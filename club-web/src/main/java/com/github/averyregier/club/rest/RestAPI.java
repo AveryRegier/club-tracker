@@ -7,7 +7,7 @@ import static spark.Spark.*;
  */
 public class RestAPI {
     public void init() {
-        get("/hello", (request, response) -> {
+        get("/protected/hello", (request, response) -> {
             return "Hello World!";
         });
     }
