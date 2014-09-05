@@ -4,6 +4,10 @@ import com.github.averyregier.club.view.Login;
 import com.github.averyregier.club.rest.RestAPI;
 import spark.servlet.SparkApplication;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 import static spark.Spark.exception;
 import static spark.SparkBase.*;
 
@@ -27,5 +31,14 @@ public class ClubApplication implements SparkApplication {
 
         new Login().init();
         new RestAPI().init();
+    }
+
+    public static Connection createDatabaseConnection()
+            throws SQLException, ClassNotFoundException {
+        String driver = "org.apache.derby.jdbc.EmbeddedDriver";
+        Class.forName(driver);
+        String url = "jdbc:derby:sampleDB";
+        Connection c = DriverManager.getConnection(url);
+        return c;
     }
 }
