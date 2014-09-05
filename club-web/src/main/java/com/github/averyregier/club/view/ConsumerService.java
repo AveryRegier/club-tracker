@@ -1,5 +1,6 @@
 package com.github.averyregier.club.view;
 
+import com.github.averyregier.club.application.ClubApplication;
 import org.openid4java.OpenIDException;
 import org.openid4java.association.AssociationSessionType;
 import org.openid4java.consumer.ConsumerManager;
@@ -8,13 +9,13 @@ import org.openid4java.consumer.InMemoryNonceVerifier;
 import org.openid4java.consumer.VerificationResult;
 import org.openid4java.discovery.DiscoveryInformation;
 import org.openid4java.discovery.Identifier;
-import org.openid4java.message.*;
+import org.openid4java.message.AuthRequest;
+import org.openid4java.message.AuthSuccess;
+import org.openid4java.message.MessageException;
+import org.openid4java.message.ParameterList;
 import org.openid4java.message.ax.AxMessage;
 import org.openid4java.message.ax.FetchRequest;
 import org.openid4java.message.ax.FetchResponse;
-import org.openid4java.message.sreg.SRegMessage;
-import org.openid4java.message.sreg.SRegRequest;
-import org.openid4java.message.sreg.SRegResponse;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -22,9 +23,13 @@ import spark.template.freemarker.FreeMarkerEngine;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-import static spark.Spark.*;
+import static spark.Spark.get;
+import static spark.Spark.post;
 
 /**
  * ConsumerService - Relying Party Service
@@ -46,20 +51,12 @@ public class ConsumerService {
 		}		
 	}		
 
-//	@POST
-//	@Path("/")
-//	@Consumes("application/x-www-form-urlencoded")
-//	public void post(@QueryParam("is_return") String is_return,
-//			@FormParam(OPENID_IDENTIFIER) String identifier,
-//			@Context HttpServletRequest httpRequest,
-//			@Context HttpServletResponse httpResponse,
-//			MultivaluedMap<String, String> params) {
-    public void init() {
+    public void init(ClubApplication app) {
         post("/consumer", "application/x-www-form-urlencoded", (httpRequest, httpResponse) -> {
             try {
                 if ("true".equals(httpRequest.queryParams("is_return"))) {
                     ParameterList paramList = new ParameterList(httpRequest.params());
-                    return this.processReturn(httpRequest, httpResponse, paramList);
+                    return this.processReturn(httpRequest, httpResponse, app, paramList);
                 } else {
                     String identifier = httpRequest.queryParams(OPENID_IDENTIFIER);
                     if (identifier != null) {
@@ -67,9 +64,6 @@ public class ConsumerService {
                     } else {
 
                         return new ModelAndView(new HashMap<>(), "index.ftl");
-//                        httpRequest.raw().getServletContext()
-//                                .getRequestDispatcher("/WEB-INF/jsp/index.jsp")
-//                                .forward(httpRequest.raw(), httpResponse.raw());
                     }
                 }
             } catch (ServletException | IOException e) {
@@ -81,7 +75,7 @@ public class ConsumerService {
             try {
                 if ("true".equals(httpRequest.queryParams("is_return"))) {
                     ParameterList paramList = new ParameterList(httpRequest.queryMap().toMap());
-                    return this.processReturn(httpRequest, httpResponse, paramList);
+                    return this.processReturn(httpRequest, httpResponse, app, paramList);
                 }
                 return new ModelAndView(new HashMap<>(), "index.ftl");
             } catch (ServletException | IOException e) {
@@ -90,24 +84,40 @@ public class ConsumerService {
         }, new FreeMarkerEngine());
 	}
 
-	private ModelAndView processReturn(Request req, Response resp, ParameterList params)
+	private ModelAndView processReturn(Request req, Response httpResponse, ClubApplication app, ParameterList params)
 				throws ServletException, IOException
     {
         // verify response to ensure the communication has not been tampered with
         HashMap<Object, Object> model = new HashMap<>();
         Identifier identifier = this.verifyResponse(req, model, params);
-        if (identifier == null) {
-            return new ModelAndView(new HashMap<>(), "index.ftl");
-//			req.getServletContext().getRequestDispatcher("/WEB-INF/jsp/index.jsp").forward(req, resp);
-        } else {
-            model.put("identifier", identifier.getIdentifier());
-            return new ModelAndView(model, "return.ftl");
-//			req.setAttribute("identifier", identifier.getIdentifier());
-//			req.getServletContext().getRequestDispatcher("/WEB-INF/jsp/return.jsp").forward(req, resp);
-		}
-	}
+        if (identifier != null) {
+            app.getUserManager().getUser(identifier.getIdentifier()).ifPresent(u->{
+                if(model.containsKey("attributes")) {
+                    Map attributes = (Map)model.get("attributes");
+                    if (attributes.containsKey("first") || attributes.containsKey("last")) {
+                        Object first = attributes.get("first");
+                        Object last = attributes.get("last");
+                        u.setName(combineName(first, last));
+                    }
+                }
+                httpResponse.cookie("auth", u.resetAuth(), 60 * 60 * 3, true);
+                httpResponse.cookie("userID", identifier.getIdentifier(), 60*60*3, true);
+                httpResponse.redirect(req.cookie("location"));
+                httpResponse.cookie("location", null, 0);
+            });
 
-	@SuppressWarnings("unchecked")
+            //model.put("identifier", identifier.getIdentifier());
+//            return new ModelAndView(model, "return.ftl");
+		}
+        return new ModelAndView(new HashMap<>(), "index.ftl");
+
+    }
+
+    private String combineName(Object first, Object last) {
+        return ((first != null ? first : "") +" "+ (last != null ? last : "")).trim();
+    }
+
+    @SuppressWarnings("unchecked")
 	public ModelAndView authRequest(String userSuppliedString,
                                     Request httpReq,
                                     Response httpResp)
@@ -136,14 +146,52 @@ public class ConsumerService {
             fetch.addAttribute("email", // attribute alias
                 "http://schema.openid.net/contact/email", // type URI
                 true); // required
+            fetch.addAttribute("first", // attribute alias
+                    "http://schema.openid.net/namePerson/first", // type URI
+                    true); // required
+            fetch.addAttribute("last", // attribute alias
+                    "http://schema.openid.net/namePerson/last", // type URI
+                    true); // required
+
+            fetch.addAttribute("prefix", // attribute alias
+                    "http://schema.openid.net/namePerson/prefix", // type URI
+                    true); // required
+            fetch.addAttribute("suffix", // attribute alias
+                    "http://schema.openid.net/namePerson/suffix", // type URI
+                    true); // required
+            fetch.addAttribute("gender", // attribute alias
+                    "http://schema.openid.net/gender", // type URI
+                    true); // required
+            fetch.addAttribute("language", // attribute alias
+                    "http://schema.openid.net/pref/language", // type URI
+                    true); // required
+            fetch.addAttribute("phones", // attribute alias
+                    "http://schema.openid.net/contact/phone", // type URI
+                    true); // required
+            fetch.addAttribute("phone", // attribute alias
+                    "http://schema.openid.net/contact/phone/default", // type URI
+                    true); // required
+            fetch.addAttribute("address1", // attribute alias
+                    "http://schema.openid.net/contact/postaladdress/home", // type URI
+                    true); // required
+            fetch.addAttribute("address2", // attribute alias
+                    "http://schema.openid.net/contact/postaladdressadditional/home", // type URI
+                    true); // required
+            fetch.addAttribute("city", // attribute alias
+                    "http://schema.openid.net/contact/city/home", // type URI
+                    true); // required
+            fetch.addAttribute("state", // attribute alias
+                    "http://schema.openid.net/contact/state/home", // type URI
+                    true); // required
+            fetch.addAttribute("country", // attribute alias
+                    "http://schema.openid.net/contact/country/home", // type URI
+                    true); // required
+            fetch.addAttribute("postalcode", // attribute alias
+                    "http://schema.openid.net/contact/postalcode/home", // type URI
+                    true); // required
 
             // attach the extension to the authentication request
             authReq.addExtension(fetch);
-
-            // example using Simple Registration to fetching the 'email' attribute
-            SRegRequest sregReq = SRegRequest.createFetchRequest();
-            sregReq.addAttribute("fullname", true);
-            authReq.addExtension(sregReq);
 
 			if (!discovered.isVersion2()) {
 				httpResp.redirect(authReq.getDestinationUrl(true));
@@ -152,10 +200,6 @@ public class ConsumerService {
                 HashMap<Object, Object> model = new HashMap<>();
                 model.put("message", authReq);
                 return new ModelAndView(model, "provider-redirection.ftl");
-//				RequestDispatcher dispatcher = httpReq.getServletContext()
-//                        .getRequestDispatcher("/WEB-INF/jsp/provider-redirection.jsp");
-//				httpReq.attribute("message", authReq);
-//				dispatcher.forward(httpReq, httpResp);
 			}
 		} catch (OpenIDException e) {
 			throw new ServletException(e);
@@ -191,8 +235,6 @@ public class ConsumerService {
 			if (verified != null) {
 				AuthSuccess authSuccess = (AuthSuccess) verification.getAuthResponse();
 
-				receiveSimpleRegistration(model, authSuccess);
-
 				receiveAttributeExchange(model, authSuccess);
 				return verified; // success
 			}
@@ -203,24 +245,6 @@ public class ConsumerService {
 		return null;
 	}
 
-	/**
-	 * @param model
-	 * @param authSuccess
-	 * @throws MessageException
-	 */
-	private void receiveSimpleRegistration(Map<Object, Object> model, AuthSuccess authSuccess) throws MessageException {
-		if (authSuccess.hasExtension(SRegMessage.OPENID_NS_SREG)) {
-			MessageExtension ext = authSuccess.getExtension(SRegMessage.OPENID_NS_SREG);
-			if (ext instanceof SRegResponse) {
-				SRegResponse sregResp = (SRegResponse) ext;
-				for (Iterator iter = sregResp.getAttributeNames().iterator(); iter.hasNext();) {
-					String name = (String) iter.next();
-					String value = sregResp.getParameterValue(name);
-					model.put(name, value);
-				}
-			}
-		}
-	}
 
 	/**
 	 * @param model

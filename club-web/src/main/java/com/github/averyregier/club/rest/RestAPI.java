@@ -1,14 +1,17 @@
 package com.github.averyregier.club.rest;
 
+import com.github.averyregier.club.application.ClubApplication;
+
 import static spark.Spark.*;
 
 /**
  * Created by avery on 8/30/14.
  */
 public class RestAPI {
-    public void init() {
+    public void init(ClubApplication app) {
         get("/protected/hello", (request, response) -> {
-            return "Hello World!";
+            String name = app.getUserManager().getUser(request.cookie("userID")).get().getName();
+            return "Hello "+ name +"!";
         });
     }
 }
