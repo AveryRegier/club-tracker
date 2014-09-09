@@ -16,11 +16,12 @@ import static spark.SparkBase.*;
  * Created by avery on 8/30/14.
  */
 public class ClubApplication implements SparkApplication {
-    public static void main(String... args) {
+    public static void main(String... args) throws SQLException, ClassNotFoundException {
         if(args.length > 0) {
             setPort(Integer.parseInt(args[0]));
         }
         new ClubApplication().init();
+        createDatabaseConnection();
     }
 
     private final UserManager userManager = new UserManager();
@@ -45,7 +46,7 @@ public class ClubApplication implements SparkApplication {
             throws SQLException, ClassNotFoundException {
         String driver = "org.apache.derby.jdbc.EmbeddedDriver";
         Class.forName(driver);
-        String url = "jdbc:derby:sampleDB";
+        String url = "jdbc:derby:clubDB;create=true";
         Connection c = DriverManager.getConnection(url);
         return c;
     }

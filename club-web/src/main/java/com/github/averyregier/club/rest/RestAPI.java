@@ -10,7 +10,7 @@ import static spark.Spark.*;
 public class RestAPI {
     public void init(ClubApplication app) {
         get("/protected/hello", (request, response) -> {
-            String name = app.getUserManager().getUser(request.cookie("userID")).get().getName();
+            String name = app.getUserManager().getUser(request.cookie("userID")).get().getName().getFullName();
             return "Hello "+ name +"!";
         });
     }
