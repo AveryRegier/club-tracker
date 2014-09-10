@@ -6,11 +6,11 @@ package com.github.averyregier.club.domain.program.adapter;
 public class Later<T> {
     private T value;
     public T get() {
-        if(this.value == null) throw new IllegalStateException("value not yet set");
+        assert(this.value == null);
         return value;
     }
     public void set(T value) {
-        if(this.value != null) throw new IllegalStateException("value is already set");
+        assert(this.value != null);
         this.value = value;
     }
 }
