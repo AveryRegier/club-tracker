@@ -13,6 +13,7 @@ public class SectionGroupAdapterTest{
                 .addSection(new SectionBuilder(0))
                 .build();
         assertEquals(sectionGroup.getSections(), sectionGroup.getSections());
+        assertEquals(sectionGroup, sectionGroup.getSections().get(0).getGroup());
     }
 
     @Test

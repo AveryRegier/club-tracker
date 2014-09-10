@@ -11,6 +11,7 @@ import java.util.Optional;
  */
 public class SectionBuilder {
     private int sequence;
+    private Later<SectionGroup> group;
 
     public SectionBuilder(int sequence) {
         this.sequence = sequence;
@@ -25,7 +26,7 @@ public class SectionBuilder {
 
             @Override
             public SectionGroup getGroup() {
-                return null;
+                return group.get();
             }
 
             @Override
@@ -43,5 +44,10 @@ public class SectionBuilder {
                 return null;
             }
         };
+    }
+
+    public SectionBuilder setGroup(Later<SectionGroup> group) {
+        this.group = group;
+        return this;
     }
 }

@@ -20,12 +20,15 @@ public class SectionGroupBuilder {
     }
 
     public SectionGroup build() {
-        final List<Section> sections = buildSections();
-        return new SectionGroupAdapter(futureBook, sequence, sections);
+        Later<SectionGroup> futureGroup = new Later<>();
+        final List<Section> sections = buildSections(futureGroup);
+        SectionGroupAdapter group = new SectionGroupAdapter(futureBook, sequence, sections);
+        futureGroup.set(group);
+        return group;
     }
 
-    private List<Section> buildSections() {
-        return sections.stream().map(b->b.build()).collect(Collectors.toList());
+    private List<Section> buildSections(Later<SectionGroup> futureGroup) {
+        return sections.stream().map(b->b.setGroup(futureGroup).build()).collect(Collectors.toList());
     }
 
     public SectionGroupBuilder addSection(SectionBuilder sectionBuilder) {
