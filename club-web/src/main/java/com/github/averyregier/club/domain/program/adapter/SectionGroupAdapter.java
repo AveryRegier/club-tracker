@@ -7,15 +7,18 @@ import com.github.averyregier.club.domain.program.SectionGroup;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
 * Created by rx39789 on 9/7/2014.
 */
 class SectionGroupAdapter implements SectionGroup {
+    private Later<Book> futureBook;
     private final List<Section> sections;
     private int sequence;
 
-    public SectionGroupAdapter(int sequence, List<Section> sections) {
+    public SectionGroupAdapter(Later<Book> futureBook, int sequence, List<Section> sections) {
+        this.futureBook = futureBook;
         this.sections = sections;
         this.sequence = sequence;
     }
@@ -32,7 +35,7 @@ class SectionGroupAdapter implements SectionGroup {
 
     @Override
     public Book getBook() {
-        return null;
+        return futureBook.get();
     }
 
     @Override

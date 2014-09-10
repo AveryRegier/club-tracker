@@ -5,6 +5,7 @@ import com.github.averyregier.club.domain.program.SectionGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
@@ -19,8 +20,9 @@ public class BookBuilder {
     }
 
     public Book build() {
-        List<SectionGroup> sectionGroups = buildSectionGroups();
-        return new BookAdapter() {
+        Later<Book> futureBook = new Later<>();
+        List<SectionGroup> sectionGroups = buildSectionGroups(futureBook);
+        BookAdapter book = new BookAdapter() {
             @Override
             public int sequence() {
                 return sequence;
@@ -31,10 +33,13 @@ public class BookBuilder {
                 return sectionGroups;
             }
         };
+        futureBook.set(book);
+        return book;
     }
 
-    private List<SectionGroup> buildSectionGroups() {
-        return sectionGroupBuilders.stream().map(b->b.build()).collect(Collectors.toList());
+    private List<SectionGroup> buildSectionGroups(Later<Book> futureBook) {
+
+        return sectionGroupBuilders.stream().map(b -> b.setBook(futureBook).build()).collect(Collectors.toList());
     }
 
     public BookBuilder addSectionGroup(SectionGroupBuilder sectionGroupBuilder) {

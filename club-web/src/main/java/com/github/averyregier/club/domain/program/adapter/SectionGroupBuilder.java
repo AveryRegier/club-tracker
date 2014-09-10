@@ -4,6 +4,7 @@ import com.github.averyregier.club.domain.program.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 public class SectionGroupBuilder {
     private ArrayList<SectionBuilder> sections = new ArrayList<>();
     private int sequence;
+    private Later<Book> futureBook;
 
     public SectionGroupBuilder(int sequence) {
         this.sequence = sequence;
@@ -19,7 +21,7 @@ public class SectionGroupBuilder {
 
     public SectionGroup build() {
         final List<Section> sections = buildSections();
-        return new SectionGroupAdapter(sequence, sections);
+        return new SectionGroupAdapter(futureBook, sequence, sections);
     }
 
     private List<Section> buildSections() {
@@ -31,4 +33,8 @@ public class SectionGroupBuilder {
         return this;
     }
 
+    public SectionGroupBuilder setBook(Later<Book> book) {
+        this.futureBook = book;
+        return this;
+    }
 }

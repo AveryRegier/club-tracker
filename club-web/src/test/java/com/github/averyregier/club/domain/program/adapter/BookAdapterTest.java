@@ -23,6 +23,7 @@ public class BookAdapterTest {
         assertEquals(1, classUnderTest.getSectionGroups().size());
         assertEquals(1, classUnderTest.getSectionGroups().get(0).sequence());
         assertEquals(classUnderTest.getSectionGroups(), classUnderTest.getSectionGroups());
+        assertEquals(classUnderTest, classUnderTest.getSectionGroups().get(0).getBook());
         List<Section> sections = classUnderTest.getSections();
         assertNotNull(sections);
         assertEquals(1, sections.size());
