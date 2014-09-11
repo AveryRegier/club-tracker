@@ -1,6 +1,5 @@
 package com.github.averyregier.club.domain.program;
 
-import java.util.List;
 import java.util.Optional;
 
 /**

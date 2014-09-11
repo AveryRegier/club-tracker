@@ -1,8 +1,8 @@
 package com.github.averyregier.club.application;
 
 import com.github.averyregier.club.domain.UserManager;
-import com.github.averyregier.club.view.Login;
 import com.github.averyregier.club.rest.RestAPI;
+import com.github.averyregier.club.view.Login;
 import spark.servlet.SparkApplication;
 
 import java.sql.Connection;
@@ -10,7 +10,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import static spark.Spark.exception;
-import static spark.SparkBase.*;
+import static spark.SparkBase.setPort;
 
 /**
  * Created by avery on 8/30/14.

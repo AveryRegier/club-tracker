@@ -1,6 +1,9 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.*;
+import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.domain.program.Book;
+import com.github.averyregier.club.domain.program.Section;
+import com.github.averyregier.club.domain.program.SectionGroup;
 
 import java.util.Collections;
 import java.util.List;

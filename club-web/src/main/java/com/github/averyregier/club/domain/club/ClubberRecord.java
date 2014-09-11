@@ -1,10 +1,10 @@
 package com.github.averyregier.club.domain.club;
 
-import com.github.averyregier.club.domain.program.*;
+import com.github.averyregier.club.domain.program.Reward;
+import com.github.averyregier.club.domain.program.Section;
+import com.github.averyregier.club.domain.program.SectionHolder;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -5,7 +5,6 @@ import com.github.averyregier.club.domain.program.SectionGroup;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**

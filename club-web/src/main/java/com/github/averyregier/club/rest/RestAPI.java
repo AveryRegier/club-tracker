@@ -2,7 +2,7 @@ package com.github.averyregier.club.rest;
 
 import com.github.averyregier.club.application.ClubApplication;
 
-import static spark.Spark.*;
+import static spark.Spark.get;
 
 /**
  * Created by avery on 8/30/14.

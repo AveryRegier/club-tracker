@@ -1,10 +1,11 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.*;
+import com.github.averyregier.club.domain.program.Book;
+import com.github.averyregier.club.domain.program.Section;
+import com.github.averyregier.club.domain.program.SectionGroup;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -28,7 +29,7 @@ public class SectionGroupBuilder {
     }
 
     private List<Section> buildSections(Later<SectionGroup> futureGroup) {
-        return sections.stream().map(b->b.setGroup(futureGroup).build()).collect(Collectors.toList());
+        return sections.stream().map(b -> b.setGroup(futureGroup).build()).collect(Collectors.toList());
     }
 
     public SectionGroupBuilder addSection(SectionBuilder sectionBuilder) {

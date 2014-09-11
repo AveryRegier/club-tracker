@@ -1,13 +1,11 @@
 package com.github.averyregier.club.domain.program.adapter;
 
 import com.github.averyregier.club.domain.program.Book;
-import com.github.averyregier.club.domain.program.Reward;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 /**
 * Created by rx39789 on 9/7/2014.
