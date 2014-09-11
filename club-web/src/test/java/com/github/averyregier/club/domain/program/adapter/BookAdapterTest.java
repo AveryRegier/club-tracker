@@ -1,6 +1,7 @@
 package com.github.averyregier.club.domain.program.adapter;
 
 import com.github.averyregier.club.domain.program.Book;
+import com.github.averyregier.club.domain.program.RewardType;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.awana.TnTSectionTypes;
 import org.junit.Test;
@@ -91,4 +92,16 @@ public class BookAdapterTest {
 //        Book classUnderTest = new BookBuilder(1).build();
 //        assertFalse(classUnderTest.getCompletionReward().isPresent());
 //    }
+
+    @Test
+    public void bookRewardType() {
+        Book classUnderTest = new BookBuilder(1)
+                .addReward(new RewardBuilder())
+                .addSectionGroup(new SectionGroupBuilder(1)
+                        .addSection(new SectionBuilder(0, TnTSectionTypes.parent.get())))
+                .build();
+        assertEquals(RewardType.book,
+                classUnderTest.getSectionGroups().get(0).getSections().get(0)
+                        .getRewards().iterator().next().getRewardType());
+    }
 }

@@ -1,6 +1,10 @@
 package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.program.*;
+import com.github.averyregier.club.domain.program.adapter.BookBuilder;
+import com.github.averyregier.club.domain.program.adapter.RewardBuilder;
+import com.github.averyregier.club.domain.program.adapter.SectionBuilder;
+import com.github.averyregier.club.domain.program.adapter.SectionGroupBuilder;
 import com.github.averyregier.club.domain.program.awana.TnTSectionTypes;
 import org.junit.Test;
 
@@ -19,96 +23,26 @@ public class ClubberRecordTest {
 
     private Clubber clubber = new MockClubber();
     private Listener me = new MockListener();
-    private MockBook book = new MockBook();
-    private SectionGroup section1Group = new MockSectionGroup(book, false, 1) {
-        private List<Section> sections = Arrays.asList(
-                new MyMockSection(0, parent, this),
-                new MyMockSection(1, regular, this),
-                new MyMockSection(2, friend, this),
-                new MyMockSection(3, regular, this),
-                new MyMockSection(4, extaCredit, this));
-
-        @Override
-        public List<Section> getSections() {
-            return sections;
-        }
-    };
-
-    private Reward section1RewardGroup = new Reward() {
-        private List<Section> sections = Arrays.asList(
-                section1Group.getSections().get(0),
-                section1Group.getSections().get(1),
-                section1Group.getSections().get(2),
-                section1Group.getSections().get(3));
-
-        @Override
-        public List<Section> getSections() {
-            return sections;
-        }
-
-        @Override
-        public RewardType getRewardType() {
-            return RewardType.group;
-        }
-    };
-
-    private SectionGroup section2Group = new MockSectionGroup(book, false, 2) {
-        private List<Section> sections = Arrays.asList(
-                new MyMockSection(0, parent, this),
-                new MyMockSection(1, regular, this),
-                new MyMockSection(2, regular, this),
-                new MyMockSection(3, regular, this),
-                new MyMockSection(4, extaCredit, this));
-
-        @Override
-        public List<Section> getSections() {
-            return sections;
-        }
-    };
-
-    private Reward section2RewardGroup = new Reward() {
-        private List<Section> sections = Arrays.asList(
-                section2Group.getSections().get(0),
-                section2Group.getSections().get(1),
-                section2Group.getSections().get(2),
-                section2Group.getSections().get(3));
-
-        @Override
-        public List<Section> getSections() {
-            return sections;
-        }
-
-        @Override
-        public RewardType getRewardType() {
-            return RewardType.group;
-        }
-    };
-
-    Reward extraSectionGroup = new Reward() {
-        @Override
-        public List<Section> getSections() {
-            return Arrays.asList(section1Group.getSections().get(4), section2Group.getSections().get(4));
-        }
-
-        @Override
-        public RewardType getRewardType() {
-            return RewardType.group;
-        }
-    };
-
-    Reward bookReward = new Reward() {
-        @Override
-        public RewardType getRewardType() {
-            return RewardType.book;
-        }
-
-        @Override
-        public List<Section> getSections() {
-            return book.getSections().stream()
-                    .filter(s->s.getSectionType().requiredForBookReward())
-                    .collect(Collectors.toList());
-        }
-    };
+    private RewardBuilder extraCreditRewardBuilder = new RewardBuilder();
+    Book book = new BookBuilder(1)
+            .addReward(new RewardBuilder())
+            .addSectionGroup(new SectionGroupBuilder(1)
+                    .addReward(new RewardBuilder()
+                            .addSection(new SectionBuilder(0, parent.get()))
+                            .addSection(new SectionBuilder(1, regular.get()))
+                            .addSection(new SectionBuilder(2, friend.get()))
+                            .addSection(new SectionBuilder(3, regular.get())))
+                    .addReward(extraCreditRewardBuilder
+                        .addSection(new SectionBuilder(4, extaCredit.get()))))
+            .addSectionGroup(new SectionGroupBuilder(1)
+                    .addReward(new RewardBuilder()
+                            .addSection(new SectionBuilder(0, parent.get()))
+                            .addSection(new SectionBuilder(1, regular.get()))
+                            .addSection(new SectionBuilder(2, regular.get()))
+                            .addSection(new SectionBuilder(3, regular.get())))
+                    .addReward(extraCreditRewardBuilder
+                            .addSection(new SectionBuilder(4, extaCredit.get()))))
+            .build();
 
     private ClubberRecord createClubberRecord(final Section theSection) {
         return clubber.getRecord(Optional.ofNullable(theSection)).get();
@@ -116,7 +50,7 @@ public class ClubberRecordTest {
 
     @Test
     public void signingUnfinishedGroupsGetNoRewards() {
-        ClubberRecord classUnderTest = createClubberRecord(section1Group.getSections().get(2));
+        ClubberRecord classUnderTest = createClubberRecord(book.getSectionGroups().get(0).getSections().get(2));
         Signing signing = assertSigning(classUnderTest);
         assertTrue(signing.getCompletionRewards().isEmpty());
     }
@@ -147,7 +81,18 @@ public class ClubberRecordTest {
         ClubberRecord finalRecord = assertGroupCompleted(2);
         Signing signing = finalRecord.getSigning().get();
         assertEquals(2, signing.getCompletionRewards().size());
-        assertTrue(signing.getCompletionRewards().contains(bookReward));
+        assertTrue(signing.getCompletionRewards().containsAll(finalRecord.getSection().getRewards()));
+    }
+
+    @Test
+    public void completingExtraCreditWinsExtraCreditReward() {
+        ClubberRecord record1 = sign(1, 4);
+        assertTrue(record1.getSigning().get().getCompletionRewards().isEmpty());
+        ClubberRecord record2 = sign(2, 4);
+        Set<Reward> completionRewards = record2.getSigning().get().getCompletionRewards();
+        assertFalse(completionRewards.isEmpty());
+        assertEquals(1, completionRewards.size());
+        assertTrue(completionRewards.containsAll(record2.getSection().getRewards(RewardType.group)));
     }
 
     private ClubberRecord signWithoutReward(int group, int section) {
@@ -178,39 +123,5 @@ public class ClubberRecordTest {
         assertEquals(LocalDate.now(), signing.getDate());
         assertEquals("Well Done!", signing.getNote());
         return signing;
-    }
-
-    private class MyMockSection extends MockSection {
-        private MockSectionGroup sectionGroup;
-
-        public MyMockSection(int sequence, TnTSectionTypes parent, MockSectionGroup mockSectionGroup) {
-            super(sequence, parent.get());
-            sectionGroup = mockSectionGroup;
-        }
-
-        @Override
-        public SectionGroup getGroup() {
-            return sectionGroup;
-        }
-
-        @Override
-        public Set<Reward> getRewards(RewardType type) {
-            return  getRewards().stream()
-                    .filter(r -> r.getRewardType() == type)
-                    .collect(Collectors.toSet());
-        }
-
-        @Override
-        public Set<Reward> getRewards() {
-            Reward forSectionGroup;
-            if(section1RewardGroup.getSections().contains(this)) {
-                forSectionGroup = section1RewardGroup;
-            } else if(section2RewardGroup.getSections().contains(this)) {
-                forSectionGroup = section2RewardGroup;
-            } else {
-                forSectionGroup = extraSectionGroup;
-            }
-            return new HashSet<>(Arrays.asList(forSectionGroup, bookReward));
-        }
     }
 }

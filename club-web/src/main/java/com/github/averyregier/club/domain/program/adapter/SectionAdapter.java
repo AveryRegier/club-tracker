@@ -2,21 +2,23 @@ package com.github.averyregier.club.domain.program.adapter;
 
 import com.github.averyregier.club.domain.program.*;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
 * Created by rx39789 on 9/10/2014.
 */
 class SectionAdapter implements Section {
+    private final List<Later<Reward>> rewards;
     private Later<SectionGroup> group;
     private SectionType sectionType;
     private int sequence;
 
-    public SectionAdapter(Later<SectionGroup> group, SectionType sectionType, int sequence) {
+    public SectionAdapter(Later<SectionGroup> group, SectionType sectionType, int sequence, List<Later<Reward>> rewards) {
         this.group = group;
         this.sectionType = sectionType;
         this.sequence = sequence;
+        this.rewards = rewards;
     }
 
     @Override
@@ -31,12 +33,14 @@ class SectionAdapter implements Section {
 
     @Override
     public Set<Reward> getRewards() {
-        return null;
+        return rewards.stream().map(r->r.get()).collect(Collectors.toSet());
     }
 
     @Override
     public Set<Reward> getRewards(RewardType group) {
-        return Collections.emptySet();
+        return getRewards().stream()
+                .filter(t->t.getRewardType() == group)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -47,5 +51,10 @@ class SectionAdapter implements Section {
     @Override
     public String getId() {
         return null;
+    }
+
+    @Override
+    public int compareTo(Section o) {
+        return sequence() - o.sequence();
     }
 }

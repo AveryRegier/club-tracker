@@ -47,7 +47,7 @@ public abstract class ClubberRecord {
     private class RecordSigning implements Signing {
         private final Listener byListener;
         private final String note;
-        Set<Reward> rewards;
+        private Set<Reward> rewards;
 
         public RecordSigning(Listener byListener, String note) {
             this.byListener = byListener;
