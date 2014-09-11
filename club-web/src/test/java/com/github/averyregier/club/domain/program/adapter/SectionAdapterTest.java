@@ -2,12 +2,9 @@ package com.github.averyregier.club.domain.program.adapter;
 
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionType;
-import com.github.averyregier.club.domain.program.awana.TnTSectionTypes;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class SectionAdapterTest {
 
