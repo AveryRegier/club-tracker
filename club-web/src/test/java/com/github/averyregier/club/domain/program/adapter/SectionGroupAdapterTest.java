@@ -15,7 +15,6 @@ public class SectionGroupAdapterTest{
                 .build();
         assertEquals(sectionGroup.getSections(), sectionGroup.getSections());
         assertEquals(sectionGroup, sectionGroup.getSections().get(0).getGroup());
-        assertEquals(TnTSectionTypes.parent.get(), sectionGroup.getSections().get(0).getSectionType());
     }
 
     @Test

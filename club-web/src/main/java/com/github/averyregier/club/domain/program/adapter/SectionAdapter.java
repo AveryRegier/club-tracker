@@ -32,7 +32,7 @@ class SectionAdapter implements Section {
 
     @Override
     public Optional<SectionGroup> getRewardGroup() {
-        return null;
+        return Optional.empty();
     }
 
     @Override
