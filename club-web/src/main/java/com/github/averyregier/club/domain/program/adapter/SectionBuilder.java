@@ -11,17 +11,19 @@ import java.util.Optional;
  */
 public class SectionBuilder {
     private int sequence;
+    private SectionType sectionType;
     private Later<SectionGroup> group;
 
-    public SectionBuilder(int sequence) {
+    public SectionBuilder(int sequence, SectionType sectionType) {
         this.sequence = sequence;
+        this.sectionType = sectionType;
     }
 
     public Section build() {
         return new Section() {
             @Override
             public SectionType getSectionType() {
-                return null;
+                return sectionType;
             }
 
             @Override

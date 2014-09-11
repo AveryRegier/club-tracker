@@ -2,6 +2,7 @@ package com.github.averyregier.club.domain.program.adapter;
 
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
+import com.github.averyregier.club.domain.program.awana.TnTSectionTypes;
 import org.junit.Test;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public class BookAdapterTest {
     public void getAllSectionsFor1SectionBook() {
         Book classUnderTest = new BookBuilder(1)
                 .addSectionGroup(new SectionGroupBuilder(1)
-                        .addSection(new SectionBuilder(0)))
+                        .addSection(new SectionBuilder(0, TnTSectionTypes.parent.get())))
                 .build();
         assertNotNull(classUnderTest);
         assertEquals(1,classUnderTest.sequence());
@@ -34,8 +35,8 @@ public class BookAdapterTest {
     public void getAllSectionsFor2SectionBook() {
         Book classUnderTest = new BookBuilder(1)
                 .addSectionGroup(new SectionGroupBuilder(1)
-                        .addSection(new SectionBuilder(0))
-                        .addSection(new SectionBuilder(1)))
+                        .addSection(new SectionBuilder(0, TnTSectionTypes.parent.get()))
+                        .addSection(new SectionBuilder(1, TnTSectionTypes.parent.get())))
                 .build();
         assertNotNull(classUnderTest);
         assertEquals(1,classUnderTest.sequence());
@@ -54,11 +55,11 @@ public class BookAdapterTest {
     public void getAllSectionsFor2SectionGroups() {
         Book classUnderTest = new BookBuilder(1)
                 .addSectionGroup(new SectionGroupBuilder(1)
-                        .addSection(new SectionBuilder(0))
-                        .addSection(new SectionBuilder(1)))
+                        .addSection(new SectionBuilder(0, TnTSectionTypes.parent.get()))
+                        .addSection(new SectionBuilder(1, TnTSectionTypes.parent.get())))
                 .addSectionGroup(new SectionGroupBuilder(2)
-                        .addSection(new SectionBuilder(0))
-                        .addSection(new SectionBuilder(1)))
+                        .addSection(new SectionBuilder(0, TnTSectionTypes.parent.get()))
+                        .addSection(new SectionBuilder(1, TnTSectionTypes.parent.get())))
                 .build();
         assertNotNull(classUnderTest);
         assertEquals(1, classUnderTest.sequence());
