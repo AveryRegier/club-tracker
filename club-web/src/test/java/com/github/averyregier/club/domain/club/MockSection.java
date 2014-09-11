@@ -25,11 +25,6 @@ abstract class MockSection implements Section {
     }
 
     @Override
-    public Optional<SectionGroup> getRewardGroup() {
-        return !getSectionType().requiredForBookReward() ? Optional.of(getGroup()) : Optional.empty();
-    }
-
-    @Override
     public int sequence() {
         return sequence;
     }

@@ -37,11 +37,6 @@ public abstract class BookAdapter implements Book {
     }
 
     @Override
-    public Optional<Reward> getCompletionReward() {
-        return Optional.empty();
-    }
-
-    @Override
     public String getId() {
         return null;
     }

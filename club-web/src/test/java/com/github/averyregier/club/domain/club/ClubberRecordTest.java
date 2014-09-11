@@ -1,15 +1,12 @@
 package com.github.averyregier.club.domain.club;
 
-import com.github.averyregier.club.domain.program.Book;
-import com.github.averyregier.club.domain.program.Section;
-import com.github.averyregier.club.domain.program.SectionGroup;
+import com.github.averyregier.club.domain.program.*;
 import com.github.averyregier.club.domain.program.awana.TnTSectionTypes;
 import org.junit.Test;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.*;
 import static org.junit.Assert.*;
@@ -37,7 +34,7 @@ public class ClubberRecordTest {
         }
     };
 
-    private SectionGroup section1RewardGroup = new MockSectionGroup(book, true, -1) {
+    private Reward section1RewardGroup = new Reward() {
         private List<Section> sections = Arrays.asList(
                 section1Group.getSections().get(0),
                 section1Group.getSections().get(1),
@@ -47,6 +44,11 @@ public class ClubberRecordTest {
         @Override
         public List<Section> getSections() {
             return sections;
+        }
+
+        @Override
+        public RewardType getRewardType() {
+            return RewardType.group;
         }
     };
 
@@ -64,7 +66,7 @@ public class ClubberRecordTest {
         }
     };
 
-    private SectionGroup section2RewardGroup = new MockSectionGroup(book, true, -1) {
+    private Reward section2RewardGroup = new Reward() {
         private List<Section> sections = Arrays.asList(
                 section2Group.getSections().get(0),
                 section2Group.getSections().get(1),
@@ -75,13 +77,36 @@ public class ClubberRecordTest {
         public List<Section> getSections() {
             return sections;
         }
+
+        @Override
+        public RewardType getRewardType() {
+            return RewardType.group;
+        }
     };
 
-    MockSectionGroup extraSectionGroup = new MockSectionGroup(book, true, -1) {
+    Reward extraSectionGroup = new Reward() {
         @Override
         public List<Section> getSections() {
-            final SectionGroup thisGroup = this;
             return Arrays.asList(section1Group.getSections().get(4), section2Group.getSections().get(4));
+        }
+
+        @Override
+        public RewardType getRewardType() {
+            return RewardType.group;
+        }
+    };
+
+    Reward bookReward = new Reward() {
+        @Override
+        public RewardType getRewardType() {
+            return RewardType.book;
+        }
+
+        @Override
+        public List<Section> getSections() {
+            return book.getSections().stream()
+                    .filter(s->s.getSectionType().requiredForBookReward())
+                    .collect(Collectors.toList());
         }
     };
 
@@ -108,7 +133,7 @@ public class ClubberRecordTest {
         ClubberRecord record3 = sign(group, 3);
         Signing signing = record3.getSigning().get();
         assertTrue(signing.getCompletionRewards().size() >= 1);
-        assertTrue(signing.getCompletionRewards().contains(record3.getSection().getRewardGroup().get().getCompletionReward().get()));
+        assertTrue(signing.getCompletionRewards().containsAll(record3.getSection().getRewards(RewardType.group)));
         // completion rewards don't change on previous records
         assertNoRewards(record0);
         assertNoRewards(record1);
@@ -121,8 +146,8 @@ public class ClubberRecordTest {
         assertGroupCompleted(1);
         ClubberRecord finalRecord = assertGroupCompleted(2);
         Signing signing = finalRecord.getSigning().get();
-        assertTrue(signing.getCompletionRewards().size() == 2);
-        assertTrue(signing.getCompletionRewards().contains(book.getCompletionReward().get()));
+        assertEquals(2, signing.getCompletionRewards().size());
+        assertTrue(signing.getCompletionRewards().contains(bookReward));
     }
 
     private ClubberRecord signWithoutReward(int group, int section) {
@@ -169,14 +194,23 @@ public class ClubberRecordTest {
         }
 
         @Override
-        public Optional<SectionGroup> getRewardGroup() {
+        public Set<Reward> getRewards(RewardType type) {
+            return  getRewards().stream()
+                    .filter(r -> r.getRewardType() == type)
+                    .collect(Collectors.toSet());
+        }
+
+        @Override
+        public Set<Reward> getRewards() {
+            Reward forSectionGroup;
             if(section1RewardGroup.getSections().contains(this)) {
-                return Optional.of(section1RewardGroup);
+                forSectionGroup = section1RewardGroup;
             } else if(section2RewardGroup.getSections().contains(this)) {
-                return Optional.of(section2RewardGroup);
+                forSectionGroup = section2RewardGroup;
             } else {
-                return Optional.of(extraSectionGroup);
+                forSectionGroup = extraSectionGroup;
             }
+            return new HashSet<>(Arrays.asList(forSectionGroup, bookReward));
         }
     }
 }

@@ -44,11 +44,6 @@ class SectionGroupAdapter implements SectionGroup {
     }
 
     @Override
-    public Optional<Reward> getCompletionReward() {
-        return Optional.empty();
-    }
-
-    @Override
     public String getId() {
         return null;
     }

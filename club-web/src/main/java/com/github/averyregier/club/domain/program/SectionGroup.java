@@ -6,12 +6,10 @@ import java.util.Optional;
 /**
  * Created by rx39789 on 9/6/2014.
  */
-public interface SectionGroup {
+public interface SectionGroup extends SectionHolder {
     public int sequence();
-    public List<Section> getSections();
     public Book getBook();
     public Optional<Book> asBook();
-    public Optional<Reward> getCompletionReward();
 
     String getId();
 }

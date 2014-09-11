@@ -8,7 +8,6 @@ import java.util.Optional;
 * Created by rx39789 on 9/6/2014.
 */
 abstract class MockSectionGroup implements SectionGroup {
-    private Reward reward = new Reward() {};
     private Book book;
     private int sequence;
 
@@ -33,11 +32,6 @@ abstract class MockSectionGroup implements SectionGroup {
     @Override
     public Optional<Book> asBook() {
         return Optional.empty();
-    }
-
-    @Override
-    public Optional<Reward> getCompletionReward() {
-        return Optional.of(reward);
     }
 
     @Override

@@ -12,8 +12,6 @@ import java.util.Optional;
 * Created by rx39789 on 9/6/2014.
 */
 class MockBook extends BookAdapter implements Book {
-    private Reward reward = new Reward() {};
-
     private List<SectionGroup> groups = new ArrayList<>(5);
     @Override
     public List<SectionGroup> getSectionGroups() {
@@ -28,11 +26,6 @@ class MockBook extends BookAdapter implements Book {
     @Override
     public int sequence() {
         return 0;
-    }
-
-    @Override
-    public Optional<Reward> getCompletionReward() {
-        return Optional.of(reward);
     }
 
     @Override

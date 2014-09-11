@@ -1,10 +1,9 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.Section;
-import com.github.averyregier.club.domain.program.SectionGroup;
-import com.github.averyregier.club.domain.program.SectionType;
+import com.github.averyregier.club.domain.program.*;
 
-import java.util.Optional;
+import java.util.Collections;
+import java.util.Set;
 
 /**
 * Created by rx39789 on 9/10/2014.
@@ -31,8 +30,13 @@ class SectionAdapter implements Section {
     }
 
     @Override
-    public Optional<SectionGroup> getRewardGroup() {
-        return Optional.empty();
+    public Set<Reward> getRewards() {
+        return null;
+    }
+
+    @Override
+    public Set<Reward> getRewards(RewardType group) {
+        return Collections.emptySet();
     }
 
     @Override

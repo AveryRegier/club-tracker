@@ -1,9 +1,6 @@
 package com.github.averyregier.club.domain.club;
 
-import com.github.averyregier.club.domain.program.Book;
-import com.github.averyregier.club.domain.program.Reward;
-import com.github.averyregier.club.domain.program.Section;
-import com.github.averyregier.club.domain.program.SectionGroup;
+import com.github.averyregier.club.domain.program.*;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -27,7 +24,7 @@ public abstract class ClubberRecord {
         return signing;
     }
 
-    private boolean isCompleted(SectionGroup g) {
+    private boolean isCompleted(SectionHolder g) {
         return allCompleted(g.getSections().stream());
     }
 
@@ -78,25 +75,9 @@ public abstract class ClubberRecord {
         }
 
         void calculateRewards() {
-            rewards = new HashSet<>();
-            Optional<SectionGroup> g = getSection().getRewardGroup();
-            if (g.isPresent()) {
-                SectionGroup rg = g.get();
-                if (rg.getCompletionReward().isPresent() && isCompleted(rg)) {
-                    rewards.add(rg.getCompletionReward().get());
-                }
-            }
-            Book book = getSection().getGroup().getBook();
-            if(book.getCompletionReward().isPresent()) {
-                boolean bookAward = allCompleted(book.getSections().stream()
-                        .filter(s -> {
-                                    return s.getSectionType().requiredForBookReward();
-                                }));
-
-                if (bookAward) {
-                    rewards.add(book.getCompletionReward().get());
-                }
-            }
+            rewards = getSection().getRewards().stream()
+                    .filter(r->isCompleted(r))
+                    .collect(Collectors.toSet());
         }
     }
 }

@@ -87,8 +87,8 @@ public class BookAdapterTest {
         assertSame(classUnderTest, classUnderTest.getBook());
     }
 
-    @Test public void noCompletionAward() {
-        Book classUnderTest = new BookBuilder(1).build();
-        assertFalse(classUnderTest.getCompletionReward().isPresent());
-    }
+//    @Test public void noCompletionAward() {
+//        Book classUnderTest = new BookBuilder(1).build();
+//        assertFalse(classUnderTest.getCompletionReward().isPresent());
+//    }
 }

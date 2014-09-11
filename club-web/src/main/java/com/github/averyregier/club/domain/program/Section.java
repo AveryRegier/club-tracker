@@ -1,6 +1,6 @@
 package com.github.averyregier.club.domain.program;
 
-import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by rx39789 on 9/6/2014.
@@ -8,7 +8,9 @@ import java.util.Optional;
 public interface Section {
     public SectionType getSectionType();
     public SectionGroup getGroup();
-    public Optional<SectionGroup> getRewardGroup();
+
+    public Set<Reward> getRewards();
+    public Set<Reward> getRewards(RewardType group);
 
     int sequence();
 
