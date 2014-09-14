@@ -1,12 +1,12 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.Book;
-import com.github.averyregier.club.domain.program.RewardType;
-import com.github.averyregier.club.domain.program.Section;
+import com.github.averyregier.club.domain.program.*;
 import com.github.averyregier.club.domain.program.awana.TnTSectionTypes;
 import org.junit.Test;
 
+import java.time.Year;
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.Assert.*;
 
@@ -78,11 +78,6 @@ public class BookAdapterTest {
         assertEquals(1, sections.get(3).sequence());
     }
 
-    @Test public void asBook() {
-        Book classUnderTest = new BookBuilder(1).build();
-        assertSame(classUnderTest, classUnderTest.asBook().get());
-    }
-
     @Test public void getBook() {
         Book classUnderTest = new BookBuilder(1).build();
         assertSame(classUnderTest, classUnderTest.getBook());
@@ -103,5 +98,14 @@ public class BookAdapterTest {
         assertEquals(RewardType.book,
                 classUnderTest.getSectionGroups().get(0).getSections().get(0)
                         .getRewards().iterator().next().getRewardType());
+    }
+
+    @Test
+    public void setBookVersion() {
+        BookVersionAdapter version = new BookVersionAdapter(1, 0, Translation.none, Locale.ENGLISH, Year.now());
+        Book classUnderTest = new BookBuilder(4)
+                .setVersion(version)
+                .build();
+        assertSame(version, classUnderTest.getVersion());
     }
 }

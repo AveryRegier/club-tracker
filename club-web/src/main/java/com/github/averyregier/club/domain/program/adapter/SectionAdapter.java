@@ -54,7 +54,17 @@ class SectionAdapter implements Section {
     }
 
     @Override
+    public String getShortCode() {
+        return Integer.toString(sequence());
+    }
+
+    @Override
     public int compareTo(Section o) {
         return sequence() - o.sequence();
+    }
+
+    @Override
+    public SectionGroup getContainer() {
+        return group.get();
     }
 }

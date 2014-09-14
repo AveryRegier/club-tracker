@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.club;
 
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -8,4 +9,5 @@ import java.util.Set;
 public interface Program extends Club {
     public Set<Club> getClubs();
     public RegistrationInformation createRegistrationForm();
+    public Locale getLocale();
 }

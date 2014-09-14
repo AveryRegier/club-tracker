@@ -21,13 +21,6 @@ public class SectionGroupAdapterTest{
     }
 
     @Test
-    public void asBook() {
-        SectionGroup sectionGroup = new SectionGroupBuilder(1)
-                .build();
-        assertFalse(sectionGroup.asBook().isPresent());
-    }
-
-    @Test
     public void noCompletionAward() {
         SectionGroup sectionGroup = new SectionGroupBuilder(1)
                 .addSection(new SectionBuilder(1, TnTSectionTypes.regular.get()))

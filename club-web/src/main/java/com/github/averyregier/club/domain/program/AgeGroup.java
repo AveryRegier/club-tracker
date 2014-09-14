@@ -4,7 +4,7 @@ package com.github.averyregier.club.domain.program;
  * Created by rx39789 on 9/6/2014.
  */
 public interface AgeGroup {
-    public enum DefaultAgeGroup {
+    public enum DefaultAgeGroup implements AgeGroup {
         NURSERY,
         PRESCHOOL,
         KINDERGARTEN,
@@ -25,7 +25,8 @@ public interface AgeGroup {
         THIRTIES,
         FORTIES,
         FIFTIES,
-        SENIOR
+        SENIOR;
+
     }
 
 }

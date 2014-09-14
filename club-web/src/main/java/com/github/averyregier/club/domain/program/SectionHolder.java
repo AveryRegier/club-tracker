@@ -7,4 +7,5 @@ import java.util.List;
  */
 public interface SectionHolder {
     public List<Section> getSections();
+    public Book getBook();
 }

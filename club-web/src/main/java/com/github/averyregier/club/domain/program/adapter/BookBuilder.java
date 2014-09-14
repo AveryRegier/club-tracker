@@ -17,6 +17,7 @@ public class BookBuilder {
     private Set<RewardBuilder> completions = new HashSet<>();
     private Later<Reward> reward;
     private RewardBuilder rewardBuilder;
+    private BookVersion bookVersion;
 
     public BookBuilder(int sequence) {
         this.sequence = sequence;
@@ -25,7 +26,7 @@ public class BookBuilder {
     public Book build() {
         Later<Book> futureBook = new Later<>();
         List<SectionGroup> sectionGroups = buildSectionGroups(futureBook);
-        BookAdapter book = new ConcreteBook(sequence, sectionGroups);
+        BookAdapter book = new ConcreteBook(sequence, sectionGroups, bookVersion);
         futureBook.set(book);
         completions.forEach(RewardBuilder::build);
         if(reward != null) {
@@ -63,4 +64,8 @@ public class BookBuilder {
         return reward;
     }
 
+    public BookBuilder setVersion(BookVersion bookVersion) {
+        this.bookVersion = bookVersion;
+        return this;
+    }
 }

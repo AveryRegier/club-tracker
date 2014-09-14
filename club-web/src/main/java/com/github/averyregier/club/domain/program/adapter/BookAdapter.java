@@ -1,9 +1,6 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.AgeGroup;
-import com.github.averyregier.club.domain.program.Book;
-import com.github.averyregier.club.domain.program.Section;
-import com.github.averyregier.club.domain.program.SectionGroup;
+import com.github.averyregier.club.domain.program.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,12 +32,22 @@ public abstract class BookAdapter implements Book {
     }
 
     @Override
-    public Optional<Book> asBook() {
-        return Optional.of(this);
+    public String getId() {
+        return null;
     }
 
     @Override
-    public String getId() {
+    public BookVersion getVersion() {
+        return null;
+    }
+
+    @Override
+    public Curriculum getContainer() {
+        return null;
+    }
+
+    @Override
+    public String getShortCode() {
         return null;
     }
 }

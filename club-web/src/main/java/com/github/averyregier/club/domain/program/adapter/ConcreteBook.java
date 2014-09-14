@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.program.adapter;
 
+import com.github.averyregier.club.domain.program.BookVersion;
 import com.github.averyregier.club.domain.program.SectionGroup;
 
 import java.util.List;
@@ -10,10 +11,12 @@ import java.util.List;
 class ConcreteBook extends BookAdapter {
     private final List<SectionGroup> sectionGroups;
     private int sequence;
+    private BookVersion bookVersion;
 
-    public ConcreteBook(int sequence, List<SectionGroup> sectionGroups) {
+    public ConcreteBook(int sequence, List<SectionGroup> sectionGroups, BookVersion bookVersion) {
         this.sectionGroups = sectionGroups;
         this.sequence = sequence;
+        this.bookVersion = bookVersion;
     }
 
     @Override
@@ -24,5 +27,10 @@ class ConcreteBook extends BookAdapter {
     @Override
     public List<SectionGroup> getSectionGroups() {
         return sectionGroups;
+    }
+
+    @Override
+    public BookVersion getVersion() {
+        return bookVersion;
     }
 }

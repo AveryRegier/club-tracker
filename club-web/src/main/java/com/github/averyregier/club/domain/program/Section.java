@@ -1,11 +1,13 @@
 package com.github.averyregier.club.domain.program;
 
+import com.github.averyregier.club.domain.Contained;
+
 import java.util.Set;
 
 /**
  * Created by rx39789 on 9/6/2014.
  */
-public interface Section extends Comparable<Section> {
+public interface Section extends Comparable<Section>, Contained<SectionGroup> {
     public SectionType getSectionType();
     public SectionGroup getGroup();
 

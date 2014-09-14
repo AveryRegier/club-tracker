@@ -37,12 +37,17 @@ class SectionGroupAdapter implements SectionGroup {
     }
 
     @Override
-    public Optional<Book> asBook() {
-        return Optional.empty();
+    public String getId() {
+        return null;
     }
 
     @Override
-    public String getId() {
-        return null;
+    public String getShortCode() {
+        return Integer.toString(sequence());
+    }
+
+    @Override
+    public Book getContainer() {
+        return getBook();
     }
 }
