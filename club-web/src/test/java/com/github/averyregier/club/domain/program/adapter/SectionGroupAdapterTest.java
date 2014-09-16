@@ -14,7 +14,7 @@ public class SectionGroupAdapterTest{
     @Test
     public void test1section() {
         SectionGroup sectionGroup = new SectionGroupBuilder(1)
-                .addSection(new SectionBuilder(0, TnTSectionTypes.parent.get()))
+                .section(new SectionBuilder(0, TnTSectionTypes.parent.get()))
                 .build();
         assertEquals(sectionGroup.getSections(), sectionGroup.getSections());
         assertEquals(sectionGroup, sectionGroup.getSections().get(0).getGroup());
@@ -23,7 +23,7 @@ public class SectionGroupAdapterTest{
     @Test
     public void noCompletionAward() {
         SectionGroup sectionGroup = new SectionGroupBuilder(1)
-                .addSection(new SectionBuilder(1, TnTSectionTypes.regular.get()))
+                .section(new SectionBuilder(1, TnTSectionTypes.regular.get()))
                 .build();
         assertTrue(sectionGroup.getSections().get(0).getRewards().isEmpty());
     }
@@ -33,7 +33,7 @@ public class SectionGroupAdapterTest{
         BookBuilder bookBuilder = new BookBuilder(0);
         SectionGroup group = new SectionGroupBuilder(1)
                 .addReward(new RewardBuilder()
-                        .addSection(new SectionBuilder(1, TnTSectionTypes.regular.get())))
+                        .section(new SectionBuilder(1, TnTSectionTypes.regular.get())))
                 .build(bookBuilder);
         bookBuilder.build();
 
@@ -48,10 +48,10 @@ public class SectionGroupAdapterTest{
         BookBuilder bookBuilder = new BookBuilder(0);
         SectionGroup group = new SectionGroupBuilder(1)
                 .addReward(new RewardBuilder()
-                        .addSection(new SectionBuilder(1, TnTSectionTypes.regular.get()))
-                        .addSection(new SectionBuilder(3, TnTSectionTypes.regular.get())))
+                        .section(new SectionBuilder(1, TnTSectionTypes.regular.get()))
+                        .section(new SectionBuilder(3, TnTSectionTypes.regular.get())))
                 .addReward(new RewardBuilder()
-                        .addSection(new SectionBuilder(2, TnTSectionTypes.extaCredit.get())))
+                        .section(new SectionBuilder(2, TnTSectionTypes.extaCredit.get())))
                 .build(bookBuilder);
         bookBuilder.build();
 

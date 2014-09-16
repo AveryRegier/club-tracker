@@ -7,7 +7,7 @@ import java.time.Year;
 import java.util.Locale;
 
 /**
- * Created by rx39789 on 9/13/2014.
+ * Created by avery on 9/13/2014.
  */
 public class BookVersionAdapter implements BookVersion {
     private final int major;

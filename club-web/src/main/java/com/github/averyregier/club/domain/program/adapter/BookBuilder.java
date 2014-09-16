@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Created by rx39789 on 9/7/2014.
+ * Created by avery on 9/7/2014.
  */
 public class BookBuilder {
     private List<SectionGroupBuilder> sectionGroupBuilders = new ArrayList<>();
@@ -38,7 +38,7 @@ public class BookBuilder {
         if(reward != null) {
             book.getSections().stream()
                     .filter(s -> s.getSectionType().requiredForBookReward())
-                    .forEach(rewardBuilder::addSection);
+                    .forEach(rewardBuilder::section);
             reward.set(rewardBuilder.build());
         }
         return book;
@@ -50,58 +50,62 @@ public class BookBuilder {
                 .collect(Collectors.toList());
     }
 
-    public BookBuilder addSectionGroup(SectionGroupBuilder sectionGroupBuilder) {
+    public BookBuilder group(SectionGroupBuilder sectionGroupBuilder) {
         this.sectionGroupBuilders.add(sectionGroupBuilder);
         return this;
     }
 
-    public void addCompletions(ArrayList<RewardBuilder> rewards) {
+    void addCompletions(ArrayList<RewardBuilder> rewards) {
         completions.addAll(rewards);
     }
 
-    public BookBuilder addReward(RewardBuilder rewardBuilder) {
+    public BookBuilder reward(RewardBuilder rewardBuilder) {
         this.rewardBuilder = rewardBuilder;
-        this.rewardBuilder.setRewardType(RewardType.book);
+        this.rewardBuilder.type(RewardType.book);
         reward = new Later<>();
         return this;
     }
 
-    public BookBuilder addReward(Function<RewardBuilder, RewardBuilder> function) {
-        return addReward(function.apply(new RewardBuilder()));
+    public BookBuilder reward(Function<RewardBuilder, RewardBuilder> function) {
+        return reward(function.apply(new RewardBuilder()));
     }
 
-    public BookBuilder addSectionGroup(int sequence, Function<SectionGroupBuilder, SectionGroupBuilder> setupFn) {
-        addSectionGroup(setupFn.apply(new SectionGroupBuilder(sequence)));
+    public BookBuilder group(int sequence, Function<SectionGroupBuilder, SectionGroupBuilder> setupFn) {
+        group(setupFn.apply(new SectionGroupBuilder(sequence)));
         return this;
     }
 
-    public Later<Reward> getReward() {
+    Later<Reward> getReward() {
         return reward;
     }
 
-    public BookBuilder setVersion(int major, int minor) {
+    public BookBuilder version(int major, int minor) {
         this.major = major;
         this.minor = minor;
         return this;
     }
 
-    public BookBuilder setShortCode(String shortCode) {
+    public BookBuilder shortCode(String shortCode) {
         this.shortCode = shortCode;
         return this;
     }
 
-    public BookBuilder setTranslation(Translation translation) {
+    public BookBuilder translation(Translation translation) {
         this.translation = translation;
         return this;
     }
 
-    public BookBuilder setLanguage(Locale locale) {
+    public BookBuilder language(Locale locale) {
         this.locale = locale;
         return this;
     }
 
-    public BookBuilder setCurriculum(Later<Curriculum> curriculumLater) {
+    BookBuilder setCurriculum(Later<Curriculum> curriculumLater) {
         this.curriculumLater = curriculumLater;
         return this;
+    }
+
+    public BookBuilder reward() {
+        return reward(new RewardBuilder());
     }
 }

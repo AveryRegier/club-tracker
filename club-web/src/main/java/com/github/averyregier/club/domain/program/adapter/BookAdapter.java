@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by rx39789 on 9/7/2014.
+ * Created by avery on 9/7/2014.
  */
 public abstract class BookAdapter implements Book {
     @Override

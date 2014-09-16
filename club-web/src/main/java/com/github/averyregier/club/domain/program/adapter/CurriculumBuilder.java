@@ -22,15 +22,15 @@ public class CurriculumBuilder {
     }
 
     private List<Book> buildBooks(Later<Curriculum> curriculumLater) {
-        return books.stream().map(b->b.setCurriculum(curriculumLater).build()).collect(Collectors.toList());
+        return books.stream().map(b -> b.setCurriculum(curriculumLater).build()).collect(Collectors.toList());
     }
 
-    public CurriculumBuilder setShortCode(String shortCode) {
+    public CurriculumBuilder shortCode(String shortCode) {
         this.shortCode = shortCode;
         return this;
     }
 
-    public CurriculumBuilder addBook(int sequence, Function<BookBuilder, BookBuilder> function) {
+    public CurriculumBuilder book(int sequence, Function<BookBuilder, BookBuilder> function) {
 
         books.add(function.apply(new BookBuilder(sequence)));
         return this;

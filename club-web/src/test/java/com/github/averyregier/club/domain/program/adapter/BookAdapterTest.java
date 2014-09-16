@@ -18,8 +18,8 @@ public class BookAdapterTest {
     @Test
     public void getAllSectionsFor1SectionBook() {
         Book classUnderTest = new BookBuilder(1)
-                .addSectionGroup(1, g->g
-                        .addSection(0, parent))
+                .group(1, g -> g
+                        .section(0, parent))
                 .build();
         assertNotNull(classUnderTest);
         assertEquals(1,classUnderTest.sequence());
@@ -37,9 +37,9 @@ public class BookAdapterTest {
     @Test
     public void getAllSectionsFor2SectionBook() {
         Book classUnderTest = new BookBuilder(1)
-                .addSectionGroup(1, g -> g
-                        .addSection(0, parent)
-                        .addSection(1, parent))
+                .group(1, g -> g
+                        .section(0, parent)
+                        .section(1, parent))
                 .build();
         assertNotNull(classUnderTest);
         assertEquals(1,classUnderTest.sequence());
@@ -57,12 +57,12 @@ public class BookAdapterTest {
     @Test
     public void getAllSectionsFor2SectionGroups() {
         Book classUnderTest = new BookBuilder(1)
-                .addSectionGroup(1,g->g
-                        .addSection(0, parent)
-                        .addSection(1, parent))
-                .addSectionGroup(2, g -> g
-                        .addSection(0, parent)
-                        .addSection(1, parent))
+                .group(1, g -> g
+                        .section(0, parent)
+                        .section(1, parent))
+                .group(2, g -> g
+                        .section(0, parent)
+                        .section(1, parent))
                 .build();
         assertNotNull(classUnderTest);
         assertEquals(1, classUnderTest.sequence());
@@ -93,9 +93,9 @@ public class BookAdapterTest {
     @Test
     public void bookRewardType() {
         Book classUnderTest = new BookBuilder(1)
-                .addReward(new RewardBuilder())
-                .addSectionGroup(1, g -> g
-                        .addSection(0, parent))
+                .reward()
+                .group(1, g -> g
+                        .section(0, parent))
                 .build();
         assertEquals(book,
                 classUnderTest.getSectionGroups().get(0).getSections().get(0)
@@ -105,7 +105,7 @@ public class BookAdapterTest {
     @Test
     public void setBookVersion() {
         Book classUnderTest = new BookBuilder(4)
-                .setVersion(1,0)
+                .version(1, 0)
                 .build();
         assertEquals(1, classUnderTest.getVersion().major());
         assertEquals(0, classUnderTest.getVersion().minor());
@@ -113,14 +113,14 @@ public class BookAdapterTest {
 
     @Test
     public void setId() {
-        assertEquals("foobar", new BookBuilder(1).setShortCode("foobar").build().getShortCode());
+        assertEquals("foobar", new BookBuilder(1).shortCode("foobar").build().getShortCode());
     }
 
     @Test
     public void translation() {
         Translation translation = new Translation() {
         };
-        assertEquals(translation, new BookBuilder(3).setTranslation(translation).build().getVersion().getTranslation());
+        assertEquals(translation, new BookBuilder(3).translation(translation).build().getVersion().getTranslation());
     }
 
     @Test
@@ -130,7 +130,7 @@ public class BookAdapterTest {
 
     @Test
     public void language() {
-        assertEquals(Locale.FRENCH, new BookBuilder(3).setLanguage(Locale.FRENCH).build().getVersion().getLanguage());
+        assertEquals(Locale.FRENCH, new BookBuilder(3).language(Locale.FRENCH).build().getVersion().getLanguage());
     }
 
     @Test

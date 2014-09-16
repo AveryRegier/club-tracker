@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
-* Created by rx39789 on 9/7/2014.
+* Created by avery on 9/7/2014.
 */
 class SectionGroupAdapter implements SectionGroup {
     private Later<Book> futureBook;

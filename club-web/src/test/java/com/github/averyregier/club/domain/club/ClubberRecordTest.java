@@ -5,12 +5,10 @@ import com.github.averyregier.club.domain.program.adapter.BookBuilder;
 import com.github.averyregier.club.domain.program.adapter.RewardBuilder;
 import com.github.averyregier.club.domain.program.adapter.SectionBuilder;
 import com.github.averyregier.club.domain.program.adapter.SectionGroupBuilder;
-import com.github.averyregier.club.domain.program.awana.TnTSectionTypes;
 import org.junit.Test;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.*;
 import static org.junit.Assert.*;
@@ -25,23 +23,23 @@ public class ClubberRecordTest {
     private Listener me = new MockListener();
     private RewardBuilder extraCreditRewardBuilder = new RewardBuilder();
     Book book = new BookBuilder(1)
-            .addReward(new RewardBuilder())
-            .addSectionGroup(new SectionGroupBuilder(1)
+            .reward(new RewardBuilder())
+            .group(new SectionGroupBuilder(1)
                     .addReward(new RewardBuilder()
-                            .addSection(new SectionBuilder(0, parent.get()))
-                            .addSection(new SectionBuilder(1, regular.get()))
-                            .addSection(new SectionBuilder(2, friend.get()))
-                            .addSection(new SectionBuilder(3, regular.get())))
+                            .section(new SectionBuilder(0, parent.get()))
+                            .section(new SectionBuilder(1, regular.get()))
+                            .section(new SectionBuilder(2, friend.get()))
+                            .section(new SectionBuilder(3, regular.get())))
                     .addReward(extraCreditRewardBuilder
-                        .addSection(new SectionBuilder(4, extaCredit.get()))))
-            .addSectionGroup(new SectionGroupBuilder(1)
+                            .section(new SectionBuilder(4, extaCredit.get()))))
+            .group(new SectionGroupBuilder(1)
                     .addReward(new RewardBuilder()
-                            .addSection(new SectionBuilder(0, parent.get()))
-                            .addSection(new SectionBuilder(1, regular.get()))
-                            .addSection(new SectionBuilder(2, regular.get()))
-                            .addSection(new SectionBuilder(3, regular.get())))
+                            .section(new SectionBuilder(0, parent.get()))
+                            .section(new SectionBuilder(1, regular.get()))
+                            .section(new SectionBuilder(2, regular.get()))
+                            .section(new SectionBuilder(3, regular.get())))
                     .addReward(extraCreditRewardBuilder
-                            .addSection(new SectionBuilder(4, extaCredit.get()))))
+                            .section(new SectionBuilder(4, extaCredit.get()))))
             .build();
 
     private ClubberRecord createClubberRecord(final Section theSection) {

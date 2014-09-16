@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by rx39789 on 9/11/2014.
+ * Created by avery on 9/11/2014.
  */
 public class RewardBuilder extends SectionHolderBuilder<RewardBuilder> {
     private Later<Reward> futureReward = new Later<>();
@@ -46,15 +46,15 @@ public class RewardBuilder extends SectionHolderBuilder<RewardBuilder> {
         return collect;
     }
 
-    public void addSection(Section s) {
+    public void section(Section s) {
         builtSections.add(s);
     }
 
-    public void setRewardType(RewardType rewardType) {
+    public void type(RewardType rewardType) {
         this.rewardType = rewardType;
     }
 
-    public void identifySectionGroup(Later<SectionGroup> futureGroup) {
+    void identifySectionGroup(Later<SectionGroup> futureGroup) {
         sections.forEach(s->s.identifyFutureGroup(futureGroup));
     }
 }

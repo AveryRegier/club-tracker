@@ -5,7 +5,7 @@ import com.github.averyregier.club.domain.Contained;
 import java.util.Set;
 
 /**
- * Created by rx39789 on 9/6/2014.
+ * Created by avery on 9/6/2014.
  */
 public interface Section extends Comparable<Section>, Contained<SectionGroup> {
     public SectionType getSectionType();

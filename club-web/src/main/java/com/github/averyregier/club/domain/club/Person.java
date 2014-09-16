@@ -5,7 +5,7 @@ import com.github.averyregier.club.domain.User;
 import java.util.Optional;
 
 /**
- * Created by rx39789 on 9/5/2014.
+ * Created by avery on 9/5/2014.
  */
 public interface Person {
 

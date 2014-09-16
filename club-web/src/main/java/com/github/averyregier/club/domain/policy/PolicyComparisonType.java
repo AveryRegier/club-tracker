@@ -3,7 +3,7 @@ package com.github.averyregier.club.domain.policy;
 import com.github.averyregier.club.domain.club.Person;
 
 /**
- * Created by rx39789 on 9/5/2014.
+ * Created by avery on 9/5/2014.
  */
 public enum PolicyComparisonType {
     BOOLEAN {

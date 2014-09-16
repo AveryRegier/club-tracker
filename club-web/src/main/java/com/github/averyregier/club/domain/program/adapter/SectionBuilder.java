@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by rx39789 on 9/7/2014.
+ * Created by avery on 9/7/2014.
  */
 public class SectionBuilder {
     private int sequence;
@@ -27,12 +27,12 @@ public class SectionBuilder {
         return new SectionAdapter(group, sectionType, sequence, rewards);
     }
 
-    public SectionBuilder setGroup(Later<SectionGroup> group) {
+    SectionBuilder setGroup(Later<SectionGroup> group) {
         this.group = group;
         return this;
     }
 
-    public SectionBuilder addRewards(Later<Reward>... moreRewards) {
+    SectionBuilder addRewards(Later<Reward>... moreRewards) {
         if(moreRewards != null) {
             for(Later<Reward> reward: moreRewards) {
                 if(reward != null) {
@@ -43,13 +43,13 @@ public class SectionBuilder {
         return this;
     }
 
-    public void identifyFutureGroup(Later<SectionGroup> futureGroup) {
+    void identifyFutureGroup(Later<SectionGroup> futureGroup) {
         if(this.futureGroup == null) { // only attach to the first one
             this.futureGroup = futureGroup;
         }
     }
 
-    public Later<SectionGroup> getGroup() {
+    Later<SectionGroup> getGroup() {
         return futureGroup;
     }
 }

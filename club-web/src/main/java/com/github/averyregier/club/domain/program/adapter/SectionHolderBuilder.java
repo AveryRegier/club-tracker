@@ -12,16 +12,16 @@ import java.util.function.Function;
 public class SectionHolderBuilder<T extends SectionHolderBuilder> {
     protected List<SectionBuilder> sections = new ArrayList<>();
 
-    public T addSection(SectionBuilder sectionBuilder) {
+    public T section(SectionBuilder sectionBuilder) {
         sections.add(sectionBuilder);
         return (T)this;
     }
 
-    public T addSection(int sequence, SectionType sectionType, Function<SectionBuilder, SectionBuilder> function) {
-        return addSection(function.apply(new SectionBuilder(sequence, sectionType)));
+    public T section(int sequence, SectionType sectionType, Function<SectionBuilder, SectionBuilder> function) {
+        return section(function.apply(new SectionBuilder(sequence, sectionType)));
     }
 
-    public T addSection(int sequence, SectionType sectionType) {
-        return addSection(new SectionBuilder(sequence, sectionType));
+    public T section(int sequence, SectionType sectionType) {
+        return section(new SectionBuilder(sequence, sectionType));
     }
 }

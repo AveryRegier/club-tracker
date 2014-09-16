@@ -3,7 +3,7 @@ package com.github.averyregier.club.domain.program.awana;
 import com.github.averyregier.club.domain.program.SectionType;
 
 /**
-* Created by rx39789 on 9/6/2014.
+* Created by avery on 9/6/2014.
 */
 public enum TnTSectionTypes implements SectionType {
     parent {

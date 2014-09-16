@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Created by rx39789 on 9/6/2014.
+ * Created by avery on 9/6/2014.
  */
 public abstract class ClubberRecord {
     private RecordSigning signing = null;

@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
-* Created by rx39789 on 9/10/2014.
+* Created by avery on 9/10/2014.
 */
 class SectionAdapter implements Section {
     private final List<Later<Reward>> rewards;

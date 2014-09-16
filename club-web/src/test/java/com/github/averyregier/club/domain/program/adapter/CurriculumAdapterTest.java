@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 public class CurriculumAdapterTest {
     @Test
     public void shortCode() {
-        Curriculum curriculum = new CurriculumBuilder().setShortCode("AWANA").build();
+        Curriculum curriculum = new CurriculumBuilder().shortCode("AWANA").build();
         assertEquals("AWANA", curriculum.getShortCode());
         assertEquals("AWANA", curriculum.getId());
     }
@@ -17,8 +17,8 @@ public class CurriculumAdapterTest {
     @Test
     public void book() {
         Curriculum curriculum = new CurriculumBuilder()
-                .setShortCode("TnT")
-                .addBook(0, b -> b.setShortCode("SZ1").setVersion(1,0))
+                .shortCode("TnT")
+                .book(0, b -> b.shortCode("SZ1").version(1, 0))
                 .build();
 
         Book book = curriculum.getBooks().get(0);

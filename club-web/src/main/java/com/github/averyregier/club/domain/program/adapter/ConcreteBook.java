@@ -7,7 +7,7 @@ import com.github.averyregier.club.domain.program.SectionGroup;
 import java.util.List;
 
 /**
-* Created by rx39789 on 9/11/2014.
+* Created by avery on 9/11/2014.
 */
 class ConcreteBook extends BookAdapter {
     private Later<Curriculum> curriculumLater;

@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Created by rx39789 on 9/7/2014.
+ * Created by avery on 9/7/2014.
  */
 public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilder> {
     private ArrayList<RewardBuilder> rewards = new ArrayList<>();
@@ -53,7 +53,7 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
     }
 
     public SectionGroupBuilder addReward(RewardBuilder reward) {
-        reward.setRewardType(RewardType.group);
+        reward.type(RewardType.group);
         reward.identifySectionGroup(futureGroup);
         rewards.add(reward);
         return this;
