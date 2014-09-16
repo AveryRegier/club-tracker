@@ -48,4 +48,9 @@ public class BookVersionAdapter implements BookVersion {
     public Year getPublicationYear() {
         return year;
     }
+
+    @Override
+    public String toString() {
+        return "v"+major+"."+minor;
+    }
 }

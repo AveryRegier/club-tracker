@@ -8,21 +8,14 @@ import com.github.averyregier.club.domain.program.SectionGroup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by rx39789 on 9/11/2014.
  */
-public class RewardBuilder {
-    private List<SectionBuilder> sections = new ArrayList<>();
+public class RewardBuilder extends SectionHolderBuilder<RewardBuilder> {
     private Later<Reward> futureReward = new Later<>();
     private List<Section> builtSections = new ArrayList<>();
     private RewardType rewardType;
-
-    public RewardBuilder addSection(SectionBuilder sectionBuilder) {
-        sections.add(sectionBuilder);
-        return this;
-    }
 
     public List<Section> build(Later<SectionGroup> futureGroup, Later<Reward> bookReward ) {
         List<Section> currentSections = buildSections(futureGroup, futureReward, bookReward);

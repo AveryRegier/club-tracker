@@ -4,7 +4,6 @@ import com.github.averyregier.club.domain.program.*;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -33,7 +32,7 @@ public abstract class BookAdapter implements Book {
 
     @Override
     public String getId() {
-        return null;
+        return getContainer().getId()+":"+getShortCode()+getVersion();
     }
 
     @Override

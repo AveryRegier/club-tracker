@@ -5,8 +5,8 @@ import com.github.averyregier.club.domain.program.SectionType;
 /**
 * Created by rx39789 on 9/6/2014.
 */
-public enum TnTSectionTypes {
-    parent(new SectionType() {
+public enum TnTSectionTypes implements SectionType {
+    parent {
         @Override
         public boolean requiredToMoveOn() {
             return false;
@@ -21,14 +21,14 @@ public enum TnTSectionTypes {
         public String toString() {
             return parent.name();
         }
-    }),
-    regular(new SectionType() {
+    },
+    regular {
         @Override
         public String toString() {
             return regular.name();
         }
-    }),
-    friend(new SectionType() {
+    },
+    friend {
         @Override
         public boolean requiredToMoveOn() {
             return false;
@@ -38,8 +38,8 @@ public enum TnTSectionTypes {
         public String toString() {
             return friend.name();
         }
-    }),
-    extaCredit(new SectionType() {
+    },
+    extaCredit {
         @Override
         public boolean requiredForBookReward() {
             return false;
@@ -54,16 +54,10 @@ public enum TnTSectionTypes {
         public String toString() {
             return extaCredit.name();
         }
-    });
-
-    private SectionType sectionType;
-
-    TnTSectionTypes(SectionType sectionType) {
-        this.sectionType = sectionType;
-    }
+    };
 
     public SectionType get() {
-        return sectionType;
+        return this;
     }
 
 }

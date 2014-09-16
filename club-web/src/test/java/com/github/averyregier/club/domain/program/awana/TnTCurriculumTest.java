@@ -28,4 +28,10 @@ public class TnTCurriculumTest {
 
         }
     }
+
+    @Test
+    public void curriculumID() {
+        assertEquals("TnT", classUnderTest.getId());
+        assertEquals("TnT", classUnderTest.getShortCode());
+    }
 }

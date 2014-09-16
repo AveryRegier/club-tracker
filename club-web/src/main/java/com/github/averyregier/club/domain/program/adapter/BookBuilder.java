@@ -2,10 +2,9 @@ package com.github.averyregier.club.domain.program.adapter;
 
 import com.github.averyregier.club.domain.program.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.Year;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -17,7 +16,13 @@ public class BookBuilder {
     private Set<RewardBuilder> completions = new HashSet<>();
     private Later<Reward> reward;
     private RewardBuilder rewardBuilder;
-    private BookVersion bookVersion;
+    private String shortCode;
+    private Translation translation = Translation.none;
+    private Locale locale = Locale.ENGLISH;
+    private int major = 0;
+    private int minor = 0;
+    private Year year = Year.now();
+    private Later<Curriculum> curriculumLater;
 
     public BookBuilder(int sequence) {
         this.sequence = sequence;
@@ -26,7 +31,8 @@ public class BookBuilder {
     public Book build() {
         Later<Book> futureBook = new Later<>();
         List<SectionGroup> sectionGroups = buildSectionGroups(futureBook);
-        BookAdapter book = new ConcreteBook(sequence, sectionGroups, bookVersion);
+        BookAdapter book = new ConcreteBook(curriculumLater, sequence, sectionGroups,
+                new BookVersionAdapter(major, minor, translation, locale, year), shortCode);
         futureBook.set(book);
         completions.forEach(RewardBuilder::build);
         if(reward != null) {
@@ -60,12 +66,42 @@ public class BookBuilder {
         return this;
     }
 
+    public BookBuilder addReward(Function<RewardBuilder, RewardBuilder> function) {
+        return addReward(function.apply(new RewardBuilder()));
+    }
+
+    public BookBuilder addSectionGroup(int sequence, Function<SectionGroupBuilder, SectionGroupBuilder> setupFn) {
+        addSectionGroup(setupFn.apply(new SectionGroupBuilder(sequence)));
+        return this;
+    }
+
     public Later<Reward> getReward() {
         return reward;
     }
 
-    public BookBuilder setVersion(BookVersion bookVersion) {
-        this.bookVersion = bookVersion;
+    public BookBuilder setVersion(int major, int minor) {
+        this.major = major;
+        this.minor = minor;
+        return this;
+    }
+
+    public BookBuilder setShortCode(String shortCode) {
+        this.shortCode = shortCode;
+        return this;
+    }
+
+    public BookBuilder setTranslation(Translation translation) {
+        this.translation = translation;
+        return this;
+    }
+
+    public BookBuilder setLanguage(Locale locale) {
+        this.locale = locale;
+        return this;
+    }
+
+    public BookBuilder setCurriculum(Later<Curriculum> curriculumLater) {
+        this.curriculumLater = curriculumLater;
         return this;
     }
 }

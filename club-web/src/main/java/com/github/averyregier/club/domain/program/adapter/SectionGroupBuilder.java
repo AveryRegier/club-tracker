@@ -2,14 +2,16 @@ package com.github.averyregier.club.domain.program.adapter;
 
 import com.github.averyregier.club.domain.program.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * Created by rx39789 on 9/7/2014.
  */
-public class SectionGroupBuilder {
-    private ArrayList<SectionBuilder> sections = new ArrayList<>();
+public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilder> {
     private ArrayList<RewardBuilder> rewards = new ArrayList<>();
     private int sequence;
     private Later<Book> futureBook;
@@ -45,11 +47,6 @@ public class SectionGroupBuilder {
         return new ArrayList<>(allSections);
     }
 
-    public SectionGroupBuilder addSection(SectionBuilder sectionBuilder) {
-        sections.add(sectionBuilder);
-        return this;
-    }
-
     public SectionGroupBuilder setBook(Later<Book> book) {
         this.futureBook = book;
         return this;
@@ -60,5 +57,9 @@ public class SectionGroupBuilder {
         reward.identifySectionGroup(futureGroup);
         rewards.add(reward);
         return this;
+    }
+
+    public SectionGroupBuilder addReward(Function<RewardBuilder, RewardBuilder> function) {
+        return addReward(function.apply(new RewardBuilder()));
     }
 }
