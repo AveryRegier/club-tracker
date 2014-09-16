@@ -31,7 +31,7 @@ public class BookBuilder {
     public Book build() {
         Later<Book> futureBook = new Later<>();
         List<SectionGroup> sectionGroups = buildSectionGroups(futureBook);
-        BookAdapter book = new ConcreteBook(curriculumLater, sequence, sectionGroups,
+        Book book = new ConcreteBook(curriculumLater, sequence, sectionGroups,
                 new BookVersionAdapter(major, minor, translation, locale, year), shortCode);
         futureBook.set(book);
         completions.forEach(RewardBuilder::build);

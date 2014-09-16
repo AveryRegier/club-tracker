@@ -1,22 +1,22 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.BookVersion;
-import com.github.averyregier.club.domain.program.Curriculum;
-import com.github.averyregier.club.domain.program.SectionGroup;
+import com.github.averyregier.club.domain.program.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
 * Created by avery on 9/11/2014.
 */
-class ConcreteBook extends BookAdapter {
+class ConcreteBook implements Book {
     private Later<Curriculum> curriculumLater;
     private final List<SectionGroup> sectionGroups;
     private int sequence;
     private BookVersion bookVersion;
     private String shortCode;
 
-    public ConcreteBook(Later<Curriculum> curriculumLater, int sequence, List<SectionGroup> sectionGroups, BookVersion bookVersion, String shortCode) {
+    public ConcreteBook(Later<Curriculum> curriculumLater, int sequence, List<SectionGroup> sectionGroups,
+                        BookVersion bookVersion, String shortCode) {
         this.curriculumLater = curriculumLater;
         this.sectionGroups = sectionGroups;
         this.sequence = sequence;
@@ -27,6 +27,11 @@ class ConcreteBook extends BookAdapter {
     @Override
     public int sequence() {
         return sequence;
+    }
+
+    @Override
+    public List<AgeGroup> getAgeGroups() {
+        return null;
     }
 
     @Override
@@ -48,4 +53,20 @@ class ConcreteBook extends BookAdapter {
     public Curriculum getContainer() {
         return curriculumLater.get();
     }
+
+    @Override
+    public List<Section> getSections() {
+        return getSectionGroups().stream().flatMap(g -> g.getSections().stream()).collect(Collectors.toList());
+    }
+
+    @Override
+    public Book getBook() {
+        return this;
+    }
+
+    @Override
+    public String getId() {
+        return getContainer().getId()+":"+getShortCode()+getVersion();
+    }
+
 }
