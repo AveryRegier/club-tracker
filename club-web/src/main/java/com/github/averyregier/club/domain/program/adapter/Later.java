@@ -3,7 +3,7 @@ package com.github.averyregier.club.domain.program.adapter;
 /**
  * Created by avery on 9/10/2014.
  */
-public class Later<T> {
+class Later<T> {
     private T value;
     public T get() {
         assert(this.value != null);

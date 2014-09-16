@@ -14,14 +14,14 @@ public class TnTCurriculum {
                     .shortCode("UA:SZ")
                     .reward(a -> a)
                     .group(0, g ->
-                            g.addReward(r -> r
-                                .section(1, TnTSectionTypes.regular)
-                                .section(2, TnTSectionTypes.regular)
-                                .section(3, TnTSectionTypes.regular)
-                                .section(4, TnTSectionTypes.regular)
-                                .section(5, TnTSectionTypes.regular)
-                                .section(6, TnTSectionTypes.regular)
-                                .section(7, TnTSectionTypes.regular)
+                            g.reward(r -> r
+                                            .section(1, TnTSectionTypes.regular)
+                                            .section(2, TnTSectionTypes.regular)
+                                            .section(3, TnTSectionTypes.regular)
+                                            .section(4, TnTSectionTypes.regular)
+                                            .section(5, TnTSectionTypes.regular)
+                                            .section(6, TnTSectionTypes.regular)
+                                            .section(7, TnTSectionTypes.regular)
                             ))).build();
 
     public static Curriculum get() {

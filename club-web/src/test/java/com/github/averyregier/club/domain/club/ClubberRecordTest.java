@@ -25,20 +25,20 @@ public class ClubberRecordTest {
     Book book = new BookBuilder(1)
             .reward(new RewardBuilder())
             .group(new SectionGroupBuilder(1)
-                    .addReward(new RewardBuilder()
+                    .reward(new RewardBuilder()
                             .section(new SectionBuilder(0, parent.get()))
                             .section(new SectionBuilder(1, regular.get()))
                             .section(new SectionBuilder(2, friend.get()))
                             .section(new SectionBuilder(3, regular.get())))
-                    .addReward(extraCreditRewardBuilder
+                    .reward(extraCreditRewardBuilder
                             .section(new SectionBuilder(4, extaCredit.get()))))
             .group(new SectionGroupBuilder(1)
-                    .addReward(new RewardBuilder()
+                    .reward(new RewardBuilder()
                             .section(new SectionBuilder(0, parent.get()))
                             .section(new SectionBuilder(1, regular.get()))
                             .section(new SectionBuilder(2, regular.get()))
                             .section(new SectionBuilder(3, regular.get())))
-                    .addReward(extraCreditRewardBuilder
+                    .reward(extraCreditRewardBuilder
                             .section(new SectionBuilder(4, extaCredit.get()))))
             .build();
 

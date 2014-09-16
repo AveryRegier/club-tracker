@@ -9,7 +9,7 @@ import java.util.Locale;
 /**
  * Created by avery on 9/13/2014.
  */
-public class BookVersionAdapter implements BookVersion {
+class BookVersionAdapter implements BookVersion {
     private final int major;
     private final int minor;
     private final Translation translation;

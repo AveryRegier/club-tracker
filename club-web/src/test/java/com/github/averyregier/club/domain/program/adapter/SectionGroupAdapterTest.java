@@ -32,7 +32,7 @@ public class SectionGroupAdapterTest{
     public void addReward() {
         BookBuilder bookBuilder = new BookBuilder(0);
         SectionGroup group = new SectionGroupBuilder(1)
-                .addReward(new RewardBuilder()
+                .reward(new RewardBuilder()
                         .section(new SectionBuilder(1, TnTSectionTypes.regular.get())))
                 .build(bookBuilder);
         bookBuilder.build();
@@ -47,10 +47,10 @@ public class SectionGroupAdapterTest{
     public void add2Rewards() {
         BookBuilder bookBuilder = new BookBuilder(0);
         SectionGroup group = new SectionGroupBuilder(1)
-                .addReward(new RewardBuilder()
+                .reward(new RewardBuilder()
                         .section(new SectionBuilder(1, TnTSectionTypes.regular.get()))
                         .section(new SectionBuilder(3, TnTSectionTypes.regular.get())))
-                .addReward(new RewardBuilder()
+                .reward(new RewardBuilder()
                         .section(new SectionBuilder(2, TnTSectionTypes.extaCredit.get())))
                 .build(bookBuilder);
         bookBuilder.build();

@@ -26,7 +26,7 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
        return build(null);
     }
 
-    public SectionGroup build(BookBuilder bookBuilder) {
+    SectionGroup build(BookBuilder bookBuilder) {
         Later<Reward> bookReward = bookBuilder != null ? bookBuilder.getReward() : null;
 
         rewards.forEach(reward->allSections.addAll(reward.build(futureGroup, bookReward)));
@@ -47,19 +47,19 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
         return new ArrayList<>(allSections);
     }
 
-    public SectionGroupBuilder setBook(Later<Book> book) {
+    SectionGroupBuilder setBook(Later<Book> book) {
         this.futureBook = book;
         return this;
     }
 
-    public SectionGroupBuilder addReward(RewardBuilder reward) {
+    public SectionGroupBuilder reward(RewardBuilder reward) {
         reward.type(RewardType.group);
         reward.identifySectionGroup(futureGroup);
         rewards.add(reward);
         return this;
     }
 
-    public SectionGroupBuilder addReward(Function<RewardBuilder, RewardBuilder> function) {
-        return addReward(function.apply(new RewardBuilder()));
+    public SectionGroupBuilder reward(Function<RewardBuilder, RewardBuilder> function) {
+        return reward(function.apply(new RewardBuilder()));
     }
 }

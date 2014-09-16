@@ -17,7 +17,7 @@ public class RewardBuilder extends SectionHolderBuilder<RewardBuilder> {
     private List<Section> builtSections = new ArrayList<>();
     private RewardType rewardType;
 
-    public List<Section> build(Later<SectionGroup> futureGroup, Later<Reward> bookReward ) {
+    List<Section> build(Later<SectionGroup> futureGroup, Later<Reward> bookReward ) {
         List<Section> currentSections = buildSections(futureGroup, futureReward, bookReward);
         builtSections.addAll(currentSections);
         return currentSections;
