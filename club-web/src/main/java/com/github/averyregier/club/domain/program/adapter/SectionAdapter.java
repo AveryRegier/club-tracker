@@ -50,7 +50,7 @@ class SectionAdapter implements Section {
 
     @Override
     public String getId() {
-        return null;
+        return getContainer().getId()+":"+getShortCode();
     }
 
     @Override

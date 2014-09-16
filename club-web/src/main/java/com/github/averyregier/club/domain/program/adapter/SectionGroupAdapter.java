@@ -5,7 +5,6 @@ import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
 * Created by avery on 9/7/2014.
@@ -38,7 +37,7 @@ class SectionGroupAdapter implements SectionGroup {
 
     @Override
     public String getId() {
-        return null;
+        return getContainer().getId()+":"+getShortCode();
     }
 
     @Override

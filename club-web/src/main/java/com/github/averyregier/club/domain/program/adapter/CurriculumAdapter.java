@@ -36,7 +36,27 @@ class CurriculumAdapter implements Curriculum {
 
     @Override
     public Optional<Section> lookup(String sectionId) {
-        return null;
+        if(sectionId != null) {
+            String[] split = sectionId.trim().split(":");
+            if (split.length == 4 && split[0].equals(shortCode)) {
+                for (Book book : bookList) {
+                    if (book.getId().equals(split[0] + ":" + split[1])) {
+                        for (SectionGroup group : book.getSectionGroups()) {
+                            if (group.getShortCode().equals(split[2])) {
+                                for (Section section : group.getSections()) {
+                                    if (section.getShortCode().equals(split[3])) {
+                                        return Optional.of(section);
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
