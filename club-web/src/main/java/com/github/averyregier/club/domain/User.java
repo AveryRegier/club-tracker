@@ -1,6 +1,7 @@
 package com.github.averyregier.club.domain;
 
 import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.view.UserBean;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -14,6 +15,7 @@ import java.util.Random;
 public class User implements Person {
     private String auth;
     private String name;
+    private String id;
 
     public String resetAuth() {
         byte[] bytes = new byte[10];
@@ -33,7 +35,7 @@ public class User implements Person {
 
     @Override
     public String getId() {
-        return null;
+        return id;
     }
 
     public Name getName() {
@@ -107,5 +109,10 @@ public class User implements Person {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void update(UserBean user) {
+        this.id = user.getUniqueId();
+        this.name = user.getName();
     }
 }

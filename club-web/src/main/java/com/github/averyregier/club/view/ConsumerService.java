@@ -100,10 +100,7 @@ public class ConsumerService {
                         u.setName(combineName(first, last));
                     }
                 }
-                httpResponse.cookie("auth", u.resetAuth(), 60 * 60 * 3, true);
-                httpResponse.cookie("userID", identifier.getIdentifier(), 60*60*3, true);
-                httpResponse.redirect(req.cookie("location"));
-                httpResponse.cookie("location", null, 0);
+                Login.resetCookies(req, httpResponse, identifier.getIdentifier(), u);
             });
 
             //model.put("identifier", identifier.getIdentifier());

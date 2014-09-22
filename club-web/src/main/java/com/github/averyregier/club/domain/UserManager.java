@@ -36,6 +36,11 @@ public class UserManager {
     }
 
     public Optional<User> getUser(String userID) {
-        return Optional.ofNullable(getUserObject(userID));
+        User user = users.get(userID);
+        return Optional.ofNullable(user);
+    }
+
+    public User createUser(String userID) {
+        return getUserObject(userID);
     }
 }

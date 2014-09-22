@@ -3,6 +3,7 @@ package com.github.averyregier.club.application;
 import com.github.averyregier.club.domain.UserManager;
 import com.github.averyregier.club.rest.RestAPI;
 import com.github.averyregier.club.view.Login;
+import com.github.averyregier.club.view.RegistrationController;
 import spark.servlet.SparkApplication;
 
 import java.sql.Connection;
@@ -34,8 +35,11 @@ public class ClubApplication implements SparkApplication {
             e.printStackTrace();
         });
 
+        spark.Spark.staticFileLocation("/public");
+
         new Login().init(this);
         new RestAPI().init(this);
+        new RegistrationController().init(this);
     }
 
     public UserManager getUserManager() {
