@@ -2,12 +2,14 @@ package com.github.averyregier.club.domain.program.adapter;
 
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Curriculum;
+import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
 import com.github.averyregier.club.domain.program.awana.TnTSectionTypes;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class CurriculumAdapterTest {
     @Test
@@ -28,6 +30,7 @@ public class CurriculumAdapterTest {
         assertEquals(book, curriculum.getBooks().get(0));
         assertEquals(curriculum, book.getContainer());
         assertEquals("TnT:SZ1v1.0", book.getId());
+        assertTrue(curriculum.getSeries().isEmpty());
     }
 
     @Test
@@ -50,16 +53,7 @@ public class CurriculumAdapterTest {
 
     @Test
     public void lookup() {
-        Curriculum curriculum = new CurriculumBuilder()
-                .shortCode("C")
-                .book(2, b -> b
-                        .shortCode("B1")
-                        .version(1, 3)
-                        .group(3, g -> g
-                                .section(3, TnTSectionTypes.parent)
-                                .section(5, TnTSectionTypes.parent)
-                                .section(6, TnTSectionTypes.parent)))
-                .build();
+        Curriculum curriculum = oneBook(new CurriculumBuilder()).build();
 
         assertFalse(curriculum.lookup("C:B1v1.3:3:4").isPresent());
         assertFalse(curriculum.lookup("C:B1v1.3:2:5").isPresent());
@@ -75,4 +69,37 @@ public class CurriculumAdapterTest {
                 curriculum.lookup("C:B1v1.3:3:6").get());
     }
 
+    private CurriculumBuilder oneBook(CurriculumBuilder builder) {
+        return builder
+                .shortCode("C")
+                .book(2, b -> b
+                        .shortCode("B1")
+                        .version(1, 3)
+                        .group(3, g -> g
+                                .section(3, TnTSectionTypes.parent)
+                                .section(5, TnTSectionTypes.parent)
+                                .section(6, TnTSectionTypes.parent)));
+    }
+
+    @Test
+    public void parent() {
+        Curriculum curriculum = new CurriculumBuilder()
+                .shortCode("A")
+                .curriculum(c -> oneBook(c))
+                .build();
+
+        String sectionId = "A:C:B1v1.3:3:5";
+        Section section = curriculum.lookup(sectionId).get();
+        assertEquals(curriculum.getBooks().get(0).getSectionGroups().get(0).getSections().get(1),
+                section);
+        assertEquals(sectionId, section.getId());
+        Section csection = curriculum.getSeries().get(0).lookup("C:B1v1.3:3:5").get();
+        assertEquals(section, csection);
+        assertEquals(sectionId, csection.getId());
+
+        assertEquals("A", curriculum.getShortCode());
+        assertEquals(1, curriculum.getSeries().size());
+        assertEquals(curriculum.getSeries().get(0).getBooks(), curriculum.getBooks());
+
+    }
 }

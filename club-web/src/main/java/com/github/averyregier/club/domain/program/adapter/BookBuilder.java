@@ -4,7 +4,7 @@ import com.github.averyregier.club.domain.program.*;
 
 import java.time.Year;
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 /**
@@ -66,11 +66,11 @@ public class BookBuilder {
         return this;
     }
 
-    public BookBuilder reward(Function<RewardBuilder, RewardBuilder> function) {
+    public BookBuilder reward(UnaryOperator<RewardBuilder> function) {
         return reward(function.apply(new RewardBuilder()));
     }
 
-    public BookBuilder group(int sequence, Function<SectionGroupBuilder, SectionGroupBuilder> setupFn) {
+    public BookBuilder group(int sequence, UnaryOperator<SectionGroupBuilder> setupFn) {
         group(setupFn.apply(new SectionGroupBuilder(sequence)));
         return this;
     }

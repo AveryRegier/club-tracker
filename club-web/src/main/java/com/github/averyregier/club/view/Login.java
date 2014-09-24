@@ -39,6 +39,7 @@ public class Login {
             if(auth != null) {
                 Optional<User> user = app.getUserManager().getUser(request.cookie("userID"));
                 if(user.isPresent() && user.get().authenticate(auth)) {
+                    request.attribute("user", user);
                     return;
                 }
             }

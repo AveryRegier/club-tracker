@@ -1,9 +1,12 @@
 package com.github.averyregier.club.application;
 
 import com.github.averyregier.club.domain.UserManager;
+import com.github.averyregier.club.domain.club.Program;
+import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.rest.RestAPI;
 import com.github.averyregier.club.view.Login;
 import com.github.averyregier.club.view.RegistrationController;
+import com.github.averyregier.club.view.SetupController;
 import spark.servlet.SparkApplication;
 
 import java.sql.Connection;
@@ -40,6 +43,7 @@ public class ClubApplication implements SparkApplication {
         new Login().init(this);
         new RestAPI().init(this);
         new RegistrationController().init(this);
+        new SetupController().init(this);
     }
 
     public UserManager getUserManager() {
@@ -54,4 +58,9 @@ public class ClubApplication implements SparkApplication {
         Connection c = DriverManager.getConnection(url);
         return c;
     }
+
+    public Program setupProgram(String organizationName, String curriculum, String acceptLanguage) {
+        return new ProgramAdapter(acceptLanguage, organizationName, curriculum);
+    }
+
 }

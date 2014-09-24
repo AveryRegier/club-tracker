@@ -5,7 +5,7 @@ import com.github.averyregier.club.domain.program.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 /**
@@ -59,7 +59,7 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
         return this;
     }
 
-    public SectionGroupBuilder reward(Function<RewardBuilder, RewardBuilder> function) {
+    public SectionGroupBuilder reward(UnaryOperator<RewardBuilder> function) {
         return reward(function.apply(new RewardBuilder()));
     }
 }

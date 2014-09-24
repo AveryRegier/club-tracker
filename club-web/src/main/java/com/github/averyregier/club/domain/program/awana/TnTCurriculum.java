@@ -8,23 +8,27 @@ import com.github.averyregier.club.domain.program.adapter.CurriculumBuilder;
  */
 public class TnTCurriculum {
 
-    public static final Curriculum curriculum = new CurriculumBuilder()
-            .shortCode("TnT")
-            .book(0, b -> b
-                    .shortCode("UA:SZ")
-                    .reward(a -> a)
-                    .group(0, g ->
-                            g.reward(r -> r
-                                            .section(1, TnTSectionTypes.regular)
-                                            .section(2, TnTSectionTypes.regular)
-                                            .section(3, TnTSectionTypes.regular)
-                                            .section(4, TnTSectionTypes.regular)
-                                            .section(5, TnTSectionTypes.regular)
-                                            .section(6, TnTSectionTypes.regular)
-                                            .section(7, TnTSectionTypes.regular)
-                            ))).build();
+    public static final Curriculum curriculum = build(new CurriculumBuilder()).build();
 
     public static Curriculum get() {
         return curriculum;
+    }
+
+    public static CurriculumBuilder build(CurriculumBuilder builder) {
+        return builder
+                .shortCode("TnT")
+                .book(0, b -> b
+                        .shortCode("UA:SZ")
+                        .reward(a -> a)
+                        .group(0, g ->
+                                g.reward(r -> r
+                                                .section(1, TnTSectionTypes.regular)
+                                                .section(2, TnTSectionTypes.regular)
+                                                .section(3, TnTSectionTypes.regular)
+                                                .section(4, TnTSectionTypes.regular)
+                                                .section(5, TnTSectionTypes.regular)
+                                                .section(6, TnTSectionTypes.regular)
+                                                .section(7, TnTSectionTypes.regular)
+                                )));
     }
 }
