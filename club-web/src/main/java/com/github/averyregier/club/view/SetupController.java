@@ -42,5 +42,11 @@ public class SetupController {
             response.redirect("/protected/program");
             return null;
         });
+
+        get("/protected/program", (request, response) -> {
+            HashMap<Object, Object> model = new HashMap<>();
+            model.put("program", app.getProgram());
+            return new ModelAndView(model, "program.ftl");
+        }, new FreeMarkerEngine());
     }
 }

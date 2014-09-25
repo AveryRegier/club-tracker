@@ -5,6 +5,7 @@ import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -25,7 +26,7 @@ public class ProgramAdapter implements Program {
 
     @Override
     public Set<Club> getClubs() {
-        return null;
+        return Collections.emptySet();
     }
 
     @Override

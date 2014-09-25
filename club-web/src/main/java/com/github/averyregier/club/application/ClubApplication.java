@@ -29,6 +29,7 @@ public class ClubApplication implements SparkApplication {
     }
 
     private final UserManager userManager = new UserManager();
+    private Program program;
 
     @Override
     public void init() {
@@ -60,7 +61,11 @@ public class ClubApplication implements SparkApplication {
     }
 
     public Program setupProgram(String organizationName, String curriculum, String acceptLanguage) {
-        return new ProgramAdapter(acceptLanguage, organizationName, curriculum);
+        program = new ProgramAdapter(acceptLanguage, organizationName, curriculum);
+        return program;
     }
 
+    public Program getProgram() {
+        return program;
+    }
 }

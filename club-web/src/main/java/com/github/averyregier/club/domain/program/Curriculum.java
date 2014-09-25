@@ -14,7 +14,5 @@ public interface Curriculum extends Contained<Curriculum> {
     Optional<Section> lookup(String sectionId);
     public List<Book> recommendedBookList(AgeGroup age);
 
-    String getId();
-
     List<Curriculum> getSeries();
 }
