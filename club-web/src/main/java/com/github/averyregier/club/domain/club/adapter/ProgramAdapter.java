@@ -53,11 +53,6 @@ public class ProgramAdapter implements Program {
     }
 
     @Override
-    public ClubType getClubType() {
-        return null;
-    }
-
-    @Override
     public Optional<Program> asProgram() {
         return null;
     }

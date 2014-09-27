@@ -25,11 +25,6 @@ class ClubAdapter implements Club {
     }
 
     @Override
-    public ClubType getClubType() {
-        return null;
-    }
-
-    @Override
     public Optional<Program> asProgram() {
         return Optional.empty();
     }
