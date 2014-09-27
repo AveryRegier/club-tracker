@@ -45,7 +45,6 @@ public class Login extends ModelMaker {
             context = context == null ? "" : context;
             response.redirect(context +"/login");
             halt();
-        //    halt(401, "Go Away!");
         });
 
         new ConsumerService().init(app);

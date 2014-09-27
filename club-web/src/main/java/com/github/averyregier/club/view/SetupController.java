@@ -44,18 +44,15 @@ public class SetupController extends ModelMaker {
         });
 
         before("/protected/program", (request, response)->{
-            Program program = app.getProgram();
-            if(program == null) {
+            if(app.getProgram() == null) {
                 response.redirect("/protected/setup");
                 halt();
             }
         });
 
-        get("/protected/program", (request, response) -> {
-            HashMap<Object, Object> model = new HashMap<>();
-            model.put("program", app.getProgram());
-            return new ModelAndView(model, "program.ftl");
-        }, new FreeMarkerEngine());
+        get("/protected/program", (request, response) ->
+                new ModelAndView(toMap("program", app.getProgram()), "program.ftl"),
+                new FreeMarkerEngine());
 
         post("/protected/program", (request, response) -> {
             Program program = app.getProgram();

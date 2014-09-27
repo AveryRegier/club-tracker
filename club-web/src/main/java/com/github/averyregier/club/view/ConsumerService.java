@@ -194,9 +194,9 @@ public class ConsumerService extends ModelMaker {
 				httpResp.redirect(authReq.getDestinationUrl(true));
 				return null;
 			} else {
-                HashMap<Object, Object> model = new HashMap<>();
-                model.put("message", authReq);
-                return new ModelAndView(model, "provider-redirection.ftl");
+                return new ModelAndView(
+                        toMap("message", authReq),
+                        "provider-redirection.ftl");
 			}
 		} catch (OpenIDException e) {
 			throw new ServletException(e);
