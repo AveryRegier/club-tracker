@@ -35,7 +35,7 @@ import static spark.Spark.post;
  * ConsumerService - Relying Party Service
  * NOTE: Some part of the code has been adopted from `OpenID4Java` library wiki.
  * */
-public class ConsumerService {
+public class ConsumerService extends ModelMaker {
 
 	private static final String OPENID_IDENTIFIER = "openid_identifier";
 	private static ConsumerManager manager = null;

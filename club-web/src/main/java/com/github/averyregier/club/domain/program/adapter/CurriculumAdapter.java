@@ -69,6 +69,13 @@ class CurriculumAdapter implements Curriculum {
     }
 
     @Override
+    public Optional<Curriculum> getSeries(String clubId) {
+        return getSeries().stream()
+                .filter(s->s.getId().equals(clubId))
+                .findFirst();
+    }
+
+    @Override
     public String getShortCode() {
         return shortCode;
     }

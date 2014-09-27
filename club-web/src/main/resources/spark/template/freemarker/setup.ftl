@@ -40,7 +40,7 @@
 			</td>
 		</tr>
 	</table>
-	<input type='submit'>
+	<input type='submit'/>
 </form>
 </div>
 </body>

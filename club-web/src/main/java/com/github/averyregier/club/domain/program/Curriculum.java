@@ -15,4 +15,6 @@ public interface Curriculum extends Contained<Curriculum> {
     public List<Book> recommendedBookList(AgeGroup age);
 
     List<Curriculum> getSeries();
+
+    Optional<Curriculum> getSeries(String clubId);
 }

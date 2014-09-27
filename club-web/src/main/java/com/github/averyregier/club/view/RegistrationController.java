@@ -8,7 +8,7 @@ import spark.Request;
 
 import static spark.Spark.post;
 
-public class RegistrationController {
+public class RegistrationController extends ModelMaker {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

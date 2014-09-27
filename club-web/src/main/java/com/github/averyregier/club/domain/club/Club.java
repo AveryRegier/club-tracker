@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Created by avery on 9/5/2014.
  */
-public interface Club extends ClubGroup {
+public interface Club extends ClubGroup, Comparable<Club> {
     public Set<Policy> getPolicies();
     public ClubType getClubType();
     public Optional<Program> asProgram();

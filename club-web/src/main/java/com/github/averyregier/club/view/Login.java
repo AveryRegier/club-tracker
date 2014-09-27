@@ -13,18 +13,15 @@ import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static spark.Spark.before;
-import static spark.Spark.get;
-import static spark.Spark.halt;
+import static spark.Spark.*;
 
 /**
  * Created by avery on 8/30/14.
  */
-public class Login {
+public class Login extends ModelMaker {
     public static void resetCookies(Request req, Response httpResponse, String identifier, User user) {
         httpResponse.cookie("auth", user.resetAuth(), 60 * 60 * 3, false);
         httpResponse.cookie("userID", identifier, 60*60*3, false);
@@ -128,13 +125,6 @@ public class Login {
                 toMap("profile", profile),
                 "registrationForm.ftl");
     }
-
-    public <K,V> Map<K,V> toMap(K key, V value) {
-        HashMap<K, V> kvHashMap = new HashMap<>();
-        kvHashMap.put(key, value);
-        return kvHashMap;
-    }
-
 
     private SocialAuthManager getSocialAuthManager(Request request) {
         SocialAuthManager manager;

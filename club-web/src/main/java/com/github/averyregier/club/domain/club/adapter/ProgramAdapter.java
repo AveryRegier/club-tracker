@@ -5,18 +5,16 @@ import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
 
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
 * Created by avery on 9/23/14.
 */
 public class ProgramAdapter implements Program {
     private final String acceptLanguage;
-    private final String organizationName;
+    private String organizationName;
     private final String curriculum;
+    private SortedSet<Club> clubs = new TreeSet<>();
 
     public ProgramAdapter(String acceptLanguage, String organizationName, String curriculum) {
         this.acceptLanguage = acceptLanguage;
@@ -26,7 +24,7 @@ public class ProgramAdapter implements Program {
 
     @Override
     public Set<Club> getClubs() {
-        return Collections.emptySet();
+        return Collections.unmodifiableSortedSet(clubs);
     }
 
     @Override
@@ -37,6 +35,16 @@ public class ProgramAdapter implements Program {
     @Override
     public Locale getLocale() {
         return Locale.forLanguageTag(acceptLanguage);
+    }
+
+    @Override
+    public void addClub(final Curriculum series) {
+        clubs.add(new ClubAdapter(this, series));
+    }
+
+    @Override
+    public void setName(String organizationName) {
+        this.organizationName = organizationName;
     }
 
     @Override
@@ -97,5 +105,10 @@ public class ProgramAdapter implements Program {
     @Override
     public Set<Clubber> getClubbers() {
         return null;
+    }
+
+    @Override
+    public int compareTo(Club o) {
+        return 0;
     }
 }

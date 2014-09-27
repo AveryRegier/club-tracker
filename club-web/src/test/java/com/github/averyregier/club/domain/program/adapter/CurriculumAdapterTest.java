@@ -31,6 +31,7 @@ public class CurriculumAdapterTest {
         assertEquals(curriculum, book.getContainer());
         assertEquals("TnT:SZ1v1.0", book.getId());
         assertTrue(curriculum.getSeries().isEmpty());
+        assertFalse(curriculum.getSeries("something").isPresent());
     }
 
     @Test
@@ -100,6 +101,8 @@ public class CurriculumAdapterTest {
         assertEquals("A", curriculum.getShortCode());
         assertEquals(1, curriculum.getSeries().size());
         assertEquals(curriculum.getSeries().get(0).getBooks(), curriculum.getBooks());
+        assertEquals(curriculum.getSeries().get(0), curriculum.getSeries("A:C").orElse(null));
+
 
     }
 }

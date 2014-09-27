@@ -28,7 +28,7 @@
 			<td>
 			<UL>
 			<#list program.clubs as club>
-                <LI>${club.shortCode}
+                <LI>${club.shortName}</LI>
             </#list>
             </UL>
             Add another:
@@ -40,7 +40,7 @@
 			</td>
 		</tr>
 	</table>
-	<input type='submit'>
+	<input type='submit'/>
 </form>
 </div>
 </body>
