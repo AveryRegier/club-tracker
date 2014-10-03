@@ -19,6 +19,7 @@ public class RewardBuilder extends SectionHolderBuilder<RewardBuilder> implement
     private List<Section> builtSections = new ArrayList<>();
     private RewardType rewardType;
 
+    @SuppressWarnings("unchecked")
     List<Section> build(Later<SectionGroup> futureGroup, Later<Reward> bookReward ) {
         List<Section> currentSections = buildSections(futureGroup, futureReward, bookReward);
         builtSections.addAll(currentSections);
@@ -34,6 +35,7 @@ public class RewardBuilder extends SectionHolderBuilder<RewardBuilder> implement
         return reward;
     }
 
+    @SuppressWarnings("unchecked")
     private synchronized List<Section> buildSections(Later<SectionGroup> futureGroup, Later<Reward>... futureReward) {
         List<SectionBuilder> relevant = sections.stream()
                 .filter(s -> s.getGroup() == futureGroup).collect(Collectors.toList());
