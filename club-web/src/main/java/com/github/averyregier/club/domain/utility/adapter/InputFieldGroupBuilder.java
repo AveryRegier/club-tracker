@@ -1,16 +1,14 @@
-package com.github.averyregier.club.domain.club.adapter;
+package com.github.averyregier.club.domain.utility.adapter;
 
-import com.github.averyregier.club.domain.builder.Builder;
-import com.github.averyregier.club.domain.builder.ChildBuilder;
-import com.github.averyregier.club.domain.builder.Later;
-import com.github.averyregier.club.domain.club.InputField;
-import com.github.averyregier.club.domain.club.InputFieldDesignator;
-import com.github.averyregier.club.domain.club.InputFieldGroup;
+import com.github.averyregier.club.domain.utility.InputFieldDesignator;
+import com.github.averyregier.club.domain.utility.InputFieldGroup;
+import com.github.averyregier.club.domain.utility.builder.Builder;
+import com.github.averyregier.club.domain.utility.builder.ChildBuilder;
+import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**

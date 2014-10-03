@@ -1,7 +1,4 @@
-package com.github.averyregier.club.domain;
-
-import java.util.HashSet;
-import java.util.Optional;
+package com.github.averyregier.club.domain.utility;
 
 /**
  * Created by avery on 9/12/2014.

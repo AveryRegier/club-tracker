@@ -1,8 +1,4 @@
-package com.github.averyregier.club.domain.club;
-
-import com.github.averyregier.club.domain.Contained;
-import com.github.averyregier.club.domain.HasId;
-import freemarker.template.TemplateHashModel;
+package com.github.averyregier.club.domain.utility;
 
 import java.util.List;
 

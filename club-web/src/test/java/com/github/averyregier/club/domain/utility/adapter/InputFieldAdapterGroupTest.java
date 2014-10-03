@@ -1,8 +1,8 @@
-package com.github.averyregier.club.domain.club.adapter;
+package com.github.averyregier.club.domain.utility.adapter;
 
-import com.github.averyregier.club.domain.club.InputField;
-import com.github.averyregier.club.domain.club.InputFieldDesignator;
-import com.github.averyregier.club.domain.club.InputFieldGroup;
+import com.github.averyregier.club.domain.utility.InputField;
+import com.github.averyregier.club.domain.utility.InputFieldDesignator;
+import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import org.junit.Test;
 
 import java.util.List;

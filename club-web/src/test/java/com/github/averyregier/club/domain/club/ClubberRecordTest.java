@@ -8,7 +8,8 @@ import com.github.averyregier.club.domain.program.adapter.SectionGroupBuilder;
 import org.junit.Test;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Optional;
+import java.util.Set;
 
 import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.*;
 import static org.junit.Assert.*;

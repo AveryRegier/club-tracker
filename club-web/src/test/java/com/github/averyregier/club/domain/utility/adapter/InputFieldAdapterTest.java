@@ -1,13 +1,11 @@
-package com.github.averyregier.club.domain.club.adapter;
+package com.github.averyregier.club.domain.utility.adapter;
 
-import com.github.averyregier.club.domain.club.InputField;
+import com.github.averyregier.club.domain.utility.InputField;
 import org.junit.Test;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class InputFieldAdapterTest {
 

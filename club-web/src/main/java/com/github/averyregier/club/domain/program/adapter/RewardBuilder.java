@@ -1,10 +1,10 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.builder.Later;
 import com.github.averyregier.club.domain.program.Reward;
 import com.github.averyregier.club.domain.program.RewardType;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
+import com.github.averyregier.club.domain.utility.builder.Later;
 import com.sun.istack.internal.Builder;
 
 import java.util.ArrayList;

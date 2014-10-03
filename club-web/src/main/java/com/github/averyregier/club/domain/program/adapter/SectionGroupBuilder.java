@@ -1,8 +1,8 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.builder.Builder;
-import com.github.averyregier.club.domain.builder.Later;
 import com.github.averyregier.club.domain.program.*;
+import com.github.averyregier.club.domain.utility.builder.Builder;
+import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.ArrayList;
 import java.util.List;

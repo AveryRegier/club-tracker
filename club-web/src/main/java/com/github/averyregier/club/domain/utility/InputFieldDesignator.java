@@ -1,6 +1,4 @@
-package com.github.averyregier.club.domain.club;
-
-import com.github.averyregier.club.domain.Contained;
+package com.github.averyregier.club.domain.utility;
 
 import java.util.Optional;
 

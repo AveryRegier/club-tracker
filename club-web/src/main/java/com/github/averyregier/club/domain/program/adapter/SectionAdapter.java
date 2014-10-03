@@ -1,9 +1,10 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.builder.Later;
 import com.github.averyregier.club.domain.program.*;
+import com.github.averyregier.club.domain.utility.builder.Later;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**

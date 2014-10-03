@@ -1,11 +1,11 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.builder.Builder;
-import com.github.averyregier.club.domain.builder.Later;
 import com.github.averyregier.club.domain.program.Reward;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
 import com.github.averyregier.club.domain.program.SectionType;
+import com.github.averyregier.club.domain.utility.builder.Builder;
+import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.ArrayList;
 import java.util.List;

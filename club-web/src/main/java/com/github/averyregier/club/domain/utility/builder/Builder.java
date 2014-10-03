@@ -1,4 +1,4 @@
-package com.github.averyregier.club.domain.builder;
+package com.github.averyregier.club.domain.utility.builder;
 
 /**
  * Created by avery on 10/1/2014.

@@ -1,6 +1,6 @@
 package com.github.averyregier.club.domain.program;
 
-import com.github.averyregier.club.domain.Contained;
+import com.github.averyregier.club.domain.utility.Contained;
 
 import java.util.Set;
 

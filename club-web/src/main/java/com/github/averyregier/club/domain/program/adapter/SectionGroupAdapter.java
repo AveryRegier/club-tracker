@@ -1,9 +1,9 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.builder.Later;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
+import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.List;
 
