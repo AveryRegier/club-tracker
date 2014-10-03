@@ -18,7 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Created by rx39789 on 9/6/2014.
+ * Created by avery on 9/6/2014.
  */
 public class Scratch {
     @Test

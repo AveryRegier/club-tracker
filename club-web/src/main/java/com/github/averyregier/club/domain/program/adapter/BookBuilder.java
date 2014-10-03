@@ -1,5 +1,7 @@
 package com.github.averyregier.club.domain.program.adapter;
 
+import com.github.averyregier.club.domain.builder.Builder;
+import com.github.averyregier.club.domain.builder.Later;
 import com.github.averyregier.club.domain.program.*;
 
 import java.time.Year;
@@ -10,7 +12,7 @@ import java.util.stream.Collectors;
 /**
  * Created by avery on 9/7/2014.
  */
-public class BookBuilder {
+public class BookBuilder implements Builder<Book> {
     private List<SectionGroupBuilder> sectionGroupBuilders = new ArrayList<>();
     private int sequence;
     private Set<RewardBuilder> completions = new HashSet<>();

@@ -1,5 +1,7 @@
 package com.github.averyregier.club.domain.program.adapter;
 
+import com.github.averyregier.club.domain.builder.Builder;
+import com.github.averyregier.club.domain.builder.Later;
 import com.github.averyregier.club.domain.program.*;
 
 import java.util.ArrayList;
@@ -11,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * Created by avery on 9/7/2014.
  */
-public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilder> {
+public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilder> implements Builder<SectionGroup> {
     private ArrayList<RewardBuilder> rewards = new ArrayList<>();
     private int sequence;
     private Later<Book> futureBook;
@@ -33,12 +35,13 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
         final List<Section> sections = buildSections(futureGroup, bookReward);
         SectionGroupAdapter group = new SectionGroupAdapter(futureBook, sequence, sections);
         futureGroup.set(group);
-        if(!rewards.isEmpty()) {
+        if(!rewards.isEmpty() && bookBuilder != null) {
             bookBuilder.addCompletions(rewards);
         }
         return group;
     }
 
+    @SuppressWarnings("unchecked")
     private List<Section> buildSections(Later<SectionGroup> futureGroup, Later<Reward> bookReward) {
 
         allSections.addAll(sections.stream()

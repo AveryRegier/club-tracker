@@ -9,9 +9,10 @@ import java.util.function.Function;
 /**
  * Created by avery on 9/14/14.
  */
-public class SectionHolderBuilder<T extends SectionHolderBuilder> {
+public abstract class SectionHolderBuilder<T extends SectionHolderBuilder> {
     protected List<SectionBuilder> sections = new ArrayList<>();
 
+    @SuppressWarnings("unchecked")
     public T section(SectionBuilder sectionBuilder) {
         sections.add(sectionBuilder);
         return (T)this;

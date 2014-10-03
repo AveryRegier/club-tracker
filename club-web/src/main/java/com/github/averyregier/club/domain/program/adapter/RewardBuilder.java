@@ -1,9 +1,11 @@
 package com.github.averyregier.club.domain.program.adapter;
 
+import com.github.averyregier.club.domain.builder.Later;
 import com.github.averyregier.club.domain.program.Reward;
 import com.github.averyregier.club.domain.program.RewardType;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
+import com.sun.istack.internal.Builder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * Created by avery on 9/11/2014.
  */
-public class RewardBuilder extends SectionHolderBuilder<RewardBuilder> {
+public class RewardBuilder extends SectionHolderBuilder<RewardBuilder> implements Builder<Reward> {
     private Later<Reward> futureReward = new Later<>();
     private List<Section> builtSections = new ArrayList<>();
     private RewardType rewardType;

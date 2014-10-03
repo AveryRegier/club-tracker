@@ -1,5 +1,7 @@
 package com.github.averyregier.club.domain.program.adapter;
 
+import com.github.averyregier.club.domain.builder.Builder;
+import com.github.averyregier.club.domain.builder.Later;
 import com.github.averyregier.club.domain.program.Reward;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
@@ -11,7 +13,7 @@ import java.util.List;
 /**
  * Created by avery on 9/7/2014.
  */
-public class SectionBuilder {
+public class SectionBuilder implements Builder<Section> {
     private int sequence;
     private SectionType sectionType;
     private Later<SectionGroup> group;

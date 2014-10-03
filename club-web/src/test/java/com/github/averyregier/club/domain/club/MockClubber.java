@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Created by rx39789 on 9/6/2014.
+ * Created by avery on 9/6/2014.
  */
 public class MockClubber implements Clubber {
     private LinkedHashMap<Section, ClubberRecord> records = new LinkedHashMap<>();

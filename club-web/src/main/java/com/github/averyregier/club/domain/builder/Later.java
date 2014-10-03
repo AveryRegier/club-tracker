@@ -1,9 +1,9 @@
-package com.github.averyregier.club.domain.program.adapter;
+package com.github.averyregier.club.domain.builder;
 
 /**
  * Created by avery on 9/10/2014.
  */
-class Later<T> {
+public class Later<T> {
     private T value;
     public T get() {
         assert(this.value != null);

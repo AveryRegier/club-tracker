@@ -1,5 +1,7 @@
 package com.github.averyregier.club.domain.program.adapter;
 
+import com.github.averyregier.club.domain.builder.Builder;
+import com.github.averyregier.club.domain.builder.Later;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Curriculum;
 
@@ -11,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * Created by avery on 9/15/14.
  */
-public class CurriculumBuilder {
+public class CurriculumBuilder implements Builder<Curriculum> {
     private String shortCode;
     private List<BookBuilder> books = new ArrayList<>();
     private List<CurriculumBuilder> series = new ArrayList<>();

@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 
 
 /**
- * Created by rx39789 on 9/6/2014.
+ * Created by avery on 9/6/2014.
  */
 public class ClubberRecordTest {
 
