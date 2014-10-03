@@ -1,8 +1,10 @@
 package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.builder.Builder;
+import com.github.averyregier.club.domain.builder.ChildBuilder;
 import com.github.averyregier.club.domain.builder.Later;
 import com.github.averyregier.club.domain.club.InputField;
+import com.github.averyregier.club.domain.club.InputFieldDesignator;
 import com.github.averyregier.club.domain.club.InputFieldGroup;
 
 import java.util.ArrayList;
@@ -11,7 +13,7 @@ import java.util.List;
 /**
  * Created by avery on 10/2/2014.
  */
-public class InputFieldBuilder implements Builder<InputField> {
+public class InputFieldBuilder implements Builder<InputField>, ChildBuilder<InputFieldGroup, InputFieldDesignator> {
     private InputField.Type type;
     private String name;
     private String id;

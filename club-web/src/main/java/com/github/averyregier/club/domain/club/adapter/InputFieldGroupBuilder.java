@@ -1,7 +1,10 @@
 package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.builder.Builder;
+import com.github.averyregier.club.domain.builder.ChildBuilder;
 import com.github.averyregier.club.domain.builder.Later;
+import com.github.averyregier.club.domain.club.InputField;
+import com.github.averyregier.club.domain.club.InputFieldDesignator;
 import com.github.averyregier.club.domain.club.InputFieldGroup;
 
 import java.util.ArrayList;
@@ -13,11 +16,13 @@ import java.util.stream.Collectors;
 /**
  * Created by avery on 10/2/2014.
  */
-public class InputFieldGroupBuilder implements Builder<InputFieldGroup> {
+public class InputFieldGroupBuilder
+  implements Builder<InputFieldGroup>,
+             ChildBuilder<InputFieldGroup, InputFieldDesignator>
+{
     private String id;
     private String name;
-    private List<InputFieldBuilder> fields = new ArrayList<>();
-    private List<InputFieldGroupBuilder> groups = new ArrayList<>();
+    private List<ChildBuilder<InputFieldGroup, InputFieldDesignator>> children = new ArrayList<>();
 
     public InputFieldGroupBuilder id(String id) {
         this.id = id;
@@ -34,25 +39,24 @@ public class InputFieldGroupBuilder implements Builder<InputFieldGroup> {
         return build(null);
     }
 
-    private InputFieldGroup build(Later<InputFieldGroup> parent) {
+    public InputFieldGroup build(Later<InputFieldGroup> parent) {
         Later<InputFieldGroup> later = new Later<>();
         InputFieldGroupAdapter group = new InputFieldGroupAdapter(
                 id,
                 name,
                 parent,
-                groups.stream().map(g -> g.build(later)).collect(Collectors.toList()),
-                fields.stream().map(f -> f.build(later)).collect(Collectors.toList()));
+                children.stream().map(g -> g.build(later)).collect(Collectors.toList()));
         later.set(group);
         return group;
     }
 
     public InputFieldGroupBuilder field(UnaryOperator<InputFieldBuilder> fn) {
-        fields.add(fn.apply(new InputFieldBuilder()));
+        children.add(fn.apply(new InputFieldBuilder()));
         return this;
     }
 
     public InputFieldGroupBuilder group(UnaryOperator<InputFieldGroupBuilder> fn) {
-        groups.add(fn.apply(new InputFieldGroupBuilder()));
+        children.add(fn.apply(new InputFieldGroupBuilder()));
         return this;
     }
 }

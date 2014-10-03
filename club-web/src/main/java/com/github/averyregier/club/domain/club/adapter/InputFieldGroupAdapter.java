@@ -2,9 +2,13 @@ package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.builder.Later;
 import com.github.averyregier.club.domain.club.InputField;
+import com.github.averyregier.club.domain.club.InputFieldDesignator;
 import com.github.averyregier.club.domain.club.InputFieldGroup;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by avery on 10/1/2014.
@@ -13,15 +17,13 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
     private final String id;
     private final String name;
     private Later<InputFieldGroup> parent;
-    private final List<InputField> fields;
-    private final List<InputFieldGroup> groups;
+    private final List<InputFieldDesignator> children;
 
-    InputFieldGroupAdapter(String id, String name, Later<InputFieldGroup> parent, List<InputFieldGroup> groups, List<InputField> fields) {
+    InputFieldGroupAdapter(String id, String name, Later<InputFieldGroup> parent, List<InputFieldDesignator> children) {
         this.id = id;
         this.name = name;
         this.parent = parent;
-        this.groups = groups;
-        this.fields = fields;
+        this.children = new ArrayList<>(children);
     }
 
     @Override
@@ -43,13 +45,34 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
     }
 
     @Override
+    public Optional<InputFieldGroup> asGroup() {
+        return Optional.of(this);
+    }
+
+    @Override
+    public Optional<InputField> asField() {
+        return Optional.empty();
+    }
+
+    @Override
     public List<InputField> getFields() {
-        return fields;
+        return children.stream()
+                .filter(c -> c.asField().isPresent())
+                .map(c -> c.asField().get())
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<InputFieldGroup> getGroups() {
-        return groups;
+        return children.stream()
+                .filter(c->c.asGroup().isPresent())
+                .map(c->c.asGroup().get())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<InputFieldDesignator> getFieldDesignations() {
+        return children;
     }
 
     @Override

@@ -9,10 +9,12 @@ import java.util.List;
 /**
  * Created by avery on 10/2/2014.
  */
-public interface InputFieldGroup extends Contained<InputFieldGroup> {
+public interface InputFieldGroup extends InputFieldDesignator {
     String getName();
 
     List<InputField> getFields();
 
     List<InputFieldGroup> getGroups();
+
+    List<InputFieldDesignator> getFieldDesignations();
 }

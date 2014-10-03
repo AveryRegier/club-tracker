@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * Created by avery on 10/2/2014.
  */
-public interface InputField extends Contained<InputFieldGroup> {
+public interface InputField extends InputFieldDesignator {
 
     public enum Type {
         integer {
@@ -29,8 +29,6 @@ public interface InputField extends Contained<InputFieldGroup> {
     }
 
     Type getType();
-
-    String getName();
 
     Optional<List<String>> getValues();
 

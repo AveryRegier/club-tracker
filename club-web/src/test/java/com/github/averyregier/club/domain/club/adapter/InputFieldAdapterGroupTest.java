@@ -1,8 +1,11 @@
 package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.club.InputField;
+import com.github.averyregier.club.domain.club.InputFieldDesignator;
 import com.github.averyregier.club.domain.club.InputFieldGroup;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -80,5 +83,41 @@ public class InputFieldAdapterGroupTest {
         assertEquals("foo:baz", group.getId());
         assertEquals("foo:baz:bar", group.getFields().get(0).getId());
         assertNull(classUnderTest.getContainer());
+    }
+
+    @Test
+    public void fieldOrder() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .id("foo")
+                .field(f -> f.id("name"))
+                .group(g -> g
+                                .id("address")
+                                .field(f -> f.id("state"))
+                )
+                .field(f -> f.id("alergies"))
+                .build();
+
+        List<InputFieldDesignator> designators = classUnderTest.getFieldDesignations();
+        InputFieldDesignator name = designators.get(0);
+        assertEquals("foo:name", name.getId());
+        assertEquals(classUnderTest, name.getContainer());
+        assertFalse(name.asGroup().isPresent());
+        assertTrue(name.asField().isPresent());
+        assertEquals(name, name.asField().get());
+
+        InputFieldDesignator address = designators.get(1);
+        assertEquals("foo:address", address.getId());
+        assertEquals(classUnderTest, address.getContainer());
+        assertTrue(address.asGroup().isPresent());
+        assertFalse(address.asField().isPresent());
+        assertEquals(address, address.asGroup().get());
+
+        InputFieldDesignator allergies = designators.get(2);
+        assertEquals("foo:alergies", allergies.getId());
+        assertEquals(classUnderTest, allergies.getContainer());
+        assertFalse(allergies.asGroup().isPresent());
+        assertTrue(allergies.asField().isPresent());
+        assertEquals(allergies, allergies.asField().get());
+
     }
 }

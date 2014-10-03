@@ -43,6 +43,16 @@ public class InputFieldAdapter implements InputField {
     }
 
     @Override
+    public Optional<InputFieldGroup> asGroup() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<InputField> asField() {
+        return Optional.of(this);
+    }
+
+    @Override
     public String getId() {
         if(group != null) {
             return group.get().getId()+":"+id;
