@@ -94,7 +94,7 @@ public class InputFieldAdapterGroupTest {
                                 .id("address")
                                 .field(f -> f.id("state"))
                 )
-                .field(f -> f.id("alergies"))
+                .field(f -> f.id("allergies"))
                 .build();
 
         List<InputFieldDesignator> designators = classUnderTest.getFieldDesignations();
@@ -113,11 +113,10 @@ public class InputFieldAdapterGroupTest {
         assertEquals(address, address.asGroup().get());
 
         InputFieldDesignator allergies = designators.get(2);
-        assertEquals("foo:alergies", allergies.getId());
+        assertEquals("foo:allergies", allergies.getId());
         assertEquals(classUnderTest, allergies.getContainer());
         assertFalse(allergies.asGroup().isPresent());
         assertTrue(allergies.asField().isPresent());
         assertEquals(allergies, allergies.asField().get());
-
     }
 }
