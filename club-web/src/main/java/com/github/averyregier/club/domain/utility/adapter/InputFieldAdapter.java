@@ -19,10 +19,10 @@ public class InputFieldAdapter implements InputField {
     private String id;
     private String name;
     private final Later<InputFieldGroup> group;
-    private Optional<List<Object>> values = Optional.empty();
+    private Optional<List<Value>> values = Optional.empty();
 
 
-    InputFieldAdapter(String id, Type type, String name, Later<InputFieldGroup> group, Object... values) {
+    InputFieldAdapter(String id, Type type, String name, Later<InputFieldGroup> group, Value... values) {
         this.type = type;
         this.id = id;
         this.name = name;
@@ -66,18 +66,12 @@ public class InputFieldAdapter implements InputField {
     }
 
     @Override
-    public Optional<List<String>> getValues() {
-        return values.map(convertToStringList());
-    }
-
-    private Function<List<?>, List<String>> convertToStringList() {
-        return l -> l.stream()
-                .map(Object::toString)
-                .collect(Collectors.toList());
+    public Optional<List<Value>> getValues() {
+        return values;
     }
 
     @Override
     public InputFieldGroup getContainer() {
-        return group.get();
+        return group != null ? group.get() : null;
     }
 }

@@ -17,7 +17,7 @@ public class InputFieldBuilder implements Builder<InputField>, ChildBuilder<Inpu
     private InputField.Type type;
     private String name;
     private String id;
-    private List<String> values = new ArrayList<>();
+    private List<InputField.Value> values = new ArrayList<InputField.Value>();
 
     @Override
     public InputField build() {
@@ -40,11 +40,46 @@ public class InputFieldBuilder implements Builder<InputField>, ChildBuilder<Inpu
     }
 
     public InputFieldBuilder value(String value) {
-        this.values.add(value);
+        this.values.add(new InputField.Value() {
+            @Override
+            public String getDisplayName() {
+                return value;
+            }
+
+            @Override
+            public String getValue() {
+                return value;
+            }
+
+            @Override
+            public boolean isDefault() {
+                return false;
+            }
+        });
         return this;
     }
 
     public InputField build(Later<InputFieldGroup> group) {
-        return new InputFieldAdapter(id, type, name, group, values.toArray());
+        return new InputFieldAdapter(id, type, name, group, values.toArray(new InputField.Value[0]));
+    }
+
+    public InputFieldBuilder value(String value, String displayName, boolean isDefault) {
+        this.values.add(new InputField.Value() {
+            @Override
+            public String getDisplayName() {
+                return displayName;
+            }
+
+            @Override
+            public String getValue() {
+                return value;
+            }
+
+            @Override
+            public boolean isDefault() {
+                return isDefault;
+            }
+        });
+        return this;
     }
 }

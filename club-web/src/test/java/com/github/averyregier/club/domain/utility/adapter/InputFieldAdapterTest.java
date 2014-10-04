@@ -46,19 +46,36 @@ public class InputFieldAdapterTest {
                 .value("value1")
                 .build();
         assertTrue(classUnderTest.getValues().isPresent());
-        assertEquals("value1", classUnderTest.getValues().get().get(0));
+        assertEquals("value1", classUnderTest.getValues().get().get(0).getValue());
     }
+
+    @Test
+    public void oneNamedValue() {
+        InputField classUnderTest = new InputFieldBuilder()
+                .value("value1", "Value One", false)
+                .build();
+        assertTrue(classUnderTest.getValues().isPresent());
+        assertEquals("value1", classUnderTest.getValues().get().get(0).getValue());
+        assertEquals("Value One", classUnderTest.getValues().get().get(0).getDisplayName());
+        assertEquals(false, classUnderTest.getValues().get().get(0).isDefault());
+    }
+
     @Test
     public void threeValues() {
         InputField classUnderTest = new InputFieldBuilder()
-                .value("value1")
-                .value("value2")
+                .value("value1", "Value One", false)
+                .value("value2", "Value Two", true)
                 .value("value3")
                 .build();
         assertTrue(classUnderTest.getValues().isPresent());
-        assertEquals("value1", classUnderTest.getValues().get().get(0));
-        assertEquals("value2", classUnderTest.getValues().get().get(1));
-        assertEquals("value3", classUnderTest.getValues().get().get(2));
+        assertEquals("value1", classUnderTest.getValues().get().get(0).getValue());
+        InputField.Value value = classUnderTest.getValues().get().get(1);
+        assertEquals("value2", value.getValue());
+        assertEquals(true, value.isDefault());
+        InputField.Value three = classUnderTest.getValues().get().get(2);
+        assertEquals("value3", three.getValue());
+        assertEquals(false, three.isDefault());
+        assertEquals("value3", three.getDisplayName());
     }
 
     @Test

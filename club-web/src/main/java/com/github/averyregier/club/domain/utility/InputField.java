@@ -27,9 +27,15 @@ public interface InputField extends InputFieldDesignator {
 
     Type getType();
 
-    Optional<List<String>> getValues();
+    Optional<List<Value>> getValues();
 
     public default Optional<Object> validate(String input) {
         return Optional.ofNullable(getType().validate(input));
+    }
+
+    public interface Value {
+        public String getDisplayName();
+        public String getValue();
+        public boolean isDefault();
     }
 }
