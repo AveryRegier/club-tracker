@@ -25,6 +25,8 @@ public class BookBuilder implements Builder<Book> {
     private int minor = 0;
     private Year year = Year.now();
     private Later<Curriculum> curriculumLater;
+    private List<AgeGroup> ageGroups = new ArrayList<>();
+    private String name;
 
     public BookBuilder(int sequence) {
         this.sequence = sequence;
@@ -33,8 +35,14 @@ public class BookBuilder implements Builder<Book> {
     public Book build() {
         Later<Book> futureBook = new Later<>();
         List<SectionGroup> sectionGroups = buildSectionGroups(futureBook);
-        Book book = new ConcreteBook(curriculumLater, sequence, sectionGroups,
-                new BookVersionAdapter(major, minor, translation, locale, year), shortCode);
+        Book book = new ConcreteBook(
+                curriculumLater,
+                sequence,
+                name != null ? name : Integer.toString(sequence),
+                sectionGroups,
+                new BookVersionAdapter(major, minor, translation, locale, year),
+                shortCode,
+                ageGroups);
         futureBook.set(book);
         completions.forEach(RewardBuilder::build);
         if(reward != null) {
@@ -109,5 +117,28 @@ public class BookBuilder implements Builder<Book> {
 
     public BookBuilder reward() {
         return reward(new RewardBuilder());
+    }
+
+    public BookBuilder ageGroup(AgeGroup ageGroup) {
+        ageGroups.add(ageGroup);
+        return this;
+    }
+
+    public BookBuilder catalog(String reference) {
+        return this;
+    }
+
+    public BookBuilder catalog(String reference, String quantity) {
+        return this;
+    }
+
+    public BookBuilder publicationYear(int year) {
+        this.year = Year.of(year);
+        return this;
+    }
+
+    public BookBuilder name(String name) {
+        this.name = name;
+        return this;
     }
 }

@@ -15,6 +15,7 @@ import java.util.List;
  */
 public class SectionBuilder implements Builder<Section> {
     private int sequence;
+    private String shortCode;
     private SectionType sectionType;
     private Later<SectionGroup> group;
     private List<Later<Reward>> rewards = new ArrayList<>(2);
@@ -25,8 +26,18 @@ public class SectionBuilder implements Builder<Section> {
         this.sectionType = sectionType;
     }
 
+    public SectionBuilder shortCode(String code) {
+        this.shortCode = code;
+        return this;
+    }
+
     public Section build() {
-        return new SectionAdapter(group, sectionType, sequence, rewards);
+        return new SectionAdapter(
+                group,
+                sectionType,
+                sequence,
+                shortCode != null ? shortCode : Integer.toString(sequence),
+                rewards);
     }
 
     SectionBuilder setGroup(Later<SectionGroup> group) {

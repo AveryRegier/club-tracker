@@ -12,11 +12,13 @@ import java.util.List;
 */
 class SectionGroupAdapter implements SectionGroup {
     private Later<Book> futureBook;
+    private String name;
     private final List<Section> sections;
     private int sequence;
 
-    public SectionGroupAdapter(Later<Book> futureBook, int sequence, List<Section> sections) {
+    public SectionGroupAdapter(Later<Book> futureBook, int sequence, String name, List<Section> sections) {
         this.futureBook = futureBook;
+        this.name = name;
         this.sections = sections;
         this.sequence = sequence;
     }
@@ -34,6 +36,11 @@ class SectionGroupAdapter implements SectionGroup {
     @Override
     public Book getBook() {
         return futureBook.get();
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override

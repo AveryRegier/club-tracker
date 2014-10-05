@@ -12,10 +12,12 @@ import java.util.List;
 */
 class RewardAdapter implements Reward {
 
+    private String name;
     private List<Section> builtSections;
     private RewardType rewardType;
 
-    public RewardAdapter(List<Section> builtSections, RewardType rewardType) {
+    public RewardAdapter(String name, List<Section> builtSections, RewardType rewardType) {
+        this.name = name;
         this.builtSections = builtSections;
         this.rewardType = rewardType;
     }
@@ -23,6 +25,15 @@ class RewardAdapter implements Reward {
     @Override
     public RewardType getRewardType() {
         return rewardType;
+    }
+
+    @Override
+    public String getName() {
+        return name != null ?
+                name :
+                rewardType == RewardType.book ?
+                        getBook().getName() :
+                        builtSections.get(0).getGroup().getName();
     }
 
     @Override

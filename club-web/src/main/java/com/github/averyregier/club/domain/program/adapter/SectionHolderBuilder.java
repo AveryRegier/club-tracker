@@ -11,10 +11,15 @@ import java.util.function.Function;
  */
 public abstract class SectionHolderBuilder<T extends SectionHolderBuilder> {
     protected List<SectionBuilder> sections = new ArrayList<>();
+    protected String name;
 
-    @SuppressWarnings("unchecked")
     public T section(SectionBuilder sectionBuilder) {
         sections.add(sectionBuilder);
+        return self();
+    }
+
+    @SuppressWarnings("unchecked")
+    private T self() {
         return (T)this;
     }
 
@@ -24,5 +29,10 @@ public abstract class SectionHolderBuilder<T extends SectionHolderBuilder> {
 
     public T section(int sequence, SectionType sectionType) {
         return section(new SectionBuilder(sequence, sectionType));
+    }
+
+    public T name(String name) {
+        this.name = name;
+        return self();
     }
 }

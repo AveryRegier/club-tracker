@@ -1,10 +1,12 @@
 package com.github.averyregier.club.domain.program.adapter;
 
+import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.Translation;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -100,6 +102,56 @@ public class BookAdapterTest {
         assertEquals(book,
                 classUnderTest.getSectionGroups().get(0).getSections().get(0)
                         .getRewards().iterator().next().getRewardType());
+    }
+
+    @Test
+    public void bookRewardName() {
+        Book classUnderTest = new BookBuilder(1)
+                .reward(r->r.name("Reward Name"))
+                .group(1, g -> g
+                        .section(0, parent))
+                .build();
+        assertEquals("Reward Name",
+                classUnderTest.getSectionGroups().get(0).getSections().get(0)
+                        .getRewards().iterator().next().getName());
+    }
+
+    @Test
+    public void bookName() {
+        Book classUnderTest = new BookBuilder(1)
+                .name("Book One")
+                .reward()
+                .group(1, g -> g
+                        .section(0, parent))
+                .build();
+        assertEquals("Book One", classUnderTest.getName());
+        assertEquals("Book One",
+                classUnderTest.getSectionGroups().get(0).getSections().get(0)
+                        .getRewards().iterator().next().getName());
+    }
+
+    @Test
+    public void bookRewardDefaultName() {
+        Book classUnderTest = new BookBuilder(1)
+                .reward()
+                .group(1, g -> g
+                        .section(0, parent))
+                .build();
+
+        assertEquals("1", classUnderTest.getName());
+        assertEquals("1",
+                classUnderTest.getSectionGroups().get(0).getSections().get(0)
+                        .getRewards().iterator().next().getName());
+    }
+
+    @Test
+    public void ageGroups() {
+        Book classUnderTest = new BookBuilder(1)
+                .ageGroup(AgeGroup.DefaultAgeGroup.COLLEGE)
+                .ageGroup(AgeGroup.DefaultAgeGroup.ELEVENTH_GRADE)
+                .build();
+        assertEquals(Arrays.asList(AgeGroup.DefaultAgeGroup.COLLEGE, AgeGroup.DefaultAgeGroup.ELEVENTH_GRADE),
+                classUnderTest.getAgeGroups());
     }
 
     @Test

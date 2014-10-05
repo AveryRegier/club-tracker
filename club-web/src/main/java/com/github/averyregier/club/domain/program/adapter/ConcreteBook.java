@@ -11,18 +11,22 @@ import java.util.stream.Collectors;
 */
 class ConcreteBook implements Book {
     private Later<Curriculum> curriculumLater;
+    private String name;
     private final List<SectionGroup> sectionGroups;
     private int sequence;
     private BookVersion bookVersion;
     private String shortCode;
+    private List<AgeGroup> ageGroups;
 
-    public ConcreteBook(Later<Curriculum> curriculumLater, int sequence, List<SectionGroup> sectionGroups,
-                        BookVersion bookVersion, String shortCode) {
+    public ConcreteBook(Later<Curriculum> curriculumLater, int sequence, String name, List<SectionGroup> sectionGroups,
+                        BookVersion bookVersion, String shortCode, List<AgeGroup> ageGroups) {
         this.curriculumLater = curriculumLater;
+        this.name = name;
         this.sectionGroups = sectionGroups;
         this.sequence = sequence;
         this.bookVersion = bookVersion;
         this.shortCode = shortCode;
+        this.ageGroups = ageGroups;
     }
 
     @Override
@@ -32,7 +36,7 @@ class ConcreteBook implements Book {
 
     @Override
     public List<AgeGroup> getAgeGroups() {
-        return null;
+        return ageGroups;
     }
 
     @Override
@@ -63,6 +67,11 @@ class ConcreteBook implements Book {
     @Override
     public Book getBook() {
         return this;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override

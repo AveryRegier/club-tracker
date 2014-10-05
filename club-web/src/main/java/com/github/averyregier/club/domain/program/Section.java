@@ -12,7 +12,7 @@ public interface Section extends Comparable<Section>, Contained<SectionGroup> {
     public SectionGroup getGroup();
 
     public Set<Reward> getRewards();
-    public Set<Reward> getRewards(RewardType group);
+    public Set<Reward> getRewards(RewardType type);
 
     int sequence();
 

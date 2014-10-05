@@ -33,7 +33,8 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
 
         rewards.forEach(reward->allSections.addAll(reward.build(futureGroup, bookReward)));
         final List<Section> sections = buildSections(futureGroup, bookReward);
-        SectionGroupAdapter group = new SectionGroupAdapter(futureBook, sequence, sections);
+        SectionGroupAdapter group = new SectionGroupAdapter(
+                futureBook, sequence, name, sections);
         futureGroup.set(group);
         if(!rewards.isEmpty() && bookBuilder != null) {
             bookBuilder.addCompletions(rewards);

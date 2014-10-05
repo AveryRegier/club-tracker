@@ -43,6 +43,20 @@ public class SectionGroupAdapterTest{
     }
 
     @Test
+    public void addRewardDefaultName() {
+        BookBuilder bookBuilder = new BookBuilder(0);
+        SectionGroup group = new SectionGroupBuilder(1)
+                .name("Discovery 1")
+                .reward(new RewardBuilder()
+                        .section(new SectionBuilder(1, TnTSectionTypes.regular.get())))
+                .build(bookBuilder);
+        bookBuilder.build();
+
+        Section section = group.getSections().get(0);
+        assertEquals("Discovery 1", section.getRewards(RewardType.group).iterator().next().getName());
+    }
+
+    @Test
     public void add2Rewards() {
         BookBuilder bookBuilder = new BookBuilder(0);
         SectionGroup group = new SectionGroupBuilder(1)

@@ -5,21 +5,25 @@ import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
 * Created by avery on 9/10/2014.
 */
 class SectionAdapter implements Section {
+    private String shortCode;
     private final List<Later<Reward>> rewards;
     private Later<SectionGroup> group;
     private SectionType sectionType;
     private int sequence;
 
-    public SectionAdapter(Later<SectionGroup> group, SectionType sectionType, int sequence, List<Later<Reward>> rewards) {
+    public SectionAdapter(Later<SectionGroup> group, SectionType sectionType,
+                          int sequence, String shortCode, List<Later<Reward>> rewards) {
         this.group = group;
         this.sectionType = sectionType;
         this.sequence = sequence;
+        this.shortCode = shortCode;
         this.rewards = rewards;
     }
 
@@ -35,14 +39,23 @@ class SectionAdapter implements Section {
 
     @Override
     public Set<Reward> getRewards() {
-        return rewards.stream().map(r->r.get()).collect(Collectors.toSet());
+        return rewards.stream().map(r->r.get())
+                .filter(isValidReward())
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public Set<Reward> getRewards(RewardType group) {
+    public Set<Reward> getRewards(RewardType type) {
         return getRewards().stream()
-                .filter(t->t.getRewardType() == group)
+                .filter(t->t.getRewardType() == type)
+                .filter(isValidReward())
                 .collect(Collectors.toSet());
+    }
+
+    private Predicate<Reward> isValidReward() {
+        return t->t.getRewardType() == RewardType.book &&
+                   getSectionType().requiredForBookReward() ||
+                   t.getRewardType() != RewardType.book;
     }
 
     @Override
@@ -57,7 +70,7 @@ class SectionAdapter implements Section {
 
     @Override
     public String getShortCode() {
-        return Integer.toString(sequence());
+        return shortCode;
     }
 
     @Override

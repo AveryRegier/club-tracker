@@ -30,7 +30,7 @@ public class RewardBuilder extends SectionHolderBuilder<RewardBuilder> implement
         if(!sections.isEmpty()) {
             throw new IllegalStateException();
         }
-        Reward reward = new RewardAdapter(builtSections, rewardType);
+        Reward reward = new RewardAdapter(name, builtSections, rewardType);
         futureReward.set(reward);
         return reward;
     }
@@ -38,13 +38,12 @@ public class RewardBuilder extends SectionHolderBuilder<RewardBuilder> implement
     @SuppressWarnings("unchecked")
     private synchronized List<Section> buildSections(Later<SectionGroup> futureGroup, Later<Reward>... futureReward) {
         List<SectionBuilder> relevant = sections.stream()
-                .filter(s -> s.getGroup() == futureGroup).collect(Collectors.toList());
+                .filter(s -> s.getGroup() == futureGroup)
+                .collect(Collectors.toList());
         List<Section> collect = relevant.stream()
-                .map(b -> {
-                    return b.setGroup(futureGroup)
-                            .addRewards(futureReward)
-                            .build();
-                })
+                .map(b -> b.setGroup(futureGroup)
+                           .addRewards(futureReward)
+                           .build())
                 .collect(Collectors.toList());
         sections.removeAll(relevant);
         return collect;

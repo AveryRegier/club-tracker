@@ -22,7 +22,7 @@ public class CurriculumBuilder implements Builder<Curriculum> {
     public Curriculum build() {
         Later<Curriculum> curriculumLater = new Later<>();
         CurriculumAdapter curriculum;
-        if(books.isEmpty()) {
+        if(!series.isEmpty()) {
             List<Curriculum> series = this.series.stream()
                     .map(s->s.setCurriculum(curriculumLater).build())
                     .collect(Collectors.toList());
