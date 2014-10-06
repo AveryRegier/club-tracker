@@ -17,8 +17,8 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
     private ArrayList<RewardBuilder> rewards = new ArrayList<>();
     private int sequence;
     private Later<Book> futureBook;
-    TreeSet<Section> allSections = new TreeSet<>();
-    Later<SectionGroup> futureGroup = new Later<>();
+    private TreeSet<Section> allSections = new TreeSet<>();
+    private Later<SectionGroup> futureGroup = new Later<>();
 
     public SectionGroupBuilder(int sequence) {
         this.sequence = sequence;
@@ -45,6 +45,7 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
     @SuppressWarnings("unchecked")
     private List<Section> buildSections(Later<SectionGroup> futureGroup, Later<Reward> bookReward) {
 
+        applyDecider();
         allSections.addAll(sections.stream()
                 .map(b -> b.setGroup(futureGroup).addRewards(bookReward).build())
                 .collect(Collectors.toList()));
@@ -59,6 +60,7 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
     public SectionGroupBuilder reward(RewardBuilder reward) {
         reward.type(RewardType.group);
         reward.identifySectionGroup(futureGroup);
+        if(decider != null) reward.typeAssigner(decider);
         rewards.add(reward);
         return this;
     }
@@ -66,4 +68,5 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
     public SectionGroupBuilder reward(UnaryOperator<RewardBuilder> function) {
         return reward(function.apply(new RewardBuilder()));
     }
+
 }

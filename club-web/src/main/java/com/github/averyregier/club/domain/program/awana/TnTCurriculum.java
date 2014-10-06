@@ -1,6 +1,5 @@
 package com.github.averyregier.club.domain.program.awana;
 
-import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.adapter.BookBuilder;
 import com.github.averyregier.club.domain.program.adapter.CurriculumBuilder;
@@ -8,6 +7,10 @@ import com.github.averyregier.club.domain.program.adapter.RewardBuilder;
 import com.github.averyregier.club.domain.program.adapter.SectionGroupBuilder;
 
 import java.util.function.UnaryOperator;
+
+import static com.github.averyregier.club.domain.program.AgeGroup.DefaultAgeGroup.FOURTH_GRADE;
+import static com.github.averyregier.club.domain.program.AgeGroup.DefaultAgeGroup.THIRD_GRADE;
+import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.*;
 
 /**
  * Created by avery on 9/12/2014.
@@ -36,33 +39,39 @@ public class TnTCurriculum {
         return b -> b
                 .shortCode("SZ")
                 .name("Ultimate Adventure Start Zone")
-                .ageGroup(AgeGroup.DefaultAgeGroup.THIRD_GRADE)
-                .ageGroup(AgeGroup.DefaultAgeGroup.FOURTH_GRADE)
+                .ageGroup(THIRD_GRADE)
+                .ageGroup(FOURTH_GRADE)
                 .publicationYear(2010)
                 .catalog("80881")
                 .reward(a -> a)
                 .group(0, g ->
                         g.reward(r -> r
-                                .section(1, TnTSectionTypes.regular)
-                                .section(2, TnTSectionTypes.regular)
-                                .section(3, TnTSectionTypes.regular)
-                                .section(4, TnTSectionTypes.regular)
-                                .section(5, TnTSectionTypes.regular)
-                                .section(6, TnTSectionTypes.regular)
-                                .section(7, TnTSectionTypes.regular)));
+                                .section(1, regular)
+                                .section(2, regular)
+                                .section(3, regular)
+                                .section(4, regular)
+                                .section(5, regular)
+                                .section(6, regular)
+                                .section(7, regular)));
     }
 
     private static UnaryOperator<BookBuilder> book1() {
 
         return b -> {
-            BookBuilder builder = b
-                    .shortCode("1")
-                    .name("Ultimate Adventure Book 1")
-                    .ageGroup(AgeGroup.DefaultAgeGroup.THIRD_GRADE)
-                    .ageGroup(AgeGroup.DefaultAgeGroup.FOURTH_GRADE)
-                    .publicationYear(2010)
-                    .catalog("80434", "Ea.")
-                    .catalog("80422", "Pkg.");
+            BookBuilder builder = b;
+            builder.shortCode("1");
+            builder.name("Ultimate Adventure Book 1");
+            builder.ageGroup(THIRD_GRADE);
+            builder.ageGroup(FOURTH_GRADE);
+            builder.publicationYear(2010);
+            builder.catalog("80434", "Ea.");
+            builder.catalog("80422", "Pkg.");
+            builder.typeAssigner((g, s) -> {
+                if (s == 0) return parent;
+                else if (s > 7) return extaCredit;
+                else if (g == 5 && s == 7) return friend;
+                else return regular;
+            });
             return tntStructure(builder);
         };
     }
@@ -90,24 +99,27 @@ public class TnTCurriculum {
                 .group(8, discovery(8, silver4, gold4));
     }
 
-    private static UnaryOperator<SectionGroupBuilder> discovery(int ordinal, RewardBuilder silver1, RewardBuilder gold1) {
+    private static UnaryOperator<SectionGroupBuilder> discovery(
+            int ordinal,
+            RewardBuilder silver1,
+            RewardBuilder gold1) {
         return g -> g
                 .name("Discovery "+ordinal)
                 .reward(r -> r
-                        .section(0, TnTSectionTypes.parent)
-                        .section(1, TnTSectionTypes.regular)
-                        .section(2, TnTSectionTypes.regular)
-                        .section(3, TnTSectionTypes.regular)
-                        .section(4, TnTSectionTypes.regular)
-                        .section(5, TnTSectionTypes.regular)
-                        .section(6, TnTSectionTypes.regular)
-                        .section(7, TnTSectionTypes.regular)
+                        .section(0)
+                        .section(1)
+                        .section(2)
+                        .section(3)
+                        .section(4)
+                        .section(5)
+                        .section(6)
+                        .section(7)
                 )
                 .reward(silver1
-                        .section(8, TnTSectionTypes.extaCredit, s->s.shortCode("S")))
+                        .section(8, s -> s.shortCode("S")))
                 .reward(gold1
-                        .section(9, TnTSectionTypes.extaCredit, s -> s.shortCode("G1"))
-                        .section(10, TnTSectionTypes.extaCredit, s -> s.shortCode("G2"))
+                        .section(9, s -> s.shortCode("G1"))
+                        .section(10, s -> s.shortCode("G2"))
                 );
     }
 }

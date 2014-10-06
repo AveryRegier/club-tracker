@@ -209,4 +209,14 @@ public class TnTCurriculumTest {
             assertEquals(0, s.getRewards(RewardType.book).size());
         }
     }
+
+    @Test
+    public void specialSections() {
+        assertEquals(TnTSectionTypes.friend, classUnderTest.lookup(classUnderTest.getId()+":UA:1©2010:5:7").get().getSectionType());
+//        assertEquals(TnTSectionTypes.group, classUnderTest.lookup(classUnderTest.getId()+":UA:2©2010:4:3").get().getSectionType());
+//        assertEquals(TnTSectionTypes.friend, classUnderTest.lookup(classUnderTest.getId()+":UA:2©2010:6:5").get().getSectionType());
+//        assertEquals(TnTSectionTypes.friend, classUnderTest.lookup(classUnderTest.getId()+":UC:1:1:7").get().getSectionType());
+//        assertEquals(TnTSectionTypes.friend, classUnderTest.lookup(classUnderTest.getId()+":UC:2:1:7").get().getSectionType());
+
+    }
 }

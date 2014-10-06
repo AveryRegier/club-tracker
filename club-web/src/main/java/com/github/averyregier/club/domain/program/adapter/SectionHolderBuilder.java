@@ -12,6 +12,7 @@ import java.util.function.Function;
 public abstract class SectionHolderBuilder<T extends SectionHolderBuilder> {
     protected List<SectionBuilder> sections = new ArrayList<>();
     protected String name;
+    protected Function<Integer, SectionType> decider;
 
     public T section(SectionBuilder sectionBuilder) {
         sections.add(sectionBuilder);
@@ -27,12 +28,30 @@ public abstract class SectionHolderBuilder<T extends SectionHolderBuilder> {
         return section(function.apply(new SectionBuilder(sequence, sectionType)));
     }
 
+    public T section(int sequence, Function<SectionBuilder, SectionBuilder> function) {
+        return section(function.apply(new SectionBuilder(sequence)));
+    }
+
     public T section(int sequence, SectionType sectionType) {
         return section(new SectionBuilder(sequence, sectionType));
     }
 
+    public T section(int sequence) {
+        return section(new SectionBuilder(sequence));
+    }
+
     public T name(String name) {
         this.name = name;
+        return self();
+    }
+
+    protected void applyDecider() {
+        if(decider != null)
+            sections.stream().forEach(s-> s.type(decider.apply(s.getSequence())));
+    }
+
+    T typeAssigner(Function<Integer, SectionType> decider) {
+        this.decider = decider;
         return self();
     }
 }

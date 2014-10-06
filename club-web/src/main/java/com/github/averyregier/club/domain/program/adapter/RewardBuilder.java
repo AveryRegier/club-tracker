@@ -21,6 +21,7 @@ public class RewardBuilder extends SectionHolderBuilder<RewardBuilder> implement
 
     @SuppressWarnings("unchecked")
     List<Section> build(Later<SectionGroup> futureGroup, Later<Reward> bookReward ) {
+        applyDecider();
         List<Section> currentSections = buildSections(futureGroup, futureReward, bookReward);
         builtSections.addAll(currentSections);
         return currentSections;

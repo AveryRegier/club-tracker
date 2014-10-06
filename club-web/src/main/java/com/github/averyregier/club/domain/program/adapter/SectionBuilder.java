@@ -26,6 +26,19 @@ public class SectionBuilder implements Builder<Section> {
         this.sectionType = sectionType;
     }
 
+    SectionBuilder(int sequence) {
+        this.sequence = sequence;
+    }
+
+    public SectionBuilder type(SectionType type) {
+        this.sectionType = type;
+        return this;
+    }
+
+    public int getSequence() {
+        return sequence;
+    }
+
     public SectionBuilder shortCode(String code) {
         this.shortCode = code;
         return this;

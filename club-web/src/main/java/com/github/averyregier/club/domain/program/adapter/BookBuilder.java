@@ -27,6 +27,7 @@ public class BookBuilder implements Builder<Book> {
     private Later<Curriculum> curriculumLater;
     private List<AgeGroup> ageGroups = new ArrayList<>();
     private String name;
+    private SectionTypeDecider decider;
 
     public BookBuilder(int sequence) {
         this.sequence = sequence;
@@ -81,7 +82,10 @@ public class BookBuilder implements Builder<Book> {
     }
 
     public BookBuilder group(int sequence, UnaryOperator<SectionGroupBuilder> setupFn) {
-        group(setupFn.apply(new SectionGroupBuilder(sequence)));
+        SectionGroupBuilder groupBuilder = new SectionGroupBuilder(sequence);
+        if(decider != null)
+            groupBuilder.typeAssigner(s -> decider.decide(sequence, s));
+        group(setupFn.apply(groupBuilder));
         return this;
     }
 
@@ -139,6 +143,11 @@ public class BookBuilder implements Builder<Book> {
 
     public BookBuilder name(String name) {
         this.name = name;
+        return this;
+    }
+
+    public BookBuilder typeAssigner(SectionTypeDecider decider) {
+        this.decider = decider;
         return this;
     }
 }
