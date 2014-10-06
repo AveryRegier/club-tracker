@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.*;
 import static org.junit.Assert.*;
 
 public class TnTCurriculumTest {
@@ -83,7 +84,7 @@ public class TnTCurriculumTest {
         for(Section s: sz.getSections()) {
             assertEquals(Integer.toString(++number), s.getShortCode());
             assertEquals(1, s.getRewards(RewardType.group).size());
-            assertEquals(TnTSectionTypes.regular, s.getSectionType());
+            assertEquals(regular, s.getSectionType());
             assertEquals(number, s.sequence());
         }
     }
@@ -91,16 +92,35 @@ public class TnTCurriculumTest {
     @Test
     public void uaBookOne() {
         Curriculum ua = classUnderTest.getSeries().get(0);
-        Book book1 = ua.getBooks().get(1);
-        assertEquals("1", book1.getShortCode());
+        Book book = ua.getBooks().get(1);
+        assertEquals("1", book.getShortCode());
         assertEquals(Arrays.asList(
                 AgeGroup.DefaultAgeGroup.THIRD_GRADE,
-                AgeGroup.DefaultAgeGroup.FOURTH_GRADE), book1.getAgeGroups());
-        assertEquals(Year.of(2010), book1.getVersion().getPublicationYear());
-        assertEquals("©2010", book1.getVersion().toString());
-        assertEquals(1, book1.sequence());
-        assertEquals("Ultimate Adventure Book 1", book1.getName());
+                AgeGroup.DefaultAgeGroup.FOURTH_GRADE), book.getAgeGroups());
+        assertEquals(Year.of(2010), book.getVersion().getPublicationYear());
+        assertEquals("©2010", book.getVersion().toString());
+        assertEquals(1, book.sequence());
+        assertEquals("Ultimate Adventure Book 1", book.getName());
 
+        assertNormalTnTStructure(book);
+    }
+
+    @Test
+    public void uaBookTwo() {
+        Curriculum ua = classUnderTest.getSeries().get(0);
+        Book book = ua.getBooks().get(2);
+        assertEquals("2", book.getShortCode());
+        assertEquals(Arrays.asList(
+                AgeGroup.DefaultAgeGroup.FOURTH_GRADE), book.getAgeGroups());
+        assertEquals(Year.of(2010), book.getVersion().getPublicationYear());
+        assertEquals("©2010", book.getVersion().toString());
+        assertEquals(2, book.sequence());
+        assertEquals("Ultimate Adventure Book 2", book.getName());
+
+        assertNormalTnTStructure(book);
+    }
+
+    private void assertNormalTnTStructure(Book book1) {
         assertEquals(8, book1.getSectionGroups().size());
         int number=0;
         for(SectionGroup group: book1.getSectionGroups()) {
@@ -125,7 +145,6 @@ public class TnTCurriculumTest {
         assertCorrectExtraCreditRewards(book1,
                 s -> s.getShortCode().startsWith("G"),
                 "Gold 1", "Gold 2", "Gold 3", "Gold 4");
-
     }
 
     private List<Reward> assertCorrectExtraCreditRewards(Book book1, Predicate<Section> fn, String... names) {
@@ -159,7 +178,7 @@ public class TnTCurriculumTest {
 
     private void assertParentSections(SectionGroup group) {
         Section parentSection = group.getSections().get(0);
-        assertEquals(TnTSectionTypes.parent, parentSection.getSectionType());
+        assertEquals(parent, parentSection.getSectionType());
         assertEquals(0, parentSection.sequence());
         assertEquals("0", parentSection.getShortCode());
         assertEquals(1, parentSection.getRewards(RewardType.group).size());
@@ -168,8 +187,8 @@ public class TnTCurriculumTest {
 
     private int assertRegularSections(SectionGroup group) {
         List<Section> regular = group.getSections().stream()
-                .filter(s -> s.getSectionType() != TnTSectionTypes.extaCredit &&
-                        s.getSectionType() != TnTSectionTypes.parent)
+                .filter(s -> s.getSectionType() != extaCredit &&
+                        s.getSectionType() != parent)
                 .collect(Collectors.toList());
 
         assertEquals(7, regular.size());
@@ -192,7 +211,7 @@ public class TnTCurriculumTest {
 
     private void assertExtraCreditSections(SectionGroup group, int sectionNumber) {
         List<Section> extraCredit = group.getSections().stream()
-                .filter(s -> s.getSectionType() == TnTSectionTypes.extaCredit)
+                .filter(s -> s.getSectionType() == extaCredit)
                 .collect(Collectors.toList());
 
         assertEquals(3, extraCredit.size());
@@ -212,11 +231,11 @@ public class TnTCurriculumTest {
 
     @Test
     public void specialSections() {
-        assertEquals(TnTSectionTypes.friend, classUnderTest.lookup(classUnderTest.getId()+":UA:1©2010:5:7").get().getSectionType());
-//        assertEquals(TnTSectionTypes.group, classUnderTest.lookup(classUnderTest.getId()+":UA:2©2010:4:3").get().getSectionType());
-//        assertEquals(TnTSectionTypes.friend, classUnderTest.lookup(classUnderTest.getId()+":UA:2©2010:6:5").get().getSectionType());
-//        assertEquals(TnTSectionTypes.friend, classUnderTest.lookup(classUnderTest.getId()+":UC:1:1:7").get().getSectionType());
-//        assertEquals(TnTSectionTypes.friend, classUnderTest.lookup(classUnderTest.getId()+":UC:2:1:7").get().getSectionType());
+        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":UA:1©2010:5:7").get().getSectionType());
+        assertEquals(group, classUnderTest.lookup(classUnderTest.getId()+":UA:2©2010:4:3").get().getSectionType());
+        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":UA:2©2010:6:5").get().getSectionType());
+//        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":UC:1:1:7").get().getSectionType());
+//        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":UC:2:1:7").get().getSectionType());
 
     }
 }

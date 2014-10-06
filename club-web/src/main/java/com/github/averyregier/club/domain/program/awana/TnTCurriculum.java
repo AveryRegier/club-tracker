@@ -29,9 +29,10 @@ public class TnTCurriculum {
                 .curriculum(c -> c
                         .shortCode("UA")
                         .book(0, startZone())
-                        .book(1, book1()))
+                        .book(1, book1())
+                        .book(2, book2()))
                 .curriculum(c -> c
-                        .shortCode("UC")
+                                .shortCode("UC")
                 );
     }
 
@@ -56,23 +57,40 @@ public class TnTCurriculum {
     }
 
     private static UnaryOperator<BookBuilder> book1() {
-
         return b -> {
-            BookBuilder builder = b;
-            builder.shortCode("1");
-            builder.name("Ultimate Adventure Book 1");
-            builder.ageGroup(THIRD_GRADE);
-            builder.ageGroup(FOURTH_GRADE);
-            builder.publicationYear(2010);
-            builder.catalog("80434", "Ea.");
-            builder.catalog("80422", "Pkg.");
-            builder.typeAssigner((g, s) -> {
+            b.shortCode("1");
+            b.name("Ultimate Adventure Book 1");
+            b.ageGroup(THIRD_GRADE);
+            b.ageGroup(FOURTH_GRADE);
+            b.publicationYear(2010);
+            b.catalog("80434", "Ea.");
+            b.catalog("80422", "Pkg.");
+            b.typeAssigner((g, s) -> {
                 if (s == 0) return parent;
                 else if (s > 7) return extaCredit;
                 else if (g == 5 && s == 7) return friend;
                 else return regular;
             });
-            return tntStructure(builder);
+            return tntStructure(b);
+        };
+    }
+
+    private static UnaryOperator<BookBuilder> book2() {
+        return b -> {
+            b.shortCode("2");
+            b.name("Ultimate Adventure Book 2");
+            b.ageGroup(FOURTH_GRADE);
+            b.publicationYear(2010);
+            b.catalog("80493", "Ea.");
+            b.catalog("80506", "Pkg.");
+            b.typeAssigner((g, s) -> {
+                if (s == 0) return parent;
+                else if (s > 7) return extaCredit;
+                else if (g == 6 && s == 5) return friend;
+                else if (g == 4 && s == 3) return group;
+                else return regular;
+            });
+            return tntStructure(b);
         };
     }
 

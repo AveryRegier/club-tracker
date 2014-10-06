@@ -16,27 +16,18 @@ public enum TnTSectionTypes implements SectionType {
         public boolean countsTowardsSectionMinimums() {
             return false;
         }
-
-        @Override
-        public String toString() {
-            return parent.name();
-        }
     },
-    regular {
-        @Override
-        public String toString() {
-            return regular.name();
-        }
-    },
+    regular,
     friend {
         @Override
         public boolean requiredToMoveOn() {
             return false;
         }
-
+    },
+    group {
         @Override
-        public String toString() {
-            return friend.name();
+        public boolean requiredToMoveOn() {
+            return false;
         }
     },
     extaCredit {
@@ -49,15 +40,14 @@ public enum TnTSectionTypes implements SectionType {
         public boolean requiredToMoveOn() {
             return false;
         }
-
-        @Override
-        public String toString() {
-            return extaCredit.name();
-        }
     };
 
     public SectionType get() {
         return this;
     }
 
+    @Override
+    public String toString() {
+        return name();
+    }
 }
