@@ -8,8 +8,7 @@ import com.github.averyregier.club.domain.program.adapter.SectionGroupBuilder;
 
 import java.util.function.UnaryOperator;
 
-import static com.github.averyregier.club.domain.program.AgeGroup.DefaultAgeGroup.FOURTH_GRADE;
-import static com.github.averyregier.club.domain.program.AgeGroup.DefaultAgeGroup.THIRD_GRADE;
+import static com.github.averyregier.club.domain.program.AgeGroup.DefaultAgeGroup.*;
 import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.*;
 
 /**
@@ -32,8 +31,10 @@ public class TnTCurriculum {
                         .book(1, book1())
                         .book(2, book2()))
                 .curriculum(c -> c
-                                .shortCode("UC")
-                );
+                        .shortCode("UC")
+                        .book(0, ucStartZone())
+                        .book(1, book3())
+                        .book(2, book4()));
     }
 
     private static UnaryOperator<BookBuilder> startZone() {
@@ -58,14 +59,14 @@ public class TnTCurriculum {
 
     private static UnaryOperator<BookBuilder> book1() {
         return b -> {
-            b.shortCode("1");
-            b.name("Ultimate Adventure Book 1");
-            b.ageGroup(THIRD_GRADE);
-            b.ageGroup(FOURTH_GRADE);
-            b.publicationYear(2010);
-            b.catalog("80434", "Ea.");
-            b.catalog("80422", "Pkg.");
-            b.typeAssigner((g, s) -> {
+            b.shortCode("1")
+             .name("Ultimate Adventure Book 1")
+             .ageGroup(THIRD_GRADE)
+             .ageGroup(FOURTH_GRADE)
+             .publicationYear(2010)
+             .catalog("80434", "Ea.")
+             .catalog("80422", "Pkg.")
+             .typeAssigner((g, s) -> {
                 if (s == 0) return parent;
                 else if (s > 7) return extaCredit;
                 else if (g == 5 && s == 7) return friend;
@@ -77,17 +78,74 @@ public class TnTCurriculum {
 
     private static UnaryOperator<BookBuilder> book2() {
         return b -> {
-            b.shortCode("2");
-            b.name("Ultimate Adventure Book 2");
-            b.ageGroup(FOURTH_GRADE);
-            b.publicationYear(2010);
-            b.catalog("80493", "Ea.");
-            b.catalog("80506", "Pkg.");
-            b.typeAssigner((g, s) -> {
+            b.shortCode("2")
+             .name("Ultimate Adventure Book 2")
+             .ageGroup(FOURTH_GRADE)
+             .publicationYear(2010)
+             .catalog("80493", "Ea.")
+             .catalog("80506", "Pkg.")
+             .typeAssigner((g, s) -> {
                 if (s == 0) return parent;
                 else if (s > 7) return extaCredit;
                 else if (g == 6 && s == 5) return friend;
                 else if (g == 4 && s == 3) return group;
+                else return regular;
+            });
+            return tntStructure(b);
+        };
+    }
+
+    private static UnaryOperator<BookBuilder> ucStartZone() {
+        return b -> b
+                .shortCode("SZ")
+                .name("Ultimate Challenge Start Zone")
+                .ageGroup(FIFTH_GRADE)
+                .ageGroup(SIXTH_GRADE)
+                .publicationYear(2010)
+                .catalog("78369")
+                .reward(a -> a)
+                .group(0, g ->
+                        g.reward(r -> r
+                                .section(1, regular)
+                                .section(2, regular)
+                                .section(3, regular)
+                                .section(4, regular)
+                                .section(5, regular)
+                                .section(6, regular)
+                                .section(7, regular)));
+    }
+
+    private static UnaryOperator<BookBuilder> book3() {
+        return b -> {
+            b.shortCode("1")
+             .name("Ultimate Challenge Book 1")
+             .ageGroup(FIFTH_GRADE)
+             .ageGroup(SIXTH_GRADE)
+             .publicationYear(2010)
+             .catalog("80557", "Ea.")
+             .catalog("80565", "Pkg.")
+             .typeAssigner((g, s) -> {
+                if (s == 0) return parent;
+                else if (s > 7) return extaCredit;
+                else if (g == 1 && s == 7) return friend;
+                else return regular;
+            });
+            return tntStructure(b);
+        };
+    }
+
+    private static UnaryOperator<BookBuilder> book4() {
+        return b -> {
+            b.shortCode("2")
+             .name("Ultimate Challenge Book 2")
+             .ageGroup(SIXTH_GRADE)
+             .publicationYear(2010)
+             .catalog("80611", "Ea.")
+             .catalog("80629", "Pkg.")
+             .typeAssigner((g, s) -> {
+                if (s == 0) return parent;
+                else if (s > 7) return extaCredit;
+                else if (g == 1 && s == 7) return friend;
                 else return regular;
             });
             return tntStructure(b);
@@ -131,13 +189,11 @@ public class TnTCurriculum {
                         .section(4)
                         .section(5)
                         .section(6)
-                        .section(7)
-                )
+                        .section(7))
                 .reward(silver1
                         .section(8, s -> s.shortCode("S")))
                 .reward(gold1
                         .section(9, s -> s.shortCode("G1"))
-                        .section(10, s -> s.shortCode("G2"))
-                );
+                        .section(10, s -> s.shortCode("G2")));
     }
 }
