@@ -3,8 +3,6 @@ package com.github.averyregier.club.domain.club;
 import com.github.averyregier.club.domain.program.*;
 import com.github.averyregier.club.domain.program.adapter.AwardBuilder;
 import com.github.averyregier.club.domain.program.adapter.BookBuilder;
-import com.github.averyregier.club.domain.program.adapter.SectionBuilder;
-import com.github.averyregier.club.domain.program.adapter.SectionGroupBuilder;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -24,23 +22,23 @@ public class ClubberRecordTest {
     private Listener me = new MockListener();
     private AwardBuilder extraCreditAwardBuilder = new AwardBuilder();
     Book book = new BookBuilder(1)
-            .award(new AwardBuilder())
-            .group(new SectionGroupBuilder(1)
-                    .award(new AwardBuilder()
-                            .section(new SectionBuilder(0, parent.get()))
-                            .section(new SectionBuilder(1, regular.get()))
-                            .section(new SectionBuilder(2, friend.get()))
-                            .section(new SectionBuilder(3, regular.get())))
+            .award()
+            .group(1, g->g
+                    .award(a->a
+                            .section(0, parent)
+                            .section(1, regular)
+                            .section(2, friend)
+                            .section(3, regular))
                     .award(extraCreditAwardBuilder
-                            .section(new SectionBuilder(4, extaCredit.get()))))
-            .group(new SectionGroupBuilder(1)
-                    .award(new AwardBuilder()
-                            .section(new SectionBuilder(0, parent.get()))
-                            .section(new SectionBuilder(1, regular.get()))
-                            .section(new SectionBuilder(2, regular.get()))
-                            .section(new SectionBuilder(3, regular.get())))
+                            .section(4, extaCredit)))
+            .group(1, g->g
+                    .award(a->a
+                            .section(0, parent)
+                            .section(1, regular)
+                            .section(2, regular)
+                            .section(3, regular))
                     .award(extraCreditAwardBuilder
-                            .section(new SectionBuilder(4, extaCredit.get()))))
+                            .section(4, extaCredit)))
             .build();
 
     private ClubberRecord createClubberRecord(final Section theSection) {

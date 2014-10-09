@@ -13,7 +13,7 @@ public class SectionGroupAdapterTest{
     @Test
     public void test1section() {
         SectionGroup sectionGroup = new SectionGroupBuilder(1)
-                .section(new SectionBuilder(0, TnTSectionTypes.parent.get()))
+                .section(0, TnTSectionTypes.parent)
                 .build();
         assertEquals(sectionGroup.getSections(), sectionGroup.getSections());
         assertEquals(sectionGroup, sectionGroup.getSections().get(0).getGroup());
@@ -22,7 +22,7 @@ public class SectionGroupAdapterTest{
     @Test
     public void noCompletionAward() {
         SectionGroup sectionGroup = new SectionGroupBuilder(1)
-                .section(new SectionBuilder(1, TnTSectionTypes.regular.get()))
+                .section(1, TnTSectionTypes.regular)
                 .build();
         assertTrue(sectionGroup.getSections().get(0).getAwards().isEmpty());
     }
@@ -31,8 +31,8 @@ public class SectionGroupAdapterTest{
     public void addAward() {
         BookBuilder bookBuilder = new BookBuilder(0);
         SectionGroup group = new SectionGroupBuilder(1)
-                .award(new AwardBuilder()
-                        .section(new SectionBuilder(1, TnTSectionTypes.regular.get())))
+                .award(a->a
+                        .section(1, TnTSectionTypes.regular))
                 .build(bookBuilder);
         bookBuilder.build();
 
@@ -47,8 +47,8 @@ public class SectionGroupAdapterTest{
         BookBuilder bookBuilder = new BookBuilder(0);
         SectionGroup group = new SectionGroupBuilder(1)
                 .name("Discovery 1")
-                .award(new AwardBuilder()
-                        .section(new SectionBuilder(1, TnTSectionTypes.regular.get())))
+                .award(a->a
+                        .section(1, TnTSectionTypes.regular))
                 .build(bookBuilder);
         bookBuilder.build();
 
@@ -60,11 +60,11 @@ public class SectionGroupAdapterTest{
     public void add2Awards() {
         BookBuilder bookBuilder = new BookBuilder(0);
         SectionGroup group = new SectionGroupBuilder(1)
-                .award(new AwardBuilder()
-                        .section(new SectionBuilder(1, TnTSectionTypes.regular.get()))
-                        .section(new SectionBuilder(3, TnTSectionTypes.regular.get())))
-                .award(new AwardBuilder()
-                        .section(new SectionBuilder(2, TnTSectionTypes.extaCredit.get())))
+                .award(a->a
+                        .section(1, TnTSectionTypes.regular)
+                        .section(3, TnTSectionTypes.regular))
+                .award(a->a
+                        .section(2, TnTSectionTypes.extaCredit))
                 .build(bookBuilder);
         bookBuilder.build();
 

@@ -14,7 +14,7 @@ public abstract class SectionHolderBuilder<T extends SectionHolderBuilder> {
     protected String name;
     protected Function<Integer, SectionType> decider;
 
-    public T section(SectionBuilder sectionBuilder) {
+    private T section(SectionBuilder sectionBuilder) {
         sections.add(sectionBuilder);
         return self();
     }

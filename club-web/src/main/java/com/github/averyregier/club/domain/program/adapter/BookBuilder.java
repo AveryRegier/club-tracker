@@ -63,7 +63,7 @@ public class BookBuilder implements Builder<Book> {
                 .collect(Collectors.toList());
     }
 
-    public BookBuilder group(SectionGroupBuilder sectionGroupBuilder) {
+    private BookBuilder group(SectionGroupBuilder sectionGroupBuilder) {
         this.sectionGroupBuilders.add(sectionGroupBuilder);
         return this;
     }
