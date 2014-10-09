@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.program.awana;
 
+import com.github.averyregier.club.domain.program.AwardType;
 import com.github.averyregier.club.domain.program.SectionType;
 
 /**
@@ -32,13 +33,13 @@ public enum TnTSectionTypes implements SectionType {
     },
     extaCredit {
         @Override
-        public boolean requiredForBookAward() {
+        public boolean requiredToMoveOn() {
             return false;
         }
 
         @Override
-        public boolean requiredToMoveOn() {
-            return false;
+        public boolean requiredFor(AwardType type) {
+            return !type.isBook();
         }
     };
 

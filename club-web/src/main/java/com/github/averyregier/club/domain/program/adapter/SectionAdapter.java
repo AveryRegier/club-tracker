@@ -53,7 +53,7 @@ class SectionAdapter implements Section {
     }
 
     private Predicate<Award> isValidAward() {
-        return t-> !t.getAwardType().isBook() || getSectionType().requiredForBookAward();
+        return t-> getSectionType().requiredFor(t.getAwardType());
     }
 
     @Override

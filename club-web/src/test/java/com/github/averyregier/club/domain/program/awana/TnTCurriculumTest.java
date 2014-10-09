@@ -255,8 +255,8 @@ public class TnTCurriculumTest {
             assertEquals(++sectionNumber, s.sequence());
             assertEquals(Integer.toString(sectionNumber), s.getShortCode());
             assertTrue(s.getSectionType().mustBeSigned());
-            assertTrue(s.getSectionType().requiredForGroupAward());
-            assertTrue(s.getSectionType().requiredForBookAward());
+            assertTrue(s.getSectionType().requiredFor(AwardType.group));
+            assertTrue(s.getSectionType().requiredFor(AwardType.book));
             assertTrue(s.getSectionType().countsTowardsSectionMinimums());
             assertEquals(group, s.getGroup());
             Set<Award> groupAwards = s.getAwards(AwardType.group);
@@ -278,8 +278,8 @@ public class TnTCurriculumTest {
             assertEquals(++sectionNumber, s.sequence());
             assertEquals(shortCodes[sectionNumber-8], s.getShortCode());
             assertTrue(s.getSectionType().mustBeSigned());
-            assertTrue(s.getSectionType().requiredForGroupAward());
-            assertFalse(s.getSectionType().requiredForBookAward());
+            assertTrue(s.getSectionType().requiredFor(AwardType.group));
+            assertFalse(s.getSectionType().requiredFor(AwardType.book));
             assertTrue(s.getSectionType().countsTowardsSectionMinimums());
             assertEquals(group, s.getGroup());
             assertEquals(1, s.getAwards(AwardType.group).size());
