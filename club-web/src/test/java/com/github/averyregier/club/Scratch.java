@@ -67,7 +67,7 @@ public class Scratch {
                                         .ifPresent(r -> {
                                             Signing signing = r.sign(me, note);
                                             System.out.println(signing.getDate());
-                                            signing.getCompletionRewards().forEach(reward->
+                                            signing.getCompletionAwards().forEach(reward->
                                                 System.out.println(c.getName().getFriendlyName()+" has earned "+reward));
                                         })));
 

@@ -1,6 +1,6 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.RewardType;
+import com.github.averyregier.club.domain.program.AwardType;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionType;
 import org.junit.Test;
@@ -11,9 +11,9 @@ import static org.junit.Assert.assertTrue;
 public class SectionAdapterTest {
 
     @Test
-    public void noRewardGroup() {
+    public void noAwardGroup() {
         Section section = new SectionBuilder(2, null).build();
-        assertTrue(section.getRewards(RewardType.group).isEmpty());
+        assertTrue(section.getAwards(AwardType.group).isEmpty());
     }
 
     @Test

@@ -32,7 +32,7 @@ public enum TnTSectionTypes implements SectionType {
     },
     extaCredit {
         @Override
-        public boolean requiredForBookReward() {
+        public boolean requiredForBookAward() {
             return false;
         }
 

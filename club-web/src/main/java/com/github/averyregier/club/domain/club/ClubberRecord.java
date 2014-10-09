@@ -1,6 +1,6 @@
 package com.github.averyregier.club.domain.club;
 
-import com.github.averyregier.club.domain.program.Reward;
+import com.github.averyregier.club.domain.program.Award;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionHolder;
 
@@ -20,7 +20,7 @@ public abstract class ClubberRecord {
     public abstract Clubber getClubber();
     public Signing sign(Listener byListener, String note) {
         signing = new RecordSigning(byListener, note);
-        signing.calculateRewards();
+        signing.calculateAwards();
         return signing;
     }
 
@@ -47,7 +47,7 @@ public abstract class ClubberRecord {
     private class RecordSigning implements Signing {
         private final Listener byListener;
         private final String note;
-        private Set<Reward> rewards;
+        private Set<Award> awards;
 
         public RecordSigning(Listener byListener, String note) {
             this.byListener = byListener;
@@ -70,12 +70,12 @@ public abstract class ClubberRecord {
         }
 
         @Override
-        public Set<Reward> getCompletionRewards() {
-            return rewards;
+        public Set<Award> getCompletionAwards() {
+            return awards;
         }
 
-        void calculateRewards() {
-            rewards = getSection().getRewards().stream()
+        void calculateAwards() {
+            awards = getSection().getAwards().stream()
                     .filter(r->isCompleted(r))
                     .collect(Collectors.toSet());
         }

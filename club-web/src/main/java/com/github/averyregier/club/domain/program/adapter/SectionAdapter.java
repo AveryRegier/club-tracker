@@ -13,18 +13,18 @@ import java.util.function.Predicate;
 */
 class SectionAdapter implements Section {
     private String shortCode;
-    private final List<Later<Reward>> rewards;
+    private final List<Later<Award>> awards;
     private Later<SectionGroup> group;
     private SectionType sectionType;
     private int sequence;
 
     public SectionAdapter(Later<SectionGroup> group, SectionType sectionType,
-                          int sequence, String shortCode, List<Later<Reward>> rewards) {
+                          int sequence, String shortCode, List<Later<Award>> awards) {
         this.group = group;
         this.sectionType = sectionType;
         this.sequence = sequence;
         this.shortCode = shortCode;
-        this.rewards = rewards;
+        this.awards = awards;
     }
 
     @Override
@@ -38,24 +38,24 @@ class SectionAdapter implements Section {
     }
 
     @Override
-    public Set<Reward> getRewards() {
-        return rewards.stream().map(r->r.get())
-                .filter(isValidReward())
+    public Set<Award> getAwards() {
+        return awards.stream().map(r->r.get())
+                .filter(isValidAward())
                 .collect(UtilityMethods.toLinkedSet());
     }
 
     @Override
-    public Set<Reward> getRewards(RewardType type) {
-        return getRewards().stream()
-                .filter(t->t.getRewardType() == type)
-                .filter(isValidReward())
+    public Set<Award> getAwards(AwardType type) {
+        return getAwards().stream()
+                .filter(t->t.getAwardType() == type)
+                .filter(isValidAward())
                 .collect(UtilityMethods.toLinkedSet());
     }
 
-    private Predicate<Reward> isValidReward() {
-        return t->t.getRewardType() == RewardType.book &&
-                   getSectionType().requiredForBookReward() ||
-                   t.getRewardType() != RewardType.book;
+    private Predicate<Award> isValidAward() {
+        return t->t.getAwardType() == AwardType.book &&
+                   getSectionType().requiredForBookAward() ||
+                   t.getAwardType() != AwardType.book;
     }
 
     @Override

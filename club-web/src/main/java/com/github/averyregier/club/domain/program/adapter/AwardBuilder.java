@@ -1,7 +1,7 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.Reward;
-import com.github.averyregier.club.domain.program.RewardType;
+import com.github.averyregier.club.domain.program.Award;
+import com.github.averyregier.club.domain.program.AwardType;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
@@ -15,38 +15,38 @@ import java.util.stream.Collectors;
 /**
  * Created by avery on 9/11/2014.
  */
-public class RewardBuilder extends SectionHolderBuilder<RewardBuilder> implements Builder<Reward> {
-    private Later<Reward> futureReward = new Later<>();
+public class AwardBuilder extends SectionHolderBuilder<AwardBuilder> implements Builder<Award> {
+    private Later<Award> futureAward = new Later<>();
     private List<Section> builtSections = new ArrayList<>();
-    private RewardType rewardType;
+    private AwardType awardType;
 
     @SuppressWarnings("unchecked")
-    List<Section> build(Later<SectionGroup> futureGroup, List<Later<Reward>> bookRewards) {
+    List<Section> build(Later<SectionGroup> futureGroup, List<Later<Award>> bookRewards) {
         applyDecider();
         List<Section> currentSections = buildSections(futureGroup,
-                UtilityMethods.concat(futureReward, bookRewards));
+                UtilityMethods.concat(futureAward, bookRewards));
         builtSections.addAll(currentSections);
         return currentSections;
     }
 
 
-    public Reward build() {
+    public Award build() {
         if(!sections.isEmpty()) {
             throw new IllegalStateException();
         }
-        Reward reward = new RewardAdapter(name, builtSections, rewardType);
-        futureReward.set(reward);
-        return reward;
+        Award award = new AwardAdapter(name, builtSections, awardType);
+        futureAward.set(award);
+        return award;
     }
 
     @SuppressWarnings("unchecked")
-    private synchronized List<Section> buildSections(Later<SectionGroup> futureGroup, List<Later<Reward>> futureReward) {
+    private synchronized List<Section> buildSections(Later<SectionGroup> futureGroup, List<Later<Award>> futureReward) {
         List<SectionBuilder> relevant = sections.stream()
                 .filter(s -> s.getGroup() == futureGroup)
                 .collect(Collectors.toList());
         List<Section> collect = relevant.stream()
                 .map(b -> b.setGroup(futureGroup)
-                           .addRewards(futureReward)
+                           .addAwards(futureReward)
                            .build())
                 .collect(Collectors.toList());
         sections.removeAll(relevant);
@@ -57,8 +57,8 @@ public class RewardBuilder extends SectionHolderBuilder<RewardBuilder> implement
         builtSections.add(s);
     }
 
-    public void type(RewardType rewardType) {
-        this.rewardType = rewardType;
+    public void type(AwardType awardType) {
+        this.awardType = awardType;
     }
 
     void identifySectionGroup(Later<SectionGroup> futureGroup) {

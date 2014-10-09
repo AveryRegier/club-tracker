@@ -80,7 +80,7 @@ public class TnTCurriculumTest {
         assertEquals(0, sz.sequence());
         assertEquals("Ultimate Adventure Start Zone", sz.getName());
         assertEquals("T&T Ultimate Adventure Uniform",
-                sz.getSections().get(0).getRewards(RewardType.group).iterator().next().getName());
+                sz.getSections().get(0).getAwards(AwardType.group).iterator().next().getName());
 
         assertStartZoneSections(sz);
     }
@@ -90,7 +90,7 @@ public class TnTCurriculumTest {
         int number = 0;
         for(Section s: sz.getSections()) {
             assertEquals(Integer.toString(++number), s.getShortCode());
-            assertEquals(1, s.getRewards(RewardType.group).size());
+            assertEquals(1, s.getAwards(AwardType.group).size());
             assertEquals(regular, s.getSectionType());
             assertEquals(number, s.sequence());
         }
@@ -109,7 +109,7 @@ public class TnTCurriculumTest {
         assertEquals(1, book.sequence());
         assertEquals("Ultimate Adventure Book 1", book.getName());
         assertEquals("T&T Alpha Award",
-                book.getSections().get(0).getRewards(RewardType.book).iterator().next().getName());
+                book.getSections().get(0).getAwards(AwardType.book).iterator().next().getName());
 
         assertNormalTnTStructure(book);
     }
@@ -142,7 +142,7 @@ public class TnTCurriculumTest {
         assertEquals(0, sz.sequence());
         assertEquals("Ultimate Challenge Start Zone", sz.getName());
         assertEquals("T&T Ultimate Challenge Uniform",
-                sz.getSections().get(0).getRewards(RewardType.group).iterator().next().getName());
+                sz.getSections().get(0).getAwards(AwardType.group).iterator().next().getName());
 
         assertStartZoneSections(sz);
     }
@@ -195,34 +195,34 @@ public class TnTCurriculumTest {
             assertExtraCreditSections(group, sectionNumber);
         }
 
-        // kids get 1 extra credit reward for each two discoveries worth of extra credit sections for each color
-        assertCorrectExtraCreditRewards(book1,
+        // kids get 1 extra credit award for each two discoveries worth of extra credit sections for each color
+        assertCorrectExtraCreditAwards(book1,
                 s -> s.getShortCode().equals("S"),
                 "Silver 1", "Silver 2", "Silver 3", "Silver 4");
 
-        assertCorrectExtraCreditRewards(book1,
+        assertCorrectExtraCreditAwards(book1,
                 s -> s.getShortCode().startsWith("G"),
                 "Gold 1", "Gold 2", "Gold 3", "Gold 4");
     }
 
-    private List<Reward> assertCorrectExtraCreditRewards(Book book1, Predicate<Section> fn, String... names) {
+    private List<Award> assertCorrectExtraCreditAwards(Book book1, Predicate<Section> fn, String... names) {
         List<Section> extraCreditSections = book1.getSections().stream()
                 .filter(fn)
                 .collect(Collectors.toList());
-        List<Reward> silverRewards = extraCreditSections.stream()
-                .flatMap(s -> s.getRewards(RewardType.group).stream())
+        List<Award> silverAwards = extraCreditSections.stream()
+                .flatMap(s -> s.getAwards(AwardType.group).stream())
                 .distinct()
                 .collect(Collectors.toList());
-        assertEquals(names.length, silverRewards.size());
+        assertEquals(names.length, silverAwards.size());
         assertEquals(Arrays.asList(names),
-                     silverRewards.stream()
+                     silverAwards.stream()
                              .map(s->s.getName())
                              .collect(Collectors.toList()));
 
         int number = 0;
-        for(Reward reward: silverRewards) {
-            assertEquals(extraCreditSections.size()/names.length, reward.getSections().size());
-            List<SectionGroup> discoveries = reward.getSections().stream()
+        for(Award award : silverAwards) {
+            assertEquals(extraCreditSections.size()/names.length, award.getSections().size());
+            List<SectionGroup> discoveries = award.getSections().stream()
                     .map(s -> s.getGroup())
                     .distinct()
                     .collect(Collectors.toList());
@@ -231,7 +231,7 @@ public class TnTCurriculumTest {
                 assertEquals(++number, discovery.sequence());
             }
         }
-        return silverRewards;
+        return silverAwards;
     }
 
     private void assertParentSections(SectionGroup group) {
@@ -239,8 +239,8 @@ public class TnTCurriculumTest {
         assertEquals(parent, parentSection.getSectionType());
         assertEquals(0, parentSection.sequence());
         assertEquals("0", parentSection.getShortCode());
-        assertEquals(1, parentSection.getRewards(RewardType.group).size());
-        assertFalse(parentSection.getRewards(RewardType.book).isEmpty());
+        assertEquals(1, parentSection.getAwards(AwardType.group).size());
+        assertFalse(parentSection.getAwards(AwardType.book).isEmpty());
     }
 
     private int assertRegularSections(SectionGroup group) {
@@ -255,14 +255,14 @@ public class TnTCurriculumTest {
             assertEquals(++sectionNumber, s.sequence());
             assertEquals(Integer.toString(sectionNumber), s.getShortCode());
             assertTrue(s.getSectionType().mustBeSigned());
-            assertTrue(s.getSectionType().requiredForGroupReward());
-            assertTrue(s.getSectionType().requiredForBookReward());
+            assertTrue(s.getSectionType().requiredForGroupAward());
+            assertTrue(s.getSectionType().requiredForBookAward());
             assertTrue(s.getSectionType().countsTowardsSectionMinimums());
             assertEquals(group, s.getGroup());
-            Set<Reward> groupRewards = s.getRewards(RewardType.group);
-            assertEquals(1, groupRewards.size());
-            assertEquals(group.getName(), groupRewards.iterator().next().getName());
-            assertFalse(s.getRewards(RewardType.book).isEmpty());
+            Set<Award> groupAwards = s.getAwards(AwardType.group);
+            assertEquals(1, groupAwards.size());
+            assertEquals(group.getName(), groupAwards.iterator().next().getName());
+            assertFalse(s.getAwards(AwardType.book).isEmpty());
         }
         return sectionNumber;
     }
@@ -278,12 +278,12 @@ public class TnTCurriculumTest {
             assertEquals(++sectionNumber, s.sequence());
             assertEquals(shortCodes[sectionNumber-8], s.getShortCode());
             assertTrue(s.getSectionType().mustBeSigned());
-            assertTrue(s.getSectionType().requiredForGroupReward());
-            assertFalse(s.getSectionType().requiredForBookReward());
+            assertTrue(s.getSectionType().requiredForGroupAward());
+            assertFalse(s.getSectionType().requiredForBookAward());
             assertTrue(s.getSectionType().countsTowardsSectionMinimums());
             assertEquals(group, s.getGroup());
-            assertEquals(1, s.getRewards(RewardType.group).size());
-            assertEquals(0, s.getRewards(RewardType.book).size());
+            assertEquals(1, s.getAwards(AwardType.group).size());
+            assertEquals(0, s.getAwards(AwardType.book).size());
         }
     }
 

@@ -11,8 +11,8 @@ public interface Section extends Comparable<Section>, Contained<SectionGroup> {
     public SectionType getSectionType();
     public SectionGroup getGroup();
 
-    public Set<Reward> getRewards();
-    public Set<Reward> getRewards(RewardType type);
+    public Set<Award> getAwards();
+    public Set<Award> getAwards(AwardType type);
 
     int sequence();
 

@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * Created by avery on 9/7/2014.
  */
 public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilder> implements Builder<SectionGroup> {
-    private ArrayList<RewardBuilder> rewards = new ArrayList<>();
+    private ArrayList<AwardBuilder> awards = new ArrayList<>();
     private int sequence;
     private Later<Book> futureBook;
     private TreeSet<Section> allSections = new TreeSet<>();
@@ -30,25 +30,25 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
     }
 
     SectionGroup build(BookBuilder bookBuilder) {
-        List<Later<Reward>> bookReward = bookBuilder != null ? bookBuilder.getReward() : Collections.emptyList();
+        List<Later<Award>> bookReward = bookBuilder != null ? bookBuilder.getAwards() : Collections.emptyList();
 
-        rewards.forEach(reward->allSections.addAll(reward.build(futureGroup, bookReward)));
+        awards.forEach(reward -> allSections.addAll(reward.build(futureGroup, bookReward)));
         final List<Section> sections = buildSections(futureGroup, bookReward);
         SectionGroupAdapter group = new SectionGroupAdapter(
                 futureBook, sequence, name, sections);
         futureGroup.set(group);
-        if(!rewards.isEmpty() && bookBuilder != null) {
-            bookBuilder.addCompletions(rewards);
+        if(!awards.isEmpty() && bookBuilder != null) {
+            bookBuilder.addCompletions(awards);
         }
         return group;
     }
 
     @SuppressWarnings("unchecked")
-    private List<Section> buildSections(Later<SectionGroup> futureGroup, List<Later<Reward>> bookReward) {
+    private List<Section> buildSections(Later<SectionGroup> futureGroup, List<Later<Award>> bookReward) {
 
         applyDecider();
         allSections.addAll(sections.stream()
-                .map(b -> b.setGroup(futureGroup).addRewards(bookReward).build())
+                .map(b -> b.setGroup(futureGroup).addAwards(bookReward).build())
                 .collect(Collectors.toList()));
         return new ArrayList<>(allSections);
     }
@@ -58,16 +58,16 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
         return this;
     }
 
-    public SectionGroupBuilder reward(RewardBuilder reward) {
-        reward.type(RewardType.group);
-        reward.identifySectionGroup(futureGroup);
-        if(decider != null) reward.typeAssigner(decider);
-        rewards.add(reward);
+    public SectionGroupBuilder award(AwardBuilder award) {
+        award.type(AwardType.group);
+        award.identifySectionGroup(futureGroup);
+        if(decider != null) award.typeAssigner(decider);
+        awards.add(award);
         return this;
     }
 
-    public SectionGroupBuilder reward(UnaryOperator<RewardBuilder> function) {
-        return reward(function.apply(new RewardBuilder()));
+    public SectionGroupBuilder award(UnaryOperator<AwardBuilder> function) {
+        return award(function.apply(new AwardBuilder()));
     }
 
 }

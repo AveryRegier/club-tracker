@@ -1,8 +1,8 @@
 package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.program.*;
+import com.github.averyregier.club.domain.program.adapter.AwardBuilder;
 import com.github.averyregier.club.domain.program.adapter.BookBuilder;
-import com.github.averyregier.club.domain.program.adapter.RewardBuilder;
 import com.github.averyregier.club.domain.program.adapter.SectionBuilder;
 import com.github.averyregier.club.domain.program.adapter.SectionGroupBuilder;
 import org.junit.Test;
@@ -22,24 +22,24 @@ public class ClubberRecordTest {
 
     private Clubber clubber = new MockClubber();
     private Listener me = new MockListener();
-    private RewardBuilder extraCreditRewardBuilder = new RewardBuilder();
+    private AwardBuilder extraCreditAwardBuilder = new AwardBuilder();
     Book book = new BookBuilder(1)
-            .reward(new RewardBuilder())
+            .award(new AwardBuilder())
             .group(new SectionGroupBuilder(1)
-                    .reward(new RewardBuilder()
+                    .award(new AwardBuilder()
                             .section(new SectionBuilder(0, parent.get()))
                             .section(new SectionBuilder(1, regular.get()))
                             .section(new SectionBuilder(2, friend.get()))
                             .section(new SectionBuilder(3, regular.get())))
-                    .reward(extraCreditRewardBuilder
+                    .award(extraCreditAwardBuilder
                             .section(new SectionBuilder(4, extaCredit.get()))))
             .group(new SectionGroupBuilder(1)
-                    .reward(new RewardBuilder()
+                    .award(new AwardBuilder()
                             .section(new SectionBuilder(0, parent.get()))
                             .section(new SectionBuilder(1, regular.get()))
                             .section(new SectionBuilder(2, regular.get()))
                             .section(new SectionBuilder(3, regular.get())))
-                    .reward(extraCreditRewardBuilder
+                    .award(extraCreditAwardBuilder
                             .section(new SectionBuilder(4, extaCredit.get()))))
             .build();
 
@@ -48,60 +48,60 @@ public class ClubberRecordTest {
     }
 
     @Test
-    public void signingUnfinishedGroupsGetNoRewards() {
+    public void signingUnfinishedGroupsGetNoAwards() {
         ClubberRecord classUnderTest = createClubberRecord(book.getSectionGroups().get(0).getSections().get(2));
         Signing signing = assertSigning(classUnderTest);
-        assertTrue(signing.getCompletionRewards().isEmpty());
+        assertTrue(signing.getCompletionAwards().isEmpty());
     }
 
     @Test
-    public void lastSectionSignedWinsReward() {
+    public void lastSectionSignedWinsAward() {
         assertGroupCompleted(1);
     }
 
     private ClubberRecord assertGroupCompleted(int group) {
-        ClubberRecord record0 = signWithoutReward(group, 0);
-        ClubberRecord record1 = signWithoutReward(group, 1);
-        ClubberRecord record2 = signWithoutReward(group, 2);
+        ClubberRecord record0 = signWithoutAward(group, 0);
+        ClubberRecord record1 = signWithoutAward(group, 1);
+        ClubberRecord record2 = signWithoutAward(group, 2);
         ClubberRecord record3 = sign(group, 3);
         Signing signing = record3.getSigning().get();
-        assertTrue(signing.getCompletionRewards().size() >= 1);
-        assertTrue(signing.getCompletionRewards().containsAll(record3.getSection().getRewards(RewardType.group)));
+        assertTrue(signing.getCompletionAwards().size() >= 1);
+        assertTrue(signing.getCompletionAwards().containsAll(record3.getSection().getAwards(AwardType.group)));
         // completion rewards don't change on previous records
-        assertNoRewards(record0);
-        assertNoRewards(record1);
-        assertNoRewards(record2);
+        assertNoAwards(record0);
+        assertNoAwards(record1);
+        assertNoAwards(record2);
         return record3;
     }
 
     @Test
-    public void completingBookWinsBookReward() {
+    public void completingBookWinsBookAward() {
         assertGroupCompleted(1);
         ClubberRecord finalRecord = assertGroupCompleted(2);
         Signing signing = finalRecord.getSigning().get();
-        assertEquals(2, signing.getCompletionRewards().size());
-        assertTrue(signing.getCompletionRewards().containsAll(finalRecord.getSection().getRewards()));
+        assertEquals(2, signing.getCompletionAwards().size());
+        assertTrue(signing.getCompletionAwards().containsAll(finalRecord.getSection().getAwards()));
     }
 
     @Test
-    public void completingExtraCreditWinsExtraCreditReward() {
+    public void completingExtraCreditWinsExtraCreditAward() {
         ClubberRecord record1 = sign(1, 4);
-        assertTrue(record1.getSigning().get().getCompletionRewards().isEmpty());
+        assertTrue(record1.getSigning().get().getCompletionAwards().isEmpty());
         ClubberRecord record2 = sign(2, 4);
-        Set<Reward> completionRewards = record2.getSigning().get().getCompletionRewards();
-        assertFalse(completionRewards.isEmpty());
-        assertEquals(1, completionRewards.size());
-        assertTrue(completionRewards.containsAll(record2.getSection().getRewards(RewardType.group)));
+        Set<Award> completionAwards = record2.getSigning().get().getCompletionAwards();
+        assertFalse(completionAwards.isEmpty());
+        assertEquals(1, completionAwards.size());
+        assertTrue(completionAwards.containsAll(record2.getSection().getAwards(AwardType.group)));
     }
 
-    private ClubberRecord signWithoutReward(int group, int section) {
+    private ClubberRecord signWithoutAward(int group, int section) {
         ClubberRecord record = sign(group, section);
-        assertNoRewards(record);
+        assertNoAwards(record);
         return record;
     }
 
-    private void assertNoRewards(ClubberRecord record) {
-        assertTrue(record.getSigning().get().getCompletionRewards().isEmpty());
+    private void assertNoAwards(ClubberRecord record) {
+        assertTrue(record.getSigning().get().getCompletionAwards().isEmpty());
     }
 
     private ClubberRecord sign(int group, int section) {

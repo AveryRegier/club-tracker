@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static com.github.averyregier.club.domain.program.RewardType.book;
+import static com.github.averyregier.club.domain.program.AwardType.book;
 import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.parent;
 import static org.junit.Assert.*;
 
@@ -88,47 +88,47 @@ public class BookAdapterTest {
 //    }
 
     @Test
-    public void bookRewardType() {
+    public void bookAwardType() {
         Book classUnderTest = new BookBuilder(1)
-                .reward()
+                .award()
                 .group(1, g -> g
                         .section(0, parent))
                 .build();
         assertEquals(book,
                 classUnderTest.getSectionGroups().get(0).getSections().get(0)
-                        .getRewards().iterator().next().getRewardType());
+                        .getAwards().iterator().next().getAwardType());
     }
 
     @Test
-    public void bookRewardName() {
+    public void bookAwardName() {
         Book classUnderTest = new BookBuilder(1)
-                .reward(r->r.name("Reward Name"))
+                .award(r -> r.name("Award Name"))
                 .group(1, g -> g
                         .section(0, parent))
                 .build();
-        assertEquals("Reward Name",
+        assertEquals("Award Name",
                 classUnderTest.getSectionGroups().get(0).getSections().get(0)
-                        .getRewards().iterator().next().getName());
+                        .getAwards().iterator().next().getName());
     }
 
     @Test
     public void bookName() {
         Book classUnderTest = new BookBuilder(1)
                 .name("Book One")
-                .reward()
+                .award()
                 .group(1, g -> g
                         .section(0, parent))
                 .build();
         assertEquals("Book One", classUnderTest.getName());
         assertEquals("Book One",
                 classUnderTest.getSectionGroups().get(0).getSections().get(0)
-                        .getRewards().iterator().next().getName());
+                        .getAwards().iterator().next().getName());
     }
 
     @Test
-    public void bookRewardDefaultName() {
+    public void bookAwardDefaultName() {
         Book classUnderTest = new BookBuilder(1)
-                .reward()
+                .award()
                 .group(1, g -> g
                         .section(0, parent))
                 .build();
@@ -136,53 +136,53 @@ public class BookAdapterTest {
         assertEquals("1", classUnderTest.getName());
         assertEquals("1",
                 classUnderTest.getSectionGroups().get(0).getSections().get(0)
-                        .getRewards().iterator().next().getName());
+                        .getAwards().iterator().next().getName());
     }
 
     @Test
-    public void bookRewardWithName() {
+    public void bookwardWithName() {
         Book classUnderTest = new BookBuilder(1)
-                .reward(r->r.name("Reward Name"))
+                .award(r -> r.name("Award Name"))
                 .group(1, g -> g
                         .section(0, parent))
                 .build();
 
         assertEquals("1", classUnderTest.getName());
-        assertEquals("Reward Name",
+        assertEquals("Award Name",
                 classUnderTest.getSectionGroups().get(0).getSections().get(0)
-                        .getRewards().iterator().next().getName());
+                        .getAwards().iterator().next().getName());
     }
 
     @Test
-    public void bookRewardInCurriculumWithName() {
+    public void bookAwardInCurriculumWithName() {
         Book classUnderTest = new CurriculumBuilder().book(0, b -> b
-                .reward(r -> r.name("Reward Name"))
+                .award(r -> r.name("Award Name"))
                 .group(1, g -> g
                         .section(0, parent)))
                 .build().getBooks().get(0);
 
         assertEquals("0", classUnderTest.getName());
-        assertEquals("Reward Name",
+        assertEquals("Award Name",
                 classUnderTest.getSectionGroups().get(0).getSections().get(0)
-                        .getRewards().iterator().next().getName());
+                        .getAwards().iterator().next().getName());
     }
 
     @Test
-    public void multipleBookRewards() {
+    public void multipleBookAwards() {
         Book classUnderTest = new BookBuilder(1)
-                .reward(r->r.name("Reward Name"))
-                .reward()
+                .award(r -> r.name("Award Name"))
+                .award()
                 .name("Book 1")
                 .group(1, g -> g
                         .section(0, parent))
                 .build();
 
         assertEquals("Book 1", classUnderTest.getName());
-        Set<Reward> rewards = classUnderTest.getSectionGroups().get(0).getSections().get(0)
-                .getRewards();
-        assertEquals(2, rewards.size());
-        Iterator<Reward> iterator = rewards.iterator();
-        assertEquals("Reward Name",
+        Set<Award> awards = classUnderTest.getSectionGroups().get(0).getSections().get(0)
+                .getAwards();
+        assertEquals(2, awards.size());
+        Iterator<Award> iterator = awards.iterator();
+        assertEquals("Award Name",
                 iterator.next().getName());
         assertEquals("Book 1",
                 iterator.next().getName());

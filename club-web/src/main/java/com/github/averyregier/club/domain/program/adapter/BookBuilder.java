@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 public class BookBuilder implements Builder<Book> {
     private List<SectionGroupBuilder> sectionGroupBuilders = new ArrayList<>();
     private int sequence;
-    private Set<RewardBuilder> completions = new HashSet<>();
-    private List<Later<Reward>> reward = new ArrayList<>(2);
-    private List<RewardBuilder> rewardBuilder = new ArrayList<>(2);
+    private Set<AwardBuilder> completions = new HashSet<>();
+    private List<Later<Award>> awards = new ArrayList<>(2);
+    private List<AwardBuilder> awardBuilders = new ArrayList<>(2);
     private String shortCode;
     private Translation translation = Translation.none;
     private Locale locale = Locale.ENGLISH;
@@ -45,13 +45,13 @@ public class BookBuilder implements Builder<Book> {
                 shortCode,
                 ageGroups);
         futureBook.set(book);
-        completions.forEach(RewardBuilder::build);
-        if(!reward.isEmpty()) {
-            for(int i=0; i<reward.size(); i++) {
+        completions.forEach(AwardBuilder::build);
+        if(!awards.isEmpty()) {
+            for(int i=0; i< awards.size(); i++) {
                 book.getSections().stream()
-                        .filter(s -> s.getSectionType().requiredForBookReward())
-                        .forEach(rewardBuilder.get(i)::section);
-                reward.get(i).set(rewardBuilder.get(i).build());
+                        .filter(s -> s.getSectionType().requiredForBookAward())
+                        .forEach(awardBuilders.get(i)::section);
+                awards.get(i).set(awardBuilders.get(i).build());
             }
         }
         return book;
@@ -68,19 +68,19 @@ public class BookBuilder implements Builder<Book> {
         return this;
     }
 
-    void addCompletions(ArrayList<RewardBuilder> rewards) {
+    void addCompletions(ArrayList<AwardBuilder> rewards) {
         completions.addAll(rewards);
     }
 
-    public BookBuilder reward(RewardBuilder rewardBuilder) {
-        this.rewardBuilder.add(rewardBuilder);
-        rewardBuilder.type(RewardType.book);
-        reward.add(new Later<>());
+    public BookBuilder award(AwardBuilder awardBuilder) {
+        this.awardBuilders.add(awardBuilder);
+        awardBuilder.type(AwardType.book);
+        awards.add(new Later<>());
         return this;
     }
 
-    public BookBuilder reward(UnaryOperator<RewardBuilder> function) {
-        return reward(function.apply(new RewardBuilder()));
+    public BookBuilder award(UnaryOperator<AwardBuilder> function) {
+        return award(function.apply(new AwardBuilder()));
     }
 
     public BookBuilder group(int sequence, UnaryOperator<SectionGroupBuilder> setupFn) {
@@ -91,8 +91,8 @@ public class BookBuilder implements Builder<Book> {
         return this;
     }
 
-    List<Later<Reward>> getReward() {
-        return reward;
+    List<Later<Award>> getAwards() {
+        return awards;
     }
 
     public BookBuilder version(int major, int minor) {
@@ -121,8 +121,8 @@ public class BookBuilder implements Builder<Book> {
         return this;
     }
 
-    public BookBuilder reward() {
-        return reward(new RewardBuilder());
+    public BookBuilder award() {
+        return award(new AwardBuilder());
     }
 
     public BookBuilder ageGroup(AgeGroup ageGroup) {

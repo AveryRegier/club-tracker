@@ -10,10 +10,10 @@ public interface SectionType {
     public default boolean requiredToMoveOn() {
         return true;
     }
-    public default boolean requiredForGroupReward() {
+    public default boolean requiredForGroupAward() {
         return true;
     }
-    public default boolean requiredForBookReward() {
+    public default boolean requiredForBookAward() {
         return true;
     }
     public default boolean countsTowardsSectionMinimums() {

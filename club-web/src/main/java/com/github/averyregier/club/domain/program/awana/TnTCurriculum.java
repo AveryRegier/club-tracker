@@ -1,9 +1,9 @@
 package com.github.averyregier.club.domain.program.awana;
 
 import com.github.averyregier.club.domain.program.Curriculum;
+import com.github.averyregier.club.domain.program.adapter.AwardBuilder;
 import com.github.averyregier.club.domain.program.adapter.BookBuilder;
 import com.github.averyregier.club.domain.program.adapter.CurriculumBuilder;
-import com.github.averyregier.club.domain.program.adapter.RewardBuilder;
 import com.github.averyregier.club.domain.program.adapter.SectionGroupBuilder;
 
 import java.util.function.UnaryOperator;
@@ -46,7 +46,7 @@ public class TnTCurriculum {
                 .publicationYear(2010)
                 .catalog("80881")
                 .group(0, g ->
-                        g.reward(r -> r
+                        g.award(r -> r
                                 .name("T&T Ultimate Adventure Uniform")
                                 .section(1, regular)
                                 .section(2, regular)
@@ -66,13 +66,13 @@ public class TnTCurriculum {
              .publicationYear(2010)
              .catalog("80434", "Ea.")
              .catalog("80422", "Pkg.")
-             .reward(r->r.name("T&T Alpha Award"))
+             .award(r -> r.name("T&T Alpha Award"))
              .typeAssigner((g, s) -> {
-                if (s == 0) return parent;
-                else if (s > 7) return extaCredit;
-                else if (g == 5 && s == 7) return friend;
-                else return regular;
-            });
+                 if (s == 0) return parent;
+                 else if (s > 7) return extaCredit;
+                 else if (g == 5 && s == 7) return friend;
+                 else return regular;
+             });
             return tntStructure(b);
         };
     }
@@ -86,12 +86,12 @@ public class TnTCurriculum {
              .catalog("80493", "Ea.")
              .catalog("80506", "Pkg.")
              .typeAssigner((g, s) -> {
-                if (s == 0) return parent;
-                else if (s > 7) return extaCredit;
-                else if (g == 6 && s == 5) return friend;
-                else if (g == 4 && s == 3) return group;
-                else return regular;
-            });
+                 if (s == 0) return parent;
+                 else if (s > 7) return extaCredit;
+                 else if (g == 6 && s == 5) return friend;
+                 else if (g == 4 && s == 3) return group;
+                 else return regular;
+             });
             return tntStructure(b);
         };
     }
@@ -104,9 +104,9 @@ public class TnTCurriculum {
                 .ageGroup(SIXTH_GRADE)
                 .publicationYear(2010)
                 .catalog("78369")
-                .reward(a -> a)
+                .award(a -> a)
                 .group(0, g ->
-                        g.reward(r -> r
+                        g.award(r -> r
                                 .name("T&T Ultimate Challenge Uniform")
                                 .section(1, regular)
                                 .section(2, regular)
@@ -127,11 +127,11 @@ public class TnTCurriculum {
              .catalog("80557", "Ea.")
              .catalog("80565", "Pkg.")
              .typeAssigner((g, s) -> {
-                if (s == 0) return parent;
-                else if (s > 7) return extaCredit;
-                else if (g == 1 && s == 7) return friend;
-                else return regular;
-            });
+                 if (s == 0) return parent;
+                 else if (s > 7) return extaCredit;
+                 else if (g == 1 && s == 7) return friend;
+                 else return regular;
+             });
             return tntStructure(b);
         };
     }
@@ -145,28 +145,28 @@ public class TnTCurriculum {
              .catalog("80611", "Ea.")
              .catalog("80629", "Pkg.")
              .typeAssigner((g, s) -> {
-                if (s == 0) return parent;
-                else if (s > 7) return extaCredit;
-                else if (g == 1 && s == 7) return friend;
-                else return regular;
-            });
+                 if (s == 0) return parent;
+                 else if (s > 7) return extaCredit;
+                 else if (g == 1 && s == 7) return friend;
+                 else return regular;
+             });
             return tntStructure(b);
         };
     }
 
     private static BookBuilder tntStructure(BookBuilder builder) {
 
-        RewardBuilder silver1 = new RewardBuilder().name("Silver 1");
-        RewardBuilder silver2 = new RewardBuilder().name("Silver 2");
-        RewardBuilder silver3 = new RewardBuilder().name("Silver 3");
-        RewardBuilder silver4 = new RewardBuilder().name("Silver 4");
-        RewardBuilder gold1 = new RewardBuilder().name("Gold 1");
-        RewardBuilder gold2 = new RewardBuilder().name("Gold 2");
-        RewardBuilder gold3 = new RewardBuilder().name("Gold 3");
-        RewardBuilder gold4 = new RewardBuilder().name("Gold 4");
+        AwardBuilder silver1 = new AwardBuilder().name("Silver 1");
+        AwardBuilder silver2 = new AwardBuilder().name("Silver 2");
+        AwardBuilder silver3 = new AwardBuilder().name("Silver 3");
+        AwardBuilder silver4 = new AwardBuilder().name("Silver 4");
+        AwardBuilder gold1 = new AwardBuilder().name("Gold 1");
+        AwardBuilder gold2 = new AwardBuilder().name("Gold 2");
+        AwardBuilder gold3 = new AwardBuilder().name("Gold 3");
+        AwardBuilder gold4 = new AwardBuilder().name("Gold 4");
 
         return builder
-                .reward()
+                .award()
                 .group(1, discovery(1, silver1, gold1))
                 .group(2, discovery(2, silver1, gold1))
                 .group(3, discovery(3, silver2, gold2))
@@ -179,11 +179,11 @@ public class TnTCurriculum {
 
     private static UnaryOperator<SectionGroupBuilder> discovery(
             int ordinal,
-            RewardBuilder silver1,
-            RewardBuilder gold1) {
+            AwardBuilder silver1,
+            AwardBuilder gold1) {
         return g -> g
                 .name("Discovery "+ordinal)
-                .reward(r -> r
+                .award(r -> r
                         .section(0)
                         .section(1)
                         .section(2)
@@ -192,9 +192,9 @@ public class TnTCurriculum {
                         .section(5)
                         .section(6)
                         .section(7))
-                .reward(silver1
+                .award(silver1
                         .section(8, s -> s.shortCode("S")))
-                .reward(gold1
+                .award(gold1
                         .section(9, s -> s.shortCode("G1"))
                         .section(10, s -> s.shortCode("G2")));
     }

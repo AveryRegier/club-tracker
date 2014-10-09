@@ -1,6 +1,6 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.Reward;
+import com.github.averyregier.club.domain.program.Award;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
 import com.github.averyregier.club.domain.program.SectionType;
@@ -18,7 +18,7 @@ public class SectionBuilder implements Builder<Section> {
     private String shortCode;
     private SectionType sectionType;
     private Later<SectionGroup> group;
-    private List<Later<Reward>> rewards = new ArrayList<>(2);
+    private List<Later<Award>> awards = new ArrayList<>(2);
     private Later<SectionGroup> futureGroup;
 
     public SectionBuilder(int sequence, SectionType sectionType) {
@@ -50,7 +50,7 @@ public class SectionBuilder implements Builder<Section> {
                 sectionType,
                 sequence,
                 shortCode != null ? shortCode : Integer.toString(sequence),
-                rewards);
+                awards);
     }
 
     SectionBuilder setGroup(Later<SectionGroup> group) {
@@ -58,11 +58,11 @@ public class SectionBuilder implements Builder<Section> {
         return this;
     }
 
-    final SectionBuilder addRewards(List<Later<Reward>> moreRewards) {
-        if(moreRewards != null) {
-            for(Later<Reward> reward: moreRewards) {
-                if(reward != null) {
-                    this.rewards.add(reward);
+    final SectionBuilder addAwards(List<Later<Award>> moreAwards) {
+        if(moreAwards != null) {
+            for(Later<Award> award: moreAwards) {
+                if(award != null) {
+                    this.awards.add(award);
                 }
             }
         }
