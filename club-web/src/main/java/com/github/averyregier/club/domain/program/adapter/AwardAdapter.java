@@ -31,7 +31,7 @@ class AwardAdapter implements Award {
     public String getName() {
         return name != null ?
                 name :
-                awardType == AwardType.book ?
+                awardType.isBook() ?
                         getBook().getName() :
                         builtSections.get(0).getGroup().getName();
     }
