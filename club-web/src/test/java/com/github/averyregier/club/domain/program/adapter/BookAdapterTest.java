@@ -1,14 +1,9 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.AgeGroup;
-import com.github.averyregier.club.domain.program.Book;
-import com.github.averyregier.club.domain.program.Section;
-import com.github.averyregier.club.domain.program.Translation;
+import com.github.averyregier.club.domain.program.*;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static com.github.averyregier.club.domain.program.RewardType.book;
 import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.parent;
@@ -142,6 +137,55 @@ public class BookAdapterTest {
         assertEquals("1",
                 classUnderTest.getSectionGroups().get(0).getSections().get(0)
                         .getRewards().iterator().next().getName());
+    }
+
+    @Test
+    public void bookRewardWithName() {
+        Book classUnderTest = new BookBuilder(1)
+                .reward(r->r.name("Reward Name"))
+                .group(1, g -> g
+                        .section(0, parent))
+                .build();
+
+        assertEquals("1", classUnderTest.getName());
+        assertEquals("Reward Name",
+                classUnderTest.getSectionGroups().get(0).getSections().get(0)
+                        .getRewards().iterator().next().getName());
+    }
+
+    @Test
+    public void bookRewardInCurriculumWithName() {
+        Book classUnderTest = new CurriculumBuilder().book(0, b -> b
+                .reward(r -> r.name("Reward Name"))
+                .group(1, g -> g
+                        .section(0, parent)))
+                .build().getBooks().get(0);
+
+        assertEquals("0", classUnderTest.getName());
+        assertEquals("Reward Name",
+                classUnderTest.getSectionGroups().get(0).getSections().get(0)
+                        .getRewards().iterator().next().getName());
+    }
+
+    @Test
+    public void multipleBookRewards() {
+        Book classUnderTest = new BookBuilder(1)
+                .reward(r->r.name("Reward Name"))
+                .reward()
+                .name("Book 1")
+                .group(1, g -> g
+                        .section(0, parent))
+                .build();
+
+        assertEquals("Book 1", classUnderTest.getName());
+        Set<Reward> rewards = classUnderTest.getSectionGroups().get(0).getSections().get(0)
+                .getRewards();
+        assertEquals(2, rewards.size());
+        Iterator<Reward> iterator = rewards.iterator();
+        assertEquals("Reward Name",
+                iterator.next().getName());
+        assertEquals("Book 1",
+                iterator.next().getName());
     }
 
     @Test

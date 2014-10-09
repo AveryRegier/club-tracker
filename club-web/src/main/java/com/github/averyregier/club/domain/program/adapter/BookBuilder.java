@@ -16,8 +16,8 @@ public class BookBuilder implements Builder<Book> {
     private List<SectionGroupBuilder> sectionGroupBuilders = new ArrayList<>();
     private int sequence;
     private Set<RewardBuilder> completions = new HashSet<>();
-    private Later<Reward> reward;
-    private RewardBuilder rewardBuilder;
+    private List<Later<Reward>> reward = new ArrayList<>(2);
+    private List<RewardBuilder> rewardBuilder = new ArrayList<>(2);
     private String shortCode;
     private Translation translation = Translation.none;
     private Locale locale = Locale.ENGLISH;
@@ -46,11 +46,13 @@ public class BookBuilder implements Builder<Book> {
                 ageGroups);
         futureBook.set(book);
         completions.forEach(RewardBuilder::build);
-        if(reward != null) {
-            book.getSections().stream()
-                    .filter(s -> s.getSectionType().requiredForBookReward())
-                    .forEach(rewardBuilder::section);
-            reward.set(rewardBuilder.build());
+        if(!reward.isEmpty()) {
+            for(int i=0; i<reward.size(); i++) {
+                book.getSections().stream()
+                        .filter(s -> s.getSectionType().requiredForBookReward())
+                        .forEach(rewardBuilder.get(i)::section);
+                reward.get(i).set(rewardBuilder.get(i).build());
+            }
         }
         return book;
     }
@@ -71,9 +73,9 @@ public class BookBuilder implements Builder<Book> {
     }
 
     public BookBuilder reward(RewardBuilder rewardBuilder) {
-        this.rewardBuilder = rewardBuilder;
-        this.rewardBuilder.type(RewardType.book);
-        reward = new Later<>();
+        this.rewardBuilder.add(rewardBuilder);
+        rewardBuilder.type(RewardType.book);
+        reward.add(new Later<>());
         return this;
     }
 
@@ -89,7 +91,7 @@ public class BookBuilder implements Builder<Book> {
         return this;
     }
 
-    Later<Reward> getReward() {
+    List<Later<Reward>> getReward() {
         return reward;
     }
 

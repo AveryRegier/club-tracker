@@ -45,9 +45,9 @@ public class TnTCurriculum {
                 .ageGroup(FOURTH_GRADE)
                 .publicationYear(2010)
                 .catalog("80881")
-                .reward(a -> a)
                 .group(0, g ->
                         g.reward(r -> r
+                                .name("T&T Ultimate Adventure Uniform")
                                 .section(1, regular)
                                 .section(2, regular)
                                 .section(3, regular)
@@ -66,6 +66,7 @@ public class TnTCurriculum {
              .publicationYear(2010)
              .catalog("80434", "Ea.")
              .catalog("80422", "Pkg.")
+             .reward(r->r.name("T&T Alpha Award"))
              .typeAssigner((g, s) -> {
                 if (s == 0) return parent;
                 else if (s > 7) return extaCredit;
@@ -106,6 +107,7 @@ public class TnTCurriculum {
                 .reward(a -> a)
                 .group(0, g ->
                         g.reward(r -> r
+                                .name("T&T Ultimate Challenge Uniform")
                                 .section(1, regular)
                                 .section(2, regular)
                                 .section(3, regular)

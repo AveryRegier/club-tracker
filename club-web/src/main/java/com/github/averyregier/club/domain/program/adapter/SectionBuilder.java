@@ -58,8 +58,7 @@ public class SectionBuilder implements Builder<Section> {
         return this;
     }
 
-    @SafeVarargs
-    final SectionBuilder addRewards(Later<Reward>... moreRewards) {
+    final SectionBuilder addRewards(List<Later<Reward>> moreRewards) {
         if(moreRewards != null) {
             for(Later<Reward> reward: moreRewards) {
                 if(reward != null) {

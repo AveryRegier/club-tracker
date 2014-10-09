@@ -4,8 +4,9 @@ import com.github.averyregier.club.domain.program.Reward;
 import com.github.averyregier.club.domain.program.RewardType;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
+import com.github.averyregier.club.domain.utility.builder.Builder;
 import com.github.averyregier.club.domain.utility.builder.Later;
-import com.sun.istack.internal.Builder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +21,14 @@ public class RewardBuilder extends SectionHolderBuilder<RewardBuilder> implement
     private RewardType rewardType;
 
     @SuppressWarnings("unchecked")
-    List<Section> build(Later<SectionGroup> futureGroup, Later<Reward> bookReward ) {
+    List<Section> build(Later<SectionGroup> futureGroup, List<Later<Reward>> bookRewards) {
         applyDecider();
-        List<Section> currentSections = buildSections(futureGroup, futureReward, bookReward);
+        List<Section> currentSections = buildSections(futureGroup,
+                UtilityMethods.concat(futureReward, bookRewards));
         builtSections.addAll(currentSections);
         return currentSections;
     }
+
 
     public Reward build() {
         if(!sections.isEmpty()) {
@@ -37,7 +40,7 @@ public class RewardBuilder extends SectionHolderBuilder<RewardBuilder> implement
     }
 
     @SuppressWarnings("unchecked")
-    private synchronized List<Section> buildSections(Later<SectionGroup> futureGroup, Later<Reward>... futureReward) {
+    private synchronized List<Section> buildSections(Later<SectionGroup> futureGroup, List<Later<Reward>> futureReward) {
         List<SectionBuilder> relevant = sections.stream()
                 .filter(s -> s.getGroup() == futureGroup)
                 .collect(Collectors.toList());

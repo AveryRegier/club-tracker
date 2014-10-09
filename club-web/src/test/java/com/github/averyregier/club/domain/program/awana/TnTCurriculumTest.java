@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.*;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class TnTCurriculumTest {
     Curriculum classUnderTest = TnTCurriculum.get();
@@ -78,6 +79,8 @@ public class TnTCurriculumTest {
         assertEquals("©2010", sz.getVersion().toString());
         assertEquals(0, sz.sequence());
         assertEquals("Ultimate Adventure Start Zone", sz.getName());
+        assertEquals("T&T Ultimate Adventure Uniform",
+                sz.getSections().get(0).getRewards(RewardType.group).iterator().next().getName());
 
         assertStartZoneSections(sz);
     }
@@ -105,6 +108,8 @@ public class TnTCurriculumTest {
         assertEquals("©2010", book.getVersion().toString());
         assertEquals(1, book.sequence());
         assertEquals("Ultimate Adventure Book 1", book.getName());
+        assertEquals("T&T Alpha Award",
+                book.getSections().get(0).getRewards(RewardType.book).iterator().next().getName());
 
         assertNormalTnTStructure(book);
     }
@@ -136,6 +141,8 @@ public class TnTCurriculumTest {
         assertEquals("©2010", sz.getVersion().toString());
         assertEquals(0, sz.sequence());
         assertEquals("Ultimate Challenge Start Zone", sz.getName());
+        assertEquals("T&T Ultimate Challenge Uniform",
+                sz.getSections().get(0).getRewards(RewardType.group).iterator().next().getName());
 
         assertStartZoneSections(sz);
     }
@@ -233,7 +240,7 @@ public class TnTCurriculumTest {
         assertEquals(0, parentSection.sequence());
         assertEquals("0", parentSection.getShortCode());
         assertEquals(1, parentSection.getRewards(RewardType.group).size());
-        assertEquals(1, parentSection.getRewards(RewardType.book).size());
+        assertFalse(parentSection.getRewards(RewardType.book).isEmpty());
     }
 
     private int assertRegularSections(SectionGroup group) {
@@ -255,7 +262,7 @@ public class TnTCurriculumTest {
             Set<Reward> groupRewards = s.getRewards(RewardType.group);
             assertEquals(1, groupRewards.size());
             assertEquals(group.getName(), groupRewards.iterator().next().getName());
-            assertEquals(1, s.getRewards(RewardType.book).size());
+            assertFalse(s.getRewards(RewardType.book).isEmpty());
         }
         return sectionNumber;
     }

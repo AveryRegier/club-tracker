@@ -5,6 +5,7 @@ import com.github.averyregier.club.domain.utility.builder.Builder;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.function.UnaryOperator;
@@ -29,7 +30,7 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
     }
 
     SectionGroup build(BookBuilder bookBuilder) {
-        Later<Reward> bookReward = bookBuilder != null ? bookBuilder.getReward() : null;
+        List<Later<Reward>> bookReward = bookBuilder != null ? bookBuilder.getReward() : Collections.emptyList();
 
         rewards.forEach(reward->allSections.addAll(reward.build(futureGroup, bookReward)));
         final List<Section> sections = buildSections(futureGroup, bookReward);
@@ -43,7 +44,7 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
     }
 
     @SuppressWarnings("unchecked")
-    private List<Section> buildSections(Later<SectionGroup> futureGroup, Later<Reward> bookReward) {
+    private List<Section> buildSections(Later<SectionGroup> futureGroup, List<Later<Reward>> bookReward) {
 
         applyDecider();
         allSections.addAll(sections.stream()
