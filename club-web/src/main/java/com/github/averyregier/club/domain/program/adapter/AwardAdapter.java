@@ -2,7 +2,7 @@ package com.github.averyregier.club.domain.program.adapter;
 
 import com.github.averyregier.club.domain.program.Award;
 import com.github.averyregier.club.domain.program.Book;
-import com.github.averyregier.club.domain.program.AwardType;
+import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Section;
 
 import java.util.List;
@@ -14,24 +14,24 @@ class AwardAdapter implements Award {
 
     private String name;
     private List<Section> builtSections;
-    private AwardType awardType;
+    private AccomplishmentLevel accomplishmentLevel;
 
-    public AwardAdapter(String name, List<Section> builtSections, AwardType awardType) {
+    public AwardAdapter(String name, List<Section> builtSections, AccomplishmentLevel accomplishmentLevel) {
         this.name = name;
         this.builtSections = builtSections;
-        this.awardType = awardType;
+        this.accomplishmentLevel = accomplishmentLevel;
     }
 
     @Override
-    public AwardType getAwardType() {
-        return awardType;
+    public AccomplishmentLevel getAccomplishmentLevel() {
+        return accomplishmentLevel;
     }
 
     @Override
     public String getName() {
         return name != null ?
                 name :
-                awardType.isBook() ?
+                accomplishmentLevel.isBook() ?
                         getBook().getName() :
                         builtSections.get(0).getGroup().getName();
     }

@@ -1,6 +1,6 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.AwardType;
+import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionType;
 import org.junit.Test;
@@ -13,7 +13,7 @@ public class SectionAdapterTest {
     @Test
     public void noAwardGroup() {
         Section section = new SectionBuilder(2, null).build();
-        assertTrue(section.getAwards(AwardType.group).isEmpty());
+        assertTrue(section.getAwards(AccomplishmentLevel.group).isEmpty());
     }
 
     @Test

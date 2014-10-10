@@ -59,7 +59,7 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
     }
 
     public SectionGroupBuilder award(AwardBuilder award) {
-        award.type(AwardType.group);
+        award.type(AccomplishmentLevel.group);
         award.identifySectionGroup(futureGroup);
         if(decider != null) award.typeAssigner(decider);
         awards.add(award);

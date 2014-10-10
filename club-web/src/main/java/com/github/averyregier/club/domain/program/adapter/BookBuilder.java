@@ -49,7 +49,7 @@ public class BookBuilder implements Builder<Book> {
         if(!awards.isEmpty()) {
             for(int i=0; i< awards.size(); i++) {
                 book.getSections().stream()
-                        .filter(s -> s.getSectionType().requiredFor(AwardType.book))
+                        .filter(s -> s.getSectionType().requiredFor(AccomplishmentLevel.book))
                         .forEach(awardBuilders.get(i)::section);
                 awards.get(i).set(awardBuilders.get(i).build());
             }
@@ -74,7 +74,7 @@ public class BookBuilder implements Builder<Book> {
 
     public BookBuilder award(AwardBuilder awardBuilder) {
         this.awardBuilders.add(awardBuilder);
-        awardBuilder.type(AwardType.book);
+        awardBuilder.type(AccomplishmentLevel.book);
         awards.add(new Later<>());
         return this;
     }

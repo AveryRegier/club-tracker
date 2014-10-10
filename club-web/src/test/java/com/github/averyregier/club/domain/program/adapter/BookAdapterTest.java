@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static com.github.averyregier.club.domain.program.AwardType.book;
+import static com.github.averyregier.club.domain.program.AccomplishmentLevel.book;
 import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.parent;
 import static org.junit.Assert.*;
 
@@ -96,7 +96,7 @@ public class BookAdapterTest {
                 .build();
         assertEquals(book,
                 classUnderTest.getSectionGroups().get(0).getSections().get(0)
-                        .getAwards().iterator().next().getAwardType());
+                        .getAwards().iterator().next().getAccomplishmentLevel());
     }
 
     @Test

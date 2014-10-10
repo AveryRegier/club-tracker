@@ -1,6 +1,6 @@
 package com.github.averyregier.club.domain.program.awana;
 
-import com.github.averyregier.club.domain.program.AwardType;
+import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.SectionType;
 
 /**
@@ -38,7 +38,7 @@ public enum TnTSectionTypes implements SectionType {
         }
 
         @Override
-        public boolean requiredFor(AwardType type) {
+        public boolean requiredFor(AccomplishmentLevel type) {
             return !type.isBook();
         }
     };

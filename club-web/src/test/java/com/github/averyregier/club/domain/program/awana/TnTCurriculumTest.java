@@ -80,7 +80,7 @@ public class TnTCurriculumTest {
         assertEquals(0, sz.sequence());
         assertEquals("Ultimate Adventure Start Zone", sz.getName());
         assertEquals("T&T Ultimate Adventure Uniform",
-                sz.getSections().get(0).getAwards(AwardType.group).iterator().next().getName());
+                sz.getSections().get(0).getAwards(AccomplishmentLevel.group).iterator().next().getName());
 
         assertStartZoneSections(sz);
     }
@@ -90,7 +90,7 @@ public class TnTCurriculumTest {
         int number = 0;
         for(Section s: sz.getSections()) {
             assertEquals(Integer.toString(++number), s.getShortCode());
-            assertEquals(1, s.getAwards(AwardType.group).size());
+            assertEquals(1, s.getAwards(AccomplishmentLevel.group).size());
             assertEquals(regular, s.getSectionType());
             assertEquals(number, s.sequence());
         }
@@ -109,7 +109,7 @@ public class TnTCurriculumTest {
         assertEquals(1, book.sequence());
         assertEquals("Ultimate Adventure Book 1", book.getName());
         assertEquals("T&T Alpha Award",
-                book.getSections().get(0).getAwards(AwardType.book).iterator().next().getName());
+                book.getSections().get(0).getAwards(AccomplishmentLevel.book).iterator().next().getName());
 
         assertNormalTnTStructure(book);
     }
@@ -142,7 +142,7 @@ public class TnTCurriculumTest {
         assertEquals(0, sz.sequence());
         assertEquals("Ultimate Challenge Start Zone", sz.getName());
         assertEquals("T&T Ultimate Challenge Uniform",
-                sz.getSections().get(0).getAwards(AwardType.group).iterator().next().getName());
+                sz.getSections().get(0).getAwards(AccomplishmentLevel.group).iterator().next().getName());
 
         assertStartZoneSections(sz);
     }
@@ -210,7 +210,7 @@ public class TnTCurriculumTest {
                 .filter(fn)
                 .collect(Collectors.toList());
         List<Award> silverAwards = extraCreditSections.stream()
-                .flatMap(s -> s.getAwards(AwardType.group).stream())
+                .flatMap(s -> s.getAwards(AccomplishmentLevel.group).stream())
                 .distinct()
                 .collect(Collectors.toList());
         assertEquals(names.length, silverAwards.size());
@@ -239,8 +239,8 @@ public class TnTCurriculumTest {
         assertEquals(parent, parentSection.getSectionType());
         assertEquals(0, parentSection.sequence());
         assertEquals("0", parentSection.getShortCode());
-        assertEquals(1, parentSection.getAwards(AwardType.group).size());
-        assertFalse(parentSection.getAwards(AwardType.book).isEmpty());
+        assertEquals(1, parentSection.getAwards(AccomplishmentLevel.group).size());
+        assertFalse(parentSection.getAwards(AccomplishmentLevel.book).isEmpty());
     }
 
     private int assertRegularSections(SectionGroup group) {
@@ -255,14 +255,14 @@ public class TnTCurriculumTest {
             assertEquals(++sectionNumber, s.sequence());
             assertEquals(Integer.toString(sectionNumber), s.getShortCode());
             assertTrue(s.getSectionType().mustBeSigned());
-            assertTrue(s.getSectionType().requiredFor(AwardType.group));
-            assertTrue(s.getSectionType().requiredFor(AwardType.book));
+            assertTrue(s.getSectionType().requiredFor(AccomplishmentLevel.group));
+            assertTrue(s.getSectionType().requiredFor(AccomplishmentLevel.book));
             assertTrue(s.getSectionType().countsTowardsSectionMinimums());
             assertEquals(group, s.getGroup());
-            Set<Award> groupAwards = s.getAwards(AwardType.group);
+            Set<Award> groupAwards = s.getAwards(AccomplishmentLevel.group);
             assertEquals(1, groupAwards.size());
             assertEquals(group.getName(), groupAwards.iterator().next().getName());
-            assertFalse(s.getAwards(AwardType.book).isEmpty());
+            assertFalse(s.getAwards(AccomplishmentLevel.book).isEmpty());
         }
         return sectionNumber;
     }
@@ -278,12 +278,12 @@ public class TnTCurriculumTest {
             assertEquals(++sectionNumber, s.sequence());
             assertEquals(shortCodes[sectionNumber-8], s.getShortCode());
             assertTrue(s.getSectionType().mustBeSigned());
-            assertTrue(s.getSectionType().requiredFor(AwardType.group));
-            assertFalse(s.getSectionType().requiredFor(AwardType.book));
+            assertTrue(s.getSectionType().requiredFor(AccomplishmentLevel.group));
+            assertFalse(s.getSectionType().requiredFor(AccomplishmentLevel.book));
             assertTrue(s.getSectionType().countsTowardsSectionMinimums());
             assertEquals(group, s.getGroup());
-            assertEquals(1, s.getAwards(AwardType.group).size());
-            assertEquals(0, s.getAwards(AwardType.book).size());
+            assertEquals(1, s.getAwards(AccomplishmentLevel.group).size());
+            assertEquals(0, s.getAwards(AccomplishmentLevel.book).size());
         }
     }
 

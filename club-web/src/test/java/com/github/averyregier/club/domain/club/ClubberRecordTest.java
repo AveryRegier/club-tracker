@@ -23,16 +23,16 @@ public class ClubberRecordTest {
     private AwardBuilder extraCreditAwardBuilder = new AwardBuilder();
     Book book = new BookBuilder(1)
             .award()
-            .group(1, g->g
-                    .award(a->a
+            .group(1, g -> g
+                    .award(a -> a
                             .section(0, parent)
                             .section(1, regular)
                             .section(2, friend)
                             .section(3, regular))
                     .award(extraCreditAwardBuilder
                             .section(4, extaCredit)))
-            .group(1, g->g
-                    .award(a->a
+            .group(1, g -> g
+                    .award(a -> a
                             .section(0, parent)
                             .section(1, regular)
                             .section(2, regular)
@@ -64,7 +64,7 @@ public class ClubberRecordTest {
         ClubberRecord record3 = sign(group, 3);
         Signing signing = record3.getSigning().get();
         assertTrue(signing.getCompletionAwards().size() >= 1);
-        assertTrue(signing.getCompletionAwards().containsAll(record3.getSection().getAwards(AwardType.group)));
+        assertTrue(signing.getCompletionAwards().containsAll(record3.getSection().getAwards(AccomplishmentLevel.group)));
         // completion rewards don't change on previous records
         assertNoAwards(record0);
         assertNoAwards(record1);
@@ -89,7 +89,7 @@ public class ClubberRecordTest {
         Set<Award> completionAwards = record2.getSigning().get().getCompletionAwards();
         assertFalse(completionAwards.isEmpty());
         assertEquals(1, completionAwards.size());
-        assertTrue(completionAwards.containsAll(record2.getSection().getAwards(AwardType.group)));
+        assertTrue(completionAwards.containsAll(record2.getSection().getAwards(AccomplishmentLevel.group)));
     }
 
     private ClubberRecord signWithoutAward(int group, int section) {

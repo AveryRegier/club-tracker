@@ -1,7 +1,7 @@
 package com.github.averyregier.club.domain.program.adapter;
 
 import com.github.averyregier.club.domain.program.Award;
-import com.github.averyregier.club.domain.program.AwardType;
+import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class AwardBuilder extends SectionHolderBuilder<AwardBuilder> implements Builder<Award> {
     private Later<Award> futureAward = new Later<>();
     private List<Section> builtSections = new ArrayList<>();
-    private AwardType awardType;
+    private AccomplishmentLevel accomplishmentLevel;
 
     @SuppressWarnings("unchecked")
     List<Section> build(Later<SectionGroup> futureGroup, List<Later<Award>> bookRewards) {
@@ -34,7 +34,7 @@ public class AwardBuilder extends SectionHolderBuilder<AwardBuilder> implements 
         if(!sections.isEmpty()) {
             throw new IllegalStateException();
         }
-        Award award = new AwardAdapter(name, builtSections, awardType);
+        Award award = new AwardAdapter(name, builtSections, accomplishmentLevel);
         futureAward.set(award);
         return award;
     }
@@ -57,8 +57,8 @@ public class AwardBuilder extends SectionHolderBuilder<AwardBuilder> implements 
         builtSections.add(s);
     }
 
-    public void type(AwardType awardType) {
-        this.awardType = awardType;
+    public void type(AccomplishmentLevel accomplishmentLevel) {
+        this.accomplishmentLevel = accomplishmentLevel;
     }
 
     void identifySectionGroup(Later<SectionGroup> futureGroup) {

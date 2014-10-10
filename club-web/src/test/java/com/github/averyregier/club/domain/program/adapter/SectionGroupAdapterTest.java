@@ -1,6 +1,6 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.AwardType;
+import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
 import com.github.averyregier.club.domain.program.awana.TnTSectionTypes;
@@ -38,8 +38,8 @@ public class SectionGroupAdapterTest{
 
         assertEquals(1, group.getSections().size());
         Section section = group.getSections().get(0);
-        assertEquals(AwardType.group, section.getAwards().iterator().next().getAwardType());
-        assertTrue(section.getAwards(AwardType.group).iterator().next().getSections().contains(section));
+        assertEquals(AccomplishmentLevel.group, section.getAwards().iterator().next().getAccomplishmentLevel());
+        assertTrue(section.getAwards(AccomplishmentLevel.group).iterator().next().getSections().contains(section));
     }
 
     @Test
@@ -47,13 +47,13 @@ public class SectionGroupAdapterTest{
         BookBuilder bookBuilder = new BookBuilder(0);
         SectionGroup group = new SectionGroupBuilder(1)
                 .name("Discovery 1")
-                .award(a->a
+                .award(a -> a
                         .section(1, TnTSectionTypes.regular))
                 .build(bookBuilder);
         bookBuilder.build();
 
         Section section = group.getSections().get(0);
-        assertEquals("Discovery 1", section.getAwards(AwardType.group).iterator().next().getName());
+        assertEquals("Discovery 1", section.getAwards(AccomplishmentLevel.group).iterator().next().getName());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class SectionGroupAdapterTest{
                 .award(a->a
                         .section(1, TnTSectionTypes.regular)
                         .section(3, TnTSectionTypes.regular))
-                .award(a->a
+                .award(a -> a
                         .section(2, TnTSectionTypes.extaCredit))
                 .build(bookBuilder);
         bookBuilder.build();
@@ -72,11 +72,11 @@ public class SectionGroupAdapterTest{
         Section section1 = group.getSections().get(0);
         Section section2 = group.getSections().get(1);
         Section section3 = group.getSections().get(2);
-        assertTrue(section1.getAwards(AwardType.group).iterator().next().getSections().contains(section1));
-        assertTrue(section1.getAwards(AwardType.group).iterator().next().getSections().contains(section3));
-        assertTrue(section3.getAwards(AwardType.group).iterator().next().getSections().contains(section1));
-        assertTrue(section3.getAwards(AwardType.group).iterator().next().getSections().contains(section3));
-        assertTrue(section2.getAwards(AwardType.group).iterator().next().getSections().contains(section2));
+        assertTrue(section1.getAwards(AccomplishmentLevel.group).iterator().next().getSections().contains(section1));
+        assertTrue(section1.getAwards(AccomplishmentLevel.group).iterator().next().getSections().contains(section3));
+        assertTrue(section3.getAwards(AccomplishmentLevel.group).iterator().next().getSections().contains(section1));
+        assertTrue(section3.getAwards(AccomplishmentLevel.group).iterator().next().getSections().contains(section3));
+        assertTrue(section2.getAwards(AccomplishmentLevel.group).iterator().next().getSections().contains(section2));
     }
 
 }

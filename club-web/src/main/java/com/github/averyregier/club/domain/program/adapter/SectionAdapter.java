@@ -45,15 +45,15 @@ class SectionAdapter implements Section {
     }
 
     @Override
-    public Set<Award> getAwards(AwardType type) {
+    public Set<Award> getAwards(AccomplishmentLevel type) {
         return getAwards().stream()
-                .filter(t->t.getAwardType() == type)
+                .filter(t->t.getAccomplishmentLevel() == type)
                 .filter(isValidAward())
                 .collect(UtilityMethods.toLinkedSet());
     }
 
     private Predicate<Award> isValidAward() {
-        return t-> getSectionType().requiredFor(t.getAwardType());
+        return t-> getSectionType().requiredFor(t.getAccomplishmentLevel());
     }
 
     @Override
