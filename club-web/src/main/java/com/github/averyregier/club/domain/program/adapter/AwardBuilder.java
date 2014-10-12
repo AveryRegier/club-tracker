@@ -1,15 +1,13 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.Award;
-import com.github.averyregier.club.domain.program.AccomplishmentLevel;
-import com.github.averyregier.club.domain.program.Section;
-import com.github.averyregier.club.domain.program.SectionGroup;
+import com.github.averyregier.club.domain.program.*;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import com.github.averyregier.club.domain.utility.builder.Builder;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 /**
@@ -19,6 +17,7 @@ public class AwardBuilder extends SectionHolderBuilder<AwardBuilder> implements 
     private Later<Award> futureAward = new Later<>();
     private List<Section> builtSections = new ArrayList<>();
     private AccomplishmentLevel accomplishmentLevel;
+    private List<Catalogued> sequence;
 
     @SuppressWarnings("unchecked")
     List<Section> build(Later<SectionGroup> futureGroup, List<Later<Award>> bookRewards) {
@@ -34,7 +33,12 @@ public class AwardBuilder extends SectionHolderBuilder<AwardBuilder> implements 
         if(!sections.isEmpty()) {
             throw new IllegalStateException();
         }
-        Award award = new AwardAdapter(name, builtSections, accomplishmentLevel);
+        Award award;
+        if(sequence == null) {
+            award = new AwardAdapter(name, builtSections, accomplishmentLevel);
+        } else {
+            award = new AwardSequence(sequence, name, builtSections, accomplishmentLevel);
+        }
         futureAward.set(award);
         return award;
     }
@@ -64,4 +68,10 @@ public class AwardBuilder extends SectionHolderBuilder<AwardBuilder> implements 
     void identifySectionGroup(Later<SectionGroup> futureGroup) {
         sections.forEach(s->s.identifyFutureGroup(futureGroup));
     }
+
+    public AwardBuilder sequence(UnaryOperator<AwardSequenceBuilder> fn) {
+        sequence = fn.apply(new AwardSequenceBuilder()).build();
+        return this;
+    }
+
 }

@@ -1,11 +1,10 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.Award;
-import com.github.averyregier.club.domain.program.Book;
-import com.github.averyregier.club.domain.program.AccomplishmentLevel;
-import com.github.averyregier.club.domain.program.Section;
+import com.github.averyregier.club.domain.program.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
 * Created by avery on 9/11/2014.
@@ -25,6 +24,21 @@ class AwardAdapter implements Award {
     @Override
     public AccomplishmentLevel getAccomplishmentLevel() {
         return accomplishmentLevel;
+    }
+
+    @Override
+    public Catalogued select(Predicate<Catalogued> filter) {
+        return list().get(0);
+    }
+
+    @Override
+    public List<Catalogued> list() {
+        return Arrays.asList((Catalogued) AwardAdapter.this::getName);
+    }
+
+    @Override
+    public Catalogued select() {
+        return select(null);
     }
 
     @Override

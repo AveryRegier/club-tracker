@@ -108,8 +108,12 @@ public class TnTCurriculumTest {
         assertEquals("©2010", book.getVersion().toString());
         assertEquals(1, book.sequence());
         assertEquals("Ultimate Adventure Book 1", book.getName());
-        assertEquals("T&T Alpha Award",
-                book.getSections().get(0).getAwards(AccomplishmentLevel.book).iterator().next().getName());
+        Award bookAward = book.getSections().get(0).getAwards(AccomplishmentLevel.book)
+                .iterator().next();
+        assertEquals("Ultimate Adventure Book 1", bookAward.getName());
+        List<Catalogued> bookAwardList = bookAward.list();
+        assertEquals(1, bookAwardList.size());
+        assertEquals("T&T Alpha Award", bookAwardList.get(0).getName());
 
         assertNormalTnTStructure(book);
     }
@@ -125,6 +129,13 @@ public class TnTCurriculumTest {
         assertEquals("©2010", book.getVersion().toString());
         assertEquals(2, book.sequence());
         assertEquals("Ultimate Adventure Book 2", book.getName());
+        Award bookAward = book.getSections().get(0).getAwards(AccomplishmentLevel.book)
+                .iterator().next();
+        assertEquals("Ultimate Adventure Book 2", bookAward.getName());
+        List<Catalogued> bookAwardList = bookAward.list();
+        assertEquals(2, bookAwardList.size());
+        assertEquals("T&T Alpha Award", bookAwardList.get(0).getName());
+        assertEquals("T&T Excellence Award", bookAwardList.get(1).getName());
 
         assertNormalTnTStructure(book);
     }
@@ -159,6 +170,14 @@ public class TnTCurriculumTest {
         assertEquals("©2010", book.getVersion().toString());
         assertEquals(1, book.sequence());
         assertEquals("Ultimate Challenge Book 1", book.getName());
+        Award bookAward = book.getSections().get(0).getAwards(AccomplishmentLevel.book)
+                .iterator().next();
+        assertEquals("Ultimate Challenge Book 1", bookAward.getName());
+        List<Catalogued> bookAwardList = bookAward.list();
+        assertEquals(3, bookAwardList.size());
+        assertEquals("T&T Alpha Award", bookAwardList.get(0).getName());
+        assertEquals("T&T Excellence Award", bookAwardList.get(1).getName());
+        assertEquals("T&T Challenge Award", bookAwardList.get(2).getName());
 
         assertNormalTnTStructure(book);
     }
@@ -174,6 +193,15 @@ public class TnTCurriculumTest {
         assertEquals("©2010", book.getVersion().toString());
         assertEquals(2, book.sequence());
         assertEquals("Ultimate Challenge Book 2", book.getName());
+        Award bookAward = book.getSections().get(0).getAwards(AccomplishmentLevel.book)
+                .iterator().next();
+        assertEquals("Ultimate Challenge Book 2", bookAward.getName());
+        List<Catalogued> bookAwardList = bookAward.list();
+        assertEquals(4, bookAwardList.size());
+        assertEquals("T&T Alpha Award", bookAwardList.get(0).getName());
+        assertEquals("T&T Excellence Award", bookAwardList.get(1).getName());
+        assertEquals("T&T Challenge Award", bookAwardList.get(2).getName());
+        assertEquals("T&T Timothy Award", bookAwardList.get(3).getName());
 
         assertNormalTnTStructure(book);
     }

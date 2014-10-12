@@ -8,6 +8,7 @@ import java.util.*;
 import static com.github.averyregier.club.domain.program.AccomplishmentLevel.book;
 import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.parent;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class BookAdapterTest {
 
@@ -94,9 +95,9 @@ public class BookAdapterTest {
                 .group(1, g -> g
                         .section(0, parent))
                 .build();
-        assertEquals(book,
-                classUnderTest.getSectionGroups().get(0).getSections().get(0)
-                        .getAwards().iterator().next().getAccomplishmentLevel());
+        Award award = classUnderTest.getSectionGroups().get(0).getSections().get(0)
+                .getAwards().iterator().next();
+        assertEquals(book, award.getAccomplishmentLevel());
     }
 
     @Test
@@ -106,9 +107,11 @@ public class BookAdapterTest {
                 .group(1, g -> g
                         .section(0, parent))
                 .build();
-        assertEquals("Award Name",
-                classUnderTest.getSectionGroups().get(0).getSections().get(0)
-                        .getAwards().iterator().next().getName());
+        Award award = classUnderTest.getSectionGroups().get(0).getSections().get(0)
+                .getAwards().iterator().next();
+        assertEquals("Award Name", award.getName());
+        assertEquals(1, award.list().size());
+        assertEquals("Award Name", award.select(null).getName());
     }
 
     @Test
@@ -120,9 +123,11 @@ public class BookAdapterTest {
                         .section(0, parent))
                 .build();
         assertEquals("Book One", classUnderTest.getName());
-        assertEquals("Book One",
-                classUnderTest.getSectionGroups().get(0).getSections().get(0)
-                        .getAwards().iterator().next().getName());
+        Award award = classUnderTest.getSectionGroups().get(0).getSections().get(0)
+                .getAwards().iterator().next();
+        assertEquals("Book One", award.getName());
+        assertEquals(1, award.list().size());
+        assertEquals("Book One", award.select(null).getName());
     }
 
     @Test
@@ -134,9 +139,11 @@ public class BookAdapterTest {
                 .build();
 
         assertEquals("1", classUnderTest.getName());
-        assertEquals("1",
-                classUnderTest.getSectionGroups().get(0).getSections().get(0)
-                        .getAwards().iterator().next().getName());
+        Award award = classUnderTest.getSectionGroups().get(0).getSections().get(0)
+                .getAwards().iterator().next();
+        assertEquals("1", award.getName());
+        assertEquals(1, award.list().size());
+        assertEquals("1", award.select(null).getName());
     }
 
     @Test
@@ -165,6 +172,29 @@ public class BookAdapterTest {
         assertEquals("Award Name",
                 classUnderTest.getSectionGroups().get(0).getSections().get(0)
                         .getAwards().iterator().next().getName());
+    }
+
+    @Test
+    public void bookAwardSequence() {
+        Book classUnderTest = new CurriculumBuilder().book(0, b -> b
+                .award(r -> r
+                        .sequence(s -> s.item(i->i.name("Award Name 1"))
+                                        .item(i->i.name("Award Name 2"))
+                                        .item(i->i.name("Award Name 3")))
+                )
+                .group(1, g -> g
+                        .section(0, parent)))
+                .build().getBooks().get(0);
+
+        assertEquals("0", classUnderTest.getName());
+        Award award = classUnderTest.getSectionGroups().get(0).getSections().get(0)
+                .getAwards().iterator().next();
+        assertEquals("0", award.getName());
+        assertEquals(3, award.list().size());
+        assertEquals("Award Name 1", award.select(null).getName());
+        assertEquals("Award Name 1", award.select().getName());
+        assertEquals("Award Name 2", award.select(c->c.getName().equals("Award Name 2")).getName());
+
     }
 
     @Test
