@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by avery on 9/6/2014.
@@ -29,11 +30,22 @@ public class MockClubber implements Clubber {
         return maybeASection.map(s->mapToRecord(s));
     }
 
+    @Override
+    public List<AwardPresentation> getAwards() {
+        return records.values().stream()
+                .map(ClubberRecord::getSigning)
+                .filter(Optional::isPresent)
+                .map(s -> s.get().getCompletionAwards())
+                .filter(r->r != null)
+                .flatMap(r->r.stream())
+                .collect(Collectors.toList());
+    }
+
     private ClubberRecord mapToRecord(Section section) {
         ClubberRecord record  = records.get(section);
         if(record == null) {
             record = createRecord(section);
-            records.put(section, record);;
+            records.put(section, record);
         }
         return record;
     }

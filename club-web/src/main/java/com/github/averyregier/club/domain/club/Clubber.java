@@ -14,4 +14,6 @@ public interface Clubber extends ClubMember {
     List<ClubberRecord> getNextSections(int max);
 
     Optional<ClubberRecord> getRecord(Optional<Section> section);
+
+    List<AwardPresentation> getAwards();
 }

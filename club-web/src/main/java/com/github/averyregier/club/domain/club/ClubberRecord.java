@@ -1,8 +1,10 @@
 package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.program.Award;
+import com.github.averyregier.club.domain.program.Catalogued;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionHolder;
+import com.github.averyregier.club.domain.utility.Named;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -47,7 +49,7 @@ public abstract class ClubberRecord {
     private class RecordSigning implements Signing {
         private final Listener byListener;
         private final String note;
-        private Set<Award> awards;
+        private Set<AwardPresentation> awards;
 
         public RecordSigning(Listener byListener, String note) {
             this.byListener = byListener;
@@ -70,14 +72,59 @@ public abstract class ClubberRecord {
         }
 
         @Override
-        public Set<Award> getCompletionAwards() {
+        public Set<AwardPresentation> getCompletionAwards() {
             return awards;
         }
 
         void calculateAwards() {
             awards = getSection().getAwards().stream()
                     .filter(r->isCompleted(r))
+                    .map(a->new AwardPresentationAdapter(a))
                     .collect(Collectors.toSet());
+        }
+
+        private class AwardPresentationAdapter implements AwardPresentation {
+
+            private final Award award;
+            private final Optional<Catalogued> token;
+
+            public AwardPresentationAdapter(Award award) {
+                this.award = award;
+                this.token = select();
+            }
+
+            @Override
+            public Person to() {
+                return null;
+            }
+
+            @Override
+            public Named forAccomplishment() {
+                return null;
+            }
+
+            @Override
+            public LocalDate earnedOn() {
+                return null;
+            }
+
+            @Override
+            public Ceremony presentedAt() {
+                return null;
+            }
+
+            @Override
+            public Optional<Catalogued> token() {
+                return token;
+            }
+
+            private Optional<Catalogued> select() {
+                Catalogued select = award.select(c->getClubber().getAwards().stream()
+                        .filter(a->a.token().isPresent())
+                        .allMatch(a->!a.token().get().equals(c)));
+                Optional<Catalogued> tOptional = Optional.ofNullable(select);
+                return tOptional;
+            }
         }
     }
 }

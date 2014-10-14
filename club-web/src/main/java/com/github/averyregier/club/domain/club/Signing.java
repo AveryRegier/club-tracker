@@ -1,7 +1,5 @@
 package com.github.averyregier.club.domain.club;
 
-import com.github.averyregier.club.domain.program.Award;
-
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -13,5 +11,5 @@ public interface Signing {
     public Listener by();
     public String getNote();
 
-    Set<Award> getCompletionAwards();
+    Set<AwardPresentation> getCompletionAwards();
 }

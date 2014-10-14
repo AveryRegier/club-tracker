@@ -3,11 +3,13 @@ package com.github.averyregier.club.domain.club;
 import com.github.averyregier.club.domain.program.*;
 import com.github.averyregier.club.domain.program.adapter.AwardBuilder;
 import com.github.averyregier.club.domain.program.adapter.BookBuilder;
+import com.github.averyregier.club.domain.program.adapter.CurriculumBuilder;
 import org.junit.Test;
 
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.*;
 import static org.junit.Assert.*;
@@ -64,7 +66,8 @@ public class ClubberRecordTest {
         ClubberRecord record3 = sign(group, 3);
         Signing signing = record3.getSigning().get();
         assertTrue(signing.getCompletionAwards().size() >= 1);
-        assertTrue(signing.getCompletionAwards().containsAll(record3.getSection().getAwards(AccomplishmentLevel.group)));
+        Set<AwardPresentation> completionAwards = signing.getCompletionAwards();
+        assertAwardEquals(record3.getSection().getAwards(AccomplishmentLevel.group), completionAwards);
         // completion rewards don't change on previous records
         assertNoAwards(record0);
         assertNoAwards(record1);
@@ -77,8 +80,8 @@ public class ClubberRecordTest {
         assertGroupCompleted(1);
         ClubberRecord finalRecord = assertGroupCompleted(2);
         Signing signing = finalRecord.getSigning().get();
-        assertEquals(2, signing.getCompletionAwards().size());
-        assertTrue(signing.getCompletionAwards().containsAll(finalRecord.getSection().getAwards()));
+        assertEquals(signing.getCompletionAwards().size(), 2);
+        assertAwardEquals(finalRecord.getSection().getAwards(), signing.getCompletionAwards());
     }
 
     @Test
@@ -86,10 +89,20 @@ public class ClubberRecordTest {
         ClubberRecord record1 = sign(1, 4);
         assertTrue(record1.getSigning().get().getCompletionAwards().isEmpty());
         ClubberRecord record2 = sign(2, 4);
-        Set<Award> completionAwards = record2.getSigning().get().getCompletionAwards();
+        Set<AwardPresentation> completionAwards = record2.getSigning().get().getCompletionAwards();
         assertFalse(completionAwards.isEmpty());
-        assertEquals(1, completionAwards.size());
-        assertTrue(completionAwards.containsAll(record2.getSection().getAwards(AccomplishmentLevel.group)));
+        assertEquals(completionAwards.size(), 1);
+        Set<Award> expected = record2.getSection().getAwards(AccomplishmentLevel.group);
+        assertAwardEquals(expected, completionAwards);
+    }
+
+    private void assertAwardEquals(Set<Award> expected, Set<AwardPresentation> completionAwards) {
+        assertTrue(completionAwards.stream()
+                .map(p -> p.token().get().getName())
+                .collect(Collectors.toSet()).containsAll(
+                        expected.stream()
+                                .map(a -> a.getName())
+                                .collect(Collectors.toSet())));
     }
 
     private ClubberRecord signWithoutAward(int group, int section) {
@@ -115,10 +128,55 @@ public class ClubberRecordTest {
         Signing signing = record.sign(me, "Well Done!");
         assertNotNull(signing);
         assertTrue(record.getSigning().isPresent());
-        assertEquals(signing, record.getSigning().get());
-        assertEquals(me, signing.by());
-        assertEquals(LocalDate.now(), signing.getDate());
-        assertEquals("Well Done!", signing.getNote());
+        assertEquals(record.getSigning().get(), signing);
+        assertEquals(signing.by(), me);
+        assertEquals(signing.getDate(), LocalDate.now());
+        assertEquals(signing.getNote(), "Well Done!");
         return signing;
+    }
+
+    @Test
+    public void bookAwardSelection() {
+        Curriculum curriculum = buildCurriculum();
+
+        Section section1 = curriculum.getBooks().get(0).getSectionGroups().get(0).getSections().get(0);
+        ClubberRecord record1 = createClubberRecord(section1);
+        Signing signing1 = record1.sign(me, "Well Done!");
+        assertArrayEquals(new Object[]{"one"}, toNameArray(signing1));
+
+        Section section2 = curriculum.getBooks().get(1).getSectionGroups().get(0).getSections().get(0);
+        ClubberRecord record2 = createClubberRecord(section2);
+        Signing signing2 = record2.sign(me, "Well Done!");
+        assertArrayEquals(new Object[] {"two"}, toNameArray(signing2));
+    }
+
+    @Test
+    public void firstBookCompletedGetsFirstAward() {
+        Curriculum curriculum = buildCurriculum();
+
+        Section section2 = curriculum.getBooks().get(1).getSectionGroups().get(0).getSections().get(0);
+        ClubberRecord record2 = createClubberRecord(section2);
+        Signing signing2 = record2.sign(me, "Well Done!");
+        assertArrayEquals(new Object[] {"one"}, toNameArray(signing2));
+    }
+
+    private Object[] toNameArray(Signing signing2) {
+        return signing2.getCompletionAwards().stream().map(a->a.token().get().getName()).toArray();
+    }
+
+    private Curriculum buildCurriculum() {
+        return new CurriculumBuilder()
+                    .book(1, b -> b
+                            .award(a -> a
+                                    .sequence(s -> s.item(i -> i.name("one"))))
+                            .group(0, g -> g
+                                    .section(0, regular)))
+                    .book(2, b -> b
+                            .award(a -> a
+                                    .sequence(s -> s
+                                            .item(i -> i.name("one"))
+                                            .item(i -> i.name("two"))))
+                            .group(0, g -> g
+                                    .section(0, regular))).build();
     }
 }
