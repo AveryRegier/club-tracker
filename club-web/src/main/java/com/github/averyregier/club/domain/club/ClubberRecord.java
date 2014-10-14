@@ -95,17 +95,17 @@ public abstract class ClubberRecord {
 
             @Override
             public Person to() {
-                return null;
+                return getClubber();
             }
 
             @Override
             public Named forAccomplishment() {
-                return null;
+                return award;
             }
 
             @Override
             public LocalDate earnedOn() {
-                return null;
+                return signing.getDate();
             }
 
             @Override

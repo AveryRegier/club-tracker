@@ -139,15 +139,21 @@ public class ClubberRecordTest {
     public void bookAwardSelection() {
         Curriculum curriculum = buildCurriculum();
 
-        Section section1 = curriculum.getBooks().get(0).getSectionGroups().get(0).getSections().get(0);
-        ClubberRecord record1 = createClubberRecord(section1);
-        Signing signing1 = record1.sign(me, "Well Done!");
-        assertArrayEquals(new Object[]{"one"}, toNameArray(signing1));
+        assertBookComplete(curriculum, "one", 0);
+        assertBookComplete(curriculum, "two", 1);
+    }
 
-        Section section2 = curriculum.getBooks().get(1).getSectionGroups().get(0).getSections().get(0);
+    private void assertBookComplete(Curriculum curriculum, String expectedAward, int bookIndex) {
+        Section section2 = curriculum.getBooks().get(bookIndex).getSectionGroups().get(0).getSections().get(0);
         ClubberRecord record2 = createClubberRecord(section2);
         Signing signing2 = record2.sign(me, "Well Done!");
-        assertArrayEquals(new Object[] {"two"}, toNameArray(signing2));
+        assertArrayEquals(new Object[] {expectedAward}, toNameArray(signing2));
+        assertTrue(signing2.getCompletionAwards().stream().allMatch(a -> a.to() == clubber));
+        assertTrue(signing2.getCompletionAwards().stream()
+                .allMatch(a -> a.forAccomplishment().getName().equals(Integer.toString(bookIndex+1))));
+        assertTrue(signing2.getCompletionAwards().stream()
+                .allMatch(a -> LocalDate.now().equals(a.earnedOn())));
+
     }
 
     @Test
