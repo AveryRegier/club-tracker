@@ -119,11 +119,9 @@ public abstract class ClubberRecord {
             }
 
             private Optional<Catalogued> select() {
-                Catalogued select = award.select(c->getClubber().getAwards().stream()
-                        .filter(a->a.token().isPresent())
-                        .allMatch(a->!a.token().get().equals(c)));
-                Optional<Catalogued> tOptional = Optional.ofNullable(select);
-                return tOptional;
+                return Optional.ofNullable(award.select(c->getClubber().getAwards().stream()
+                        .filter(a -> a.token().isPresent())
+                        .allMatch(a -> !a.token().get().equals(c))));
             }
         }
     }

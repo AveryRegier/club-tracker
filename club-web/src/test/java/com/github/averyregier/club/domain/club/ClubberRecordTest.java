@@ -153,7 +153,6 @@ public class ClubberRecordTest {
                 .allMatch(a -> a.forAccomplishment().getName().equals(Integer.toString(bookIndex+1))));
         assertTrue(signing2.getCompletionAwards().stream()
                 .allMatch(a -> LocalDate.now().equals(a.earnedOn())));
-
     }
 
     @Test
