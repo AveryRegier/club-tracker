@@ -16,6 +16,9 @@ public class User implements Person {
     private String auth;
     private String name;
     private String id;
+    private String first;
+    private String last;
+    private Gender gender;
 
     public String resetAuth() {
         byte[] bytes = new byte[10];
@@ -42,12 +45,12 @@ public class User implements Person {
         return new Name() {
             @Override
             public String getGivenName() {
-                return null;
+                return first;
             }
 
             @Override
             public String getSurname() {
-                return null;
+                return last;
             }
 
             @Override
@@ -79,7 +82,7 @@ public class User implements Person {
 
     @Override
     public Optional<Gender> getGender() {
-        return Optional.empty();
+        return Optional.ofNullable(gender);
     }
 
     @Override
@@ -107,12 +110,22 @@ public class User implements Person {
         return Optional.empty();
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(Object first, Object last) {
+        this.first = first != null ? first.toString() : null;
+        this.last = last != null ? last.toString() : null;
+        this.name = combineName(first, last);
     }
 
     public void update(UserBean user) {
         this.id = user.getUniqueId();
         this.name = user.getName();
+        String gender1 = user.getGender();
+        if(gender1 != null) {
+            this.gender = Gender.valueOf(gender1);
+        }
+    }
+
+    private String combineName(Object first, Object last) {
+        return ((first != null ? first : "") +" "+ (last != null ? last : "")).trim();
     }
 }

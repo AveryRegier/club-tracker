@@ -97,7 +97,7 @@ public class ConsumerService extends ModelMaker {
                     if (attributes.containsKey("first") || attributes.containsKey("last")) {
                         Object first = attributes.get("first");
                         Object last = attributes.get("last");
-                        u.setName(combineName(first, last));
+                        u.setName(first, last);
                     }
                 }
                 Login.resetCookies(req, httpResponse, identifier.getIdentifier(), u);
@@ -108,10 +108,6 @@ public class ConsumerService extends ModelMaker {
 		}
         return new ModelAndView(new HashMap<>(), "index.ftl");
 
-    }
-
-    private String combineName(Object first, Object last) {
-        return ((first != null ? first : "") +" "+ (last != null ? last : "")).trim();
     }
 
     @SuppressWarnings("unchecked")

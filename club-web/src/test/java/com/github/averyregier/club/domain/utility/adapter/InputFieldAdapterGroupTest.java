@@ -119,4 +119,29 @@ public class InputFieldAdapterGroupTest {
         assertTrue(allergies.asField().isPresent());
         assertEquals(allergies, allergies.asField().get());
     }
+
+    @Test
+    public void find() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .id("foo")
+                .field(f -> f.id("name"))
+                .group(g -> g
+                                .id("address")
+                                .field(f -> f.id("state"))
+                )
+                .group(g -> g
+                                .id("hierarchy")
+                                .group(g2 -> g2
+                                                .id("hierarchy2")
+                                                .field(f -> f.id("leaf"))
+                                )
+                )
+                .build();
+        assertEquals("name", classUnderTest.find("name").get().getShortCode());
+        assertEquals("address", classUnderTest.find("address").get().getShortCode());
+        assertEquals("state", classUnderTest.find("address", "state").get().getShortCode());
+        assertEquals("leaf", classUnderTest.find("hierarchy", "hierarchy2", "leaf").get().getShortCode());
+        assertFalse(classUnderTest.find("hierarchy", "don't exist").isPresent());
+        assertFalse(classUnderTest.find("hierarchy", "hierarchy2", "leaf", "too", "many").isPresent());
+    }
 }

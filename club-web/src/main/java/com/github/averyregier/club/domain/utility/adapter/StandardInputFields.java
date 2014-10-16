@@ -69,7 +69,8 @@ public enum StandardInputFields {
         public InputFieldBuilder create(Locale locale) {
             return buildField(this).name("Age").type(integer);
         }
-    }, email {
+    },
+    email {
         @Override
         public ChildBuilder<InputFieldGroup, InputFieldDesignator> create(Locale locale) {
             return buildField(this).name("Email Address").type(text);

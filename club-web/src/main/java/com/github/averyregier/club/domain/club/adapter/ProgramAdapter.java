@@ -1,9 +1,15 @@
 package com.github.averyregier.club.domain.club.adapter;
 
+import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
+import com.github.averyregier.club.domain.utility.InputField;
+import com.github.averyregier.club.domain.utility.InputFieldDesignator;
+import com.github.averyregier.club.domain.utility.InputFieldGroup;
+import com.github.averyregier.club.domain.utility.adapter.InputFieldGroupBuilder;
+import com.github.averyregier.club.domain.utility.adapter.StandardInputFields;
 
 import java.util.*;
 
@@ -28,8 +34,33 @@ public class ProgramAdapter implements Program {
     }
 
     @Override
-    public RegistrationInformation createRegistrationForm() {
-        return null;
+    public RegistrationInformation createRegistrationForm(User user) {
+        InputFieldGroup me = new InputFieldGroupBuilder().id("me").name("About Myself")
+                .group(StandardInputFields.name.createGroup(getLocale()))
+                .field(StandardInputFields.gender.createField(getLocale()))
+                .build();
+        List<InputFieldDesignator> list = Arrays.asList(me);
+
+        InputField given = me.find("name", "given").get().asField().get();
+        InputField surname = me.find("name", "surname").get().asField().get();
+        InputField gender = me.find("gender").get().asField().get();
+
+        LinkedHashMap<InputField, Object> map = new LinkedHashMap<>();
+        map.put(given, user.getName().getGivenName());
+        map.put(surname, user.getName().getSurname());
+        map.put(gender, user.getGender().orElse(null));
+
+        return new RegistrationInformation() {
+            @Override
+            public List<InputFieldDesignator> getForm() {
+                return list;
+            }
+
+            @Override
+            public Map<InputField, Object> getFields() {
+                return map;
+            }
+        };
     }
 
     @Override

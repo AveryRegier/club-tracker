@@ -54,7 +54,16 @@ public class InputFieldGroupBuilder
     }
 
     public InputFieldGroupBuilder group(UnaryOperator<InputFieldGroupBuilder> fn) {
-        children.add(fn.apply(new InputFieldGroupBuilder()));
+        return group(fn.apply(new InputFieldGroupBuilder()));
+    }
+
+    public InputFieldGroupBuilder group(InputFieldGroupBuilder groupBuilder) {
+        children.add(groupBuilder);
+        return this;
+    }
+
+    public InputFieldGroupBuilder field(InputFieldBuilder fieldBuilder) {
+        children.add(fieldBuilder);
         return this;
     }
 }
