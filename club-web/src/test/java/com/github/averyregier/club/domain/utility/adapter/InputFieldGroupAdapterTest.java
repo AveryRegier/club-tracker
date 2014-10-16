@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class InputFieldAdapterGroupTest {
+public class InputFieldGroupAdapterTest {
 
     @Test
     public void id() throws Exception {
