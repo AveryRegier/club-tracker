@@ -112,8 +112,8 @@ public class StandardInputFieldsTest {
         InputField field = StandardInputFields.ageGroup.createField(EN_US).build();
         assertField(field, "Age Group", "ageGroup", InputField.Type.ageGroup,
                 Arrays.asList(AgeGroup.DefaultAgeGroup.values()).stream()
-                        .map(e->e.name())
-                        .toArray(i->new String[i]));
+                        .map(Enum::name)
+                        .toArray(String[]::new));
         for(AgeGroup.DefaultAgeGroup group: AgeGroup.DefaultAgeGroup.values()) {
             assertEquals(group, field.validate(group.name()).get());
         }
