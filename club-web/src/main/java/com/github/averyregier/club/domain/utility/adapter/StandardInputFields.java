@@ -2,6 +2,7 @@ package com.github.averyregier.club.domain.utility.adapter;
 
 import com.github.averyregier.club.domain.club.Name;
 import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
@@ -114,10 +115,22 @@ public enum StandardInputFields {
     },
     email {
         @Override
-        public ChildBuilder<InputFieldGroup, InputFieldDesignator> create(Locale locale) {
+        public InputFieldBuilder create(Locale locale) {
             return buildField(this)
                     .name("Email Address")
                     .type(InputField.Type.email);
+        }
+    },
+    ageGroup {
+        @Override
+        public InputFieldBuilder create(Locale locale) {
+            InputFieldBuilder builder = buildField(this)
+                    .name("Age Group")
+                    .type(InputField.Type.ageGroup);
+            for(AgeGroup.DefaultAgeGroup group: AgeGroup.DefaultAgeGroup.values()) {
+                builder.value(group.name(), group.name(), false);
+            }
+            return builder;
         }
     };
 

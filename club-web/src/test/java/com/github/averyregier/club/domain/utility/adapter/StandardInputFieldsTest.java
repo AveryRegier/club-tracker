@@ -2,6 +2,7 @@ package com.github.averyregier.club.domain.utility.adapter;
 
 import com.github.averyregier.club.domain.club.Name;
 import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
@@ -13,7 +14,6 @@ import java.util.stream.Collectors;
 import static com.github.averyregier.club.domain.utility.InputField.Type.integer;
 import static com.github.averyregier.club.domain.utility.InputField.Type.text;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 public class StandardInputFieldsTest {
 
@@ -107,6 +107,19 @@ public class StandardInputFieldsTest {
         assertFalse(email.validate("notdotsaren@thappy").isPresent());
     }
 
+    @Test
+    public void grade() {
+        InputField field = StandardInputFields.ageGroup.createField(EN_US).build();
+        assertField(field, "Age Group", "ageGroup", InputField.Type.ageGroup,
+                Arrays.asList(AgeGroup.DefaultAgeGroup.values()).stream()
+                        .map(e->e.name())
+                        .toArray(i->new String[i]));
+        for(AgeGroup.DefaultAgeGroup group: AgeGroup.DefaultAgeGroup.values()) {
+            assertEquals(group, field.validate(group.name()).get());
+        }
+        assertFalse(field.validate("Ageless").isPresent());
+    }
+
     private void assertField(InputFieldDesignator designator,
                              String name,
                              String shortCode,
@@ -120,6 +133,8 @@ public class StandardInputFieldsTest {
         }
         assertEquals(shortCode, designator.getShortCode());
         assertTrue(designator.asField().isPresent());
+        assertEquals(type, designator.asField().get().getType());
+
         Optional<List<InputField.Value>> foundValues = designator.asField().get().getValues();
         if (expectedValues != null && expectedValues.length > 0) {
             assertTrue(foundValues.isPresent());
@@ -129,7 +144,6 @@ public class StandardInputFieldsTest {
                                  .collect(Collectors.toList()));
         } else {
             assertFalse(foundValues.isPresent());
-            assertEquals(type, designator.asField().get().getType());
         }
     }
 }

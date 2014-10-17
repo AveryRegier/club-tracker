@@ -1,6 +1,7 @@
 package com.github.averyregier.club.domain.utility;
 
 import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.program.AgeGroup;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +37,16 @@ public interface InputField extends InputFieldDesignator {
             @Override
             Object validate(String input) {
                 return input.matches("\\S*@\\S*\\.\\S*") ? input : null;
+            }
+        },
+        ageGroup {
+            @Override
+            Object validate(String input) {
+                try {
+                    return AgeGroup.DefaultAgeGroup.valueOf(input);
+                } catch(IllegalArgumentException e) {
+                    return null;
+                }
             }
         };
 
