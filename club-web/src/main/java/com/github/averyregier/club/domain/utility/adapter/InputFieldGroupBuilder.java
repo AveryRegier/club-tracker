@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.utility.adapter;
 
+import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import com.github.averyregier.club.domain.utility.builder.Builder;
@@ -8,6 +9,9 @@ import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
@@ -21,6 +25,7 @@ public class InputFieldGroupBuilder
     private String id;
     private String name;
     private List<ChildBuilder<InputFieldGroup, InputFieldDesignator>> children = new ArrayList<>();
+    private BiFunction<Person, Map<String, Object>, Optional<Object>> validationFn;
 
     public InputFieldGroupBuilder id(String id) {
         this.id = id;
@@ -43,13 +48,20 @@ public class InputFieldGroupBuilder
                 id,
                 name,
                 parent,
-                children.stream().map(g -> g.build(later)).collect(Collectors.toList()));
+                children.stream().map(g -> g.build(later)).collect(Collectors.toList()),
+                validationFn
+        );
         later.set(group);
         return group;
     }
 
     public InputFieldGroupBuilder field(UnaryOperator<InputFieldBuilder> fn) {
         children.add(fn.apply(new InputFieldBuilder()));
+        return this;
+    }
+
+    public InputFieldGroupBuilder validate(BiFunction<Person,  Map<String, Object>, Optional<Object>> validationFn) {
+        this.validationFn = validationFn;
         return this;
     }
 
@@ -66,4 +78,7 @@ public class InputFieldGroupBuilder
         children.add(fieldBuilder);
         return this;
     }
+
+
+
 }

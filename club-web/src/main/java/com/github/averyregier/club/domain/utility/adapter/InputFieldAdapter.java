@@ -7,8 +7,6 @@ import com.github.averyregier.club.domain.utility.builder.Later;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Created by avery on 9/30/2014.

@@ -1,6 +1,7 @@
 package com.github.averyregier.club.domain.utility;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -35,4 +36,6 @@ public interface InputFieldGroup extends InputFieldDesignator {
         }
         return Optional.empty();
     }
+
+    Optional<Object> validate(Map<String, String> map);
 }

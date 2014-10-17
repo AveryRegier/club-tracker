@@ -1,5 +1,7 @@
 package com.github.averyregier.club.domain.utility;
 
+import com.github.averyregier.club.domain.club.Person;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +20,24 @@ public interface InputField extends InputFieldDesignator {
                     return null;
                 }
             }
-        }, text;
+        },
+        text,
+        gender {
+            @Override
+            Object validate(String input) {
+                try {
+                    return Person.Gender.valueOf(input);
+                } catch(IllegalArgumentException e) {
+                    return null;
+                }
+            }
+        },
+        email {
+            @Override
+            Object validate(String input) {
+                return input.matches("\\S*@\\S*\\.\\S*") ? input : null;
+            }
+        };
 
         Object validate(String input) {
             return input;

@@ -1,20 +1,19 @@
 package com.github.averyregier.club.domain.utility.adapter;
 
+import com.github.averyregier.club.domain.club.Name;
+import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.github.averyregier.club.domain.utility.InputField.Type.*;
+import static com.github.averyregier.club.domain.utility.InputField.Type.integer;
+import static com.github.averyregier.club.domain.utility.InputField.Type.text;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class StandardInputFieldsTest {
 
@@ -37,12 +36,33 @@ public class StandardInputFieldsTest {
         assertField(designations.get(5), "Suffix", "honorific", text, "", "Sr", "Jr", "I", "II", "III", "IV");
 
         assertEquals(6, designations.size());
+
+        HashMap<String, String> input = new HashMap<>();
+        input.put("given", "Space");
+        input.put("surname", "Alien");
+        input.put("middle", "J");
+        input.put("friendly", "Spacey");
+        input.put("title", "Dr");
+        input.put("honorific", "III");
+
+        Object o = group.validate(input).get();
+        assertTrue(o instanceof Name);
+        Name name = (Name)o;
+        assertEquals("Dr", name.getTitle().get());
+        assertEquals("Space", name.getGivenName());
+        assertEquals("Alien", name.getSurname());
+        assertEquals("J", name.getMiddleNames().get(0));
+        assertEquals("III", name.getHonorificName());
+        assertEquals("Spacey", name.getFriendlyName());
     }
 
     @Test
     public void gender() {
         InputField gender = StandardInputFields.gender.createField(EN_US).build();
-        assertField(gender, "Gender", "gender", text, "MALE", "FEMALE");
+        assertField(gender, "Gender", "gender", InputField.Type.gender, "MALE", "FEMALE");
+        assertEquals(Person.Gender.MALE, gender.validate("MALE").get());
+        assertEquals(Person.Gender.FEMALE, gender.validate("FEMALE").get());
+        assertFalse(gender.validate("Both").isPresent());
     }
 
     @Test
@@ -77,8 +97,14 @@ public class StandardInputFieldsTest {
 
     @Test
     public void email() {
-        InputField gender = StandardInputFields.email.createField(EN_US).build();
-        assertField(gender, "Email Address", "email", text);
+        InputField email = StandardInputFields.email.createField(EN_US).build();
+        assertField(email, "Email Address", "email", InputField.Type.email);
+
+        assertEquals("a@b.c", email.validate("a@b.c").get());
+        assertFalse(email.validate("http://i.am.a.url").isPresent());
+        assertFalse(email.validate("spaces aren@t.happy").isPresent());
+        assertEquals("dots.are@.ha.py", email.validate("dots.are@.ha.py").get());
+        assertFalse(email.validate("notdotsaren@thappy").isPresent());
     }
 
     private void assertField(InputFieldDesignator designator,

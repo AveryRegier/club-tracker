@@ -5,7 +5,9 @@ import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -144,4 +146,69 @@ public class InputFieldGroupAdapterTest {
         assertFalse(classUnderTest.find("hierarchy", "don't exist").isPresent());
         assertFalse(classUnderTest.find("hierarchy", "hierarchy2", "leaf", "too", "many").isPresent());
     }
+
+    @Test
+    public void validate() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .id("name")
+                .field(f -> f.id("first").type(InputField.Type.text))
+                .field(f -> f.id("last").type(InputField.Type.text))
+                .validate((p, m) -> Optional.of(m.get("first").toString() + m.get("last").toString()))
+                .build();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("first", "First");
+        map.put("last", "Last");
+
+        assertEquals("FirstLast", classUnderTest.validate(map).get());
+    }
+
+    @Test
+    public void validationFailure() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .id("name")
+                .field(f -> f.id("first").type(InputField.Type.text))
+                .field(f -> f.id("last").type(InputField.Type.integer))
+                .validate((p, m) -> Optional.of(m.get("first").toString() + m.get("last").toString()))
+                .build();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("first", "First");
+        map.put("last", "Last");
+
+        assertFalse(classUnderTest.validate(map).isPresent());
+    }
+
+    @Test
+    public void validationMultiLevelFailure() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .id("upper")
+                .group(g->g.id("name")
+                    .field(f -> f.id("first").type(InputField.Type.text))
+                    .field(f -> f.id("last").type(InputField.Type.integer))
+                    .validate((p, m) -> Optional.of(m.get("first").toString() + m.get("last").toString())))
+                .validate((p,m) -> Optional.of(m.get("name")))
+                .build();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("name.first", "First");
+        map.put("name.last", "Last");
+
+        assertFalse(classUnderTest.validate(map).isPresent());
+    }
+
+    @Test
+    public void validationMultiLevel() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .id("upper")
+                .group(g->g.id("name")
+                        .field(f -> f.id("first").type(InputField.Type.text))
+                        .field(f -> f.id("last").type(InputField.Type.text))
+                        .validate((p, m) -> Optional.of(m.get("first").toString() + m.get("last").toString())))
+                .validate((p,m) -> Optional.of(m.get("name")).map(s->s.toString().toUpperCase()))
+                .build();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("name.first", "First");
+        map.put("name.last", "Last");
+
+        assertEquals("FIRSTLAST", classUnderTest.validate(map).get());
+    }
+
 }

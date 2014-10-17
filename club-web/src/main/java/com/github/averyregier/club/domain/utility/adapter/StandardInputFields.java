@@ -1,17 +1,22 @@
 package com.github.averyregier.club.domain.utility.adapter;
 
+import com.github.averyregier.club.domain.club.Name;
 import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import com.github.averyregier.club.domain.utility.builder.ChildBuilder;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import static com.github.averyregier.club.domain.utility.InputField.Type.integer;
 import static com.github.averyregier.club.domain.utility.InputField.Type.text;
 
 /**
- * Created by rx39789 on 10/3/2014.
+ * Created by avery on 10/3/2014.
  */
 public enum StandardInputFields {
     name() {
@@ -33,7 +38,44 @@ public enum StandardInputFields {
                             .value("I")
                             .value("II")
                             .value("III")
-                            .value("IV"));
+                            .value("IV"))
+                    .validate((p,m)->Optional.of(new Name() {
+                        @Override
+                        public String getGivenName() {
+                            return (String)m.get("given");
+                        }
+
+                        @Override
+                        public String getSurname() {
+                            return (String)m.get("surname");
+                        }
+
+                        @Override
+                        public List<String> getMiddleNames() {
+                            String middle = (String) m.get("middle");
+                            return Arrays.<String>asList(middle);
+                        }
+
+                        @Override
+                        public Optional<String> getTitle() {
+                            return Optional.<String>ofNullable((String)m.get("title"));
+                        }
+
+                        @Override
+                        public String getFriendlyName() {
+                            return (String)m.get("friendly");
+                        }
+
+                        @Override
+                        public String getHonorificName() {
+                            return (String)m.get("honorific");
+                        }
+
+                        @Override
+                        public String getFullName() {
+                            return null;
+                        }
+                    }));
         }
     },
     address {
@@ -59,7 +101,7 @@ public enum StandardInputFields {
         public InputFieldBuilder create(Locale locale) {
             return buildField(this)
                     .name("Gender")
-                    .type(text)
+                    .type(InputField.Type.gender)
                     .value(Person.Gender.MALE.name())
                     .value(Person.Gender.FEMALE.name());
         }
@@ -73,7 +115,9 @@ public enum StandardInputFields {
     email {
         @Override
         public ChildBuilder<InputFieldGroup, InputFieldDesignator> create(Locale locale) {
-            return buildField(this).name("Email Address").type(text);
+            return buildField(this)
+                    .name("Email Address")
+                    .type(InputField.Type.email);
         }
     };
 
