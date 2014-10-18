@@ -2,14 +2,12 @@ package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
-import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import com.github.averyregier.club.view.UserBean;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -67,12 +65,5 @@ public class RegistrationTest {
         return meFields.asGroup().get();
     }
 
-    private Optional<InputField> find(String shortCode, List<InputFieldDesignator> fieldDesignations) {
-        for(InputFieldDesignator d: fieldDesignations) {
-            if(d.getShortCode().equals(shortCode)) {
-                return d.asField();
-            }
-        }
-        return Optional.empty();
-    }
+
 }

@@ -8,10 +8,7 @@ import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import com.github.averyregier.club.domain.utility.builder.ChildBuilder;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 import static com.github.averyregier.club.domain.utility.InputField.Type.integer;
 import static com.github.averyregier.club.domain.utility.InputField.Type.text;
@@ -76,7 +73,12 @@ public enum StandardInputFields {
                         public String getFullName() {
                             return null;
                         }
-                    }));
+                    }))
+                    .map(p->{
+                        HashMap<String, String> model = new HashMap<>();
+                        model.put("given", p.getName().getGivenName());
+                        return model;
+                    });
         }
     },
     address {

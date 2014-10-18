@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.utility.adapter;
 
+import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
@@ -198,11 +199,11 @@ public class InputFieldGroupAdapterTest {
     public void validationMultiLevel() {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .id("upper")
-                .group(g->g.id("name")
+                .group(g -> g.id("name")
                         .field(f -> f.id("first").type(InputField.Type.text))
                         .field(f -> f.id("last").type(InputField.Type.text))
                         .validate((p, m) -> Optional.of(m.get("first").toString() + m.get("last").toString())))
-                .validate((p,m) -> Optional.of(m.get("name")).map(s->s.toString().toUpperCase()))
+                .validate((p, m) -> Optional.of(m.get("name")).map(s -> s.toString().toUpperCase()))
                 .build();
         HashMap<String, String> map = new HashMap<>();
         map.put("name.first", "First");
@@ -211,4 +212,28 @@ public class InputFieldGroupAdapterTest {
         assertEquals("FIRSTLAST", classUnderTest.validate(map).get());
     }
 
+    @Test
+    public void map() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .id("name")
+                .field(f -> f.id("first").type(InputField.Type.text))
+                .field(f -> f.id("last").type(InputField.Type.text))
+                .map(p -> {
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put("first", p.getName().getGivenName());
+                    map.put("last", p.getName().getSurname());
+                    return map;
+                })
+                .build();
+
+        HashMap<String, String> expected = new HashMap<>();
+        expected.put("first", "First");
+        expected.put("last", "Last");
+
+        User user = new User();
+        user.setName("First", "Last");
+
+        assertEquals(expected, classUnderTest.map(user));
+
+    }
 }

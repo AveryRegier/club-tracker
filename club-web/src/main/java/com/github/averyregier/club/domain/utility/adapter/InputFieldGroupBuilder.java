@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ public class InputFieldGroupBuilder
     private String name;
     private List<ChildBuilder<InputFieldGroup, InputFieldDesignator>> children = new ArrayList<>();
     private BiFunction<Person, Map<String, Object>, Optional<Object>> validationFn;
+    private Function<Person, Map<String, String>> mapFn;
 
     public InputFieldGroupBuilder id(String id) {
         this.id = id;
@@ -49,7 +51,8 @@ public class InputFieldGroupBuilder
                 name,
                 parent,
                 children.stream().map(g -> g.build(later)).collect(Collectors.toList()),
-                validationFn
+                validationFn,
+                mapFn
         );
         later.set(group);
         return group;
@@ -79,6 +82,9 @@ public class InputFieldGroupBuilder
         return this;
     }
 
-
+    public InputFieldGroupBuilder map(Function<Person, Map<String,String>> mapFn) {
+        this.mapFn = mapFn;
+        return this;
+    }
 
 }

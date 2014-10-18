@@ -8,6 +8,7 @@ import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -19,16 +20,19 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
     private Later<InputFieldGroup> parent;
     private final List<InputFieldDesignator> children;
     private final BiFunction<Person, Map<String, Object>, Optional<Object>> validationFn;
+    private final Function<Person, Map<String, String>> mapFn;
 
     InputFieldGroupAdapter(String id, String name,
                            Later<InputFieldGroup> parent,
                            List<InputFieldDesignator> children,
-                           BiFunction<Person, Map<String, Object>, Optional<Object>> validationFn)
+                           BiFunction<Person, Map<String, Object>, Optional<Object>> validationFn,
+                           Function<Person, Map<String, String>> mapFn)
     {
         this.id = id;
         this.name = name;
         this.parent = parent;
         this.validationFn = validationFn;
+        this.mapFn = mapFn;
         this.children = new ArrayList<>(children);
     }
 
@@ -76,11 +80,16 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
         return validationFn != null ? validationFn.apply(null, results) : Optional.empty();
     }
 
+    @Override
+    public Map<String, String> map(Person person) {
+        return mapFn.apply(person);
+    }
+
     private Map<String, String> subMap(String prefix, Map<String, String> map) {
         return map.entrySet().stream()
-                .filter(e->e.getKey().split("\\.")[0].equals(prefix))
+                .filter(e -> e.getKey().split("\\.")[0].equals(prefix))
                 .collect(Collectors.toMap(
-                        e->e.getKey().substring(prefix.length()+1),
+                        e -> e.getKey().substring(prefix.length() + 1),
                         Map.Entry::getValue));
     }
 

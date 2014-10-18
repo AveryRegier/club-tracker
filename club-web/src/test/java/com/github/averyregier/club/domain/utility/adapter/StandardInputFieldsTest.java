@@ -54,6 +54,8 @@ public class StandardInputFieldsTest {
         assertEquals("J", name.getMiddleNames().get(0));
         assertEquals("III", name.getHonorificName());
         assertEquals("Spacey", name.getFriendlyName());
+
+
     }
 
     @Test
