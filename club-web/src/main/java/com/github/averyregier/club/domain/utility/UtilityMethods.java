@@ -36,4 +36,23 @@ public class UtilityMethods {
     public static <T> Collector<T, ?, LinkedHashSet<T>> toLinkedSet() {
         return Collectors.toCollection(LinkedHashSet::new);
     }
+
+    public static <R> Map<String, R> putAll(Map<String, R> model, String prefix, Map<String, R> subModel) {
+        for(Map.Entry<String, R> e: subModel.entrySet()) {
+            model.put(prefix + "." + e.getKey(), e.getValue());
+        }
+        return model;
+    }
+
+    public static <R> Map<String, R> prefix(String prefix, Map<String, R> subModel) {
+        return putAll(new HashMap<>(), prefix, subModel);
+    }
+
+    public static <R> Map<String, R> subMap(String prefix, Map<String, R> map) {
+        return map.entrySet().stream()
+                .filter(e -> e.getKey().split("\\.")[0].equals(prefix))
+                .collect(Collectors.toMap(
+                        e -> e.getKey().substring(prefix.length() + 1),
+                        Map.Entry::getValue));
+    }
 }

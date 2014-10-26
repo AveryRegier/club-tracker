@@ -1,6 +1,5 @@
 package com.github.averyregier.club.domain.club;
 
-import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 
 import java.util.List;
@@ -12,5 +11,5 @@ import java.util.Map;
 public interface RegistrationInformation {
 
     public List<InputFieldDesignator> getForm();
-    public Map<InputField, Object> getFields();
+    public Map<String, String> getFields();
 }

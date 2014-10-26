@@ -77,6 +77,7 @@ public enum StandardInputFields {
                     .map(p->{
                         HashMap<String, String> model = new HashMap<>();
                         model.put("given", p.getName().getGivenName());
+                        model.put("surname", p.getName().getSurname());
                         return model;
                     });
         }
@@ -106,7 +107,8 @@ public enum StandardInputFields {
                     .name("Gender")
                     .type(InputField.Type.gender)
                     .value(Person.Gender.MALE.name())
-                    .value(Person.Gender.FEMALE.name());
+                    .value(Person.Gender.FEMALE.name())
+                    .map(p->p.getGender().map(g->g.name()).orElse(null));
         }
     },
     age {

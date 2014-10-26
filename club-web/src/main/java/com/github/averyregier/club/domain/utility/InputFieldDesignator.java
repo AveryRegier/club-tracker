@@ -9,5 +9,12 @@ public interface InputFieldDesignator extends Contained<InputFieldGroup> {
     public String getName();
     public Optional<InputFieldGroup> asGroup();
     public Optional<InputField> asField();
+    public default boolean isGroup() {
+        return false;
+    }
+
+    public default boolean isField() {
+        return false;
+    }
 
 }

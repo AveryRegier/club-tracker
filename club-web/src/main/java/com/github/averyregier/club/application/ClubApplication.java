@@ -42,9 +42,9 @@ public class ClubApplication implements SparkApplication {
         spark.Spark.staticFileLocation("/public");
 
         new Login().init(this);
-        new RestAPI().init(this);
-        new RegistrationController().init(this);
         new SetupController().init(this);
+        new RegistrationController().init(this);
+        new RestAPI().init(this);
     }
 
     public UserManager getUserManager() {

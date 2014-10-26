@@ -1,0 +1,24 @@
+.inputGroupFields {
+    margin-left: 10px;
+}
+.inputGroupLabel {
+    border-style: solid;
+    border-width: 1px;
+    padding-left: 10px;
+    border-radius: 5px;
+}
+label{
+    display: inline-block;
+    float: left;
+    clear: left;
+    width: 70px;
+}
+input,select {
+    display: inline-block;
+    float: left;
+}
+.actions{
+    display: inline-block;
+    float: left;
+    clear: left;
+}

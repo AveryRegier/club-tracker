@@ -26,8 +26,8 @@ public class RegistrationTest {
         InputFieldGroup meFields = assertGroup("me", registrationForm.getForm());
         InputFieldGroup nameFields = assertGroup("name", meFields);
 
-        assertEquals("Foo", registrationForm.getFields().get(nameFields.find("given").get()));
-        assertEquals("Bar", registrationForm.getFields().get(nameFields.find("surname").get()));
+        assertEquals("Foo", registrationForm.getFields().get("me.name.given"));
+        assertEquals("Bar", registrationForm.getFields().get("me.name.surname"));
 //        Family family = me.asParent().get().register(registrationForm);
     }
 
@@ -43,10 +43,10 @@ public class RegistrationTest {
         InputFieldGroup meFields = assertGroup("me", registrationForm.getForm());
         InputFieldGroup nameFields = assertGroup("name", meFields);
 
-        assertNull(registrationForm.getFields().get(nameFields.find("given").get()));
-        assertNull(registrationForm.getFields().get(nameFields.find("surname").get()));
+        assertNull(registrationForm.getFields().get("me.name.given"));
+        assertNull(registrationForm.getFields().get("me.name.surname"));
 
-        assertEquals(Person.Gender.MALE, registrationForm.getFields().get(meFields.find("gender").get()));
+        assertEquals("MALE", registrationForm.getFields().get("me.gender"));
     }
 
     private InputFieldGroup assertGroup(String shortCode, List<InputFieldDesignator> form) {

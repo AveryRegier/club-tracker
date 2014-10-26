@@ -5,8 +5,11 @@ import com.github.averyregier.club.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
+import spark.template.freemarker.FreeMarkerEngine;
 
-import static spark.Spark.post;
+import java.util.Optional;
+
+import static spark.Spark.*;
 
 public class RegistrationController extends ModelMaker {
 
@@ -26,6 +29,20 @@ public class RegistrationController extends ModelMaker {
 //            request.attribute("user", bean);
 //            return new spark.ModelAndView(new HashMap<>(), "registrationSuccess.ftl");
         });
+
+        before("/protected/*/*", (request, response) -> {
+            if(app.getProgram() == null) {
+                response.redirect("/protected/setup");
+                halt();
+            }
+        });
+
+        get("/protected/*/family", (request, response) ->{
+            User user = ((Optional<User>) request.attribute("user")).get();
+            return new spark.ModelAndView(
+                    toMap("regInfo", app.getProgram().createRegistrationForm(user)),
+                    "family.ftl");
+        }, new FreeMarkerEngine());
     }
 
     private UserBean mapUser(Request request) {

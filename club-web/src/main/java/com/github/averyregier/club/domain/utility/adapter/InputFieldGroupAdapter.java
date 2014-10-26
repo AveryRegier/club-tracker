@@ -4,6 +4,7 @@ import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.*;
@@ -32,14 +33,31 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
         this.name = name;
         this.parent = parent;
         this.validationFn = validationFn;
-        this.mapFn = mapFn;
+        this.mapFn = mapFn != null ? mapFn : defaultMapper();
         this.children = new ArrayList<>(children);
+    }
+
+    private Function<Person, Map<String, String>> defaultMapper() {
+        return p->{
+            Map<String, String> model = new HashMap<String,String>();
+            for(InputFieldDesignator d: getFieldDesignations()) {
+                if(d.asField().isPresent()) {
+                    model.put(d.getShortCode(), d.asField().get().map(p));
+                } else {
+                    UtilityMethods.putAll(
+                            model,
+                            d.getShortCode(),
+                            d.asGroup().get().map(p));
+                }
+            }
+            return model;
+        };
     }
 
     @Override
     public String getId() {
         if(parent != null) {
-            return parent.get().getId()+":"+id;
+            return parent.get().getId()+"."+id;
         }
         return id;
     }
@@ -65,6 +83,11 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
     }
 
     @Override
+    public boolean isGroup() {
+        return true;
+    }
+
+    @Override
     public Optional<Object> validate(Map<String, String> map) {
         Map<String, Object> results = new HashMap<>();
         for(InputFieldDesignator d: getFieldDesignations()) {
@@ -72,7 +95,7 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
             if(d.asField().isPresent())  {
                 dResult = d.asField().get().validate(map.get(d.getShortCode()));
             } else {
-                dResult = d.asGroup().get().validate(subMap(d.getShortCode(), map));
+                dResult = d.asGroup().get().validate(UtilityMethods.subMap(d.getShortCode(), map));
             }
             if(!dResult.isPresent()) return Optional.empty();
             results.put(d.getShortCode(), dResult.get());
@@ -83,14 +106,6 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
     @Override
     public Map<String, String> map(Person person) {
         return mapFn.apply(person);
-    }
-
-    private Map<String, String> subMap(String prefix, Map<String, String> map) {
-        return map.entrySet().stream()
-                .filter(e -> e.getKey().split("\\.")[0].equals(prefix))
-                .collect(Collectors.toMap(
-                        e -> e.getKey().substring(prefix.length() + 1),
-                        Map.Entry::getValue));
     }
 
     @Override

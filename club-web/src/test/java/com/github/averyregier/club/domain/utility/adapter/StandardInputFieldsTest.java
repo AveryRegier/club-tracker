@@ -1,11 +1,13 @@
 package com.github.averyregier.club.domain.utility.adapter;
 
+import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.Name;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
+import com.github.averyregier.club.view.UserBean;
 import org.junit.Test;
 
 import java.util.*;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 import static com.github.averyregier.club.domain.utility.InputField.Type.integer;
 import static com.github.averyregier.club.domain.utility.InputField.Type.text;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class StandardInputFieldsTest {
 
@@ -55,6 +58,11 @@ public class StandardInputFieldsTest {
         assertEquals("III", name.getHonorificName());
         assertEquals("Spacey", name.getFriendlyName());
 
+        User person = new User();
+        person.setName("Space", "Alien");
+        Map<String, String> model = group.map(person);
+        assertEquals("Space", model.get("given"));
+        assertEquals("Alien", model.get("surname"));
 
     }
 
@@ -65,6 +73,19 @@ public class StandardInputFieldsTest {
         assertEquals(Person.Gender.MALE, gender.validate("MALE").get());
         assertEquals(Person.Gender.FEMALE, gender.validate("FEMALE").get());
         assertFalse(gender.validate("Both").isPresent());
+
+        assertGenderMaps(gender, "MALE");
+        assertGenderMaps(gender, "FEMALE");
+
+        assertNull(gender.map(new User()));
+    }
+
+    private void assertGenderMaps(InputField gender, String aGenderName) {
+        User person = new User();
+        UserBean bean = new UserBean();
+        bean.setGender(aGenderName);
+        person.update(bean);
+        assertEquals(aGenderName, gender.map(person));
     }
 
     @Test
@@ -129,7 +150,7 @@ public class StandardInputFieldsTest {
                              String... expectedValues) {
         assertEquals(name, designator.getName());
         if (designator.getContainer() != null) {
-            assertEquals(designator.getContainer().getId() + ":" + shortCode, designator.getId());
+            assertEquals(designator.getContainer().getId() + "." + shortCode, designator.getId());
         } else {
             assertEquals(shortCode, designator.getId());
         }

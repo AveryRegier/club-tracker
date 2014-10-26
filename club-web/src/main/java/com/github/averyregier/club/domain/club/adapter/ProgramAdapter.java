@@ -5,9 +5,9 @@ import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
-import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 import com.github.averyregier.club.domain.utility.adapter.InputFieldGroupBuilder;
 import com.github.averyregier.club.domain.utility.adapter.StandardInputFields;
 
@@ -41,14 +41,9 @@ public class ProgramAdapter implements Program {
                 .build();
         List<InputFieldDesignator> list = Arrays.asList(me);
 
-        InputField given = me.find("name", "given").get().asField().get();
-        InputField surname = me.find("name", "surname").get().asField().get();
-        InputField gender = me.find("gender").get().asField().get();
+        Map<String, String> map = UtilityMethods.prefix(me.getShortCode(), me.map(user));
 
-        LinkedHashMap<InputField, Object> map = new LinkedHashMap<>();
-        map.put(given, user.getName().getGivenName());
-        map.put(surname, user.getName().getSurname());
-        map.put(gender, user.getGender().orElse(null));
+//        Map<InputField, ? extends Object> map = me.getFields().stream().collect(Collectors.toMap(f -> f, f -> f.map(user)));
 
         return new RegistrationInformation() {
             @Override
@@ -57,7 +52,7 @@ public class ProgramAdapter implements Program {
             }
 
             @Override
-            public Map<InputField, Object> getFields() {
+            public Map<String, String> getFields() {
                 return map;
             }
         };

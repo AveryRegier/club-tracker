@@ -64,7 +64,7 @@ public class InputFieldGroupAdapterTest {
 
         InputField field = classUnderTest.getFields().get(0);
         assertEquals("bar", field.getShortCode());
-        assertEquals("foo:bar", field.getId());
+        assertEquals("foo.bar", field.getId());
         assertNull(classUnderTest.getContainer());
     }
 
@@ -83,8 +83,8 @@ public class InputFieldGroupAdapterTest {
         InputFieldGroup group = classUnderTest.getGroups().get(0);
         assertEquals("baz", group.getShortCode());
         assertEquals(classUnderTest, group.getContainer());
-        assertEquals("foo:baz", group.getId());
-        assertEquals("foo:baz:bar", group.getFields().get(0).getId());
+        assertEquals("foo.baz", group.getId());
+        assertEquals("foo.baz.bar", group.getFields().get(0).getId());
         assertNull(classUnderTest.getContainer());
     }
 
@@ -102,21 +102,21 @@ public class InputFieldGroupAdapterTest {
 
         List<InputFieldDesignator> designators = classUnderTest.getFieldDesignations();
         InputFieldDesignator name = designators.get(0);
-        assertEquals("foo:name", name.getId());
+        assertEquals("foo.name", name.getId());
         assertEquals(classUnderTest, name.getContainer());
         assertFalse(name.asGroup().isPresent());
         assertTrue(name.asField().isPresent());
         assertEquals(name, name.asField().get());
 
         InputFieldDesignator address = designators.get(1);
-        assertEquals("foo:address", address.getId());
+        assertEquals("foo.address", address.getId());
         assertEquals(classUnderTest, address.getContainer());
         assertTrue(address.asGroup().isPresent());
         assertFalse(address.asField().isPresent());
         assertEquals(address, address.asGroup().get());
 
         InputFieldDesignator allergies = designators.get(2);
-        assertEquals("foo:allergies", allergies.getId());
+        assertEquals("foo.allergies", allergies.getId());
         assertEquals(classUnderTest, allergies.getContainer());
         assertFalse(allergies.asGroup().isPresent());
         assertTrue(allergies.asField().isPresent());
@@ -235,5 +235,50 @@ public class InputFieldGroupAdapterTest {
 
         assertEquals(expected, classUnderTest.map(user));
 
+    }
+
+    @Test
+    public void defaultGroupMap() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .id("name")
+                .field(f -> f.id("first")
+                        .type(InputField.Type.text)
+                        .map(p->p.getName().getGivenName()))
+                .field(f -> f.id("last")
+                        .type(InputField.Type.text)
+                        .map(p->p.getName().getSurname()))
+                .build();
+
+        HashMap<String, String> expected = new HashMap<>();
+        expected.put("first", "First");
+        expected.put("last", "Last");
+
+        User user = new User();
+        user.setName("First", "Last");
+
+        assertEquals(expected, classUnderTest.map(user));
+    }
+
+    @Test
+    public void defaultMultiLevelGroupMap() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .group(g->g
+                    .id("name")
+                    .field(f -> f.id("first")
+                            .type(InputField.Type.text)
+                            .map(p->p.getName().getGivenName()))
+                    .field(f -> f.id("last")
+                            .type(InputField.Type.text)
+                            .map(p->p.getName().getSurname())))
+                .build();
+
+        HashMap<String, String> expected = new HashMap<>();
+        expected.put("name.first", "First");
+        expected.put("name.last", "Last");
+
+        User user = new User();
+        user.setName("First", "Last");
+
+        assertEquals(expected, classUnderTest.map(user));
     }
 }

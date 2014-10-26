@@ -11,6 +11,8 @@ import java.util.Optional;
  */
 public interface InputField extends InputFieldDesignator {
 
+
+
     public enum Type {
         integer {
             @Override
@@ -62,6 +64,8 @@ public interface InputField extends InputFieldDesignator {
     public default Optional<Object> validate(String input) {
         return Optional.ofNullable(getType().validate(input));
     }
+
+    public String map(Person person);
 
     public interface Value {
         public String getDisplayName();

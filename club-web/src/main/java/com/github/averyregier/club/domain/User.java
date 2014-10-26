@@ -121,7 +121,7 @@ public class User implements Person {
         this.name = user.getName();
         String gender1 = user.getGender();
         if(gender1 != null) {
-            this.gender = Gender.valueOf(gender1);
+            this.gender = Gender.valueOf(gender1.toUpperCase());
         }
     }
 
