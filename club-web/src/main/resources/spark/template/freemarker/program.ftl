@@ -15,7 +15,7 @@
         <div class="inputGroupLabel">Setup your club.</div>
         <div class="inputGroupFields">
             <div class="inputField">
-                <label>Organization Name:</label>
+                <label for="organizationName">Organization Name:</label>
                 <input type="text" size="50" name="organizationName" id="organizationName" value="${program.shortName}"/>
             </div>
             <div class="inputField">
@@ -35,8 +35,8 @@
                 </div>
             </div>
             <div class="inputField">
-                <label>Add another:</label>
-                <select name="addClub">
+                <label for="addClub">Add another:</label>
+                <select name="addClub" id="addClub">
                     <#list program.curriculum.series as club>
                         <option value="${club.id}">${club.shortCode}</option>
                     </#list>
