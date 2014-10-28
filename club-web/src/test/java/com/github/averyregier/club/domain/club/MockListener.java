@@ -57,6 +57,11 @@ class MockListener implements Listener {
     }
 
     @Override
+    public Optional<String> getEmail() {
+        return null;
+    }
+
+    @Override
     public Optional<Parent> asParent() {
         return null;
     }

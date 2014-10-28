@@ -49,6 +49,25 @@ public class RegistrationTest {
         assertEquals("MALE", registrationForm.getFields().get("me.gender"));
     }
 
+    @Test
+    public void emailPrefilled() {
+        UserBean bean = new UserBean();
+        bean.setEmail("hi@there.com");
+        User me = new User();
+        me.update(bean);
+        Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
+        RegistrationInformation registrationForm = program.createRegistrationForm(me);
+
+        InputFieldGroup meFields = assertGroup("me", registrationForm.getForm());
+        InputFieldGroup nameFields = assertGroup("name", meFields);
+
+        assertNull(registrationForm.getFields().get("me.name.given"));
+        assertNull(registrationForm.getFields().get("me.name.surname"));
+
+        assertNull(registrationForm.getFields().get("me.gender"));
+        assertEquals("hi@there.com", registrationForm.getFields().get("me.email"));
+    }
+
     private InputFieldGroup assertGroup(String shortCode, List<InputFieldDesignator> form) {
         assertTrue(!form.isEmpty());
         InputFieldDesignator meFields = form.get(0);

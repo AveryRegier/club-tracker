@@ -19,6 +19,7 @@ public class User implements Person {
     private String first;
     private String last;
     private Gender gender;
+    private String email;
 
     public String resetAuth() {
         byte[] bytes = new byte[10];
@@ -91,6 +92,11 @@ public class User implements Person {
     }
 
     @Override
+    public Optional<String> getEmail() {
+        return Optional.ofNullable(email);
+    }
+
+    @Override
     public Optional<Parent> asParent() {
         return Optional.empty();
     }
@@ -123,6 +129,7 @@ public class User implements Person {
         if(gender1 != null) {
             this.gender = Gender.valueOf(gender1.toUpperCase());
         }
+        this.email = user.getEmail();
     }
 
     private String combineName(Object first, Object last) {

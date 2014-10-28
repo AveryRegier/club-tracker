@@ -13,12 +13,13 @@ public interface Person {
     public enum Gender {
         MALE,
         FEMALE;
+
     }
     String getId();
     public Name getName();
     public Optional<Gender> getGender();
-
     public Optional<User> getLogin();
+    public Optional<String> getEmail();
 
     public Optional<Parent> asParent();
     public Optional<Listener> asListener();

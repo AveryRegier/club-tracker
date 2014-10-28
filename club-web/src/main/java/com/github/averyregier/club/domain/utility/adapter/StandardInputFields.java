@@ -122,7 +122,8 @@ public enum StandardInputFields {
         public InputFieldBuilder create(Locale locale) {
             return buildField(this)
                     .name("Email Address")
-                    .type(InputField.Type.email);
+                    .type(InputField.Type.email)
+                    .map(p->p.getEmail().orElse(null));
         }
     },
     ageGroup {

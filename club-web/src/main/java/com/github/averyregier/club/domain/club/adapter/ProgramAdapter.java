@@ -38,6 +38,7 @@ public class ProgramAdapter implements Program {
         InputFieldGroup me = new InputFieldGroupBuilder().id("me").name("About Myself")
                 .group(StandardInputFields.name.createGroup(getLocale()))
                 .field(StandardInputFields.gender.createField(getLocale()))
+                .field(StandardInputFields.email.createField(getLocale()))
                 .build();
         List<InputFieldDesignator> list = Arrays.asList(me);
 

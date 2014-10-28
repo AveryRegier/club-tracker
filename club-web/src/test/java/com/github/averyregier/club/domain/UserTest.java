@@ -27,4 +27,21 @@ public class UserTest {
         assertEquals(Optional.empty(), classUnderTest.getGender());
     }
 
+    @Test
+    public void noEmail() {
+        User classUnderTest = new User();
+        UserBean bean = new UserBean();
+        classUnderTest.update(bean);
+        assertEquals(Optional.empty(), classUnderTest.getEmail());
+
+    }
+
+    @Test
+    public void email() {
+        User classUnderTest = new User();
+        UserBean bean = new UserBean();
+        bean.setEmail("blubber@flubber.org");
+        classUnderTest.update(bean);
+        assertEquals("blubber@flubber.org", classUnderTest.getEmail().get());
+    }
 }
