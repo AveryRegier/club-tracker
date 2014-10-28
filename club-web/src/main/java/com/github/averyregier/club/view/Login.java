@@ -6,6 +6,7 @@ import org.brickred.socialauth.AuthProvider;
 import org.brickred.socialauth.Profile;
 import org.brickred.socialauth.SocialAuthConfig;
 import org.brickred.socialauth.SocialAuthManager;
+import org.brickred.socialauth.util.BirthDate;
 import spark.Request;
 import spark.Response;
 import spark.Session;
@@ -43,7 +44,7 @@ public class Login extends ModelMaker {
             request.session().attribute("location", request.url());
             String context = request.contextPath();
             context = context == null ? "" : context;
-            response.redirect(context +"/login");
+            response.redirect(context + "/login");
             halt();
         });
 
@@ -77,15 +78,18 @@ public class Login extends ModelMaker {
                 if(manager == null || provider == null) {
                     response.redirect("/login");
                 } else {
-
                     try {
-                        String validatedId = provider.getUserProfile().getValidatedId();
-                        Optional<User> user = app.getUserManager().getUser(validatedId);
-                        if (!user.isPresent()) {
-                            return Login.this.registration(provider);
+                        UserBean userBean = mapUser(provider.getUserProfile());
+                        User auser = null;
+                        Optional<User> userOptional = app.getUserManager().getUser(userBean.getUniqueId());
+                        if(userOptional.isPresent()) {
+                            auser = userOptional.get();
                         } else {
-                            Login.resetCookies(request, response, validatedId, user.get());
+                            auser = app.getUserManager().createUser(userBean.getUniqueId());
                         }
+                        auser.update(userBean);
+                        resetCookies(request, response, auser.getId(), auser);
+//                            return Login.this.registration(provider);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -95,8 +99,28 @@ public class Login extends ModelMaker {
                 response.redirect("/login");
             }
             return null;
-        }, new FreeMarkerEngine());
+        });
     }
+
+    private UserBean mapUser(Profile profile) {
+        UserBean user = new UserBean();
+        user.setEmail(profile.getEmail());
+        user.setFirstName(profile.getFirstName());
+        user.setLastName(profile.getLastName());
+        user.setDisplayName(profile.getDisplayName());
+        BirthDate dob = profile.getDob();
+        if(dob != null) {
+            user.setDob(dob.getDay() + "/" + dob.getMonth() + "/" + dob.getYear());
+        }
+        user.setCountry(profile.getCountry());
+        user.setLanguage(profile.getLanguage());
+        user.setGender(profile.getGender());
+        user.setLocation(profile.getLocation());
+        user.setProfileImageURL(profile.getProfileImageURL());
+        user.setUniqueId(profile.getValidatedId());
+        return user;
+    }
+
 
     private spark.ModelAndView registration(final AuthProvider provider)
             throws Exception {

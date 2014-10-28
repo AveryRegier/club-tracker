@@ -1,3 +1,8 @@
+body {
+    font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+    line-height: 150%;
+}
+
 .inputGroupFields {
     margin-left: 10px;
 }
@@ -11,9 +16,12 @@ label{
     display: inline-block;
     float: left;
     clear: left;
-    width: 70px;
+    width: 150px;
+    cursor: pointer;
+    cursor: hand;
 }
-input,select {
+input, select, .staticField {
+    font-family: 'Open Sans', Arial, Helvetica, sans-serif;
     display: inline-block;
     float: left;
 }
@@ -21,4 +29,12 @@ input,select {
     display: inline-block;
     float: left;
     clear: left;
+}
+
+input {
+    border: 2px solid #ccc;
+}
+
+input:focus {
+    border: 2px solid #000;
 }

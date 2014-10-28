@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <LINK href="/main.css" rel="stylesheet" type="text/css">
     <title>OpenID Provider Redirection</title>
 </head>
   <body onload="document.forms['openid-provider-redirection'].submit();">

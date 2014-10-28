@@ -4,6 +4,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <LINK href="/main.css" rel="stylesheet" type="text/css">
     <title>Club Login</title>
+    <script type="text/javascript">
+        <#include "forms.js">
+    </script>
 </head>
 <body>
 

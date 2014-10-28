@@ -1,13 +1,13 @@
 <div class="inputField">
-    <label>${descriptor.name}</label>
+    <label for="${descriptor.id}">${descriptor.name}</label>
     <#assign fieldValue = regInfo.fields[descriptor.id]!"">
     <#if descriptor.values.present>
-        <select name="${descriptor.id}">
+        <select name="${descriptor.id}" id="${descriptor.id}">
         <#list descriptor.values.get() as value>
             <option value="${value.value}"<#if value.value = fieldValue || value.default> default</#if>>${value.displayName}</option>
         </#list>
         </select>
     <#else>
-        <input type="text" name="${descriptor.id}" value="${fieldValue}">
+        <input type="text" name="${descriptor.id}" id="${descriptor.id}" value="${fieldValue}" onfocus="this.select()">
     </#if>
 </div>

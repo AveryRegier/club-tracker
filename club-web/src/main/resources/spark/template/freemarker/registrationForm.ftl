@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Club Login</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <LINK href="/main.css" rel="stylesheet" type="text/css">
+    <title>Club Login</title>
     <style type="text/css">
         .style1{text-align: justify;}
     </style>

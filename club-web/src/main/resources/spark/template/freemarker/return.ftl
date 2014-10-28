@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OpenId sample</title>
+    <LINK href="/main.css" rel="stylesheet" type="text/css">
+    <title>OpenId sample</title>
 </head>
 <body>
 	<div>
