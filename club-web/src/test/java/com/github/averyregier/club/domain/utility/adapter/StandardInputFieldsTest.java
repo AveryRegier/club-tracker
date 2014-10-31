@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.utility.adapter;
 
+import com.github.averyregier.club.LocaleTinkerer;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.Name;
 import com.github.averyregier.club.domain.club.Person;
@@ -108,14 +109,21 @@ public class StandardInputFieldsTest {
         assertField(designations.get(2), "City", "city", text);
         assertField(designations.get(3), "State/Province", "territory", text);
         assertField(designations.get(4), "Postal Code", "postal-code", text);
-        assertField(designations.get(5), "Country", "country", text, Locale.getISOCountries());
+        assertFieldIgnoreValues(designations.get(5), "Country", "country", text);
 
-//        assertEquals(Arrays.asList(Locale.getISOCountries()).stream()
-//                        .map(c->Locale.forLanguageTag("en_"+c).getDisplayCountry())
-//                        .collect(Collectors.toList()),
-//                designations.get(5).asField().get().getValues().get().stream()
-//                        .map(InputField.Value::getDisplayName)
-//                        .collect(Collectors.toList()));
+        assertEquals(LocaleTinkerer.getAllCountryDropDown("en", Locale.getDefault()).stream()
+                        .map(InputField.Value::getDisplayName)
+                        .collect(Collectors.toList()),
+                designations.get(5).asField().get().getValues().get().stream()
+                        .map(InputField.Value::getDisplayName)
+                        .collect(Collectors.toList()));
+
+        assertEquals(LocaleTinkerer.getAllCountryDropDown("en", Locale.getDefault()).stream()
+                        .map(InputField.Value::getValue)
+                        .collect(Collectors.toList()),
+                designations.get(5).asField().get().getValues().get().stream()
+                        .map(InputField.Value::getValue)
+                        .collect(Collectors.toList()));
     }
 
     @Test
@@ -148,15 +156,7 @@ public class StandardInputFieldsTest {
                              String shortCode,
                              InputField.Type type,
                              String... expectedValues) {
-        assertEquals(name, designator.getName());
-        if (designator.getContainer() != null) {
-            assertEquals(designator.getContainer().getId() + "." + shortCode, designator.getId());
-        } else {
-            assertEquals(shortCode, designator.getId());
-        }
-        assertEquals(shortCode, designator.getShortCode());
-        assertTrue(designator.asField().isPresent());
-        assertEquals(type, designator.asField().get().getType());
+        assertFieldIgnoreValues(designator, name, shortCode, type);
 
         Optional<List<InputField.Value>> foundValues = designator.asField().get().getValues();
         if (expectedValues != null && expectedValues.length > 0) {
@@ -168,5 +168,17 @@ public class StandardInputFieldsTest {
         } else {
             assertFalse(foundValues.isPresent());
         }
+    }
+
+    private void assertFieldIgnoreValues(InputFieldDesignator designator, String name, String shortCode, InputField.Type type) {
+        assertEquals(name, designator.getName());
+        if (designator.getContainer() != null) {
+            assertEquals(designator.getContainer().getId() + "." + shortCode, designator.getId());
+        } else {
+            assertEquals(shortCode, designator.getId());
+        }
+        assertEquals(shortCode, designator.getShortCode());
+        assertTrue(designator.asField().isPresent());
+        assertEquals(type, designator.asField().get().getType());
     }
 }

@@ -43,7 +43,7 @@ public class InputFieldBuilder implements Builder<InputField>, ChildBuilder<Inpu
     }
 
     public InputFieldBuilder value(String value) {
-        this.values.add(new InputField.Value() {
+        return value(new InputField.Value() {
             @Override
             public String getDisplayName() {
                 return value;
@@ -59,7 +59,6 @@ public class InputFieldBuilder implements Builder<InputField>, ChildBuilder<Inpu
                 return false;
             }
         });
-        return this;
     }
 
     public InputField build(Later<InputFieldGroup> group) {
@@ -67,7 +66,7 @@ public class InputFieldBuilder implements Builder<InputField>, ChildBuilder<Inpu
     }
 
     public InputFieldBuilder value(String value, String displayName, boolean isDefault) {
-        this.values.add(new InputField.Value() {
+        return value(new InputField.Value() {
             @Override
             public String getDisplayName() {
                 return displayName;
@@ -83,11 +82,15 @@ public class InputFieldBuilder implements Builder<InputField>, ChildBuilder<Inpu
                 return isDefault;
             }
         });
-        return this;
     }
 
     public InputFieldBuilder map(Function<Person, String> mapFn) {
         this.mapFn = mapFn;
+        return this;
+    }
+
+    public InputFieldBuilder value(InputField.Value value) {
+        this.values.add(value);
         return this;
     }
 }
