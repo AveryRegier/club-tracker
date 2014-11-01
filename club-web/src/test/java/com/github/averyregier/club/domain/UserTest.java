@@ -44,4 +44,22 @@ public class UserTest {
         classUnderTest.update(bean);
         assertEquals("blubber@flubber.org", classUnderTest.getEmail().get());
     }
+
+    @Test
+    public void firstName() {
+        User classUnderTest = new User();
+        UserBean bean = new UserBean();
+        bean.setFirstName("Harry");
+        classUnderTest.update(bean);
+        assertEquals("Harry", classUnderTest.getName().getGivenName());
+    }
+
+    @Test
+    public void lastName() {
+        User classUnderTest = new User();
+        UserBean bean = new UserBean();
+        bean.setFirstName("Houdini");
+        classUnderTest.update(bean);
+        assertEquals("Houdini", classUnderTest.getName().getGivenName());
+    }
 }

@@ -105,8 +105,17 @@ public class Login extends ModelMaker {
     private UserBean mapUser(Profile profile) {
         UserBean user = new UserBean();
         user.setEmail(profile.getEmail());
-        user.setFirstName(profile.getFirstName());
-        user.setLastName(profile.getLastName());
+        String firstName = profile.getFirstName();
+        if(!empty(firstName))
+            user.setFirstName(firstName);
+        String lastName = profile.getLastName();
+        if(!empty(lastName)) {
+            user.setLastName(lastName);
+        } else if(!empty(profile.getFullName())) {
+            mapSplitName(profile.getFullName(), user);
+        } else if(!empty(profile.getDisplayName())) {
+            mapSplitName(profile.getDisplayName(), user);
+        }
         user.setDisplayName(profile.getDisplayName());
         BirthDate dob = profile.getDob();
         if(dob != null) {
@@ -119,6 +128,22 @@ public class Login extends ModelMaker {
         user.setProfileImageURL(profile.getProfileImageURL());
         user.setUniqueId(profile.getValidatedId());
         return user;
+    }
+
+    private void mapSplitName(String fullName, UserBean user) {
+        String[] parts = fullName.trim().split("\\s");
+        if(parts.length > 0) {
+            user.setFirstName(parts[0]);
+        }
+        if(parts.length > 1) {
+            int lastIndex = parts.length - 1;
+            user.setLastName(parts[lastIndex]);
+            // if middle names were on user bean set them here
+        }
+    }
+
+    private boolean empty(String s) {
+        return s == null || s.trim().isEmpty();
     }
 
 

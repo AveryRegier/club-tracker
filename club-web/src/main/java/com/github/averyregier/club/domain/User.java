@@ -124,6 +124,8 @@ public class User implements Person {
 
     public void update(UserBean user) {
         this.id = user.getUniqueId();
+        this.first = user.getFirstName();
+        this.last = user.getLastName();
         this.name = user.getName();
         String gender1 = user.getGender();
         if(gender1 != null) {
