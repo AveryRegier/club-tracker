@@ -9,6 +9,7 @@ import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import com.github.averyregier.club.view.UserBean;
+import com.github.averyregier.club.domain.utility.Action;
 import org.junit.Test;
 
 import java.util.*;
@@ -149,6 +150,19 @@ public class StandardInputFieldsTest {
             assertEquals(group, field.validate(group.name()).get());
         }
         assertFalse(field.validate("Ageless").isPresent());
+    }
+
+    @Test
+    public void action() {
+        InputField field = StandardInputFields.action.createField(EN_US).build();
+        assertField(field, "Action", "action", InputField.Type.action,
+                Arrays.asList(Action.values()).stream()
+                        .map(Enum::name)
+                        .toArray(String[]::new));
+        for(Action group: Action.values()) {
+            assertEquals(group, field.validate(group.name()).get());
+        }
+        assertFalse(field.validate("Exterminate!").isPresent());
     }
 
     private void assertField(InputFieldDesignator designator,

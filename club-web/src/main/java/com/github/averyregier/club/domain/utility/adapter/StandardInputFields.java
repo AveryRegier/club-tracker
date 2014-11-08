@@ -3,14 +3,13 @@ package com.github.averyregier.club.domain.utility.adapter;
 import com.github.averyregier.club.domain.club.Name;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.domain.utility.Action;
 import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import com.github.averyregier.club.domain.utility.builder.ChildBuilder;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.github.averyregier.club.domain.utility.InputField.Type.integer;
 import static com.github.averyregier.club.domain.utility.InputField.Type.text;
@@ -133,7 +132,19 @@ public enum StandardInputFields {
                     .name("Age Group")
                     .type(InputField.Type.ageGroup);
             for(AgeGroup.DefaultAgeGroup group: AgeGroup.DefaultAgeGroup.values()) {
-                builder.value(group.name(), group.name(), false);
+                builder.value(group.name(), group.getDisplayName(), false);
+            }
+            return builder;
+        }
+    },
+    action {
+        @Override
+        public ChildBuilder<InputFieldGroup, InputFieldDesignator> create(Locale locale) {
+            InputFieldBuilder builder = buildField(this)
+                    .name("Action")
+                    .type(InputField.Type.action);
+            for(Action action: Action.values()) {
+                builder.value(action.name(), action.getDisplayName(), false);
             }
             return builder;
         }

@@ -50,6 +50,16 @@ public interface InputField extends InputFieldDesignator {
                     return null;
                 }
             }
+        },
+        action {
+            @Override
+            Object validate(String input) {
+                try {
+                    return Action.valueOf(input);
+                } catch(IllegalArgumentException e) {
+                    return null;
+                }
+            }
         };
 
         Object validate(String input) {

@@ -2,6 +2,8 @@ package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
+import com.github.averyregier.club.domain.utility.Action;
+import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import com.github.averyregier.club.view.UserBean;
@@ -23,7 +25,7 @@ public class RegistrationTest {
         Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
         RegistrationInformation registrationForm = program.createRegistrationForm(me);
 
-        InputFieldGroup meFields = assertGroup("me", registrationForm.getForm());
+        InputFieldGroup meFields = assertGroup("me", registrationForm.getForm(), 0);
         InputFieldGroup nameFields = assertGroup("name", meFields);
 
         assertEquals("Foo", registrationForm.getFields().get("me.name.given"));
@@ -40,7 +42,7 @@ public class RegistrationTest {
         Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
         RegistrationInformation registrationForm = program.createRegistrationForm(me);
 
-        InputFieldGroup meFields = assertGroup("me", registrationForm.getForm());
+        InputFieldGroup meFields = assertGroup("me", registrationForm.getForm(), 0);
         InputFieldGroup nameFields = assertGroup("name", meFields);
 
         assertNull(registrationForm.getFields().get("me.name.given"));
@@ -58,7 +60,7 @@ public class RegistrationTest {
         Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
         RegistrationInformation registrationForm = program.createRegistrationForm(me);
 
-        InputFieldGroup meFields = assertGroup("me", registrationForm.getForm());
+        InputFieldGroup meFields = assertGroup("me", registrationForm.getForm(), 0);
         InputFieldGroup nameFields = assertGroup("name", meFields);
 
         assertNull(registrationForm.getFields().get("me.name.given"));
@@ -68,9 +70,22 @@ public class RegistrationTest {
         assertEquals("hi@there.com", registrationForm.getFields().get("me.email"));
     }
 
-    private InputFieldGroup assertGroup(String shortCode, List<InputFieldDesignator> form) {
+    @Test
+    public void standardActions() {
+        User me = new User();
+        Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
+        RegistrationInformation registrationForm = program.createRegistrationForm(me);
+        List<InputFieldDesignator> form = registrationForm.getForm();
+        InputFieldDesignator designator = form.get(form.size() - 1);
+        assertEquals("action", designator.getShortCode());
+        assertTrue(designator.asField().isPresent());
+        assertEquals(InputField.Type.action, designator.asField().get().getType());
+        assertEquals(Action.values().length, designator.asField().get().getValues().get().size());
+    }
+
+    private InputFieldGroup assertGroup(String shortCode, List<InputFieldDesignator> form, int index) {
         assertTrue(!form.isEmpty());
-        InputFieldDesignator meFields = form.get(0);
+        InputFieldDesignator meFields = form.get(index);
         assertEquals(shortCode, meFields.getShortCode());
         assertTrue(meFields.asGroup().isPresent());
         return meFields.asGroup().get();

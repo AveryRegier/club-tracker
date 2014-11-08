@@ -5,6 +5,7 @@ import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
+import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
@@ -40,7 +41,8 @@ public class ProgramAdapter implements Program {
                 .field(StandardInputFields.gender.createField(getLocale()))
                 .field(StandardInputFields.email.createField(getLocale()))
                 .build();
-        List<InputFieldDesignator> list = Arrays.asList(me);
+        InputField action = StandardInputFields.action.createField(getLocale()).build();
+        List<InputFieldDesignator> list = Arrays.asList(me, action);
 
         Map<String, String> map = UtilityMethods.prefix(me.getShortCode(), me.map(user));
 
