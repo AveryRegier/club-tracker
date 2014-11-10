@@ -11,9 +11,30 @@ public interface Person {
 
 
     public enum Gender {
-        MALE,
-        FEMALE;
+        MALE {
+            @Override
+            public Gender opposite() {
+                return FEMALE;
+            }
+        },
+        FEMALE {
+            @Override
+            public Gender opposite() {
+                return MALE;
+            }
+        };
 
+        public abstract Gender opposite();
+
+        public static Optional<Gender> lookup(String s) {
+            if(s == null) return Optional.empty();
+            try {
+                Gender gender = valueOf(s);
+                return Optional.ofNullable(gender);
+            } catch(IllegalArgumentException e) {
+                return Optional.empty();
+            }
+        }
     }
     String getId();
     public Name getName();

@@ -4,6 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <LINK href="/main.css" rel="stylesheet" type="text/css">
     <title>Club Setup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript">
         <#include "forms.js">
     </script>
@@ -11,8 +12,8 @@
 <body>
 
 <form method="post">
-    <div class="inputGroup">
-        <div class="inputGroupLabel">Setup your club.</div>
+    <fieldset class="inputGroup">
+        <legend class="inputGroupLabel">Setup your club.</legend>
         <div class="inputGroupFields">
             <div class="inputField">
                 <label for="organizationName">Organization Name:</label>
@@ -35,9 +36,9 @@
                 </select>
             </div>
         </div>
-    </div>
+    </fieldset>
     <div class="actions">
-        <input type='submit'/>
+        <button type='submit'>Submit</button>
     </div>
 </form>
 </div>

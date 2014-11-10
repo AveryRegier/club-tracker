@@ -2,11 +2,13 @@ package com.github.averyregier.club.view;
 
 import com.github.averyregier.club.application.ClubApplication;
 import com.github.averyregier.club.domain.User;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.template.freemarker.FreeMarkerEngine;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static spark.Spark.*;
@@ -42,6 +44,14 @@ public class RegistrationController extends ModelMaker {
             return new spark.ModelAndView(
                     toMap("regInfo", app.getProgram().createRegistrationForm(user)),
                     "family.ftl");
+        }, new FreeMarkerEngine());
+
+        post("/protected/*/family", (request, response) -> {
+            logger.info("Submitting family registration");
+            Map<String,String> collect = UtilityMethods.transformToSingleValueMap(request.queryMap().toMap());
+            return new spark.ModelAndView(
+                    toMap("regInfo", app.getProgram().updateRegistrationForm(collect)),
+            "family.ftl");
         }, new FreeMarkerEngine());
     }
 

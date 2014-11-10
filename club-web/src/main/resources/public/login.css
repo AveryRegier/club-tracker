@@ -1,0 +1,49 @@
+body {
+    font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+    line-height: 150%;
+}
+
+.provider {
+    display: inline;
+    margin: 1em;
+}
+
+a {
+    padding: 1em;
+}
+
+label {
+    display: inline-block;
+    float: left;
+    clear: left;
+    cursor: pointer;
+    cursor: hand;
+}
+
+.action {
+    display: inline-block;
+    float: left;
+    clear: left;
+}
+
+input:focus {
+    border: 2px solid #000;
+}
+
+
+input {
+    border: 2px solid #ccc;
+}
+
+input, button {
+    font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+    display: inline-block;
+    float: left;
+}
+
+button {
+    margin: 1em;
+    padding: 1em;
+    cursor: pointer;
+    cursor: hand;
+}

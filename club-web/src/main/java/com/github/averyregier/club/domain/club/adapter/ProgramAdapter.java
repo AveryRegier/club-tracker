@@ -36,11 +36,7 @@ public class ProgramAdapter implements Program {
 
     @Override
     public RegistrationInformation createRegistrationForm(User user) {
-        InputFieldGroup me = new InputFieldGroupBuilder().id("me").name("About Myself")
-                .group(StandardInputFields.name.createGroup(getLocale()))
-                .field(StandardInputFields.gender.createField(getLocale()))
-                .field(StandardInputFields.email.createField(getLocale()))
-                .build();
+        InputFieldGroup me = buildMeFields();
         InputField action = StandardInputFields.action.createField(getLocale()).build();
         List<InputFieldDesignator> list = Arrays.asList(me, action);
 
@@ -57,6 +53,39 @@ public class ProgramAdapter implements Program {
             @Override
             public Map<String, String> getFields() {
                 return map;
+            }
+        };
+    }
+
+    private InputFieldGroup buildMeFields() {
+        return buildPersonFields(new InputFieldGroupBuilder().id("me").name("About Myself"));
+    }
+
+    private InputFieldGroup buildPersonFields(InputFieldGroupBuilder builder) {
+        return builder
+                    .group(StandardInputFields.name.createGroup(getLocale()))
+                    .field(StandardInputFields.gender.createField(getLocale()))
+                    .field(StandardInputFields.email.createField(getLocale()))
+                    .build();
+    }
+
+    @Override
+    public RegistrationInformation updateRegistrationForm(Map<String, String> values) {
+        InputFieldGroup me = buildMeFields();
+        InputFieldGroup spouse = buildPersonFields(new InputFieldGroupBuilder().id("spouse").name("About My Spouse"));
+        List<InputFieldDesignator> list = Arrays.asList(me, spouse);
+        Map<String, String> fields = new HashMap<>(values);
+        fields.remove("action");
+        fields.put("spouse.gender", Person.Gender.lookup(values.get("me.gender")).map(g->g.opposite().name()).orElse(null));
+        return new RegistrationInformation() {
+            @Override
+            public List<InputFieldDesignator> getForm() {
+                return list;
+            }
+
+            @Override
+            public Map<String, String> getFields() {
+                return fields;
             }
         };
     }

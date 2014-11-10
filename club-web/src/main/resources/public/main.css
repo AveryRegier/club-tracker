@@ -3,18 +3,14 @@ body {
     line-height: 150%;
 }
 
+.inputGroup {
+    margin-bottom: 10px;
+}
+
 .inputGroupFields {
     margin-left: 10px;
 }
-.inputGroupLabel {
-    border-style: solid;
-    border-width: 1px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    padding-left:10px;
-    border-radius: 5px;
-}
-label{
+label {
     display: inline-block;
     float: left;
     clear: left;
@@ -22,7 +18,7 @@ label{
     cursor: pointer;
     cursor: hand;
 }
-input, select, .staticField {
+input, select, button, .staticField {
     font-family: 'Open Sans', Arial, Helvetica, sans-serif;
     display: inline-block;
     float: left;
@@ -43,4 +39,19 @@ input:focus {
 input[type="text"] {
     width: 200px;
 }
-
+button {
+    margin: 1em;
+    padding: 1em;
+    cursor: pointer;
+    cursor: hand;
+}
+.action {
+    display: inline-block;
+    float: left;
+    clear: left;
+}
+.inputGroup {
+    display: inline-block;
+    float: left;
+    clear: left;
+}

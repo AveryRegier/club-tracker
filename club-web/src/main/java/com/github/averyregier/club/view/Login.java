@@ -26,7 +26,11 @@ public class Login extends ModelMaker {
     public static void resetCookies(Request req, Response httpResponse, String identifier, User user) {
         httpResponse.cookie("auth", user.resetAuth(), 60 * 60 * 3, false);
         httpResponse.cookie("userID", identifier, 60*60*3, false);
-        httpResponse.redirect(req.session().attribute("location"));
+        String location = req.session().attribute("location");
+        if(location == null) {
+            location = "/protected/hello";
+        }
+        httpResponse.redirect(location);
         req.session().removeAttribute("location");
     }
 

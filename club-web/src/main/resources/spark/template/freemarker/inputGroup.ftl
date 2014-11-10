@@ -1,5 +1,5 @@
-<div class="inputGroup" name="${descriptor.id}">
-    <div class="inputGroupLabel">${descriptor.name}</div>
+<fieldset class="inputGroup" name="${descriptor.id}">
+    <legend class="inputGroupLabel">${descriptor.name}</legend>
     <div class="inputGroupFields">
         <#list descriptor.fieldDesignations as descriptor>
             <#if descriptor.isGroup()>
@@ -9,4 +9,4 @@
             </#if>
         </#list>
     </div>
-</div>
+</fieldset>

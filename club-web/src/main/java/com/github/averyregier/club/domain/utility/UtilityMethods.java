@@ -55,4 +55,9 @@ public class UtilityMethods {
                         e -> e.getKey().substring(prefix.length() + 1),
                         Map.Entry::getValue));
     }
+
+    public static Map<String, String> transformToSingleValueMap(Map<String, String[]> map) {
+        return map.entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()[0]));
+    }
 }
