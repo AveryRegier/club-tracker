@@ -120,23 +120,32 @@ public class RegistrationTest {
     }
 
     @Test
-    public void addSpouseAction() {
-        User me = new User();
+    public void addSpouseOfGuy() {
+        Person.Gender meGender = Person.Gender.MALE;
+        assertDefaultSpouse(meGender);
+    }
+
+    @Test
+    public void addSpouseOfGal() {
+        Person.Gender meGender = Person.Gender.FEMALE;
+        assertDefaultSpouse(meGender);
+    }
+
+    private void assertDefaultSpouse(Person.Gender meGender) {
         Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
-        RegistrationInformation registrationForm = program.createRegistrationForm(me);
         Map<String, String> values = new HashMap<>();
         values.put("action", Action.spouse.name());
-        values.put("me.gender", Person.Gender.MALE.name());
-        registrationForm = program.updateRegistrationForm(values);
+        values.put("me.gender", meGender.name());
+        RegistrationInformation registrationForm = program.updateRegistrationForm(values);
         List<InputFieldDesignator> form = registrationForm.getForm();
 
         // verify the me fields didn't disappear
         InputFieldGroup meFields = assertGroup("me", registrationForm.getForm(), 0);
-        InputFieldGroup nameFields = assertGroup("name", meFields);
+        assertGroup("name", meFields);
         assertField("gender", meFields);
         assertField("email", meFields);
 
-        assertEquals("MALE", registrationForm.getFields().get("me.gender"));
+        assertEquals(meGender.name(), registrationForm.getFields().get("me.gender"));
 
         int expected = Action.values().length - 1;
         if(expected > 0) {
@@ -159,7 +168,8 @@ public class RegistrationTest {
         assertGroup("name", spouseFields);
         assertField("gender", spouseFields);
         assertField("email", spouseFields);
-        assertEquals("FEMALE", registrationForm.getFields().get("spouse.gender"));
+        assertEquals(meGender.opposite().name(), registrationForm.getFields().get("spouse.gender"));
     }
+
 
 }

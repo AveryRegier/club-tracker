@@ -42,8 +42,6 @@ public class ProgramAdapter implements Program {
 
         Map<String, String> map = UtilityMethods.prefix(me.getShortCode(), me.map(user));
 
-//        Map<InputField, ? extends Object> map = me.getFields().stream().collect(Collectors.toMap(f -> f, f -> f.map(user)));
-
         return new RegistrationInformation() {
             @Override
             public List<InputFieldDesignator> getForm() {
