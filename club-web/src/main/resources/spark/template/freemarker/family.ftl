@@ -12,15 +12,17 @@
 <body>
 
     <form method="post">
-        <#list regInfo.form as descriptor>
-            <#if descriptor.isGroup()>
-                 <#include "inputGroup.ftl">
-            <#elseif descriptor.isField()>
-                 <#include "inputField.ftl">
-            </#if>
-        </#list>
-        <div class="actions">
-            <button type='submit'>Submit</button>
+        <div class="inputForm">
+            <#list regInfo.form as descriptor>
+                <#if descriptor.isGroup()>
+                     <#include "inputGroup.ftl">
+                <#elseif descriptor.isField()>
+                     <#include "inputField.ftl">
+                </#if>
+            </#list>
+            <div class="actions">
+                <button type='submit'>Submit</button>
+            </div>
         </div>
     </form>
 </body>

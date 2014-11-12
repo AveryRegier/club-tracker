@@ -5,6 +5,8 @@ body {
 
 .inputGroup {
     margin-bottom: 10px;
+    display: inline-block;
+    float: left;
 }
 
 .inputGroupFields {
@@ -46,11 +48,6 @@ button {
     cursor: hand;
 }
 .action {
-    display: inline-block;
-    float: left;
-    clear: left;
-}
-.inputGroup {
     display: inline-block;
     float: left;
     clear: left;

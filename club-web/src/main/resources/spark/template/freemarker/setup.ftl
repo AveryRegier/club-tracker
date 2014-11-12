@@ -12,6 +12,7 @@
 <body>
 
 <form method="post">
+    <div class="inputForm">
     <fieldset class="inputGroup">
         <legend class="inputGroupLabel">Setup your club.</legend>
         <div class="inputGroupFields">
@@ -39,6 +40,7 @@
     </fieldset>
     <div class="actions">
         <button type='submit'>Submit</button>
+    </div>
     </div>
 </form>
 </div>
