@@ -5,10 +5,7 @@ import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
-import com.github.averyregier.club.domain.utility.InputField;
-import com.github.averyregier.club.domain.utility.InputFieldDesignator;
-import com.github.averyregier.club.domain.utility.InputFieldGroup;
-import com.github.averyregier.club.domain.utility.UtilityMethods;
+import com.github.averyregier.club.domain.utility.*;
 import com.github.averyregier.club.domain.utility.adapter.InputFieldGroupBuilder;
 import com.github.averyregier.club.domain.utility.adapter.StandardInputFields;
 
@@ -70,11 +67,37 @@ public class ProgramAdapter implements Program {
     @Override
     public RegistrationInformation updateRegistrationForm(Map<String, String> values) {
         InputFieldGroup me = buildMeFields();
-        InputFieldGroup spouse = buildPersonFields(new InputFieldGroupBuilder().id("spouse").name("About My Spouse"));
-        List<InputFieldDesignator> list = Arrays.asList(me, spouse);
         Map<String, String> fields = new HashMap<>(values);
         fields.remove("action");
-        fields.put("spouse.gender", Person.Gender.lookup(values.get("me.gender")).map(g->g.opposite().name()).orElse(null));
+        Action action = Action.valueOf(values.get("action"));
+        List<InputFieldDesignator> list = new ArrayList<>();
+        list.add(me);
+
+        boolean hasSpouse = hasSpouse(values);
+        if(hasSpouse) {
+            addSpouse(action, list);
+        } else if(action == Action.spouse) {
+            addSpouse(action, list);
+            hasSpouse = true;
+            fields.put("spouse.gender", Person.Gender.lookup(values.get("me.gender")).map(g -> g.opposite().name()).orElse(null));
+            fields.put("spouse.name.surname", values.get("me.name.surname"));
+        }
+
+        int num = getNextChildNumber(values);
+        for(int i=1; i<num; i++) {
+            addChild(list, i);
+        }
+        if(action == Action.child) {
+            addChild(list, num);
+            fields.put("child" + num + ".name.surname", values.get("me.name.surname"));
+        }
+
+        if(hasSpouse) {
+            list.add(StandardInputFields.action.createField(getLocale()).exclude(Action.spouse.name()).build());
+        } else {
+            list.add(StandardInputFields.action.createField(getLocale()).build());
+        }
+
         return new RegistrationInformation() {
             @Override
             public List<InputFieldDesignator> getForm() {
@@ -86,6 +109,29 @@ public class ProgramAdapter implements Program {
                 return fields;
             }
         };
+    }
+
+    private void addChild(List<InputFieldDesignator> list, int i) {
+        InputFieldGroup child = buildPersonFields(new InputFieldGroupBuilder().id("child" + i).name("About My Child"));
+        list.add(child);
+    }
+
+    private boolean hasSpouse(Map<String, String> values) {
+        return values.keySet().stream()
+                .anyMatch(k -> k.startsWith("spouse"));
+
+    }
+
+    private void addSpouse(Action action, List<InputFieldDesignator> list) {
+        InputFieldGroup spouse = buildPersonFields(new InputFieldGroupBuilder().id("spouse").name("About My Spouse"));
+        list.add(spouse);
+    }
+
+    private int getNextChildNumber(Map<String, String> values) {
+        return values.keySet().stream()
+                .filter(k -> k.startsWith("child"))
+                .map(k->Integer.parseInt(k.substring(5,k.indexOf('.'))))
+                .max(Comparator.comparingInt(num->num)).orElse(0)+1;
     }
 
     @Override

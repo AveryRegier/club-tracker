@@ -4,7 +4,8 @@ package com.github.averyregier.club.domain.utility;
  * Created by avery on 11/1/14.
  */
 public enum Action {
-    spouse("Add Spouse");
+    spouse("Add Spouse"),
+    child("Add Child");
 
     private String displayName;
 

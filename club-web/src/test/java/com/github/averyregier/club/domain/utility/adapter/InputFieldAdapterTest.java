@@ -79,6 +79,22 @@ public class InputFieldAdapterTest {
     }
 
     @Test
+    public void excludeValue() {
+        InputField classUnderTest = new InputFieldBuilder()
+                .value("value1", "Value One", false)
+                .value("value2", "Value Two", true)
+                .value("value3")
+                .exclude("value2")
+                .build();
+        assertTrue(classUnderTest.getValues().isPresent());
+        assertEquals("value1", classUnderTest.getValues().get().get(0).getValue());
+        InputField.Value three = classUnderTest.getValues().get().get(1);
+        assertEquals("value3", three.getValue());
+        assertEquals(false, three.isDefault());
+        assertEquals("value3", three.getDisplayName());
+    }
+
+    @Test
     public void validateFreeFormString() {
         InputField classUnderTest = new InputFieldBuilder()
                 .type(InputFieldAdapter.Type.text)

@@ -35,7 +35,7 @@ input {
     border: 2px solid #ccc;
 }
 
-input:focus {
+input:focus, input:hover {
     border: 2px solid #000;
 }
 input[type="text"] {

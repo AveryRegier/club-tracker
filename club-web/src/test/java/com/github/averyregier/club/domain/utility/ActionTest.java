@@ -11,4 +11,8 @@ public class ActionTest {
         assertEquals("Add Spouse", Action.spouse.getDisplayName());
     }
 
+    @Test
+    public void addChild() {
+        assertEquals("Add Child", Action.child.getDisplayName());
+    }
 }

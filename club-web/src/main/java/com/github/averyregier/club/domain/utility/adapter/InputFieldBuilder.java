@@ -9,6 +9,7 @@ import com.github.averyregier.club.domain.utility.builder.ChildBuilder;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
@@ -93,4 +94,16 @@ public class InputFieldBuilder implements Builder<InputField>, ChildBuilder<Inpu
         this.values.add(value);
         return this;
     }
+
+    public InputFieldBuilder exclude(String value) {
+        Iterator<InputField.Value> iterator = values.iterator();
+        while(iterator.hasNext()) {
+            if(iterator.next().getValue().equals(value)){
+                iterator.remove();
+            }
+        }
+        return this;
+    }
+
+
 }
