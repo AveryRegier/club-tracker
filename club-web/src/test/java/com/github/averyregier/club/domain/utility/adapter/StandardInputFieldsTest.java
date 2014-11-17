@@ -69,6 +69,46 @@ public class StandardInputFieldsTest {
     }
 
     @Test
+    public void childName() {
+        InputFieldGroup group = StandardInputFields.childName.createGroup(Locale.forLanguageTag("en_US")).build();
+        assertEquals("Name", group.getName());
+        assertEquals("childName", group.getShortCode());
+        assertEquals("childName", group.getId());
+        List<InputFieldDesignator> designations = group.getFieldDesignations();
+        assertFalse(designations.isEmpty());
+
+        assertField(designations.get(0), "Given", "given", text);
+        assertField(designations.get(1), "Middle", "middle", text);
+        assertField(designations.get(2), "Surname", "surname", text);
+        assertField(designations.get(3), "Friendly", "friendly", text);
+        assertField(designations.get(4), "Suffix", "honorific", text, "", "Jr", "I", "II", "III", "IV");
+
+        assertEquals(5, designations.size());
+
+        HashMap<String, String> input = new HashMap<>();
+        input.put("given", "Space");
+        input.put("surname", "Alien");
+        input.put("middle", "J");
+        input.put("friendly", "Spacey");
+        input.put("honorific", "III");
+
+        Object o = group.validate(input).get();
+        assertTrue(o instanceof Name);
+        Name name = (Name)o;
+        assertEquals("Space", name.getGivenName());
+        assertEquals("Alien", name.getSurname());
+        assertEquals("J", name.getMiddleNames().get(0));
+        assertEquals("III", name.getHonorificName());
+        assertEquals("Spacey", name.getFriendlyName());
+
+        User person = new User();
+        person.setName("Space", "Alien");
+        Map<String, String> model = group.map(person);
+        assertEquals("Space", model.get("given"));
+        assertEquals("Alien", model.get("surname"));
+    }
+
+    @Test
     public void gender() {
         InputField gender = StandardInputFields.gender.createField(EN_US).build();
         assertField(gender, "Gender", "gender", InputField.Type.gender, "MALE", "FEMALE");

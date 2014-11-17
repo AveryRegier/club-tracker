@@ -148,6 +148,67 @@ public enum StandardInputFields {
             }
             return builder;
         }
+    },
+    childName {
+        @Override
+        public InputFieldGroupBuilder create(Locale locale) {
+            return buildGroup(this)
+                .name("Name")
+                .field(f->f.name("Given").id("given").type(text))
+                .field(f->f.name("Middle").id("middle").type(text))
+                .field(f->f.name("Surname").id("surname").type(text))
+                .field(f->f.name("Friendly").id("friendly").type(text))
+                .field(f->f.name("Suffix").id("honorific").type(text)
+                        .value("")
+                        .value("Jr")
+                        .value("I")
+                        .value("II")
+                        .value("III")
+                        .value("IV"))
+                .validate((p,m)->Optional.of(new Name() {
+                    @Override
+                    public String getGivenName() {
+                        return (String)m.get("given");
+                    }
+
+                    @Override
+                    public String getSurname() {
+                        return (String)m.get("surname");
+                    }
+
+                    @Override
+                    public List<String> getMiddleNames() {
+                        String middle = (String) m.get("middle");
+                        return Arrays.<String>asList(middle);
+                    }
+
+                    @Override
+                    public Optional<String> getTitle() {
+                        return Optional.<String>ofNullable((String)m.get("title"));
+                    }
+
+                    @Override
+                    public String getFriendlyName() {
+                        return (String)m.get("friendly");
+                    }
+
+                    @Override
+                    public String getHonorificName() {
+                        return (String)m.get("honorific");
+                    }
+
+                    @Override
+                    public String getFullName() {
+                        return null;
+                    }
+                }))
+                .map(p->{
+                    HashMap<String, String> model = new HashMap<>();
+                    model.put("given", p.getName().getGivenName());
+                    model.put("surname", p.getName().getSurname());
+                    return model;
+                });
+        }
     };
 
     public abstract ChildBuilder<InputFieldGroup, InputFieldDesignator> create(Locale locale);

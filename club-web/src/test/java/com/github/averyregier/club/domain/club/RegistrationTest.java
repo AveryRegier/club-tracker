@@ -181,6 +181,13 @@ public class RegistrationTest {
         assertField("email", meFields);
     }
 
+    private void assertChildFieldsPresent(RegistrationInformation registrationForm, String id, int index) {
+        InputFieldGroup meFields = assertGroup(id, registrationForm.getForm(), index);
+        assertGroup("childName", meFields);
+        assertField("gender", meFields);
+        assertField("email", meFields);
+    }
+
     @Test
     public void addChildAction() {
         Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
@@ -196,8 +203,9 @@ public class RegistrationTest {
 
         assertAllActions(form);
 
-        assertPersonFieldsPresent(registrationForm, "child1", 1);
-        assertEquals("Smith", registrationForm.getFields().get("child1.name.surname"));
+        assertChildFieldsPresent(registrationForm, "child1", 1);
+        assertEquals("Smith", registrationForm.getFields().get("child1.childName.surname"));
+        assertFalse(registrationForm.getFields().containsKey("child1.childName.title"));
     }
 
     @Test
@@ -219,8 +227,8 @@ public class RegistrationTest {
         assertPersonFieldsPresent(registrationForm, "spouse", 1);
         assertEquals("Another", registrationForm.getFields().get("spouse.name.surname"));
 
-        assertPersonFieldsPresent(registrationForm, "child1", 2);
-        assertEquals("Smith", registrationForm.getFields().get("child1.name.surname"));
+        assertChildFieldsPresent(registrationForm, "child1", 2);
+        assertEquals("Smith", registrationForm.getFields().get("child1.childName.surname"));
 
         assertAllButSpouseAction(form);
     }
@@ -231,7 +239,7 @@ public class RegistrationTest {
         Map<String, String> values = new HashMap<>();
         values.put("action", Action.spouse.name());
         values.put("me.name.surname", "Smith");
-        values.put("child1.name.surname", "Another");
+        values.put("child1.childName.surname", "Another");
 
         RegistrationInformation registrationForm = program.updateRegistrationForm(values);
         List<InputFieldDesignator> form = registrationForm.getForm();
@@ -245,8 +253,8 @@ public class RegistrationTest {
         assertEquals("Smith", registrationForm.getFields().get("spouse.name.surname"));
 
         // verify the child fields didn't disappear
-        assertPersonFieldsPresent(registrationForm, "child1", 2);
-        assertEquals("Another", registrationForm.getFields().get("child1.name.surname"));
+        assertChildFieldsPresent(registrationForm, "child1", 2);
+        assertEquals("Another", registrationForm.getFields().get("child1.childName.surname"));
 
         assertAllButSpouseAction(form);
     }
@@ -257,7 +265,7 @@ public class RegistrationTest {
         Map<String, String> values = new HashMap<>();
         values.put("action", Action.child.name());
         values.put("me.name.surname", "Smith");
-        values.put("child1.name.surname", "Another");
+        values.put("child1.childName.surname", "Another");
         RegistrationInformation registrationForm = program.updateRegistrationForm(values);
         List<InputFieldDesignator> form = registrationForm.getForm();
 
@@ -267,11 +275,11 @@ public class RegistrationTest {
 
         assertAllActions(form);
 
-        assertPersonFieldsPresent(registrationForm, "child1", 1);
-        assertEquals("Another", registrationForm.getFields().get("child1.name.surname"));
+        assertChildFieldsPresent(registrationForm, "child1", 1);
+        assertEquals("Another", registrationForm.getFields().get("child1.childName.surname"));
 
-        assertPersonFieldsPresent(registrationForm, "child2", 2);
-        assertEquals("Smith", registrationForm.getFields().get("child2.name.surname"));
+        assertChildFieldsPresent(registrationForm, "child2", 2);
+        assertEquals("Smith", registrationForm.getFields().get("child2.childName.surname"));
     }
 
     private void assertAllActions(List<InputFieldDesignator> form) {

@@ -63,6 +63,13 @@ public class ProgramAdapter implements Program {
                     .field(StandardInputFields.email.createField(getLocale()))
                     .build();
     }
+    private InputFieldGroup buildChildFields(InputFieldGroupBuilder builder) {
+        return builder
+                .group(StandardInputFields.childName.createGroup(getLocale()))
+                .field(StandardInputFields.gender.createField(getLocale()))
+                .field(StandardInputFields.email.createField(getLocale()))
+                .build();
+    }
 
     @Override
     public RegistrationInformation updateRegistrationForm(Map<String, String> values) {
@@ -89,7 +96,7 @@ public class ProgramAdapter implements Program {
         }
         if(action == Action.child) {
             addChild(list, num);
-            fields.put("child" + num + ".name.surname", values.get("me.name.surname"));
+            fields.put("child" + num + ".childName.surname", values.get("me.name.surname"));
         }
 
         if(hasSpouse) {
@@ -112,8 +119,7 @@ public class ProgramAdapter implements Program {
     }
 
     private void addChild(List<InputFieldDesignator> list, int i) {
-        InputFieldGroup child = buildPersonFields(new InputFieldGroupBuilder().id("child" + i).name("About My Child"));
-        list.add(child);
+        list.add(buildChildFields(new InputFieldGroupBuilder().id("child" + i).name("About My Child")));
     }
 
     private boolean hasSpouse(Map<String, String> values) {
@@ -123,8 +129,7 @@ public class ProgramAdapter implements Program {
     }
 
     private void addSpouse(Action action, List<InputFieldDesignator> list) {
-        InputFieldGroup spouse = buildPersonFields(new InputFieldGroupBuilder().id("spouse").name("About My Spouse"));
-        list.add(spouse);
+        list.add(buildPersonFields(new InputFieldGroupBuilder().id("spouse").name("About My Spouse")));
     }
 
     private int getNextChildNumber(Map<String, String> values) {
