@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by avery on 10/15/14.
  */
-public class RegistrationTest {
+public class RegistrationFormTest {
     private Program program;
     
     @Before
@@ -40,7 +40,6 @@ public class RegistrationTest {
 
         assertEquals("Foo", registrationForm.getFields().get("me.name.given"));
         assertEquals("Bar", registrationForm.getFields().get("me.name.surname"));
-//        Family family = me.asParent().get().register(registrationForm);
     }
 
     @Test
