@@ -7,6 +7,7 @@ import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import com.github.averyregier.club.view.UserBean;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -20,12 +21,18 @@ import static org.junit.Assert.assertEquals;
  * Created by avery on 10/15/14.
  */
 public class RegistrationTest {
+    private Program program;
+    
+    @Before
+    public void setup() {
+        program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
+    }
 
     @Test
     public void userNamePrefilled() {
         User me = new User();
         me.setName("Foo", "Bar");
-        Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
+        
         RegistrationInformation registrationForm = program.createRegistrationForm(me);
 
         InputFieldGroup meFields = assertGroup("me", registrationForm.getForm(), 0);
@@ -42,7 +49,6 @@ public class RegistrationTest {
         bean.setGender("MALE");
         User me = new User();
         me.update(bean);
-        Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
         RegistrationInformation registrationForm = program.createRegistrationForm(me);
 
         InputFieldGroup meFields = assertGroup("me", registrationForm.getForm(), 0);
@@ -61,7 +67,6 @@ public class RegistrationTest {
         bean.setEmail("hi@there.com");
         User me = new User();
         me.update(bean);
-        Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
         RegistrationInformation registrationForm = program.createRegistrationForm(me);
 
         InputFieldGroup meFields = assertGroup("me", registrationForm.getForm(), 0);
@@ -130,7 +135,6 @@ public class RegistrationTest {
     }
 
     private void assertDefaultSpouse(Person.Gender meGender) {
-        Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
         Map<String, String> values = new HashMap<>();
         values.put("action", Action.spouse.name());
         values.put("me.gender", meGender.name());
@@ -190,7 +194,6 @@ public class RegistrationTest {
 
     @Test
     public void addChildAction() {
-        Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
         Map<String, String> values = new HashMap<>();
         values.put("action", Action.child.name());
         values.put("me.name.surname", "Smith");
@@ -210,7 +213,6 @@ public class RegistrationTest {
 
     @Test
     public void addChildActionWithSpouse() {
-        Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
         Map<String, String> values = new HashMap<>();
         values.put("action", Action.child.name());
         values.put("me.name.surname", "Smith");
@@ -235,7 +237,6 @@ public class RegistrationTest {
 
     @Test
     public void addSpouseActionWithChild() {
-        Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
         Map<String, String> values = new HashMap<>();
         values.put("action", Action.spouse.name());
         values.put("me.name.surname", "Smith");
@@ -261,7 +262,6 @@ public class RegistrationTest {
 
     @Test
     public void addSecondChild() {
-        Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
         Map<String, String> values = new HashMap<>();
         values.put("action", Action.child.name());
         values.put("me.name.surname", "Smith");
