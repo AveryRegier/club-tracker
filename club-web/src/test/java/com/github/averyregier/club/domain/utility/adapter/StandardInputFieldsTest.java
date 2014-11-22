@@ -37,6 +37,7 @@ public class StandardInputFieldsTest {
         assertField(designations.get(1), "Middle", "middle", text);
         assertField(designations.get(2), "Surname", "surname", text);
         assertField(designations.get(3), "Friendly", "friendly", text);
+        // http://notes.ericwillis.com/2009/11/common-name-prefixes-titles-and-honorifics/
         assertField(designations.get(4), "Title", "title", text, "", "Dr");
         assertField(designations.get(5), "Suffix", "honorific", text, "", "Sr", "Jr", "I", "II", "III", "IV");
 
