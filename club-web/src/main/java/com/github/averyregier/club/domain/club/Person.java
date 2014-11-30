@@ -46,4 +46,7 @@ public interface Person {
     public Optional<Listener> asListener();
     public Optional<Clubber> asClubber();
     public Optional<ClubLeader> asClubLeader();
+
+    public Family register(RegistrationInformation information);
+    public Optional<Family> getFamily();
 }

@@ -7,6 +7,6 @@ import java.util.Set;
  */
 public interface Family extends Group {
     public Set<Parent> getParents();
-    public void update(RegistrationInformation information);
+    public Family update(RegistrationInformation information);
     public RegistrationInformation getRegistration();
 }

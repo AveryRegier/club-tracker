@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.utility;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -17,4 +18,5 @@ public interface InputFieldDesignator extends Contained<InputFieldGroup> {
         return false;
     }
 
+    public Optional<Object> validateFromParentMap(Map<String, String> map);
 }

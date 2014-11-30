@@ -1,23 +1,22 @@
 package com.github.averyregier.club.domain;
 
 import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.view.UserBean;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
+
+import static com.github.averyregier.club.domain.utility.UtilityMethods.asSet;
 
 /**
  * Created by avery on 9/2/14.
  */
-public class User implements Person {
+public class User implements Person, Parent {
     private String auth;
-    private String name;
     private String id;
-    private String first;
-    private String last;
+    private Name name;
     private Gender gender;
     private String email;
 
@@ -43,15 +42,107 @@ public class User implements Person {
     }
 
     public Name getName() {
-        return new Name() {
+        return name;
+    }
+
+    @Override
+    public Optional<Gender> getGender() {
+        return Optional.ofNullable(gender);
+    }
+
+    @Override
+    public Optional<User> getLogin() {
+        return Optional.of(this);
+    }
+
+    @Override
+    public Optional<String> getEmail() {
+        return Optional.ofNullable(email);
+    }
+
+    @Override
+    public Optional<Parent> asParent() {
+        return Optional.of(this);
+    }
+
+    @Override
+    public Optional<Listener> asListener() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Clubber> asClubber() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<ClubLeader> asClubLeader() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Family register(RegistrationInformation information) {
+        if(getFamily().isPresent()) {
+            return getFamily().get().update(information);
+        } else {
+
+            List<InputFieldDesignator> form = information.getForm();
+
+            Map<InputFieldDesignator, Object> results = new LinkedHashMap<>();
+
+            Map<String, String> fields = information.getFields();
+            for(InputFieldDesignator section: form) {
+                Optional<Object> result = section.validateFromParentMap(fields);
+                if(result.isPresent()) {
+                    results.put(section, result.get());
+                }
+            }
+
+            Map<String, Object> myResults = (Map<String, Object>) results.get(form.get(0));
+            if(myResults != null) {
+                this.name = (Name)myResults.get("name");
+
+            }
+
+            return new Family() {
+                @Override
+                public Set<Parent> getParents() {
+                    return asParent().map(p -> asSet((Parent) p)).orElse(Collections.emptySet());
+                }
+
+                @Override
+                public Family update(RegistrationInformation information) {
+                    return this;
+                }
+
+                @Override
+                public RegistrationInformation getRegistration() {
+                    return null;
+                }
+
+                @Override
+                public Set<Clubber> getClubbers() {
+                    return null;
+                }
+            };
+        }
+    }
+
+    @Override
+    public Optional<Family> getFamily() {
+        return Optional.empty();
+    }
+
+    public void setName(Object first, Object last) {
+        this.name = new Name() {
             @Override
             public String getGivenName() {
-                return first;
+                return first != null ? first.toString() : null;
             }
 
             @Override
             public String getSurname() {
-                return last;
+                return last != null ? last.toString() : null;
             }
 
             @Override
@@ -76,57 +167,16 @@ public class User implements Person {
 
             @Override
             public String getFullName() {
-                return name;
+                return combineName(first, last);
             }
         };
     }
 
-    @Override
-    public Optional<Gender> getGender() {
-        return Optional.ofNullable(gender);
-    }
-
-    @Override
-    public Optional<User> getLogin() {
-        return Optional.of(this);
-    }
-
-    @Override
-    public Optional<String> getEmail() {
-        return Optional.ofNullable(email);
-    }
-
-    @Override
-    public Optional<Parent> asParent() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Listener> asListener() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Clubber> asClubber() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<ClubLeader> asClubLeader() {
-        return Optional.empty();
-    }
-
-    public void setName(Object first, Object last) {
-        this.first = first != null ? first.toString() : null;
-        this.last = last != null ? last.toString() : null;
-        this.name = combineName(first, last);
-    }
-
-    public void update(UserBean user) {
+    public void update(final UserBean user) {
         this.id = user.getUniqueId();
-        this.first = user.getFirstName();
-        this.last = user.getLastName();
-        this.name = user.getName();
+
+        setName(user.getFirstName(), user.getLastName());
+
         String gender1 = user.getGender();
         if(gender1 != null) {
             this.gender = Gender.valueOf(gender1.toUpperCase());

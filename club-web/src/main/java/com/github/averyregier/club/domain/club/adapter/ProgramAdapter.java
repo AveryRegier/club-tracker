@@ -75,8 +75,8 @@ public class ProgramAdapter implements Program {
     public RegistrationInformation updateRegistrationForm(Map<String, String> values) {
         InputFieldGroup me = buildMeFields();
         Map<String, String> fields = new HashMap<>(values);
-        fields.remove("action");
-        Action action = Action.valueOf(values.get("action"));
+        String actionName = fields.remove("action");
+        Action action = actionName != null ? Action.valueOf(actionName) : null;
         List<InputFieldDesignator> list = new ArrayList<>();
         list.add(me);
 

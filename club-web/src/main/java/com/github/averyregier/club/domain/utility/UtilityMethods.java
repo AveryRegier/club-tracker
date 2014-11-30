@@ -37,6 +37,18 @@ public class UtilityMethods {
         return Collectors.toCollection(LinkedHashSet::new);
     }
 
+    public static <T> LinkedHashSet<T> asLinkedSet(T... elements) {
+        LinkedHashSet<T> set = new LinkedHashSet<>();
+        for(T element: elements) {
+            set.add(element);
+        }
+        return set;
+    }
+
+    public static <T> Set<T> asSet(T... elements) {
+        return asLinkedSet(elements);
+    }
+
     public static <R> Map<String, R> putAll(Map<String, R> model, String prefix, Map<String, R> subModel) {
         for(Map.Entry<String, R> e: subModel.entrySet()) {
             model.put(prefix + "." + e.getKey(), e.getValue());
@@ -59,5 +71,10 @@ public class UtilityMethods {
     public static Map<String, String> transformToSingleValueMap(Map<String, String[]> map) {
         return map.entrySet().stream()
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()[0]));
+    }
+
+    public static <K,V> MapBuilder<K,V> map(K firstKey, V firstValue) {
+        MapBuilder<K, V> builder = new MapBuilder<>();
+        return builder.put(firstKey, firstValue);
     }
 }

@@ -1,13 +1,12 @@
 package com.github.averyregier.club.domain.utility.adapter;
 
 import com.github.averyregier.club.domain.User;
-import com.github.averyregier.club.domain.utility.InputField;
-import com.github.averyregier.club.domain.utility.InputFieldDesignator;
-import com.github.averyregier.club.domain.utility.InputFieldGroup;
+import com.github.averyregier.club.domain.utility.*;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -167,8 +166,8 @@ public class InputFieldGroupAdapterTest {
     public void validationFailure() {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .id("name")
-                .field(f -> f.id("first").type(InputField.Type.text))
-                .field(f -> f.id("last").type(InputField.Type.integer))
+                .field(f -> f.id("first").type(InputField.Type.text).required())
+                .field(f -> f.id("last").type(InputField.Type.integer).required())
                 .validate((p, m) -> Optional.of(m.get("first").toString() + m.get("last").toString()))
                 .build();
         HashMap<String, String> map = new HashMap<>();
@@ -179,12 +178,31 @@ public class InputFieldGroupAdapterTest {
     }
 
     @Test
+    public void defaultValidation() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .id("name")
+                .field(f -> f.id("first").type(InputField.Type.text))
+                .field(f -> f.id("age").type(InputField.Type.integer))
+                .build();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("first", "First");
+        map.put("age", "13");
+
+        Optional<Object> result = classUnderTest.validate(map);
+        assertTrue(result.isPresent());
+        assertTrue(result.get() instanceof Map);
+        assertEquals("First", ((Map) result.get()).get("first"));
+        assertEquals(13, ((Map)result.get()).get("age"));
+    }
+
+
+    @Test
     public void validationMultiLevelFailure() {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .id("upper")
                 .group(g->g.id("name")
-                    .field(f -> f.id("first").type(InputField.Type.text))
-                    .field(f -> f.id("last").type(InputField.Type.integer))
+                    .field(f -> f.id("first").type(InputField.Type.text).required())
+                    .field(f -> f.id("last").type(InputField.Type.integer).required())
                     .validate((p, m) -> Optional.of(m.get("first").toString() + m.get("last").toString())))
                 .validate((p,m) -> Optional.of(m.get("name")))
                 .build();
@@ -200,8 +218,8 @@ public class InputFieldGroupAdapterTest {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .id("upper")
                 .group(g -> g.id("name")
-                        .field(f -> f.id("first").type(InputField.Type.text))
-                        .field(f -> f.id("last").type(InputField.Type.text))
+                        .field(f -> f.id("first").type(InputField.Type.text).required())
+                        .field(f -> f.id("last").type(InputField.Type.text).required())
                         .validate((p, m) -> Optional.of(m.get("first").toString() + m.get("last").toString())))
                 .validate((p, m) -> Optional.of(m.get("name")).map(s -> s.toString().toUpperCase()))
                 .build();
@@ -281,4 +299,43 @@ public class InputFieldGroupAdapterTest {
 
         assertEquals(expected, classUnderTest.map(user));
     }
+
+    @Test
+    public void optionalIsOptional() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .group(g->g
+                        .id("name")
+                        .field(f -> f.id("first")
+                                .type(InputField.Type.text)
+                                .required())
+                        .field(f -> f.id("last")
+                                .type(InputField.Type.text)))
+                .build();
+
+        Map<String, String> map = UtilityMethods.map("name.first", "Green").build();
+        Optional<Object> result = classUnderTest.validate(map);
+        assertTrue(result.isPresent());
+        Map resultMap = (Map) result.get();
+        assertEquals(1, resultMap.size());
+        Map nameMap = (Map) resultMap.get("name");
+        assertEquals("Green", nameMap.get("first"));
+    }
+
+    @Test
+    public void requiredIsRequired() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .group(g -> g
+                        .id("name")
+                        .field(f -> f.id("first")
+                                .type(InputField.Type.text))
+                        .field(f -> f.id("last")
+                                .type(InputField.Type.text)
+                                .required()))
+                .build();
+
+        Map<String, String> map = UtilityMethods.map("name.first", "Green").build();
+        Optional<Object> result = classUnderTest.validate(map);
+        assertFalse(result.isPresent());
+    }
+
 }

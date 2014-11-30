@@ -7,6 +7,7 @@ import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -19,15 +20,17 @@ public class InputFieldAdapter implements InputField {
     private String id;
     private String name;
     private final Later<InputFieldGroup> group;
+    private final boolean required;
     private Function<Person, String> mapFn;
     private Optional<List<Value>> values = Optional.empty();
 
 
-    InputFieldAdapter(String id, Type type, String name, Later<InputFieldGroup> group, Function<Person, String> mapFn, Value... values) {
+    InputFieldAdapter(String id, Type type, String name, Later<InputFieldGroup> group, boolean required, Function<Person, String> mapFn, Value... values) {
         this.type = type;
         this.id = id;
         this.name = name;
         this.group = group;
+        this.required = required;
         this.mapFn = mapFn;
         if (values != null && values.length > 0) {
             this.values = Optional.of(Arrays.asList(values));
@@ -77,9 +80,16 @@ public class InputFieldAdapter implements InputField {
         return id;
     }
 
+
+
     @Override
     public Optional<List<Value>> getValues() {
         return values;
+    }
+
+    @Override
+    public boolean isRequired() {
+        return required;
     }
 
     @Override
@@ -90,5 +100,10 @@ public class InputFieldAdapter implements InputField {
     @Override
     public InputFieldGroup getContainer() {
         return group != null ? group.get() : null;
+    }
+
+    @Override
+    public Optional<Object> validateFromParentMap(Map<String, String> map) {
+        return asField().get().validate(map.get(getShortCode()));
     }
 }

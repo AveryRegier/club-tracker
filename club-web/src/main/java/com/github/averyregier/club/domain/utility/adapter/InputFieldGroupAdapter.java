@@ -91,16 +91,11 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
     public Optional<Object> validate(Map<String, String> map) {
         Map<String, Object> results = new HashMap<>();
         for(InputFieldDesignator d: getFieldDesignations()) {
-            Optional<Object> dResult;
-            if(d.asField().isPresent())  {
-                dResult = d.asField().get().validate(map.get(d.getShortCode()));
-            } else {
-                dResult = d.asGroup().get().validate(UtilityMethods.subMap(d.getShortCode(), map));
-            }
-            if(!dResult.isPresent()) return Optional.empty();
-            results.put(d.getShortCode(), dResult.get());
+            Optional<Object> dResult = d.validateFromParentMap(map);
+            if((d.isGroup() || d.asField().get().isRequired()) && !dResult.isPresent()) return Optional.empty(); // propagate validation failure
+            results.put(d.getShortCode(), dResult.orElse(null));
         }
-        return validationFn != null ? validationFn.apply(null, results) : Optional.empty();
+        return validationFn != null ? validationFn.apply(null, results) : Optional.of(results);
     }
 
     @Override
@@ -132,5 +127,10 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
     @Override
     public InputFieldGroup getContainer() {
         return parent != null ? parent.get() : null;
+    }
+
+    @Override
+    public Optional<Object> validateFromParentMap(Map<String, String> map) {
+        return validate(UtilityMethods.subMap(getShortCode(), map));
     }
 }

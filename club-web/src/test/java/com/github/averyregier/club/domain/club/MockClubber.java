@@ -128,4 +128,14 @@ public class MockClubber implements Clubber {
     public Optional<ClubLeader> asClubLeader() {
         return null;
     }
+
+    @Override
+    public Family register(RegistrationInformation information) {
+        return null;
+    }
+
+    @Override
+    public Optional<Family> getFamily() {
+        return null;
+    }
 }

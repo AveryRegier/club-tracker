@@ -77,8 +77,11 @@ public enum StandardInputFields {
                     }))
                     .map(p->{
                         HashMap<String, String> model = new HashMap<>();
-                        model.put("given", p.getName().getGivenName());
-                        model.put("surname", p.getName().getSurname());
+                        Name name1 = p.getName();
+                        if(name1 != null) {
+                            model.put("given", name1.getGivenName());
+                            model.put("surname", name1.getSurname());
+                        }
                         return model;
                     });
         }

@@ -30,7 +30,7 @@ public interface InputField extends InputFieldDesignator {
             Object validate(String input) {
                 try {
                     return Person.Gender.valueOf(input);
-                } catch(IllegalArgumentException e) {
+                } catch(IllegalArgumentException|NullPointerException e) {
                     return null;
                 }
             }
@@ -38,7 +38,7 @@ public interface InputField extends InputFieldDesignator {
         email {
             @Override
             Object validate(String input) {
-                return input.matches("\\S*@\\S*\\.\\S*") ? input : null;
+                return input != null && input.matches("\\S*@\\S*\\.\\S*") ? input : null;
             }
         },
         ageGroup {
@@ -56,7 +56,7 @@ public interface InputField extends InputFieldDesignator {
             Object validate(String input) {
                 try {
                     return Action.valueOf(input);
-                } catch(IllegalArgumentException e) {
+                } catch(IllegalArgumentException|NullPointerException e) {
                     return null;
                 }
             }
@@ -74,6 +74,8 @@ public interface InputField extends InputFieldDesignator {
     public default Optional<Object> validate(String input) {
         return Optional.ofNullable(getType().validate(input));
     }
+
+    public boolean isRequired();
 
     public String map(Person person);
 
