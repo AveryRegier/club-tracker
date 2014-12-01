@@ -5,12 +5,11 @@ import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Map;
+import java.util.*;
 
 import static com.github.averyregier.club.domain.utility.UtilityMethods.asLinkedSet;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.map;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * Created by avery on 11/21/14.
@@ -24,7 +23,7 @@ public class RegistrationTest {
     }
 
     @Test
-    public void firstTest() {
+    public void selfRegistration() {
         User me = new User();
         Map<String, String> formValues =
                  map("me.name.given", "Green")
@@ -36,5 +35,107 @@ public class RegistrationTest {
         assertEquals(asLinkedSet(me), family.getParents());
         assertEquals("Green", me.getName().getGivenName());
         assertEquals("Flubber", me.getName().getSurname());
+    }
+
+    @Test
+    public void spouseRegistration() {
+        User me = new User();
+        Map<String, String> formValues =
+                map("me.name.given", "Green")
+               .put("me.name.surname", "Flubber")
+               .put("spouse.name.given", "Gooey")
+               .put("spouse.name.surname", "Flubber-Goo")
+               .build();
+        RegistrationInformation form = program.updateRegistrationForm(formValues);
+        Family family = me.register(form);
+        assertNotNull(family);
+        Set<Parent> parents = family.getParents();
+        assertContains(me, parents);
+        assertEquals("Green", me.getName().getGivenName());
+        assertEquals("Flubber", me.getName().getSurname());
+
+        assertEquals(2, parents.size());
+        Parent spouse = getOther(parents, me);
+
+        assertEquals("Gooey", spouse.getName().getGivenName());
+        assertEquals("Flubber-Goo", spouse.getName().getSurname());
+    }
+
+    @Test
+    public void childRegistration() {
+        User me = new User();
+        Map<String, String> formValues =
+                 map("me.name.given", "Green")
+                .put("me.name.surname", "Flubber")
+                .put("child1.childName.given", "Johny")
+                .put("child1.childName.surname", "Flubber")
+                .build();
+        RegistrationInformation form = program.updateRegistrationForm(formValues);
+        Family family = me.register(form);
+        assertNotNull(family);
+        assertEquals(asLinkedSet(me), family.getParents());
+        assertEquals("Green", me.getName().getGivenName());
+        assertEquals("Flubber", me.getName().getSurname());
+
+        Set<Clubber> clubbers = family.getClubbers();
+        assertEquals(1, clubbers.size());
+        Clubber clubber = clubbers.stream().findAny().get();
+
+        assertEquals("Johny", clubber.getName().getGivenName());
+        assertEquals("Flubber", clubber.getName().getSurname());
+    }
+
+    @Test
+    public void wholeFamilyRegistration() {
+        User me = new User();
+        Map<String, String> formValues =
+                map("me.name.given", "Green")
+                        .put("me.name.surname", "Flubber")
+                        .put("spouse.name.given", "Gooey")
+                        .put("spouse.name.surname", "Flubber-Goo")
+                        .put("child1.childName.given", "Johny")
+                        .put("child1.childName.surname", "Flubber")
+                        .put("child2.childName.given", "Betsy")
+                        .put("child2.childName.surname", "Flubber")
+                        .put("child3.childName.given", "Edna")
+                        .put("child3.childName.surname", "Flubber")
+                        .build();
+        RegistrationInformation form = program.updateRegistrationForm(formValues);
+        Family family = me.register(form);
+        assertNotNull(family);
+        Set<Parent> parents = family.getParents();
+        assertContains(me, parents);
+        assertEquals("Green", me.getName().getGivenName());
+        assertEquals("Flubber", me.getName().getSurname());
+
+        assertEquals(2, parents.size());
+        Parent spouse = getOther(parents, me);
+
+        assertEquals("Gooey", spouse.getName().getGivenName());
+        assertEquals("Flubber-Goo", spouse.getName().getSurname());
+
+        Set<Clubber> clubbers = family.getClubbers();
+        assertEquals(3, clubbers.size());
+        Iterator<Clubber> iterator = clubbers.iterator();
+        Clubber clubber = iterator.next();
+        assertEquals("Johny", clubber.getName().getGivenName());
+        assertEquals("Flubber", clubber.getName().getSurname());
+        clubber = iterator.next();
+        assertEquals("Betsy", clubber.getName().getGivenName());
+        assertEquals("Flubber", clubber.getName().getSurname());
+        clubber = iterator.next();
+        assertEquals("Edna", clubber.getName().getGivenName());
+        assertEquals("Flubber", clubber.getName().getSurname());
+    }
+
+
+    private <T> T getOther(Set<T> set, T... items) {
+        HashSet<T> toReturn = new HashSet<>(set);
+        toReturn.removeAll(Arrays.asList(items));
+        return toReturn.stream().findFirst().get();
+    }
+
+    private <T> void assertContains(T item, Set<T> set) {
+        assertTrue(set.contains(item));
     }
 }

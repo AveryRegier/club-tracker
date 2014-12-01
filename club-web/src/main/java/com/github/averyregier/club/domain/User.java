@@ -1,14 +1,15 @@
 package com.github.averyregier.club.domain;
 
 import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.view.UserBean;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
-
-import static com.github.averyregier.club.domain.utility.UtilityMethods.asSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by avery on 9/2/14.
@@ -98,16 +99,44 @@ public class User implements Person, Parent {
                 }
             }
 
-            Map<String, Object> myResults = (Map<String, Object>) results.get(form.get(0));
-            if(myResults != null) {
-                this.name = (Name)myResults.get("name");
+            LinkedHashSet<Parent> parents = new LinkedHashSet<>();
+            LinkedHashSet<Clubber> clubbers = new LinkedHashSet<>();
+            for(InputFieldDesignator section: form) {
+                Map<String, Object> theResults = (Map<String, Object>) results.get(section);
+                if(theResults != null) {
+                    Matcher matcher = Pattern.compile("([a-z]*)(\\d?)").matcher(section.getShortCode());
+                    if(matcher.find()) {
+                        switch (matcher.group(1)) {
+                            case "me":
+                                this.name = (Name) theResults.get("name");
+                                parents.add(this);
+                                break;
+                            case "spouse":
+                                User spouse = new User();
+                                spouse.name = (Name) theResults.get("name");
+                                parents.add(spouse);
+                                break;
+                            case "child":
+                                Clubber child = new ClubberAdapter() {
+                                    @Override
+                                    public Name getName() {
+                                        return (Name) theResults.get("childName");
+                                    }
+                                };
+                                clubbers.add(child);
+                                break;
+                        }
+                    }
+
+                }
 
             }
+
 
             return new Family() {
                 @Override
                 public Set<Parent> getParents() {
-                    return asParent().map(p -> asSet((Parent) p)).orElse(Collections.emptySet());
+                    return parents;
                 }
 
                 @Override
@@ -122,7 +151,7 @@ public class User implements Person, Parent {
 
                 @Override
                 public Set<Clubber> getClubbers() {
-                    return null;
+                    return clubbers;
                 }
             };
         }
