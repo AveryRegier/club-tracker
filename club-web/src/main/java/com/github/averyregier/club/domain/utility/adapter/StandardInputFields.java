@@ -38,7 +38,7 @@ public enum StandardInputFields {
                             .value("II")
                             .value("III")
                             .value("IV"))
-                    .validate((p,m)->Optional.of(new Name() {
+                    .validate(m->Optional.of(new Name() {
                         @Override
                         public String getGivenName() {
                             return (String)m.get("given");
@@ -168,7 +168,7 @@ public enum StandardInputFields {
                         .value("II")
                         .value("III")
                         .value("IV"))
-                .validate((p,m)->Optional.of(new Name() {
+                .validate(m->Optional.of(new Name() {
                     @Override
                     public String getGivenName() {
                         return (String)m.get("given");

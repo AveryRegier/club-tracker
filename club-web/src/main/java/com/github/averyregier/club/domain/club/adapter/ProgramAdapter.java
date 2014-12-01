@@ -58,10 +58,10 @@ public class ProgramAdapter implements Program {
 
     private InputFieldGroup buildPersonFields(InputFieldGroupBuilder builder) {
         return builder
-                    .group(StandardInputFields.name.createGroup(getLocale()))
-                    .field(StandardInputFields.gender.createField(getLocale()))
-                    .field(StandardInputFields.email.createField(getLocale()))
-                    .build();
+                .group(StandardInputFields.name.createGroup(getLocale()))
+                .field(StandardInputFields.gender.createField(getLocale()))
+                .field(StandardInputFields.email.createField(getLocale()))
+                .build();
     }
     private InputFieldGroup buildChildFields(InputFieldGroupBuilder builder) {
         return builder

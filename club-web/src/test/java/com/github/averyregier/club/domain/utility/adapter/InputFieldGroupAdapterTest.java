@@ -153,7 +153,7 @@ public class InputFieldGroupAdapterTest {
                 .id("name")
                 .field(f -> f.id("first").type(InputField.Type.text))
                 .field(f -> f.id("last").type(InputField.Type.text))
-                .validate((p, m) -> Optional.of(m.get("first").toString() + m.get("last").toString()))
+                .validate(m -> Optional.of(m.get("first").toString() + m.get("last").toString()))
                 .build();
         HashMap<String, String> map = new HashMap<>();
         map.put("first", "First");
@@ -168,7 +168,7 @@ public class InputFieldGroupAdapterTest {
                 .id("name")
                 .field(f -> f.id("first").type(InputField.Type.text).required())
                 .field(f -> f.id("last").type(InputField.Type.integer).required())
-                .validate((p, m) -> Optional.of(m.get("first").toString() + m.get("last").toString()))
+                .validate(m -> Optional.of(m.get("first").toString() + m.get("last").toString()))
                 .build();
         HashMap<String, String> map = new HashMap<>();
         map.put("first", "First");
@@ -203,8 +203,8 @@ public class InputFieldGroupAdapterTest {
                 .group(g->g.id("name")
                     .field(f -> f.id("first").type(InputField.Type.text).required())
                     .field(f -> f.id("last").type(InputField.Type.integer).required())
-                    .validate((p, m) -> Optional.of(m.get("first").toString() + m.get("last").toString())))
-                .validate((p,m) -> Optional.of(m.get("name")))
+                    .validate(m -> Optional.of(m.get("first").toString() + m.get("last").toString())))
+                .validate(m -> Optional.of(m.get("name")))
                 .build();
         HashMap<String, String> map = new HashMap<>();
         map.put("name.first", "First");
@@ -220,8 +220,8 @@ public class InputFieldGroupAdapterTest {
                 .group(g -> g.id("name")
                         .field(f -> f.id("first").type(InputField.Type.text).required())
                         .field(f -> f.id("last").type(InputField.Type.text).required())
-                        .validate((p, m) -> Optional.of(m.get("first").toString() + m.get("last").toString())))
-                .validate((p, m) -> Optional.of(m.get("name")).map(s -> s.toString().toUpperCase()))
+                        .validate(m -> Optional.of(m.get("first").toString() + m.get("last").toString())))
+                .validate(m -> Optional.of(m.get("name")).map(s -> s.toString().toUpperCase()))
                 .build();
         HashMap<String, String> map = new HashMap<>();
         map.put("name.first", "First");

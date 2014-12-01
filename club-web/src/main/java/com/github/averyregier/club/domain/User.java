@@ -2,6 +2,7 @@ package com.github.averyregier.club.domain;
 
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
+import com.github.averyregier.club.domain.club.adapter.FamilyAdapter;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.view.UserBean;
 
@@ -86,25 +87,16 @@ public class User implements Person, Parent {
         if(getFamily().isPresent()) {
             return getFamily().get().update(information);
         } else {
+            Pattern pattern = Pattern.compile("([a-z]*)(\\d?)");
 
-            List<InputFieldDesignator> form = information.getForm();
-
-            Map<InputFieldDesignator, Object> results = new LinkedHashMap<>();
-
-            Map<String, String> fields = information.getFields();
-            for(InputFieldDesignator section: form) {
-                Optional<Object> result = section.validateFromParentMap(fields);
-                if(result.isPresent()) {
-                    results.put(section, result.get());
-                }
-            }
+            Map<InputFieldDesignator, Object> results = information.validate();
 
             LinkedHashSet<Parent> parents = new LinkedHashSet<>();
             LinkedHashSet<Clubber> clubbers = new LinkedHashSet<>();
-            for(InputFieldDesignator section: form) {
+            for(InputFieldDesignator section: information.getForm()) {
                 Map<String, Object> theResults = (Map<String, Object>) results.get(section);
                 if(theResults != null) {
-                    Matcher matcher = Pattern.compile("([a-z]*)(\\d?)").matcher(section.getShortCode());
+                    Matcher matcher = pattern.matcher(section.getShortCode());
                     if(matcher.find()) {
                         switch (matcher.group(1)) {
                             case "me":
@@ -127,33 +119,10 @@ public class User implements Person, Parent {
                                 break;
                         }
                     }
-
                 }
-
             }
 
-
-            return new Family() {
-                @Override
-                public Set<Parent> getParents() {
-                    return parents;
-                }
-
-                @Override
-                public Family update(RegistrationInformation information) {
-                    return this;
-                }
-
-                @Override
-                public RegistrationInformation getRegistration() {
-                    return null;
-                }
-
-                @Override
-                public Set<Clubber> getClubbers() {
-                    return clubbers;
-                }
-            };
+            return new FamilyAdapter(parents, clubbers);
         }
     }
 
@@ -216,4 +185,5 @@ public class User implements Person, Parent {
     private String combineName(Object first, Object last) {
         return ((first != null ? first : "") +" "+ (last != null ? last : "")).trim();
     }
+
 }

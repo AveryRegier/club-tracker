@@ -8,7 +8,6 @@ import com.github.averyregier.club.domain.utility.UtilityMethods;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -20,13 +19,13 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
     private final String name;
     private Later<InputFieldGroup> parent;
     private final List<InputFieldDesignator> children;
-    private final BiFunction<Person, Map<String, Object>, Optional<Object>> validationFn;
+    private final Function<Map<String, Object>, Optional<Object>> validationFn;
     private final Function<Person, Map<String, String>> mapFn;
 
     InputFieldGroupAdapter(String id, String name,
                            Later<InputFieldGroup> parent,
                            List<InputFieldDesignator> children,
-                           BiFunction<Person, Map<String, Object>, Optional<Object>> validationFn,
+                           Function<Map<String, Object>, Optional<Object>> validationFn,
                            Function<Person, Map<String, String>> mapFn)
     {
         this.id = id;
@@ -95,7 +94,7 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
             if((d.isGroup() || d.asField().get().isRequired()) && !dResult.isPresent()) return Optional.empty(); // propagate validation failure
             results.put(d.getShortCode(), dResult.orElse(null));
         }
-        return validationFn != null ? validationFn.apply(null, results) : Optional.of(results);
+        return validationFn != null ? validationFn.apply(results) : Optional.of(results);
     }
 
     @Override

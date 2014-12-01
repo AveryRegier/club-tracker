@@ -23,7 +23,7 @@ public class InputFieldGroupBuilder
     private String id;
     private String name;
     private List<ChildBuilder<InputFieldGroup, InputFieldDesignator>> children = new ArrayList<>();
-    private BiFunction<Person, Map<String, Object>, Optional<Object>> validationFn;
+    private Function<Map<String, Object>, Optional<Object>> validationFn;
     private Function<Person, Map<String, String>> mapFn;
 
     public InputFieldGroupBuilder id(String id) {
@@ -60,7 +60,7 @@ public class InputFieldGroupBuilder
         return this;
     }
 
-    public InputFieldGroupBuilder validate(BiFunction<Person,  Map<String, Object>, Optional<Object>> validationFn) {
+    public InputFieldGroupBuilder validate(Function<Map<String, Object>, Optional<Object>> validationFn) {
         this.validationFn = validationFn;
         return this;
     }
