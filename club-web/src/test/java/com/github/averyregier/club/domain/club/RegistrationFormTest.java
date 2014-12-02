@@ -189,6 +189,7 @@ public class RegistrationFormTest {
         assertGroup("childName", meFields);
         assertField("gender", meFields);
         assertField("email", meFields);
+        assertField("ageGroup", meFields);
     }
 
     @Test

@@ -46,7 +46,7 @@ public interface InputField extends InputFieldDesignator {
             Object validate(String input) {
                 try {
                     return AgeGroup.DefaultAgeGroup.valueOf(input);
-                } catch(IllegalArgumentException e) {
+                } catch(IllegalArgumentException|NullPointerException e) {
                     return null;
                 }
             }

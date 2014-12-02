@@ -68,6 +68,7 @@ public class ProgramAdapter implements Program {
                 .group(StandardInputFields.childName.createGroup(getLocale()))
                 .field(StandardInputFields.gender.createField(getLocale()))
                 .field(StandardInputFields.email.createField(getLocale()))
+                .field(StandardInputFields.ageGroup.createField(getLocale()))
                 .build();
     }
 
