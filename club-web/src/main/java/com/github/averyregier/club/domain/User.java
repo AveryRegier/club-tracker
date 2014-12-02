@@ -3,6 +3,7 @@ package com.github.averyregier.club.domain;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
 import com.github.averyregier.club.domain.club.adapter.FamilyAdapter;
+import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.view.UserBean;
 
@@ -113,6 +114,11 @@ public class User implements Person, Parent {
                                     @Override
                                     public Name getName() {
                                         return (Name) theResults.get("childName");
+                                    }
+
+                                    @Override
+                                    public AgeGroup getCurrentAgeGroup() {
+                                        return (AgeGroup) theResults.get("ageGroup");
                                     }
                                 };
                                 clubbers.add(child);

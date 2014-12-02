@@ -2,6 +2,7 @@ package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
+import com.github.averyregier.club.domain.program.AgeGroup;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -69,6 +70,7 @@ public class RegistrationTest {
                 .put("me.name.surname", "Flubber")
                 .put("child1.childName.given", "Johny")
                 .put("child1.childName.surname", "Flubber")
+                .put("child1.ageGroup","THIRD_GRADE")
                 .build();
         RegistrationInformation form = program.updateRegistrationForm(formValues);
         Family family = me.register(form);
@@ -83,6 +85,7 @@ public class RegistrationTest {
 
         assertEquals("Johny", clubber.getName().getGivenName());
         assertEquals("Flubber", clubber.getName().getSurname());
+        assertEquals(AgeGroup.DefaultAgeGroup.THIRD_GRADE, clubber.getCurrentAgeGroup());
     }
 
     @Test
