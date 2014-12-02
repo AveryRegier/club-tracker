@@ -9,8 +9,9 @@ public class Later<T> {
         assert(this.value != null);
         return value;
     }
-    public void set(T value) {
+    public T set(T value) {
         assert(this.value == null);
         this.value = value;
+        return value;
     }
 }

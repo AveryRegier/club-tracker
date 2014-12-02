@@ -3,6 +3,7 @@ package com.github.averyregier.club.domain.club;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.domain.program.awana.TnTCurriculum;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,6 +22,7 @@ public class RegistrationTest {
     @Before
     public void setup() {
         program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
+        program.addClub(TnTCurriculum.get());
     }
 
     @Test
@@ -36,6 +38,7 @@ public class RegistrationTest {
         assertEquals(asLinkedSet(me), family.getParents());
         assertEquals("Green", me.getName().getGivenName());
         assertEquals("Flubber", me.getName().getSurname());
+        assertSame(family, me.getFamily().get());
     }
 
     @Test
@@ -54,12 +57,14 @@ public class RegistrationTest {
         assertContains(me, parents);
         assertEquals("Green", me.getName().getGivenName());
         assertEquals("Flubber", me.getName().getSurname());
+        assertSame(family, me.getFamily().get());
 
         assertEquals(2, parents.size());
         Parent spouse = getOther(parents, me);
 
         assertEquals("Gooey", spouse.getName().getGivenName());
         assertEquals("Flubber-Goo", spouse.getName().getSurname());
+        assertSame(family, spouse.getFamily().get());
     }
 
     @Test
@@ -86,6 +91,17 @@ public class RegistrationTest {
         assertEquals("Johny", clubber.getName().getGivenName());
         assertEquals("Flubber", clubber.getName().getSurname());
         assertEquals(AgeGroup.DefaultAgeGroup.THIRD_GRADE, clubber.getCurrentAgeGroup());
+
+        assertSame(family, clubber.getFamily().get());
+
+//        assertTrue(program.getClubbers().contains(clubber));
+//        assertTrue(clubber.getClub().isPresent());
+//        Club clubbersClub = clubber.getClub().get();
+//        assertTrue(program.getClubs().contains(clubbersClub));
+//        assertEquals("TnT", clubbersClub.getShortName());
+//        assertTrue(clubber.getNextSection().isPresent());
+//        Section clubberSection = clubber.getNextSection().get();
+//        assertEquals(1, clubberSection.sequence());
     }
 
     @Test

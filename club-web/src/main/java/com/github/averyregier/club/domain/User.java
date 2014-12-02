@@ -5,6 +5,7 @@ import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
 import com.github.averyregier.club.domain.club.adapter.FamilyAdapter;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
+import com.github.averyregier.club.domain.utility.builder.Later;
 import com.github.averyregier.club.view.UserBean;
 
 import java.io.UnsupportedEncodingException;
@@ -22,6 +23,7 @@ public class User implements Person, Parent {
     private Name name;
     private Gender gender;
     private String email;
+    private Later<Family> familyLater;
 
     public String resetAuth() {
         byte[] bytes = new byte[10];
@@ -92,6 +94,7 @@ public class User implements Person, Parent {
 
             Map<InputFieldDesignator, Object> results = information.validate();
 
+            Later<Family> familyLater = new Later<>();
             LinkedHashSet<Parent> parents = new LinkedHashSet<>();
             LinkedHashSet<Clubber> clubbers = new LinkedHashSet<>();
             for(InputFieldDesignator section: information.getForm()) {
@@ -102,11 +105,13 @@ public class User implements Person, Parent {
                         switch (matcher.group(1)) {
                             case "me":
                                 this.name = (Name) theResults.get("name");
+                                this.familyLater = familyLater;
                                 parents.add(this);
                                 break;
                             case "spouse":
                                 User spouse = new User();
                                 spouse.name = (Name) theResults.get("name");
+                                spouse.familyLater = familyLater;
                                 parents.add(spouse);
                                 break;
                             case "child":
@@ -120,6 +125,11 @@ public class User implements Person, Parent {
                                     public AgeGroup getCurrentAgeGroup() {
                                         return (AgeGroup) theResults.get("ageGroup");
                                     }
+
+                                    @Override
+                                    public Optional<Family> getFamily() {
+                                        return Optional.of(familyLater.get());
+                                    }
                                 };
                                 clubbers.add(child);
                                 break;
@@ -128,13 +138,13 @@ public class User implements Person, Parent {
                 }
             }
 
-            return new FamilyAdapter(parents, clubbers);
+            return familyLater.set(new FamilyAdapter(parents, clubbers));
         }
     }
 
     @Override
     public Optional<Family> getFamily() {
-        return Optional.empty();
+        return Optional.ofNullable(familyLater != null ? familyLater.get() : null);
     }
 
     public void setName(Object first, Object last) {
