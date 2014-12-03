@@ -108,17 +108,17 @@ public class RegistrationTest {
     public void wholeFamilyRegistration() {
         User me = new User();
         Map<String, String> formValues =
-                map("me.name.given", "Green")
-                        .put("me.name.surname", "Flubber")
-                        .put("spouse.name.given", "Gooey")
-                        .put("spouse.name.surname", "Flubber-Goo")
-                        .put("child1.childName.given", "Johny")
-                        .put("child1.childName.surname", "Flubber")
-                        .put("child2.childName.given", "Betsy")
-                        .put("child2.childName.surname", "Flubber")
-                        .put("child3.childName.given", "Edna")
-                        .put("child3.childName.surname", "Flubber")
-                        .build();
+                 map("me.name.given", "Green")
+                .put("me.name.surname", "Flubber")
+                .put("spouse.name.given", "Gooey")
+                .put("spouse.name.surname", "Flubber-Goo")
+                .put("child1.childName.given", "Johny")
+                .put("child1.childName.surname", "Flubber")
+                .put("child2.childName.given", "Betsy")
+                .put("child2.childName.surname", "Flubber")
+                .put("child3.childName.given", "Edna")
+                .put("child3.childName.surname", "Flubber")
+                .build();
         RegistrationInformation form = program.updateRegistrationForm(formValues);
         Family family = me.register(form);
         assertNotNull(family);
