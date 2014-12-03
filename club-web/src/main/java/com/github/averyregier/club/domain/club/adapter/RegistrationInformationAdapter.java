@@ -46,7 +46,7 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
                                 parents.add(spouse);
                                 break;
                             case "child":
-                                Clubber child = new ClubberAdapter() {
+                                ClubberAdapter child = new ClubberAdapter() {
                                     @Override
                                     public Name getName() {
                                         return (Name) theResults.get("childName");
@@ -62,6 +62,7 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
                                         return Optional.of(familyLater.get());
                                     }
                                 };
+                                getProgram().register(child);
                                 clubbers.add(child);
                                 break;
                         }
@@ -72,4 +73,6 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
             return familyLater.set(new FamilyAdapter(parents, clubbers));
         }
     }
+
+    abstract ProgramAdapter getProgram();
 }

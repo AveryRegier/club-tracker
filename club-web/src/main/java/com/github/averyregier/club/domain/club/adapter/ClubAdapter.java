@@ -4,6 +4,8 @@ import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.Curriculum;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -13,6 +15,7 @@ import java.util.Set;
 class ClubAdapter implements Club {
     private ProgramAdapter programAdapter;
     private final Curriculum series;
+    private Set<Clubber> clubbers = new HashSet<>();
 
     public ClubAdapter(ProgramAdapter programAdapter, Curriculum series) {
         this.programAdapter = programAdapter;
@@ -71,11 +74,16 @@ class ClubAdapter implements Club {
 
     @Override
     public Set<Clubber> getClubbers() {
-        return null;
+        return Collections.unmodifiableSet(clubbers);
     }
 
     @Override
     public int compareTo(Club o) {
         return getShortName().compareTo(o.getShortName());
+    }
+
+    void addClubber(ClubberAdapter clubber) {
+        this.clubbers.add(clubber);
+        clubber.setClub(this);
     }
 }

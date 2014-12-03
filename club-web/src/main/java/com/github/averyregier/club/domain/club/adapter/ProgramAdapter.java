@@ -10,6 +10,7 @@ import com.github.averyregier.club.domain.utility.adapter.InputFieldGroupBuilder
 import com.github.averyregier.club.domain.utility.adapter.StandardInputFields;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
 * Created by avery on 9/23/14.
@@ -18,7 +19,7 @@ public class ProgramAdapter implements Program {
     private final String acceptLanguage;
     private String organizationName;
     private final String curriculum;
-    private SortedSet<Club> clubs = new TreeSet<>();
+    private SortedSet<ClubAdapter> clubs = new TreeSet<>();
 
     public ProgramAdapter(String acceptLanguage, String organizationName, String curriculum) {
         this.acceptLanguage = acceptLanguage;
@@ -28,7 +29,12 @@ public class ProgramAdapter implements Program {
 
     @Override
     public Set<Club> getClubs() {
-        return Collections.unmodifiableSortedSet(clubs);
+        return Collections.unmodifiableSet(downcast(clubs));
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> SortedSet<T> downcast(SortedSet<? extends T> set) {
+        return (SortedSet<T>) set;
     }
 
     @Override
@@ -48,6 +54,11 @@ public class ProgramAdapter implements Program {
             @Override
             public Map<String, String> getFields() {
                 return map;
+            }
+
+            @Override
+            ProgramAdapter getProgram() {
+                return ProgramAdapter.this;
             }
         };
     }
@@ -115,6 +126,11 @@ public class ProgramAdapter implements Program {
             @Override
             public Map<String, String> getFields() {
                 return fields;
+            }
+
+            @Override
+            ProgramAdapter getProgram() {
+                return ProgramAdapter.this;
             }
         };
     }
@@ -207,11 +223,15 @@ public class ProgramAdapter implements Program {
 
     @Override
     public Set<Clubber> getClubbers() {
-        return null;
+        return clubs.stream().flatMap(c->c.getClubbers().stream()).collect(Collectors.toSet());
     }
 
     @Override
     public int compareTo(Club o) {
         return 0;
+    }
+
+    void register(ClubberAdapter clubber) {
+        clubs.forEach(c -> c.addClubber(clubber));
     }
 }

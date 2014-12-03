@@ -16,9 +16,10 @@ import java.util.stream.Collectors;
  */
 public abstract class ClubberAdapter implements Clubber {
     private LinkedHashMap<Section, ClubberRecord> records = new LinkedHashMap<>();
+    private ClubAdapter club;
 
     public Optional<ClubberRecord> getRecord(Optional<Section> maybeASection) {
-        return maybeASection.map(s->mapToRecord(s));
+        return maybeASection.map(s -> mapToRecord(s));
     }
 
     public List<AwardPresentation> getAwards() {
@@ -81,7 +82,7 @@ public abstract class ClubberAdapter implements Clubber {
 
     @Override
     public Optional<Club> getClub() {
-        return null;
+        return Optional.ofNullable(club);
     }
 
     @Override
@@ -132,5 +133,9 @@ public abstract class ClubberAdapter implements Clubber {
     @Override
     public Optional<Family> getFamily() {
         return null;
+    }
+
+    void setClub(ClubAdapter club) {
+        this.club = club;
     }
 }

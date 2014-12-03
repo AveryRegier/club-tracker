@@ -94,11 +94,11 @@ public class RegistrationTest {
 
         assertSame(family, clubber.getFamily().get());
 
-//        assertTrue(program.getClubbers().contains(clubber));
-//        assertTrue(clubber.getClub().isPresent());
-//        Club clubbersClub = clubber.getClub().get();
-//        assertTrue(program.getClubs().contains(clubbersClub));
-//        assertEquals("TnT", clubbersClub.getShortName());
+        assertTrue(program.getClubbers().contains(clubber));
+        assertTrue(clubber.getClub().isPresent());
+        Club clubbersClub = clubber.getClub().get();
+        assertTrue(program.getClubs().contains(clubbersClub));
+        assertEquals("TnT", clubbersClub.getShortName());
 //        assertTrue(clubber.getNextSection().isPresent());
 //        Section clubberSection = clubber.getNextSection().get();
 //        assertEquals(1, clubberSection.sequence());
