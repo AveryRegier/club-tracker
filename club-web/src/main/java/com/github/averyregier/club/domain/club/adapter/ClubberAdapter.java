@@ -130,11 +130,6 @@ public abstract class ClubberAdapter implements Clubber {
     }
 
     @Override
-    public Family register(RegistrationInformation information) {
-        return null;
-    }
-
-    @Override
     public Optional<Family> getFamily() {
         return null;
     }

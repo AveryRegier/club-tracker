@@ -39,7 +39,7 @@ public class ProgramAdapter implements Program {
 
         Map<String, String> map = UtilityMethods.prefix(me.getShortCode(), me.map(user));
 
-        return new RegistrationInformation() {
+        return new RegistrationInformationAdapter() {
             @Override
             public List<InputFieldDesignator> getForm() {
                 return list;
@@ -106,7 +106,7 @@ public class ProgramAdapter implements Program {
             list.add(StandardInputFields.action.createField(getLocale()).build());
         }
 
-        return new RegistrationInformation() {
+        return new RegistrationInformationAdapter() {
             @Override
             public List<InputFieldDesignator> getForm() {
                 return list;

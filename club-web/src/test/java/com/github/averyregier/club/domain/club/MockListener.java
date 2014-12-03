@@ -82,11 +82,6 @@ class MockListener implements Listener {
     }
 
     @Override
-    public Family register(RegistrationInformation information) {
-        return null;
-    }
-
-    @Override
     public Optional<Family> getFamily() {
         return null;
     }

@@ -33,7 +33,7 @@ public class RegistrationTest {
                 .put("me.name.surname", "Flubber")
                 .build();
         RegistrationInformation form = program.updateRegistrationForm(formValues);
-        Family family = me.register(form);
+        Family family = form.register(me);
         assertNotNull(family);
         assertEquals(asLinkedSet(me), family.getParents());
         assertEquals("Green", me.getName().getGivenName());
@@ -51,7 +51,7 @@ public class RegistrationTest {
                .put("spouse.name.surname", "Flubber-Goo")
                .build();
         RegistrationInformation form = program.updateRegistrationForm(formValues);
-        Family family = me.register(form);
+        Family family = form.register(me);
         assertNotNull(family);
         Set<Parent> parents = family.getParents();
         assertContains(me, parents);
@@ -78,7 +78,7 @@ public class RegistrationTest {
                 .put("child1.ageGroup","THIRD_GRADE")
                 .build();
         RegistrationInformation form = program.updateRegistrationForm(formValues);
-        Family family = me.register(form);
+        Family family = form.register(me);
         assertNotNull(family);
         assertEquals(asLinkedSet(me), family.getParents());
         assertEquals("Green", me.getName().getGivenName());
@@ -120,7 +120,7 @@ public class RegistrationTest {
                 .put("child3.childName.surname", "Flubber")
                 .build();
         RegistrationInformation form = program.updateRegistrationForm(formValues);
-        Family family = me.register(form);
+        Family family = form.register(me);
         assertNotNull(family);
         Set<Parent> parents = family.getParents();
         assertContains(me, parents);

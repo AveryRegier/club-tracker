@@ -1,18 +1,12 @@
 package com.github.averyregier.club.domain;
 
 import com.github.averyregier.club.domain.club.*;
-import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
-import com.github.averyregier.club.domain.club.adapter.FamilyAdapter;
-import com.github.averyregier.club.domain.program.AgeGroup;
-import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.builder.Later;
 import com.github.averyregier.club.view.UserBean;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by avery on 9/2/14.
@@ -86,63 +80,6 @@ public class User implements Person, Parent {
     }
 
     @Override
-    public Family register(RegistrationInformation information) {
-        if(getFamily().isPresent()) {
-            return getFamily().get().update(information);
-        } else {
-            Pattern pattern = Pattern.compile("([a-z]*)(\\d?)");
-
-            Map<InputFieldDesignator, Object> results = information.validate();
-
-            Later<Family> familyLater = new Later<>();
-            LinkedHashSet<Parent> parents = new LinkedHashSet<>();
-            LinkedHashSet<Clubber> clubbers = new LinkedHashSet<>();
-            for(InputFieldDesignator section: information.getForm()) {
-                Map<String, Object> theResults = (Map<String, Object>) results.get(section);
-                if(theResults != null) {
-                    Matcher matcher = pattern.matcher(section.getShortCode());
-                    if(matcher.find()) {
-                        switch (matcher.group(1)) {
-                            case "me":
-                                this.name = (Name) theResults.get("name");
-                                this.familyLater = familyLater;
-                                parents.add(this);
-                                break;
-                            case "spouse":
-                                User spouse = new User();
-                                spouse.name = (Name) theResults.get("name");
-                                spouse.familyLater = familyLater;
-                                parents.add(spouse);
-                                break;
-                            case "child":
-                                Clubber child = new ClubberAdapter() {
-                                    @Override
-                                    public Name getName() {
-                                        return (Name) theResults.get("childName");
-                                    }
-
-                                    @Override
-                                    public AgeGroup getCurrentAgeGroup() {
-                                        return (AgeGroup) theResults.get("ageGroup");
-                                    }
-
-                                    @Override
-                                    public Optional<Family> getFamily() {
-                                        return Optional.of(familyLater.get());
-                                    }
-                                };
-                                clubbers.add(child);
-                                break;
-                        }
-                    }
-                }
-            }
-
-            return familyLater.set(new FamilyAdapter(parents, clubbers));
-        }
-    }
-
-    @Override
     public Optional<Family> getFamily() {
         return Optional.ofNullable(familyLater != null ? familyLater.get() : null);
     }
@@ -202,4 +139,11 @@ public class User implements Person, Parent {
         return ((first != null ? first : "") +" "+ (last != null ? last : "")).trim();
     }
 
+    public void setName(Name name) {
+        this.name = name;
+    }
+
+    public void setFamily(Later<Family> familyLater) {
+        this.familyLater = familyLater;
+    }
 }
