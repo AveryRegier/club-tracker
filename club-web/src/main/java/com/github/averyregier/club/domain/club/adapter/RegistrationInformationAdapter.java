@@ -21,57 +21,61 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
         if(user.getFamily().isPresent()) {
             return user.getFamily().get().update(this);
         } else {
-            Pattern pattern = Pattern.compile("([a-z]*)(\\d?)");
+            return newFamily(user);
+        }
+    }
 
-            Map<InputFieldDesignator, Object> results = validate();
+    private Family newFamily(User user) {
+        Pattern pattern = Pattern.compile("([a-z]*)(\\d?)");
 
-            Later<Family> familyLater = new Later<>();
-            LinkedHashSet<Parent> parents = new LinkedHashSet<>();
-            LinkedHashSet<Clubber> clubbers = new LinkedHashSet<>();
-            for(InputFieldDesignator section: getForm()) {
-                Map<String, Object> theResults = (Map<String, Object>) results.get(section);
-                if(theResults != null) {
-                    Matcher matcher = pattern.matcher(section.getShortCode());
-                    if(matcher.find()) {
-                        switch (matcher.group(1)) {
-                            case "me":
-                                user.setName((Name) theResults.get("name"));
-                                user.setFamily(familyLater);
-                                parents.add(user);
-                                break;
-                            case "spouse":
-                                User spouse = new User();
-                                spouse.setName((Name) theResults.get("name"));
-                                spouse.setFamily(familyLater);
-                                parents.add(spouse);
-                                break;
-                            case "child":
-                                ClubberAdapter child = new ClubberAdapter() {
-                                    @Override
-                                    public Name getName() {
-                                        return (Name) theResults.get("childName");
-                                    }
+        Map<InputFieldDesignator, Object> results = validate();
 
-                                    @Override
-                                    public AgeGroup getCurrentAgeGroup() {
-                                        return (AgeGroup) theResults.get("ageGroup");
-                                    }
+        Later<Family> familyLater = new Later<>();
+        LinkedHashSet<Parent> parents = new LinkedHashSet<>();
+        LinkedHashSet<Clubber> clubbers = new LinkedHashSet<>();
+        for(InputFieldDesignator section: getForm()) {
+            Map<String, Object> theResults = (Map<String, Object>) results.get(section);
+            if(theResults != null) {
+                Matcher matcher = pattern.matcher(section.getShortCode());
+                if(matcher.find()) {
+                    switch (matcher.group(1)) {
+                        case "me":
+                            user.setName((Name) theResults.get("name"));
+                            user.setFamily(familyLater);
+                            parents.add(user);
+                            break;
+                        case "spouse":
+                            User spouse = new User();
+                            spouse.setName((Name) theResults.get("name"));
+                            spouse.setFamily(familyLater);
+                            parents.add(spouse);
+                            break;
+                        case "child":
+                            ClubberAdapter child = new ClubberAdapter() {
+                                @Override
+                                public Name getName() {
+                                    return (Name) theResults.get("childName");
+                                }
 
-                                    @Override
-                                    public Optional<Family> getFamily() {
-                                        return Optional.of(familyLater.get());
-                                    }
-                                };
-                                getProgram().register(child);
-                                clubbers.add(child);
-                                break;
-                        }
+                                @Override
+                                public AgeGroup getCurrentAgeGroup() {
+                                    return (AgeGroup) theResults.get("ageGroup");
+                                }
+
+                                @Override
+                                public Optional<Family> getFamily() {
+                                    return Optional.of(familyLater.get());
+                                }
+                            };
+                            getProgram().register(child);
+                            clubbers.add(child);
+                            break;
                     }
                 }
             }
-
-            return familyLater.set(new FamilyAdapter(parents, clubbers));
         }
+
+        return familyLater.set(new FamilyAdapter(parents, clubbers));
     }
 
     abstract ProgramAdapter getProgram();
