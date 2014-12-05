@@ -21,8 +21,52 @@ public class TnTCurriculumTest {
     public void thirdGradeBookRecommendation() {
         List<Book> recommendation = classUnderTest.recommendedBookList(AgeGroup.DefaultAgeGroup.THIRD_GRADE);
         assertNotNull(recommendation);
-        assertTrue(recommendation.size()>=1);
+        assertEquals(2, recommendation.size());
         assertSame(0, recommendation.get(0).sequence());
+        assertSame(1, recommendation.get(1).sequence());
+    }
+
+    @Test
+    public void fourthGradeBookRecommendation() {
+        List<Book> recommendation = classUnderTest.recommendedBookList(AgeGroup.DefaultAgeGroup.FOURTH_GRADE);
+        assertNotNull(recommendation);
+        assertEquals(3, recommendation.size());
+        assertSame(0, recommendation.get(0).sequence());
+        assertSame(1, recommendation.get(1).sequence());
+        assertSame(2, recommendation.get(2).sequence());
+    }
+
+    @Test
+    public void fifthGradeBookRecommendation() {
+        List<Book> recommendation = classUnderTest.recommendedBookList(AgeGroup.DefaultAgeGroup.FIFTH_GRADE);
+        assertNotNull(recommendation);
+        assertEquals(2, recommendation.size());
+        assertSame(0, recommendation.get(0).sequence());
+        assertSame(1, recommendation.get(1).sequence());
+    }
+
+    @Test
+    public void sixthGradeBookRecommendation() {
+        List<Book> recommendation = classUnderTest.recommendedBookList(AgeGroup.DefaultAgeGroup.SIXTH_GRADE);
+        assertNotNull(recommendation);
+        assertEquals(3, recommendation.size());
+        assertSame(0, recommendation.get(0).sequence());
+        assertSame(1, recommendation.get(1).sequence());
+        assertSame(2, recommendation.get(2).sequence());
+    }
+
+    @Test
+    public void seventhGradeGetsNoBooks() {
+        List<Book> recommendation = classUnderTest.recommendedBookList(AgeGroup.DefaultAgeGroup.SEVENTH_GRADE);
+        assertNotNull(recommendation);
+        assertEquals(0, recommendation.size());
+    }
+
+    @Test
+    public void secondGradeGetsNoBooks() {
+        List<Book> recommendation = classUnderTest.recommendedBookList(AgeGroup.DefaultAgeGroup.SECOND_GRADE);
+        assertNotNull(recommendation);
+        assertEquals(0, recommendation.size());
     }
 
     @Test

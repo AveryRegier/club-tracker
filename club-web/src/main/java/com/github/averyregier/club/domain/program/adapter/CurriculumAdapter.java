@@ -6,6 +6,7 @@ import com.github.averyregier.club.domain.utility.builder.Later;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
 * Created by avery on 9/15/14.
@@ -53,7 +54,9 @@ class CurriculumAdapter implements Curriculum {
 
     @Override
     public List<Book> recommendedBookList(AgeGroup age) {
-        return getBooks();
+        return getBooks().stream()
+                .filter(b->b.getAgeGroups().contains(age))
+                .collect(Collectors.toList());
     }
 
     @Override

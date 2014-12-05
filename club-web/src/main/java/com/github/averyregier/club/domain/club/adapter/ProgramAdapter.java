@@ -232,6 +232,8 @@ public class ProgramAdapter implements Program {
     }
 
     void register(ClubberAdapter clubber) {
-        clubs.forEach(c -> c.addClubber(clubber));
+        clubs.stream()
+                .filter(c->!c.getCurriculum().recommendedBookList(clubber.getCurrentAgeGroup()).isEmpty())
+                .forEach(c -> c.addClubber(clubber));
     }
 }
