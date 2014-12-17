@@ -1,11 +1,7 @@
 package com.github.averyregier.club;
 
 import com.github.averyregier.club.domain.PersonManager;
-import com.github.averyregier.club.domain.User;
-import com.github.averyregier.club.domain.club.Clubber;
-import com.github.averyregier.club.domain.club.ClubberRecord;
-import com.github.averyregier.club.domain.club.Listener;
-import com.github.averyregier.club.domain.club.Signing;
+import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.Section;
 import org.junit.Test;
 
@@ -23,9 +19,10 @@ import java.util.stream.Collectors;
 public class Scratch {
     @Test
     public void checkoffList() {
-        User user = new User();
-        if(user.asListener().isPresent()) {
-            Listener me = user.asListener().get();
+        PersonManager personManager = new PersonManager();
+        Optional<Person> user = personManager.lookup("Diane");
+        if(user.isPresent() && user.get().asListener().isPresent()) {
+            Listener me = user.get().asListener().get();
             {
                 // Screen: What are the next sections my clubbers are working on?
                 Set<Clubber> quickList = me.getQuickList();
@@ -61,7 +58,7 @@ public class Scratch {
                 String personId = "1234-5678";
                 String sectionId = "A-TnT-3b-3-1";
                 String note = "Word Perfect!";
-                new PersonManager().lookup(personId)
+                personManager.lookup(personId)
                         .ifPresent(p -> p.asClubber()
                                 .ifPresent(c -> c.getRecord(c.getClub().get().getCurriculum().lookup(sectionId))
                                         .ifPresent(r -> {

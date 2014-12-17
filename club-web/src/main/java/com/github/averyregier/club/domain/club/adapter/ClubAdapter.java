@@ -12,7 +12,7 @@ import java.util.Set;
 /**
 * Created by avery on 9/26/14.
 */
-class ClubAdapter implements Club {
+class ClubAdapter extends ClubGroupAdapter implements Club {
     private ProgramAdapter programAdapter;
     private final Curriculum series;
     private Set<Clubber> clubbers = new HashSet<>();
@@ -45,16 +45,6 @@ class ClubAdapter implements Club {
     @Override
     public Curriculum getCurriculum() {
         return series;
-    }
-
-    @Override
-    public Set<Listener> getListeners() {
-        return null;
-    }
-
-    @Override
-    public Listener recruit(Person person) {
-        return null;
     }
 
     @Override

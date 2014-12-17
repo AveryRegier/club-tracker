@@ -1,6 +1,8 @@
 package com.github.averyregier.club.domain.club.adapter;
 
+import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.Club;
+import com.github.averyregier.club.domain.club.Listener;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.program.Programs;
 import com.github.averyregier.club.domain.program.adapter.MasterCurriculum;
@@ -82,4 +84,51 @@ public class ProgramAdapterTest {
         assertFalse(program.getClubbers().contains(clubber));
         assertFalse(clubber.getClub().isPresent());
     }
+
+    @Test
+    public void recruitExistingUserAsListener() {
+        User user = new User();
+        ProgramAdapter program = new ProgramAdapter("en_US", null, "AWANA");
+
+        Listener recruit = program.recruit(user);
+        assertNotNull(recruit);
+        assertTrue(user.asListener().isPresent());
+        assertSame(recruit, user.asListener().get());
+        assertTrue(recruit.getLogin().isPresent());
+        assertSame(user, recruit.getLogin().get());
+
+        assertTrue(program.getListeners().contains(recruit));
+
+        Listener recruit2 = program.recruit(user);
+        assertSame(recruit, recruit2);
+
+        assertTrue(recruit.getClub().isPresent());
+        assertSame(program, recruit.getClub().get());
+    }
+
+    @Test
+    public void recruitExistingUserAsListenerForClub() {
+        User user = new User();
+        ProgramAdapter program = new ProgramAdapter("en_US", null, "AWANA");
+        Club club = program.addClub(TnTCurriculum.get());
+
+        Listener recruit = club.recruit(user);
+        assertNotNull(recruit);
+        assertTrue(user.asListener().isPresent());
+        assertSame(recruit, user.asListener().get());
+        assertTrue(recruit.getLogin().isPresent());
+        assertSame(user, recruit.getLogin().get());
+
+        assertTrue(club.getListeners().contains(recruit));
+        assertTrue(program.getListeners().contains(recruit));
+
+        Listener recruit2 = program.recruit(user);
+        assertSame(recruit, recruit2);
+        Listener recruit3 = club.recruit(user);
+        assertSame(recruit, recruit3);
+
+        assertTrue(recruit.getClub().isPresent());
+        assertSame(club, recruit.getClub().get());
+    }
+
 }

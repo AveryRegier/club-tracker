@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 /**
 * Created by avery on 9/23/14.
 */
-public class ProgramAdapter implements Program {
+public class ProgramAdapter extends ClubGroupAdapter implements Program {
     private final String acceptLanguage;
     private String organizationName;
     private final String curriculum;
@@ -162,8 +162,10 @@ public class ProgramAdapter implements Program {
     }
 
     @Override
-    public void addClub(final Curriculum series) {
-        clubs.add(new ClubAdapter(this, series));
+    public Club addClub(final Curriculum series) {
+        ClubAdapter club = new ClubAdapter(this, series);
+        clubs.add(club);
+        return club;
     }
 
     @Override
@@ -197,18 +199,8 @@ public class ProgramAdapter implements Program {
     }
 
     @Override
-    public Set<Listener> getListeners() {
-        return null;
-    }
-
-    @Override
-    public Listener recruit(Person person) {
-        return null;
-    }
-
-    @Override
     public Optional<ClubGroup> getParentGroup() {
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -218,7 +210,7 @@ public class ProgramAdapter implements Program {
 
     @Override
     public Optional<Club> asClub() {
-        return null;
+        return Optional.of(this);
     }
 
     @Override
@@ -233,7 +225,8 @@ public class ProgramAdapter implements Program {
 
     void register(ClubberAdapter clubber) {
         clubs.stream()
-                .filter(c->!c.getCurriculum().recommendedBookList(clubber.getCurrentAgeGroup()).isEmpty())
+                .filter(c -> !c.getCurriculum().recommendedBookList(clubber.getCurrentAgeGroup()).isEmpty())
                 .forEach(c -> c.addClubber(clubber));
     }
+
 }

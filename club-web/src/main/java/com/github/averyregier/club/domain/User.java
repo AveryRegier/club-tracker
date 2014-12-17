@@ -18,6 +18,7 @@ public class User implements Person, Parent {
     private Gender gender;
     private String email;
     private Later<Family> familyLater;
+    private Listener listener;
 
     public String resetAuth() {
         byte[] bytes = new byte[10];
@@ -66,7 +67,7 @@ public class User implements Person, Parent {
 
     @Override
     public Optional<Listener> asListener() {
-        return Optional.empty();
+        return Optional.ofNullable(listener);
     }
 
     @Override
@@ -145,5 +146,9 @@ public class User implements Person, Parent {
 
     public void setFamily(Later<Family> familyLater) {
         this.familyLater = familyLater;
+    }
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
     }
 }

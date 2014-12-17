@@ -16,7 +16,7 @@ public interface Program extends Club {
     RegistrationInformation updateRegistrationForm(Map<String, String> values);
     Locale getLocale();
 
-    void addClub(Curriculum series);
+    Club addClub(Curriculum series);
 
     void setName(String organizationName);
 
