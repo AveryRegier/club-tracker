@@ -3,6 +3,8 @@ package com.github.averyregier.club.domain.club.adapter;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.club.Listener;
+import com.github.averyregier.club.domain.club.Program;
+import com.github.averyregier.club.domain.club.RegistrationTest;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.program.Programs;
 import com.github.averyregier.club.domain.program.adapter.MasterCurriculum;
@@ -91,6 +93,10 @@ public class ProgramAdapterTest {
         ProgramAdapter program = new ProgramAdapter("en_US", null, "AWANA");
 
         Listener recruit = program.recruit(user);
+        assertRecruitConsistency(user, program, recruit);
+    }
+
+    private void assertRecruitConsistency(User user, Program program, Listener recruit) {
         assertNotNull(recruit);
         assertTrue(user.asListener().isPresent());
         assertSame(recruit, user.asListener().get());
@@ -131,4 +137,15 @@ public class ProgramAdapterTest {
         assertSame(club, recruit.getClub().get());
     }
 
+    @Test
+    public void aParentCanBeAListenerToo() {
+        RegistrationTest registrationTest = new RegistrationTest();
+        registrationTest.setup();
+        User user = registrationTest.wholeFamilyRegistration();
+        Program program = registrationTest.getProgram();
+
+        Listener recruit = program.recruit(user);
+
+        assertRecruitConsistency(user, program, recruit);
+    }
 }

@@ -105,7 +105,11 @@ public class RegistrationTest {
     }
 
     @Test
-    public void wholeFamilyRegistration() {
+    public void wholeFamilyRegistrationTest() {
+        wholeFamilyRegistration();
+    }
+
+    public User wholeFamilyRegistration() {
         User me = new User();
         Map<String, String> formValues =
                  map("me.name.given", "Green")
@@ -145,8 +149,13 @@ public class RegistrationTest {
         clubber = iterator.next();
         assertEquals("Edna", clubber.getName().getGivenName());
         assertEquals("Flubber", clubber.getName().getSurname());
+
+        return me;
     }
 
+    public Program getProgram() {
+        return program;
+    }
 
     private <T> T getOther(Set<T> set, T... items) {
         HashSet<T> toReturn = new HashSet<>(set);
