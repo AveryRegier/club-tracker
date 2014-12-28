@@ -36,7 +36,7 @@ public class RegistrationTest {
         RegistrationInformation form = program.updateRegistrationForm(formValues);
         Family family = form.register(me);
         assertNotNull(family);
-        assertEquals(asLinkedSet(me), family.getParents());
+        assertEquals(asLinkedSet(me.asParent().get()), family.getParents());
         assertEquals("Green", me.getName().getGivenName());
         assertEquals("Flubber", me.getName().getSurname());
         assertSame(family, me.getFamily().get());
@@ -55,13 +55,13 @@ public class RegistrationTest {
         Family family = form.register(me);
         assertNotNull(family);
         Set<Parent> parents = family.getParents();
-        assertContains(me, parents);
+        assertContains(me.asParent().get(), parents);
         assertEquals("Green", me.getName().getGivenName());
         assertEquals("Flubber", me.getName().getSurname());
         assertSame(family, me.getFamily().get());
 
         assertEquals(2, parents.size());
-        Parent spouse = UtilityMethods.getOther(parents, me).orElse(null);
+        Parent spouse = UtilityMethods.getOther(parents, me.asParent().get()).orElse(null);
 
         assertEquals("Gooey", spouse.getName().getGivenName());
         assertEquals("Flubber-Goo", spouse.getName().getSurname());
@@ -81,7 +81,7 @@ public class RegistrationTest {
         RegistrationInformation form = program.updateRegistrationForm(formValues);
         Family family = form.register(me);
         assertNotNull(family);
-        assertEquals(asLinkedSet(me), family.getParents());
+        assertEquals(asLinkedSet(me.asParent().get()), family.getParents());
         assertEquals("Green", me.getName().getGivenName());
         assertEquals("Flubber", me.getName().getSurname());
 
@@ -128,12 +128,12 @@ public class RegistrationTest {
         Family family = form.register(me);
         assertNotNull(family);
         Set<Parent> parents = family.getParents();
-        assertContains(me, parents);
+        assertContains(me.asParent().get(), parents);
         assertEquals("Green", me.getName().getGivenName());
         assertEquals("Flubber", me.getName().getSurname());
 
         assertEquals(2, parents.size());
-        Parent spouse = UtilityMethods.getOther(parents, me).orElse(null);
+        Parent spouse = UtilityMethods.getOther(parents, me.asParent().get()).orElse(null);
 
         assertEquals("Gooey", spouse.getName().getGivenName());
         assertEquals("Flubber-Goo", spouse.getName().getSurname());

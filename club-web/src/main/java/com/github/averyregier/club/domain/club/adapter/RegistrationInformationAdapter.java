@@ -1,10 +1,7 @@
 package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.User;
-import com.github.averyregier.club.domain.club.Clubber;
-import com.github.averyregier.club.domain.club.Family;
-import com.github.averyregier.club.domain.club.Name;
-import com.github.averyregier.club.domain.club.RegistrationInformation;
+import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 
@@ -21,11 +18,14 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.getOther
 public abstract class RegistrationInformationAdapter implements RegistrationInformation {
     @Override
     public Family register(User user) {
+        ParentAdapter thisParent = (ParentAdapter)user.asParent().orElse(new ParentAdapter(user));
+        user.setParent(thisParent);
+
         Pattern pattern = Pattern.compile("([a-z]*)(\\d?)");
 
         Map<InputFieldDesignator, Object> results = validate();
 
-        FamilyAdapter family = (FamilyAdapter) user.getFamily().orElse(new FamilyAdapter(user));
+        FamilyAdapter family = (FamilyAdapter) user.getFamily().orElse(new FamilyAdapter(thisParent));
 
         for(InputFieldDesignator section: getForm()) {
             Map<String, Object> theResults = (Map<String, Object>) results.get(section);
@@ -35,11 +35,11 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
                     switch (matcher.group(1)) {
                         case "me":
                             user.setName((Name) theResults.get("name"));
-                            user.setFamily(family);
+                            thisParent.setFamily(family);
                             break;
                         case "spouse":
-                            User spouse = (User) getOther(family.getParents(), user).orElse(new User());
-                            spouse.setName((Name) theResults.get("name"));
+                            Name name = (Name) theResults.get("name");
+                            ParentAdapter spouse = (ParentAdapter)getOther(family.getParents(), thisParent).orElse(new ParentAdapter(new PersonAdapter(name)));
                             family.addParent(spouse);
                             spouse.setFamily(family);
                             break;
@@ -85,4 +85,5 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
     }
 
     abstract ProgramAdapter getProgram();
+
 }

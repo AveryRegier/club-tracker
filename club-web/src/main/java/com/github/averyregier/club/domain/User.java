@@ -1,7 +1,6 @@
 package com.github.averyregier.club.domain;
 
 import com.github.averyregier.club.domain.club.*;
-import com.github.averyregier.club.domain.club.adapter.FamilyAdapter;
 import com.github.averyregier.club.view.UserBean;
 
 import java.io.UnsupportedEncodingException;
@@ -13,15 +12,15 @@ import java.util.Random;
 /**
  * Created by avery on 9/2/14.
  */
-public class User implements Person, Parent {
+public class User implements Person {
     private String auth;
     private String id;
     private Name name;
     private Gender gender;
     private String email;
-    private Family family;
     private Listener listener;
     private ClubLeader leader;
+    private Parent parent;
 
     public String resetAuth() {
         byte[] bytes = new byte[10];
@@ -65,7 +64,7 @@ public class User implements Person, Parent {
 
     @Override
     public Optional<Parent> asParent() {
-        return Optional.of(this);
+        return Optional.ofNullable(parent);
     }
 
     @Override
@@ -85,7 +84,7 @@ public class User implements Person, Parent {
 
     @Override
     public Optional<Family> getFamily() {
-        return Optional.ofNullable(family);
+        return asParent().map(Person::getFamily).orElse(asClubber().map(Person::getFamily).orElse(Optional.empty()));
     }
 
     public void setName(Object first, Object last) {
@@ -147,15 +146,15 @@ public class User implements Person, Parent {
         this.name = name;
     }
 
-    public void setFamily(FamilyAdapter family) {
-        this.family = family;
-    }
-
     public void setListener(Listener listener) {
         this.listener = listener;
     }
 
     public void setLeader(ClubLeader leader){
         this.leader = leader;
+    }
+
+    public void setParent(Parent parent) {
+        this.parent = parent;
     }
 }
