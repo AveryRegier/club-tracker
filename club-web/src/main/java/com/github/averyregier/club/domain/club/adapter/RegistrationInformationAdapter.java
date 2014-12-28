@@ -39,7 +39,13 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
                             break;
                         case "spouse":
                             Name name = (Name) theResults.get("name");
-                            ParentAdapter spouse = (ParentAdapter)getOther(family.getParents(), thisParent).orElse(new ParentAdapter(new PersonAdapter(name)));
+                            ParentAdapter spouse = (ParentAdapter)getOther(family.getParents(), thisParent)
+                                    .orElse(new ParentAdapter(new PersonAdapter() {
+                                        @Override
+                                        public Name getName() {
+                                            return name;
+                                        }
+                                    }));
                             family.addParent(spouse);
                             spouse.setFamily(family);
                             break;

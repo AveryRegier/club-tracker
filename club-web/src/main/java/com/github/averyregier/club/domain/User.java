@@ -1,6 +1,7 @@
 package com.github.averyregier.club.domain;
 
 import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import com.github.averyregier.club.view.UserBean;
 
 import java.io.UnsupportedEncodingException;
@@ -12,15 +13,9 @@ import java.util.Random;
 /**
  * Created by avery on 9/2/14.
  */
-public class User implements Person {
+public class User extends PersonAdapter implements Person {
     private String auth;
     private String id;
-    private Name name;
-    private Gender gender;
-    private String email;
-    private Listener listener;
-    private ClubLeader leader;
-    private Parent parent;
 
     public String resetAuth() {
         byte[] bytes = new byte[10];
@@ -43,52 +38,15 @@ public class User implements Person {
         return id;
     }
 
-    public Name getName() {
-        return name;
-    }
-
-    @Override
-    public Optional<Gender> getGender() {
-        return Optional.ofNullable(gender);
-    }
 
     @Override
     public Optional<User> getLogin() {
         return Optional.of(this);
     }
 
-    @Override
-    public Optional<String> getEmail() {
-        return Optional.ofNullable(email);
-    }
-
-    @Override
-    public Optional<Parent> asParent() {
-        return Optional.ofNullable(parent);
-    }
-
-    @Override
-    public Optional<Listener> asListener() {
-        return Optional.ofNullable(listener);
-    }
-
-    @Override
-    public Optional<Clubber> asClubber() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<ClubLeader> asClubLeader() {
-        return Optional.ofNullable(leader);
-    }
-
-    @Override
-    public Optional<Family> getFamily() {
-        return asParent().map(Person::getFamily).orElse(asClubber().map(Person::getFamily).orElse(Optional.empty()));
-    }
 
     public void setName(Object first, Object last) {
-        this.name = new Name() {
+        setName(new Name() {
             @Override
             public String getGivenName() {
                 return first != null ? first.toString() : null;
@@ -123,7 +81,7 @@ public class User implements Person {
             public String getFullName() {
                 return combineName(first, last);
             }
-        };
+        });
     }
 
     public void update(final UserBean user) {
@@ -133,28 +91,13 @@ public class User implements Person {
 
         String gender1 = user.getGender();
         if(gender1 != null) {
-            this.gender = Gender.valueOf(gender1.toUpperCase());
+            setGender(Gender.valueOf(gender1.toUpperCase()));
         }
-        this.email = user.getEmail();
+        setEmail(user.getEmail());
     }
 
     private String combineName(Object first, Object last) {
         return ((first != null ? first : "") +" "+ (last != null ? last : "")).trim();
     }
 
-    public void setName(Name name) {
-        this.name = name;
-    }
-
-    public void setListener(Listener listener) {
-        this.listener = listener;
-    }
-
-    public void setLeader(ClubLeader leader){
-        this.leader = leader;
-    }
-
-    public void setParent(Parent parent) {
-        this.parent = parent;
-    }
 }

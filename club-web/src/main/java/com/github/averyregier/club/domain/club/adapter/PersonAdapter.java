@@ -8,26 +8,26 @@ import java.util.Optional;
 /**
 * Created by avery on 12/28/14.
 */
-class PersonAdapter implements Person {
-    private final Name name;
-
-    public PersonAdapter(Name name) {
-        this.name = name;
-    }
+public class PersonAdapter implements Person {
+    private Name name;
+    private Gender gender;
+    private String email;
+    private Listener listener;
+    private ClubLeader leader;
+    private Parent parent;
 
     @Override
     public String getId() {
         return null;
     }
 
-    @Override
     public Name getName() {
         return name;
     }
 
     @Override
     public Optional<Gender> getGender() {
-        return Optional.empty();
+        return Optional.ofNullable(gender);
     }
 
     @Override
@@ -37,17 +37,27 @@ class PersonAdapter implements Person {
 
     @Override
     public Optional<String> getEmail() {
-        return Optional.empty();
+        return Optional.ofNullable(email);
     }
 
     @Override
     public Optional<Parent> asParent() {
-        return Optional.empty();
+        return Optional.ofNullable(parent);
     }
 
     @Override
     public Optional<Listener> asListener() {
-        return Optional.empty();
+        return Optional.ofNullable(listener);
+    }
+
+    @Override
+    public Optional<ClubLeader> asClubLeader() {
+        return Optional.ofNullable(leader);
+    }
+
+    @Override
+    public Optional<Family> getFamily() {
+        return asParent().map(Person::getFamily).orElse(asClubber().map(Person::getFamily).orElse(Optional.empty()));
     }
 
     @Override
@@ -55,13 +65,27 @@ class PersonAdapter implements Person {
         return Optional.empty();
     }
 
-    @Override
-    public Optional<ClubLeader> asClubLeader() {
-        return Optional.empty();
+    public void setName(Name name) {
+        this.name = name;
     }
 
-    @Override
-    public Optional<Family> getFamily() {
-        return Optional.empty();
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
+    public void setLeader(ClubLeader leader){
+        this.leader = leader;
+    }
+
+    public void setParent(Parent parent) {
+        this.parent = parent;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
