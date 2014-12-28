@@ -62,6 +62,7 @@ public class UtilityMethods {
 
     public static <R> Map<String, R> subMap(String prefix, Map<String, R> map) {
         return map.entrySet().stream()
+                .filter(e->e.getValue() != null)
                 .filter(e -> e.getKey().split("\\.")[0].equals(prefix))
                 .collect(Collectors.toMap(
                         e -> e.getKey().substring(prefix.length() + 1),
@@ -76,5 +77,11 @@ public class UtilityMethods {
     public static <K,V> MapBuilder<K,V> map(K firstKey, V firstValue) {
         MapBuilder<K, V> builder = new MapBuilder<>();
         return builder.put(firstKey, firstValue);
+    }
+
+    public static <T> Optional<T> getOther(Set<T> set, T... items) {
+        HashSet<T> toReturn = new HashSet<>(set);
+        toReturn.removeAll(Arrays.asList(items));
+        return toReturn.stream().findFirst();
     }
 }

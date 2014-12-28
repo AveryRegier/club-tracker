@@ -21,7 +21,7 @@
                 </#if>
             </#list>
             <div class="actions">
-                <button type='submit'>Submit</button>
+                <button name="submit" type='submit' value="submit">Submit</button>
             </div>
         </div>
     </form>

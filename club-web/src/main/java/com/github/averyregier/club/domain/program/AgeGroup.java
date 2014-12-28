@@ -40,5 +40,6 @@ public interface AgeGroup {
     }
 
     public String getDisplayName();
+    public String name();
 
 }

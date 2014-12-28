@@ -289,4 +289,56 @@ public class RegistrationFormTest {
             assertEquals(Action.values()[i++].name(), value.getValue());
         }
     }
+
+    @Test
+    public void existingFamilyUpdateRegistration() {
+        Map<String, String> values = new HashMap<>();
+        values.put("me.name.surname", "Smith");
+        values.put("spouse.name.surname", "Smith");
+        values.put("child1.childName.surname", "Another");
+        values.put("child2.childName.surname", "Smith");
+
+        RegistrationInformation firstForm = program.updateRegistrationForm(values);
+        User user = new User();
+        Family family = firstForm.register(user);
+        RegistrationInformation newForm = program.createRegistrationForm(user);
+
+        Map<String, String> fields = newForm.getFields();
+        assertEquals("Smith", fields.get("me.name.surname"));
+        assertEquals("Smith", fields.get("spouse.name.surname"));
+        assertEquals("Another", fields.get("child1.childName.surname"));
+        assertEquals("Smith", fields.get("child2.childName.surname"));
+
+        assertAllButSpouseAction(newForm.getForm());
+        Family updatedFamily = newForm.register(user);
+
+        assertEquals(family, user.getFamily().get());
+        assertEquals(family, updatedFamily);
+        assertEquals(2, family.getClubbers().size());
+        assertEquals(2, family.getParents().size());
+    }
+    @Test
+    public void existingFamilyChangedRegistration() {
+        Map<String, String> values = new HashMap<>();
+        values.put("me.name.surname", "Smith");
+
+        RegistrationInformation firstForm = program.updateRegistrationForm(values);
+        User user = new User();
+        Family family = firstForm.register(user);
+        RegistrationInformation newForm = program.createRegistrationForm(user);
+
+        HashMap<String, String> newValues = new HashMap<>(newForm.getFields());
+
+        newValues.put("spouse.name.surname", "Smith");
+        newValues.put("child1.childName.surname", "Another");
+        newValues.put("child2.childName.surname", "Smith");
+
+        RegistrationInformation lastForm = program.updateRegistrationForm(newValues);
+        Family updatedFamily = lastForm.register(user);
+
+        assertEquals(family, user.getFamily().get());
+        assertEquals(family, updatedFamily);
+        assertEquals(2, family.getClubbers().size());
+        assertEquals(2, family.getParents().size());
+    }
 }

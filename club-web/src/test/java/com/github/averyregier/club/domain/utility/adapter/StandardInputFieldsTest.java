@@ -4,21 +4,21 @@ import com.github.averyregier.club.LocaleTinkerer;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.Name;
 import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
 import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.domain.utility.Action;
 import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
-import com.github.averyregier.club.view.UserBean;
-import com.github.averyregier.club.domain.utility.Action;
 import org.junit.Test;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.github.averyregier.club.TestUtility.getUser;
 import static com.github.averyregier.club.domain.utility.InputField.Type.integer;
 import static com.github.averyregier.club.domain.utility.InputField.Type.text;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 public class StandardInputFieldsTest {
 
@@ -117,24 +117,16 @@ public class StandardInputFieldsTest {
         assertEquals(Person.Gender.FEMALE, gender.validate("FEMALE").get());
         assertFalse(gender.validate("Both").isPresent());
 
-        assertGenderMaps(gender, "MALE");
-        assertGenderMaps(gender, "FEMALE");
+        assertEquals("FEMALE", gender.map(getUser(b -> b.setGender("FEMALE"))));
+        assertEquals("MALE", gender.map(getUser(b -> b.setGender("MALE"))));
 
         assertNull(gender.map(new User()));
     }
 
-    private void assertGenderMaps(InputField gender, String aGenderName) {
-        User person = new User();
-        UserBean bean = new UserBean();
-        bean.setGender(aGenderName);
-        person.update(bean);
-        assertEquals(aGenderName, gender.map(person));
-    }
-
     @Test
     public void age() {
-        InputField gender = StandardInputFields.age.createField(EN_US).build();
-        assertField(gender, "Age", "age", integer);
+        InputField age = StandardInputFields.age.createField(EN_US).build();
+        assertField(age, "Age", "age", integer);
     }
 
     @Test
@@ -191,6 +183,19 @@ public class StandardInputFieldsTest {
             assertEquals(group, field.validate(group.name()).get());
         }
         assertFalse(field.validate("Ageless").isPresent());
+        assertEquals("THIRD_GRADE", field.map(new ClubberAdapter() {
+            @Override
+            public AgeGroup getCurrentAgeGroup() {
+                return AgeGroup.DefaultAgeGroup.THIRD_GRADE;
+            }
+        }));
+        assertEquals("COLLEGE", field.map(new ClubberAdapter() {
+            @Override
+            public AgeGroup getCurrentAgeGroup() {
+                return AgeGroup.DefaultAgeGroup.COLLEGE;
+            }
+        }));
+        assertNull(field.map(new User()));
     }
 
     @Test

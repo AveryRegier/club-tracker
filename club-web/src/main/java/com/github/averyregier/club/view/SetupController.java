@@ -1,7 +1,6 @@
 package com.github.averyregier.club.view;
 
 import com.github.averyregier.club.application.ClubApplication;
-import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.ClubLeader;
 import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.program.Curriculum;
@@ -37,7 +36,7 @@ public class SetupController extends ModelMaker {
             String acceptLanguage = request.headers("Accept-Language").split(",")[0];
 
             Program program = app.setupProgram(organizationName, curriculum, acceptLanguage);
-            program.assign(((Optional<User>) request.attribute("user")).get(), ClubLeader.LeadershipRole.valueOf(myRole));
+            program.assign(getUser(request), ClubLeader.LeadershipRole.valueOf(myRole));
 
             response.redirect("/protected/program");
             return null;

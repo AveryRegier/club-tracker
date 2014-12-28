@@ -133,7 +133,10 @@ public enum StandardInputFields {
         public InputFieldBuilder create(Locale locale) {
             InputFieldBuilder builder = buildField(this)
                     .name("Age Group")
-                    .type(InputField.Type.ageGroup);
+                    .type(InputField.Type.ageGroup)
+                    .map(p->p.asClubber()
+                            .map(c->c.getCurrentAgeGroup() != null ? c.getCurrentAgeGroup().name() : null)
+                            .orElse(null));
             for(AgeGroup.DefaultAgeGroup group: AgeGroup.DefaultAgeGroup.values()) {
                 builder.value(group.name(), group.getDisplayName(), false);
             }

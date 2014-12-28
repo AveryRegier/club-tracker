@@ -4,6 +4,7 @@ import com.github.averyregier.club.domain.UserManager;
 import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.rest.RestAPI;
+import com.github.averyregier.club.view.ClubController;
 import com.github.averyregier.club.view.Login;
 import com.github.averyregier.club.view.RegistrationController;
 import com.github.averyregier.club.view.SetupController;
@@ -45,6 +46,7 @@ public class ClubApplication implements SparkApplication {
         new SetupController().init(this);
         new RegistrationController().init(this);
         new RestAPI().init(this);
+        new ClubController().init(this);
     }
 
     public UserManager getUserManager() {

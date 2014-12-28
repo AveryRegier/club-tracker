@@ -5,6 +5,7 @@ import com.github.averyregier.club.domain.program.Curriculum;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -21,4 +22,5 @@ public interface Program extends Club {
     void setName(String organizationName);
 
 
+    Optional<Club> lookupClub(String shortCode);
 }

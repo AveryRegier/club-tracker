@@ -97,7 +97,7 @@ public abstract class ClubberAdapter implements Clubber {
 
     @Override
     public Optional<Gender> getGender() {
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -107,7 +107,7 @@ public abstract class ClubberAdapter implements Clubber {
 
     @Override
     public Optional<String> getEmail() {
-        return null;
+        return Optional.empty();
     }
 
     @Override

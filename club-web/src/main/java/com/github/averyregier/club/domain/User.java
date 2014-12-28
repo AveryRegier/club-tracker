@@ -1,12 +1,14 @@
 package com.github.averyregier.club.domain;
 
 import com.github.averyregier.club.domain.club.*;
-import com.github.averyregier.club.domain.utility.builder.Later;
+import com.github.averyregier.club.domain.club.adapter.FamilyAdapter;
 import com.github.averyregier.club.view.UserBean;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 /**
  * Created by avery on 9/2/14.
@@ -17,7 +19,7 @@ public class User implements Person, Parent {
     private Name name;
     private Gender gender;
     private String email;
-    private Later<Family> familyLater;
+    private Family family;
     private Listener listener;
 
     public String resetAuth() {
@@ -82,7 +84,7 @@ public class User implements Person, Parent {
 
     @Override
     public Optional<Family> getFamily() {
-        return Optional.ofNullable(familyLater != null ? familyLater.get() : null);
+        return Optional.ofNullable(family);
     }
 
     public void setName(Object first, Object last) {
@@ -144,8 +146,8 @@ public class User implements Person, Parent {
         this.name = name;
     }
 
-    public void setFamily(Later<Family> familyLater) {
-        this.familyLater = familyLater;
+    public void setFamily(FamilyAdapter family) {
+        this.family = family;
     }
 
     public void setListener(Listener listener) {

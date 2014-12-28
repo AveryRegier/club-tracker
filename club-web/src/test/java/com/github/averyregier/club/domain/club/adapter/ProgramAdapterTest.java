@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -147,5 +148,19 @@ public class ProgramAdapterTest {
         Listener recruit = program.recruit(user);
 
         assertRecruitConsistency(user, program, recruit);
+    }
+
+    @Test
+    public void lookupClub() {
+        ProgramAdapter program = new ProgramAdapter("en_US", null, "AWANA");
+        Club club = program.addClub(TnTCurriculum.get());
+
+        assertFound(club, program.lookupClub("TnT"));
+        assertFalse(program.lookupClub("SomethingElse").isPresent());
+    }
+
+    private void assertFound(Club club, Optional<Club> result) {
+        assertTrue(result.isPresent());
+        assertEquals(club, result.get());
     }
 }

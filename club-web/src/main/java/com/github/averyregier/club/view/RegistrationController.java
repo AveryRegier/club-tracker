@@ -2,6 +2,8 @@ package com.github.averyregier.club.view;
 
 import com.github.averyregier.club.application.ClubApplication;
 import com.github.averyregier.club.domain.User;
+import com.github.averyregier.club.domain.club.Family;
+import com.github.averyregier.club.domain.club.RegistrationInformation;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +11,6 @@ import spark.Request;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static spark.Spark.*;
 
@@ -40,18 +41,31 @@ public class RegistrationController extends ModelMaker {
         });
 
         get("/protected/*/family", (request, response) ->{
-            User user = ((Optional<User>) request.attribute("user")).get();
+            User user = getUser(request);
             return new spark.ModelAndView(
                     toMap("regInfo", app.getProgram().createRegistrationForm(user)),
                     "family.ftl");
         }, new FreeMarkerEngine());
 
+        before("/protected/*/family", (request, response) -> {
+            if ("submit".equals(request.queryParams("submit"))) {
+                logger.info("Submitting family registration");
+                Map<String, String> collect = UtilityMethods.transformToSingleValueMap(request.queryMap().toMap());
+                RegistrationInformation form = app.getProgram().updateRegistrationForm(collect);
+                User user = getUser(request);
+                Family family = form.register(user);
+                response.redirect("/protected/my");
+                halt();
+            }
+        });
+
         post("/protected/*/family", (request, response) -> {
-            logger.info("Submitting family registration");
-            Map<String,String> collect = UtilityMethods.transformToSingleValueMap(request.queryMap().toMap());
+            logger.info("Adding additional family members");
+            Map<String, String> collect = UtilityMethods.transformToSingleValueMap(request.queryMap().toMap());
+            RegistrationInformation form = app.getProgram().updateRegistrationForm(collect);
             return new spark.ModelAndView(
-                    toMap("regInfo", app.getProgram().updateRegistrationForm(collect)),
-            "family.ftl");
+                    toMap("regInfo", form),
+                    "family.ftl");
         }, new FreeMarkerEngine());
     }
 

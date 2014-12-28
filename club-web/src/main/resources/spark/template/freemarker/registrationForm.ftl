@@ -63,7 +63,7 @@
 			<td colspan="2" align="center">
 				<input type="hidden" name="uniqueId" id="uniqueId" value='${profile.validatedId}'/>
 				<input type="hidden" name="profileImageURL" id="profileImageURL" value='${profile.profileImageURL}'/>
-				<input type="submit" value="Submit"/></td>
+				<input type="submit" name="submit" value="Submit"/></td>
 		</tr>
 	</table>
 </form>

@@ -1,9 +1,6 @@
 package com.github.averyregier.club.domain.club.adapter;
 
-import com.github.averyregier.club.domain.club.Clubber;
-import com.github.averyregier.club.domain.club.Family;
-import com.github.averyregier.club.domain.club.Parent;
-import com.github.averyregier.club.domain.club.RegistrationInformation;
+import com.github.averyregier.club.domain.club.*;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -12,12 +9,23 @@ import java.util.Set;
 * Created by avery on 11/30/14.
 */
 public class FamilyAdapter implements Family {
-    private final LinkedHashSet<Parent> parents;
-    private final LinkedHashSet<Clubber> clubbers;
+    private final LinkedHashSet<Parent> parents = new LinkedHashSet<>();
+    private final LinkedHashSet<Clubber> clubbers = new LinkedHashSet<>();
 
-    public FamilyAdapter(LinkedHashSet<Parent> parents, LinkedHashSet<Clubber> clubbers) {
-        this.parents = parents;
-        this.clubbers = clubbers;
+    public FamilyAdapter(Person firstPerson) {
+        if(firstPerson.asParent().isPresent()) {
+            parents.add(firstPerson.asParent().get());
+        } else {
+            clubbers.add(firstPerson.asClubber().get());
+        }
+    }
+
+    protected void addParent(Parent parent) {
+        parents.add(parent);
+    }
+
+    protected void addClubber(Clubber clubber) {
+        clubbers.add(clubber);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.program.awana.TnTCurriculum;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -60,7 +61,7 @@ public class RegistrationTest {
         assertSame(family, me.getFamily().get());
 
         assertEquals(2, parents.size());
-        Parent spouse = getOther(parents, me);
+        Parent spouse = UtilityMethods.getOther(parents, me).orElse(null);
 
         assertEquals("Gooey", spouse.getName().getGivenName());
         assertEquals("Flubber-Goo", spouse.getName().getSurname());
@@ -132,7 +133,7 @@ public class RegistrationTest {
         assertEquals("Flubber", me.getName().getSurname());
 
         assertEquals(2, parents.size());
-        Parent spouse = getOther(parents, me);
+        Parent spouse = UtilityMethods.getOther(parents, me).orElse(null);
 
         assertEquals("Gooey", spouse.getName().getGivenName());
         assertEquals("Flubber-Goo", spouse.getName().getSurname());
@@ -155,12 +156,6 @@ public class RegistrationTest {
 
     public Program getProgram() {
         return program;
-    }
-
-    private <T> T getOther(Set<T> set, T... items) {
-        HashSet<T> toReturn = new HashSet<>(set);
-        toReturn.removeAll(Arrays.asList(items));
-        return toReturn.stream().findFirst().get();
     }
 
     private <T> void assertContains(T item, Set<T> set) {
