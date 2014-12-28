@@ -21,6 +21,7 @@ public class User implements Person, Parent {
     private String email;
     private Family family;
     private Listener listener;
+    private ClubLeader leader;
 
     public String resetAuth() {
         byte[] bytes = new byte[10];
@@ -79,7 +80,7 @@ public class User implements Person, Parent {
 
     @Override
     public Optional<ClubLeader> asClubLeader() {
-        return Optional.empty();
+        return Optional.ofNullable(leader);
     }
 
     @Override
@@ -152,5 +153,9 @@ public class User implements Person, Parent {
 
     public void setListener(Listener listener) {
         this.listener = listener;
+    }
+
+    public void setLeader(ClubLeader leader){
+        this.leader = leader;
     }
 }

@@ -1,10 +1,7 @@
 package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.User;
-import com.github.averyregier.club.domain.club.Club;
-import com.github.averyregier.club.domain.club.Listener;
-import com.github.averyregier.club.domain.club.Program;
-import com.github.averyregier.club.domain.club.RegistrationTest;
+import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.program.Programs;
 import com.github.averyregier.club.domain.program.adapter.MasterCurriculum;
@@ -162,5 +159,41 @@ public class ProgramAdapterTest {
     private void assertFound(Club club, Optional<Club> result) {
         assertTrue(result.isPresent());
         assertEquals(club, result.get());
+    }
+
+    @Test
+    public void assignLeaderToProgram() {
+        ProgramAdapter program = new ProgramAdapter("en_US", null, "AWANA");
+        Club club = program.addClub(TnTCurriculum.get()); // should ignore the club even though it is present
+        User user = new User();
+        ClubLeader leader = program.assign(user, ClubLeader.LeadershipRole.DIRECTOR);
+
+        assertNotNull(leader);
+        assertTrue(user.asClubLeader().isPresent());
+        assertSame(leader, user.asClubLeader().get());
+        assertEquals(program, leader.getProgram());
+        assertTrue(leader.getLogin().isPresent());
+        assertEquals(user, leader.getLogin().get());
+
+        assertTrue(leader.getClub().isPresent());
+        assertEquals(program, leader.getClub().get());
+    }
+
+    @Test
+    public void assignLeaderToClub() {
+        ProgramAdapter program = new ProgramAdapter("en_US", null, "AWANA");
+        Club club = program.addClub(TnTCurriculum.get());
+        User user = new User();
+        ClubLeader leader = club.assign(user, ClubLeader.LeadershipRole.DIRECTOR);
+
+        assertNotNull(leader);
+        assertTrue(user.asClubLeader().isPresent());
+        assertSame(leader, user.asClubLeader().get());
+        assertEquals(program, leader.getProgram());
+        assertTrue(leader.getLogin().isPresent());
+        assertEquals(user, leader.getLogin().get());
+
+        assertTrue(leader.getClub().isPresent());
+        assertEquals(club, leader.getClub().get());
     }
 }

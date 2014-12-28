@@ -19,16 +19,15 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.putAll;
 /**
 * Created by avery on 9/23/14.
 */
-public class ProgramAdapter extends ClubGroupAdapter implements Program {
+public class ProgramAdapter extends ClubAdapter implements Program {
     private final String acceptLanguage;
     private String organizationName;
-    private final String curriculum;
     private SortedSet<ClubAdapter> clubs = new TreeSet<>();
 
     public ProgramAdapter(String acceptLanguage, String organizationName, String curriculum) {
+        super(curriculum != null ? Programs.valueOf(curriculum).get() : null);
         this.acceptLanguage = acceptLanguage;
         this.organizationName = organizationName;
-        this.curriculum = curriculum;
     }
 
     @Override
@@ -138,22 +137,7 @@ public class ProgramAdapter extends ClubGroupAdapter implements Program {
             list.add(StandardInputFields.action.createField(getLocale()).build());
         }
 
-        return new RegistrationInformationAdapter() {
-            @Override
-            public List<InputFieldDesignator> getForm() {
-                return list;
-            }
-
-            @Override
-            public Map<String, String> getFields() {
-                return fields;
-            }
-
-            @Override
-            ProgramAdapter getProgram() {
-                return ProgramAdapter.this;
-            }
-        };
+        return new ProgramRegistrationInformation(list, fields);
     }
 
     private InputFieldGroup addChild(List<InputFieldDesignator> list, int i) {
@@ -188,7 +172,12 @@ public class ProgramAdapter extends ClubGroupAdapter implements Program {
 
     @Override
     public Club addClub(final Curriculum series) {
-        ClubAdapter club = new ClubAdapter(this, series);
+        ClubAdapter club = new ClubAdapter(series) {
+            @Override
+            public Program getProgram() {
+                return ProgramAdapter.this;
+            }
+        };
         clubs.add(club);
         return club;
     }
@@ -222,23 +211,13 @@ public class ProgramAdapter extends ClubGroupAdapter implements Program {
     }
 
     @Override
-    public ClubLeader assign(Person person, ClubLeader.LeadershipRole role) {
-        return null;
-    }
-
-    @Override
-    public Curriculum getCurriculum() {
-        return Programs.valueOf(curriculum).get();
-    }
-
-    @Override
     public Optional<ClubGroup> getParentGroup() {
         return Optional.empty();
     }
 
     @Override
     public Program getProgram() {
-        return null;
+        return this;
     }
 
     @Override
@@ -286,4 +265,5 @@ public class ProgramAdapter extends ClubGroupAdapter implements Program {
             return ProgramAdapter.this;
         }
     }
+
 }

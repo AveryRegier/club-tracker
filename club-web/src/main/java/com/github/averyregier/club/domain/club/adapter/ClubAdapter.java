@@ -12,13 +12,11 @@ import java.util.Set;
 /**
 * Created by avery on 9/26/14.
 */
-class ClubAdapter extends ClubGroupAdapter implements Club {
-    private ProgramAdapter programAdapter;
+abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     private final Curriculum series;
     private Set<Clubber> clubbers = new HashSet<>();
 
-    public ClubAdapter(ProgramAdapter programAdapter, Curriculum series) {
-        this.programAdapter = programAdapter;
+    public ClubAdapter(Curriculum series) {
         this.series = series;
     }
 
@@ -38,11 +36,6 @@ class ClubAdapter extends ClubGroupAdapter implements Club {
     }
 
     @Override
-    public ClubLeader assign(Person person, ClubLeader.LeadershipRole role) {
-        return null;
-    }
-
-    @Override
     public Curriculum getCurriculum() {
         return series;
     }
@@ -50,11 +43,6 @@ class ClubAdapter extends ClubGroupAdapter implements Club {
     @Override
     public Optional<ClubGroup> getParentGroup() {
         return Optional.of(getProgram());
-    }
-
-    @Override
-    public Program getProgram() {
-        return programAdapter;
     }
 
     @Override
@@ -75,5 +63,14 @@ class ClubAdapter extends ClubGroupAdapter implements Club {
     void addClubber(ClubberAdapter clubber) {
         this.clubbers.add(clubber);
         clubber.setClub(this);
+    }
+
+    @Override
+    public ClubLeader assign(Person person, ClubLeader.LeadershipRole role) {
+        ClubLeaderAdapter leader = new ClubLeaderAdapter(this, person);
+        if(person.getLogin().isPresent()) {
+            person.getLogin().get().setLeader(leader);
+        }
+        return leader;
     }
 }
