@@ -1,9 +1,10 @@
 package com.github.averyregier.club.domain.club.adapter;
 
-import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.club.AwardPresentation;
+import com.github.averyregier.club.domain.club.Clubber;
+import com.github.averyregier.club.domain.club.ClubberRecord;
 import com.github.averyregier.club.domain.program.Section;
 
-import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
@@ -12,22 +13,16 @@ import java.util.stream.Collectors;
 /**
  * Created by avery on 11/30/14.
  */
-public class ClubberAdapter extends PersonWrapper implements Clubber {
+public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     private LinkedHashMap<Section, ClubberRecord> records = new LinkedHashMap<>();
-    private ClubAdapter club;
-    private Person person = new PersonAdapter();
 
     public ClubberAdapter() {
-        this.person.getUpdater().setClubber(this);
+        super(new PersonAdapter());
+        getPerson().getUpdater().setClubber(this);
     }
 
     public Optional<ClubberRecord> getRecord(Optional<Section> maybeASection) {
         return maybeASection.map(s -> mapToRecord(s));
-    }
-
-    @Override
-    protected Person getPerson() {
-        return person;
     }
 
     public List<AwardPresentation> getAwards() {
@@ -74,26 +69,7 @@ public class ClubberAdapter extends PersonWrapper implements Clubber {
     }
 
     @Override
-    public LocalDate getBirthDate() {
-        return null;
-    }
-
-    @Override
     public Optional<Clubber> asClubber() {
         return Optional.of(this);
-    }
-
-    @Override
-    public int getAge() {
-        return 0;
-    }
-
-    @Override
-    public Optional<Club> getClub() {
-        return Optional.ofNullable(club);
-    }
-
-    void setClub(ClubAdapter club) {
-        this.club = club;
     }
 }
