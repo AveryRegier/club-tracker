@@ -72,7 +72,7 @@ public enum StandardInputFields {
 
                         @Override
                         public String getFullName() {
-                            return null;
+                            return getGivenName()+" "+getSurname();
                         }
                     }))
                     .map(p->{
@@ -205,7 +205,7 @@ public enum StandardInputFields {
 
                     @Override
                     public String getFullName() {
-                        return null;
+                        return getGivenName()+" "+getSurname();
                     }
                 }))
                 .map(p->{
