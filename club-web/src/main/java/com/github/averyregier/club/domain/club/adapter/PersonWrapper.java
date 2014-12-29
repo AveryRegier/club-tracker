@@ -1,93 +1,73 @@
-package com.github.averyregier.club.domain.club;
+package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.User;
+import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.AgeGroup;
 
-import java.time.LocalDate;
 import java.util.Optional;
-import java.util.Set;
 
 /**
-* Created by avery on 9/6/2014.
-*/
-class MockListener implements Listener {
-    @Override
-    public Set<Clubber> getQuickList() {
-        return null;
-    }
-
-    @Override
-    public LocalDate getBirthDate() {
-        return null;
-    }
-
-    @Override
-    public int getAge() {
-        return 0;
-    }
-
-    @Override
-    public AgeGroup getCurrentAgeGroup() {
-        return null;
-    }
-
-    @Override
-    public Optional<Club> getClub() {
-        return null;
-    }
+ * Created by avery on 12/28/14.
+ */
+public abstract class PersonWrapper implements Person {
+    protected abstract Person getPerson();
 
     @Override
     public String getId() {
-        return null;
+        return getPerson().getId();
     }
 
     @Override
     public Name getName() {
-        return null;
+        return getPerson().getName();
     }
 
     @Override
     public Optional<Gender> getGender() {
-        return null;
+        return getPerson().getGender();
     }
 
     @Override
     public Optional<User> getLogin() {
-        return null;
+        return getPerson().getLogin();
     }
 
     @Override
     public Optional<String> getEmail() {
-        return null;
+        return getPerson().getEmail();
     }
 
     @Override
     public Optional<Parent> asParent() {
-        return null;
+        return getPerson().asParent();
     }
 
     @Override
     public Optional<Listener> asListener() {
-        return null;
+        return getPerson().asListener();
     }
 
     @Override
     public Optional<Clubber> asClubber() {
-        return null;
+        return getPerson().asClubber();
     }
 
     @Override
     public Optional<ClubLeader> asClubLeader() {
-        return null;
+        return getPerson().asClubLeader();
     }
 
     @Override
     public Optional<Family> getFamily() {
-        return null;
+        return getPerson().getFamily();
     }
 
     @Override
     public PersonUpdater getUpdater() {
-        return null;
+        return getPerson().getUpdater();
+    }
+
+    public AgeGroup getCurrentAgeGroup() {
+        return ((PersonAdapter)getPerson()).getCurrentAgeGroup();
     }
 }

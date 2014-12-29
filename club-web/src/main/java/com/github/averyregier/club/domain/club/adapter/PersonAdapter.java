@@ -2,19 +2,23 @@ package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.program.AgeGroup;
 
 import java.util.Optional;
 
 /**
 * Created by avery on 12/28/14.
 */
-public class PersonAdapter implements Person {
+public class PersonAdapter implements Person, PersonUpdater {
     private Name name;
     private Gender gender;
     private String email;
     private Listener listener;
     private ClubLeader leader;
     private Parent parent;
+    private Clubber clubber;
+    private Family family;
+    private AgeGroup currentAgeGroup;
 
     @Override
     public String getId() {
@@ -57,12 +61,12 @@ public class PersonAdapter implements Person {
 
     @Override
     public Optional<Family> getFamily() {
-        return asParent().map(Person::getFamily).orElse(asClubber().map(Person::getFamily).orElse(Optional.empty()));
+        return Optional.ofNullable(family);
     }
 
     @Override
     public Optional<Clubber> asClubber() {
-        return Optional.empty();
+        return Optional.ofNullable(clubber);
     }
 
     public void setName(Name name) {
@@ -71,6 +75,16 @@ public class PersonAdapter implements Person {
 
     public void setListener(Listener listener) {
         this.listener = listener;
+    }
+
+    @Override
+    public void setClubber(Clubber clubber) {
+        this.clubber = clubber;
+    }
+
+    @Override
+    public void setFamily(Family family) {
+        this.family = family;
     }
 
     public void setLeader(ClubLeader leader){
@@ -87,5 +101,19 @@ public class PersonAdapter implements Person {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public PersonUpdater getUpdater() {
+        return this;
+    }
+
+    public AgeGroup getCurrentAgeGroup() {
+        return currentAgeGroup;
+    }
+
+    @Override
+    public void setAgeGroup(AgeGroup ageGroup) {
+        this.currentAgeGroup = ageGroup;
     }
 }

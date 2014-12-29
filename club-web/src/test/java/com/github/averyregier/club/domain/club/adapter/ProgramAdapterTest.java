@@ -53,12 +53,8 @@ public class ProgramAdapterTest {
         ProgramAdapter program = new ProgramAdapter("en_US", null, "AWANA");
         program.addClub(TnTCurriculum.get());
 
-        ClubberAdapter clubber = new ClubberAdapter() {
-            @Override
-            public AgeGroup getCurrentAgeGroup() {
-                return AgeGroup.DefaultAgeGroup.THIRD_GRADE;
-            }
-        };
+        ClubberAdapter clubber = new ClubberAdapter();
+        clubber.getUpdater().setAgeGroup(AgeGroup.DefaultAgeGroup.THIRD_GRADE);
         program.register(clubber);
 
         assertTrue(program.getClubbers().contains(clubber));
@@ -73,12 +69,8 @@ public class ProgramAdapterTest {
         ProgramAdapter program = new ProgramAdapter("en_US", null, "AWANA");
         program.addClub(TnTCurriculum.get());
 
-        ClubberAdapter clubber = new ClubberAdapter() {
-            @Override
-            public AgeGroup getCurrentAgeGroup() {
-                return AgeGroup.DefaultAgeGroup.COLLEGE;
-            }
-        };
+        ClubberAdapter clubber = new ClubberAdapter();
+        clubber.getUpdater().setAgeGroup(AgeGroup.DefaultAgeGroup.COLLEGE);
         program.register(clubber);
 
         assertFalse(program.getClubbers().contains(clubber));

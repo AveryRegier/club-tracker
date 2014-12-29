@@ -48,4 +48,6 @@ public interface Person {
     public Optional<ClubLeader> asClubLeader();
 
     public Optional<Family> getFamily();
+
+    public PersonUpdater getUpdater();
 }

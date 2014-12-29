@@ -2,6 +2,7 @@ package com.github.averyregier.club.domain;
 
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
+import com.github.averyregier.club.domain.club.adapter.PersonWrapper;
 import com.github.averyregier.club.view.UserBean;
 
 import java.io.UnsupportedEncodingException;
@@ -13,7 +14,8 @@ import java.util.Random;
 /**
  * Created by avery on 9/2/14.
  */
-public class User extends PersonAdapter implements Person {
+public class User extends PersonWrapper implements Person {
+    private PersonAdapter person = new PersonAdapter();
     private String auth;
     private String id;
 
@@ -27,6 +29,11 @@ public class User extends PersonAdapter implements Person {
             e.printStackTrace();
         }
         return auth;
+    }
+
+    @Override
+    protected Person getPerson() {
+        return person;
     }
 
     public boolean authenticate(String auth) {
@@ -46,7 +53,7 @@ public class User extends PersonAdapter implements Person {
 
 
     public void setName(Object first, Object last) {
-        setName(new Name() {
+        person.setName(new Name() {
             @Override
             public String getGivenName() {
                 return first != null ? first.toString() : null;
@@ -91,9 +98,9 @@ public class User extends PersonAdapter implements Person {
 
         String gender1 = user.getGender();
         if(gender1 != null) {
-            setGender(Gender.valueOf(gender1.toUpperCase()));
+            person.setGender(Gender.valueOf(gender1.toUpperCase()));
         }
-        setEmail(user.getEmail());
+        person.setEmail(user.getEmail());
     }
 
     private String combineName(Object first, Object last) {

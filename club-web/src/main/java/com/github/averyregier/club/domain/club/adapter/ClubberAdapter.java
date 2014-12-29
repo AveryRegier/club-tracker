@@ -1,8 +1,6 @@
 package com.github.averyregier.club.domain.club.adapter;
 
-import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.*;
-import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.program.Section;
 
 import java.time.LocalDate;
@@ -14,12 +12,22 @@ import java.util.stream.Collectors;
 /**
  * Created by avery on 11/30/14.
  */
-public abstract class ClubberAdapter implements Clubber {
+public class ClubberAdapter extends PersonWrapper implements Clubber {
     private LinkedHashMap<Section, ClubberRecord> records = new LinkedHashMap<>();
     private ClubAdapter club;
+    private Person person = new PersonAdapter();
+
+    public ClubberAdapter() {
+        this.person.getUpdater().setClubber(this);
+    }
 
     public Optional<ClubberRecord> getRecord(Optional<Section> maybeASection) {
         return maybeASection.map(s -> mapToRecord(s));
+    }
+
+    @Override
+    protected Person getPerson() {
+        return person;
     }
 
     public List<AwardPresentation> getAwards() {
@@ -71,68 +79,18 @@ public abstract class ClubberAdapter implements Clubber {
     }
 
     @Override
-    public int getAge() {
-        return 0;
-    }
-
-    @Override
-    public AgeGroup getCurrentAgeGroup() {
-        return null;
-    }
-
-    @Override
-    public Optional<Club> getClub() {
-        return Optional.ofNullable(club);
-    }
-
-    @Override
-    public String getId() {
-        return null;
-    }
-
-    @Override
-    public Name getName() {
-        return null;
-    }
-
-    @Override
-    public Optional<Gender> getGender() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<User> getLogin() {
-        return null;
-    }
-
-    @Override
-    public Optional<String> getEmail() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Parent> asParent() {
-        return null;
-    }
-
-    @Override
-    public Optional<Listener> asListener() {
-        return null;
-    }
-
-    @Override
     public Optional<Clubber> asClubber() {
         return Optional.of(this);
     }
 
     @Override
-    public Optional<ClubLeader> asClubLeader() {
-        return null;
+    public int getAge() {
+        return 0;
     }
 
     @Override
-    public Optional<Family> getFamily() {
-        return null;
+    public Optional<Club> getClub() {
+        return Optional.ofNullable(club);
     }
 
     void setClub(ClubAdapter club) {

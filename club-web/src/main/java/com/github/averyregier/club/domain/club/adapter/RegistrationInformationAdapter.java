@@ -19,7 +19,6 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
     @Override
     public Family register(User user) {
         ParentAdapter thisParent = (ParentAdapter)user.asParent().orElse(new ParentAdapter(user));
-        user.setParent(thisParent);
 
         Pattern pattern = Pattern.compile("([a-z]*)(\\d?)");
 
@@ -34,26 +33,23 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
                 if(matcher.find()) {
                     switch (matcher.group(1)) {
                         case "me":
-                            user.setName((Name) theResults.get("name"));
-                            thisParent.setFamily(family);
+                            user.getUpdater().setName((Name) theResults.get("name"));
+                            thisParent.getUpdater().setFamily(family);
                             break;
                         case "spouse":
                             Name name = (Name) theResults.get("name");
                             ParentAdapter spouse = (ParentAdapter)getOther(family.getParents(), thisParent)
-                                    .orElse(new ParentAdapter(new PersonAdapter() {
-                                        @Override
-                                        public Name getName() {
-                                            return name;
-                                        }
-                                    }));
+                                    .orElse(new ParentAdapter(new PersonAdapter()));
                             family.addParent(spouse);
-                            spouse.setFamily(family);
+                            spouse.getUpdater().setName(name);
+                            spouse.getUpdater().setFamily(family);
                             break;
                         case "child":
                             int childNumber = Integer.parseInt(matcher.group(2));
+                            Name childName = (Name) theResults.get("childName");
                             Optional<Clubber> clubber = family.getClubbers().stream().skip(childNumber - 1).findFirst();
                             if(clubber.isPresent()) {
-
+                                clubber.get().getUpdater().setName(childName);
                             } else {
                                 ClubberAdapter child = newClubber(family, theResults);
                             }
@@ -69,22 +65,12 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
     private ClubberAdapter newClubber(final FamilyAdapter family, final Map<String, Object> theResults) {
         Name childName = (Name) theResults.get("childName");
         AgeGroup ageGroup = (AgeGroup) theResults.get("ageGroup");
-        ClubberAdapter child = new ClubberAdapter() {
-            @Override
-            public Name getName() {
-                return childName;
-            }
 
-            @Override
-            public AgeGroup getCurrentAgeGroup() {
-                return ageGroup;
-            }
+        ClubberAdapter child = new ClubberAdapter();
 
-            @Override
-            public Optional<Family> getFamily() {
-                return Optional.of(family);
-            }
-        };
+        child.getUpdater().setName(childName);
+        child.getUpdater().setFamily(family);
+        child.getUpdater().setAgeGroup(ageGroup);
         family.addClubber(child);
         getProgram().register(child);
         return child;

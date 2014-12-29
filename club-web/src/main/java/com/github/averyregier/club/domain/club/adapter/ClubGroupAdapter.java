@@ -1,6 +1,5 @@
 package com.github.averyregier.club.domain.club.adapter;
 
-import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.ClubGroup;
 import com.github.averyregier.club.domain.club.Listener;
 import com.github.averyregier.club.domain.club.Person;
@@ -35,9 +34,6 @@ public abstract class ClubGroupAdapter implements ClubGroup {
             return (ListenerAdapter)person.asListener().get();
         } else {
             ListenerAdapter listener = new ListenerAdapter(person);
-            if (person instanceof User) {
-                ((User) person).setListener(listener);
-            }
             return listener;
         }
     }

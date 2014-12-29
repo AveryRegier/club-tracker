@@ -68,9 +68,6 @@ abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     @Override
     public ClubLeader assign(Person person, ClubLeader.LeadershipRole role) {
         ClubLeaderAdapter leader = new ClubLeaderAdapter(this, person);
-        if(person.getLogin().isPresent()) {
-            person.getLogin().get().setLeader(leader);
-        }
         return leader;
     }
 }
