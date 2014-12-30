@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.club;
 
+import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.domain.utility.Action;
@@ -26,6 +27,7 @@ public class RegistrationFormTest {
     @Before
     public void setup() {
         program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
+        program.setPersonManager(new PersonManager());
     }
 
     @Test

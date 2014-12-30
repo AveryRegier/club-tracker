@@ -15,9 +15,17 @@ import java.util.Random;
  * Created by avery on 9/2/14.
  */
 public class User extends PersonWrapper implements Person {
-    private PersonAdapter person = new PersonAdapter();
+    private Person person;
     private String auth;
     private String id;
+
+    public User() {
+        this(new PersonAdapter());
+    }
+
+    public User(Person personAdapter) {
+        this.person = personAdapter;
+    }
 
     public String resetAuth() {
         byte[] bytes = new byte[10];
@@ -53,7 +61,7 @@ public class User extends PersonWrapper implements Person {
 
 
     public void setName(Object first, Object last) {
-        person.setName(new Name() {
+        person.getUpdater().setName(new Name() {
             @Override
             public String getGivenName() {
                 return first != null ? first.toString() : null;
@@ -98,9 +106,9 @@ public class User extends PersonWrapper implements Person {
 
         String gender1 = user.getGender();
         if(gender1 != null) {
-            person.setGender(Gender.valueOf(gender1.toUpperCase()));
+            person.getUpdater().setGender(Gender.valueOf(gender1.toUpperCase()));
         }
-        person.setEmail(user.getEmail());
+        person.getUpdater().setEmail(user.getEmail());
     }
 
     private String combineName(Object first, Object last) {

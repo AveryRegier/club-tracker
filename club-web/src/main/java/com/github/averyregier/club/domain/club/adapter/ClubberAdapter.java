@@ -3,6 +3,7 @@ package com.github.averyregier.club.domain.club.adapter;
 import com.github.averyregier.club.domain.club.AwardPresentation;
 import com.github.averyregier.club.domain.club.Clubber;
 import com.github.averyregier.club.domain.club.ClubberRecord;
+import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.program.Section;
 
 import java.util.LinkedHashMap;
@@ -17,7 +18,11 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     private LinkedHashMap<Section, ClubberRecord> records = new LinkedHashMap<>();
 
     public ClubberAdapter() {
-        super(new PersonAdapter());
+        this(new PersonAdapter());
+    }
+
+    public ClubberAdapter(Person person) {
+        super(person);
         getPerson().getUpdater().setClubber(this);
     }
 

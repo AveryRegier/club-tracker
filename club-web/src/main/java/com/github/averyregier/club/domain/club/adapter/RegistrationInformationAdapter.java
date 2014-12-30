@@ -3,6 +3,7 @@ package com.github.averyregier.club.domain.club.adapter;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.Clubber;
 import com.github.averyregier.club.domain.club.Family;
+import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.RegistrationInformation;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 
@@ -25,7 +26,7 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
 
         Map<InputFieldDesignator, Object> results = validate();
 
-        FamilyAdapter family = (FamilyAdapter) user.getFamily().orElse(new FamilyAdapter(thisParent));
+        FamilyAdapter family = (FamilyAdapter) user.getFamily().orElseGet(() -> new FamilyAdapter(thisParent));
 
         for(InputFieldDesignator section: getForm()) {
             Map<String, Object> theResults = (Map<String, Object>) results.get(section);
@@ -39,7 +40,7 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
                             break;
                         case "spouse":
                             ParentAdapter spouse = (ParentAdapter)getOther(family.getParents(), thisParent)
-                                    .orElse(new ParentAdapter(new PersonAdapter()));
+                                    .orElseGet(() -> new ParentAdapter(createPerson()));
                             family.addParent(spouse);
                             section.update(spouse, theResults);
                             spouse.getUpdater().setFamily(family);
@@ -58,13 +59,17 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
         return family;
     }
 
+    private Person createPerson() {
+        return getProgram().getPersonManager().createPerson();
+    }
+
     private Clubber findClubber(FamilyAdapter family, int childNumber) {
         Optional<Clubber> clubber = family.getClubbers().stream().skip(childNumber - 1).findFirst();
         Clubber child;
         if(clubber.isPresent()) {
             child = clubber.get();
         } else {
-            child = new ClubberAdapter();
+            child = new ClubberAdapter(createPerson());
             family.addClubber(child);
             child.getUpdater().setFamily(family);
         }

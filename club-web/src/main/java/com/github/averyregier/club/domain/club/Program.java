@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.club;
 
+import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.program.Curriculum;
 
@@ -23,4 +24,7 @@ public interface Program extends Club {
 
 
     Optional<Club> lookupClub(String shortCode);
+
+    void setPersonManager(PersonManager personManager);
+    PersonManager getPersonManager();
 }

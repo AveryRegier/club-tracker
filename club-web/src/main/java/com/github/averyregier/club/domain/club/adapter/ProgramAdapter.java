@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.club.adapter;
 
+import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.policy.Policy;
@@ -23,6 +24,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     private final String acceptLanguage;
     private String organizationName;
     private SortedSet<ClubAdapter> clubs = new TreeSet<>();
+    private PersonManager personManager;
 
     public ProgramAdapter(String acceptLanguage, String organizationName, String curriculum) {
         super(curriculum != null ? Programs.valueOf(curriculum).get() : null);
@@ -193,6 +195,16 @@ public class ProgramAdapter extends ClubAdapter implements Program {
                 .filter(c->shortCode.equals(c.getShortName()))
                 .findFirst()
                 .map(c->(Club)c);
+    }
+
+    @Override
+    public void setPersonManager(PersonManager personManager) {
+        this.personManager = personManager;
+    }
+
+    @Override
+    public PersonManager getPersonManager() {
+        return personManager;
     }
 
     @Override

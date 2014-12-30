@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.club;
 
+import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.domain.program.AgeGroup;
@@ -24,6 +25,7 @@ public class RegistrationTest {
     public void setup() {
         program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
         program.addClub(TnTCurriculum.get());
+        program.setPersonManager(new PersonManager());
     }
 
     @Test
@@ -111,7 +113,7 @@ public class RegistrationTest {
     }
 
     public User wholeFamilyRegistration() {
-        User me = new User();
+        User me = new User(program.getPersonManager().createPerson());
         Map<String, String> formValues =
                  map("me.name.given", "Green")
                 .put("me.name.surname", "Flubber")
@@ -151,7 +153,15 @@ public class RegistrationTest {
         assertEquals("Edna", clubber.getName().getGivenName());
         assertEquals("Flubber", clubber.getName().getSurname());
 
+        Collection<Person> people = program.getPersonManager().getPeople();
+        assertTrue(allPeoplePresent(people, family.getClubbers()));
+        assertTrue(allPeoplePresent(people, family.getParents()));
+
         return me;
+    }
+
+    private boolean allPeoplePresent(Collection<Person> people, Set<? extends Person> persons) {
+        return persons.stream().map(p -> p.getUpdater()).allMatch(p -> people.contains(p));
     }
 
     public Program getProgram() {
