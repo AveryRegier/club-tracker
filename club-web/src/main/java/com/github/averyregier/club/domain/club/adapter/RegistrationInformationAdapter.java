@@ -1,8 +1,9 @@
 package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.User;
-import com.github.averyregier.club.domain.club.*;
-import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.domain.club.Clubber;
+import com.github.averyregier.club.domain.club.Family;
+import com.github.averyregier.club.domain.club.RegistrationInformation;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 
 import java.util.Map;
@@ -33,26 +34,21 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
                 if(matcher.find()) {
                     switch (matcher.group(1)) {
                         case "me":
-                            user.getUpdater().setName((Name) theResults.get("name"));
+                            section.update(thisParent, theResults);
                             thisParent.getUpdater().setFamily(family);
                             break;
                         case "spouse":
-                            Name name = (Name) theResults.get("name");
                             ParentAdapter spouse = (ParentAdapter)getOther(family.getParents(), thisParent)
                                     .orElse(new ParentAdapter(new PersonAdapter()));
                             family.addParent(spouse);
-                            spouse.getUpdater().setName(name);
+                            section.update(spouse, theResults);
                             spouse.getUpdater().setFamily(family);
                             break;
                         case "child":
                             int childNumber = Integer.parseInt(matcher.group(2));
-                            Name childName = (Name) theResults.get("childName");
-                            Optional<Clubber> clubber = family.getClubbers().stream().skip(childNumber - 1).findFirst();
-                            if(clubber.isPresent()) {
-                                clubber.get().getUpdater().setName(childName);
-                            } else {
-                                ClubberAdapter child = newClubber(family, theResults);
-                            }
+                            Clubber child = findClubber(family, childNumber);
+                            section.update(child, theResults);
+                            getProgram().register((ClubberAdapter)child);
                             break;
                     }
                 }
@@ -62,17 +58,16 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
         return family;
     }
 
-    private ClubberAdapter newClubber(final FamilyAdapter family, final Map<String, Object> theResults) {
-        Name childName = (Name) theResults.get("childName");
-        AgeGroup ageGroup = (AgeGroup) theResults.get("ageGroup");
-
-        ClubberAdapter child = new ClubberAdapter();
-
-        child.getUpdater().setName(childName);
-        child.getUpdater().setFamily(family);
-        child.getUpdater().setAgeGroup(ageGroup);
-        family.addClubber(child);
-        getProgram().register(child);
+    private Clubber findClubber(FamilyAdapter family, int childNumber) {
+        Optional<Clubber> clubber = family.getClubbers().stream().skip(childNumber - 1).findFirst();
+        Clubber child;
+        if(clubber.isPresent()) {
+            child = clubber.get();
+        } else {
+            child = new ClubberAdapter();
+            family.addClubber(child);
+            child.getUpdater().setFamily(family);
+        }
         return child;
     }
 

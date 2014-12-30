@@ -19,4 +19,8 @@ public interface PersonUpdater {
     void setFamily(Family family);
 
     void setAgeGroup(AgeGroup ageGroup);
+
+    void setEmail(String emailAddress);
+
+    void setGender(Person.Gender gender);
 }

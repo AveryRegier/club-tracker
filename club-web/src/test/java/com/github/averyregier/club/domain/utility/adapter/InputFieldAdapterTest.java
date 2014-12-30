@@ -1,8 +1,11 @@
 package com.github.averyregier.club.domain.utility.adapter;
 
+import com.github.averyregier.club.domain.User;
+import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.utility.InputField;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -129,5 +132,22 @@ public class InputFieldAdapterTest {
                 .build();
         Optional<Object> validate = classUnderTest.validate("12.34");
         assertFalse(validate.isPresent());
+    }
+
+    @Test
+    public void updateDoesNothingWhenNoFunction() {
+        InputField classUnderTest = new InputFieldBuilder().build();
+        User user = new User();
+        classUnderTest.update(user, new HashMap<>());
+    }
+
+    @Test
+    public void updateFunction() {
+        InputField classUnderTest = new InputFieldBuilder()
+                .update((p,o) -> p.getUpdater().setAgeGroup((AgeGroup)o))
+                .build();
+        User user = new User();
+        classUnderTest.update(user, AgeGroup.DefaultAgeGroup.ELEVENTH_GRADE);
+        assertEquals(AgeGroup.DefaultAgeGroup.ELEVENTH_GRADE, user.getCurrentAgeGroup());
     }
 }

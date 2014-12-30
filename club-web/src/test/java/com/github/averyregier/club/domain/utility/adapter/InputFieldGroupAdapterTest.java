@@ -1,7 +1,12 @@
 package com.github.averyregier.club.domain.utility.adapter;
 
 import com.github.averyregier.club.domain.User;
-import com.github.averyregier.club.domain.utility.*;
+import com.github.averyregier.club.domain.club.Name;
+import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.domain.utility.InputField;
+import com.github.averyregier.club.domain.utility.InputFieldDesignator;
+import com.github.averyregier.club.domain.utility.InputFieldGroup;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -338,4 +343,119 @@ public class InputFieldGroupAdapterTest {
         assertFalse(result.isPresent());
     }
 
+    @Test
+    public void update() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .id("name")
+                .field(f -> f.id("first").type(InputField.Type.text))
+                .field(f -> f.id("last").type(InputField.Type.text))
+                .update((p, r) -> {
+                    p.getUpdater().setName(new Name() {
+                        @Override
+                        public String getGivenName() {
+                            return (String)((Map)r).get("first");
+                        }
+
+                        @Override
+                        public String getSurname() {
+                            return (String)((Map)r).get("last");
+                        }
+                    });
+                })
+                .build();
+
+        HashMap<String, String> validatedInput = new HashMap<>();
+        validatedInput.put("first", "First");
+        validatedInput.put("last", "Last");
+
+        User user = new User();
+        classUnderTest.update(user, validatedInput);
+        assertEquals("First", user.getName().getGivenName());
+        assertEquals("Last", user.getName().getSurname());
+
+    }
+
+    @Test
+    public void defaultGroupUpdate() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .id("person")
+                .field(f -> f.id("name")
+                        .type(InputField.Type.text)
+                        .update((p, o) -> p.getUpdater().setName(new Name() {
+                            @Override
+                            public String getFullName() {
+                                return (String) o;
+                            }
+                        })))
+                .field(f -> f.id("ageGroup")
+                        .type(InputField.Type.ageGroup)
+                        .update((p, o) -> p.getUpdater().setAgeGroup((AgeGroup) o)))
+                .build();
+
+        HashMap<String, Object> validatedInput = new HashMap<>();
+        validatedInput.put("name", "Full Name");
+        validatedInput.put("ageGroup", AgeGroup.DefaultAgeGroup.COLLEGE);
+
+        User user = new User();
+
+        classUnderTest.update(user, validatedInput);
+        assertEquals("Full Name", user.getName().getFullName());
+        assertEquals(AgeGroup.DefaultAgeGroup.COLLEGE, user.getCurrentAgeGroup());
+    }
+
+    @Test
+    public void defaultMultiLevelGroupUpdate() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .group(g -> g
+                        .id("person")
+                        .field(f -> f.id("name")
+                                .type(InputField.Type.text)
+                                .update((p, o) -> p.getUpdater().setName(new Name() {
+                                    @Override
+                                    public String getFullName() {
+                                        return (String) o;
+                                    }
+                                })))
+                        .field(f -> f.id("ageGroup")
+                                .type(InputField.Type.ageGroup)
+                                .update((p, o) -> p.getUpdater().setAgeGroup((AgeGroup) o))))
+                .build();
+
+        HashMap<String, Object> validatedInput = new HashMap<>();
+        validatedInput.put("person.name", "Full Name");
+        validatedInput.put("person.ageGroup", AgeGroup.DefaultAgeGroup.COLLEGE);
+
+        User user = new User();
+
+        classUnderTest.update(user, validatedInput);
+        assertEquals("Full Name", user.getName().getFullName());
+        assertEquals(AgeGroup.DefaultAgeGroup.COLLEGE, user.getCurrentAgeGroup());
+    }
+
+    @Test
+    public void defaultMultiLevelGroupUpdateWithValidate() {
+        Name mock = new Name() {};
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .group(g -> g
+                        .id("name")
+                        .field(f -> f.id("first")
+                                .type(InputField.Type.text)
+                                .update((p, o) -> fail()))
+                        .field(f -> f.id("last")
+                                .type(InputField.Type.text)
+                                .update((p, o) -> fail()))
+                        .validate(r->Optional.of(mock))
+                        .update((p,r)-> p.getUpdater().setName((Name)r))
+                )
+                .build();
+
+        HashMap<String, String> input = new HashMap<>();
+        input.put("person.first", "First");
+        input.put("person.last", "Last");
+
+        User user = new User();
+
+        classUnderTest.update(user, classUnderTest.validate(input).get());
+        assertEquals(mock, user.getName());
+    }
 }

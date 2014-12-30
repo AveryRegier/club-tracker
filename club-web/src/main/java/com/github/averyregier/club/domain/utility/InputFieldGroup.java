@@ -42,5 +42,4 @@ public interface InputFieldGroup extends InputFieldDesignator {
     Optional<Object> validate(Map<String, String> map);
 
     Map<String, String> map(Person person);
-
 }

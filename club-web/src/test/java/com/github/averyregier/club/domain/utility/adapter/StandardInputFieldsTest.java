@@ -67,6 +67,9 @@ public class StandardInputFieldsTest {
         assertEquals("Space", model.get("given"));
         assertEquals("Alien", model.get("surname"));
 
+        User user = new User();
+        group.update(user, o);
+        assertEquals(o, user.getName());
     }
 
     @Test
@@ -107,6 +110,10 @@ public class StandardInputFieldsTest {
         Map<String, String> model = group.map(person);
         assertEquals("Space", model.get("given"));
         assertEquals("Alien", model.get("surname"));
+
+        User user = new User();
+        group.update(user, o);
+        assertEquals(o, user.getName());
     }
 
     @Test
@@ -121,6 +128,10 @@ public class StandardInputFieldsTest {
         assertEquals("MALE", gender.map(getUser(b -> b.setGender("MALE"))));
 
         assertNull(gender.map(new User()));
+
+        User user = new User();
+        gender.update(user, Person.Gender.FEMALE);
+        assertEquals(Person.Gender.FEMALE, user.getGender().get());
     }
 
     @Test
@@ -170,6 +181,10 @@ public class StandardInputFieldsTest {
         assertFalse(email.validate("spaces aren@t.happy").isPresent());
         assertEquals("dots.are@.ha.py", email.validate("dots.are@.ha.py").get());
         assertFalse(email.validate("notdotsaren@thappy").isPresent());
+
+        User user = new User();
+        email.update(user, "hi@there.com");
+        assertEquals("hi@there.com", user.getEmail().get());
     }
 
     @Test
@@ -196,6 +211,10 @@ public class StandardInputFieldsTest {
             }
         }));
         assertNull(field.map(new User()));
+
+        User person = new User();
+        field.update(person, AgeGroup.DefaultAgeGroup.FIRST_GRADE);
+        assertEquals(AgeGroup.DefaultAgeGroup.FIRST_GRADE, person.getCurrentAgeGroup());
     }
 
     @Test

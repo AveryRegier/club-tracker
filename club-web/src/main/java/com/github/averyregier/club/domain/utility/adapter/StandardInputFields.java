@@ -83,7 +83,8 @@ public enum StandardInputFields {
                             model.put("surname", name1.getSurname());
                         }
                         return model;
-                    });
+                    })
+                    .update((p,o)->p.getUpdater().setName((Name)o));
         }
     },
     address {
@@ -110,7 +111,8 @@ public enum StandardInputFields {
                     .type(InputField.Type.gender)
                     .value(Person.Gender.MALE.name())
                     .value(Person.Gender.FEMALE.name())
-                    .map(p->p.getGender().map(g->g.name()).orElse(null));
+                    .map(p->p.getGender().map(g->g.name()).orElse(null))
+                    .update((p,o)->p.getUpdater().setGender((Person.Gender)o));
         }
     },
     age {
@@ -125,7 +127,8 @@ public enum StandardInputFields {
             return buildField(this)
                     .name("Email Address")
                     .type(InputField.Type.email)
-                    .map(p->p.getEmail().orElse(null));
+                    .map(p->p.getEmail().orElse(null))
+                    .update((p,o)->p.getUpdater().setEmail((String)o));
         }
     },
     ageGroup {
@@ -136,7 +139,8 @@ public enum StandardInputFields {
                     .type(InputField.Type.ageGroup)
                     .map(p->p.asClubber()
                             .map(c->c.getCurrentAgeGroup() != null ? c.getCurrentAgeGroup().name() : null)
-                            .orElse(null));
+                            .orElse(null))
+                    .update((p,o)->p.getUpdater().setAgeGroup((AgeGroup)o));
             for(AgeGroup.DefaultAgeGroup group: AgeGroup.DefaultAgeGroup.values()) {
                 builder.value(group.name(), group.getDisplayName(), false);
             }
@@ -213,7 +217,8 @@ public enum StandardInputFields {
                     model.put("given", p.getName().getGivenName());
                     model.put("surname", p.getName().getSurname());
                     return model;
-                });
+                })
+                .update((p,o)->p.getUpdater().setName((Name)o));
         }
     };
 

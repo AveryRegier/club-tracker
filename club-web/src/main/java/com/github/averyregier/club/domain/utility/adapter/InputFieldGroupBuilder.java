@@ -7,8 +7,11 @@ import com.github.averyregier.club.domain.utility.builder.Builder;
 import com.github.averyregier.club.domain.utility.builder.ChildBuilder;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
-import java.util.*;
-import java.util.function.BiFunction;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -25,6 +28,7 @@ public class InputFieldGroupBuilder
     private List<ChildBuilder<InputFieldGroup, InputFieldDesignator>> children = new ArrayList<>();
     private Function<Map<String, Object>, Optional<Object>> validationFn;
     private Function<Person, Map<String, String>> mapFn;
+    private BiConsumer<Person, Object> updateFn;
 
     public InputFieldGroupBuilder id(String id) {
         this.id = id;
@@ -49,7 +53,8 @@ public class InputFieldGroupBuilder
                 parent,
                 children.stream().map(g -> g.build(later)).collect(Collectors.toList()),
                 validationFn,
-                mapFn
+                mapFn,
+                updateFn
         );
         later.set(group);
         return group;
@@ -84,4 +89,8 @@ public class InputFieldGroupBuilder
         return this;
     }
 
+    public InputFieldGroupBuilder update(BiConsumer<Person, Object> updateFn) {
+        this.updateFn = updateFn;
+        return this;
+    }
 }

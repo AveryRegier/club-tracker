@@ -11,6 +11,7 @@ import com.github.averyregier.club.domain.utility.builder.Later;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
@@ -23,6 +24,7 @@ public class InputFieldBuilder implements Builder<InputField>, ChildBuilder<Inpu
     private List<InputField.Value> values = new ArrayList<InputField.Value>();
     private Function<Person, String> mapFn;
     private boolean required;
+    private BiConsumer<Person, Object> updateFn;
 
     @Override
     public InputField build() {
@@ -64,7 +66,7 @@ public class InputFieldBuilder implements Builder<InputField>, ChildBuilder<Inpu
     }
 
     public InputField build(Later<InputFieldGroup> group) {
-        return new InputFieldAdapter(id, type, name, group, required, mapFn, values.toArray(new InputField.Value[0]));
+        return new InputFieldAdapter(id, type, name, group, required, mapFn, updateFn, values.toArray(new InputField.Value[0]));
     }
 
     public InputFieldBuilder value(String value, String displayName, boolean isDefault) {
@@ -109,6 +111,11 @@ public class InputFieldBuilder implements Builder<InputField>, ChildBuilder<Inpu
 
     public InputFieldBuilder required() {
         this.required = true;
+        return this;
+    }
+
+    public InputFieldBuilder update(BiConsumer<Person, Object> updateFn) {
+        this.updateFn = updateFn;
         return this;
     }
 }
