@@ -64,6 +64,7 @@ public class ClubApplication implements SparkApplication {
 
     public Program setupProgram(String organizationName, String curriculum, String acceptLanguage) {
         program = new ProgramAdapter(acceptLanguage, organizationName, curriculum);
+        program.setPersonManager(userManager.getPersonManager());
         return program;
     }
 

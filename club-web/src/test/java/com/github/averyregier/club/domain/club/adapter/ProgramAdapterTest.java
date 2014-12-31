@@ -141,11 +141,12 @@ public class ProgramAdapterTest {
 
     @Test
     public void lookupClub() {
-        ProgramAdapter program = new ProgramAdapter("en_US", null, "AWANA");
+        ProgramAdapter program = new ProgramAdapter("en_US", "Foo", "AWANA");
         Club club = program.addClub(TnTCurriculum.get());
 
         assertFound(club, program.lookupClub("TnT"));
         assertFalse(program.lookupClub("SomethingElse").isPresent());
+        assertFound(program, program.lookupClub("Foo"));
     }
 
     private void assertFound(Club club, Optional<Club> result) {

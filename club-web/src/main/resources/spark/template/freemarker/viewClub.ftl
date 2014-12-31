@@ -40,5 +40,8 @@
             </div>
         </div>
     </fieldset>
+
+    <#assign people=club.program.personManager.people>
+    <#include "people.ftl">
 </body>
 </html>

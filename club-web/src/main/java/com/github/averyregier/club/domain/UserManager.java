@@ -9,6 +9,7 @@ import java.util.Optional;
  */
 public class UserManager {
     final Map<String, User> users = new HashMap<>();
+    private final PersonManager personManager = new PersonManager();
 
 //    public String authenticate(String userID, String password) {
 //        try {
@@ -22,7 +23,7 @@ public class UserManager {
     private User getUserObject(String userID) {
         User user = users.get(userID);
         if(user == null)  {
-            user = new User();
+            user = new User(personManager.createPerson());
             User old = users.putIfAbsent(userID, user);
             if(old != null) {
                 user = old;
@@ -42,5 +43,9 @@ public class UserManager {
 
     public User createUser(String userID) {
         return getUserObject(userID);
+    }
+
+    public PersonManager getPersonManager() {
+        return personManager;
     }
 }
