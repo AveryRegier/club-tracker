@@ -4,6 +4,7 @@ import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.AgeGroup;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ class ListenerAdapter extends PersonWrapper implements Listener {
 
     @Override
     public Set<Clubber> getQuickList() {
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
