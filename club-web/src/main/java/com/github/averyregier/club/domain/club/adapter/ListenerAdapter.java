@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
 * Created by avery on 12/16/14.
@@ -22,7 +23,19 @@ class ListenerAdapter extends PersonWrapper implements Listener {
 
     @Override
     public Set<Clubber> getQuickList() {
-        return Collections.emptySet();
+        return getClub().map(cl -> matchingClubbers(cl)).orElse(Collections.emptySet());
+    }
+
+    private Set<Clubber> matchingClubbers(Group cl) {
+        return cl.getClubbers().stream()
+                .filter(c -> matchesGender(c))
+                .collect(Collectors.toSet());
+    }
+
+    private Boolean matchesGender(Clubber c) {
+        return c.getGender().map(
+                    g -> g.equals(getGender().orElse(null)))
+                .orElse(false);
     }
 
     @Override

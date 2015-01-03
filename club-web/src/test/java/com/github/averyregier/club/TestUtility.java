@@ -1,9 +1,14 @@
 package com.github.averyregier.club;
 
 import com.github.averyregier.club.domain.User;
+import com.github.averyregier.club.domain.club.Clubber;
 import com.github.averyregier.club.view.UserBean;
 
+import java.util.Set;
 import java.util.function.Consumer;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by avery on 12/27/14.
@@ -15,5 +20,10 @@ public class TestUtility {
         User user = new User();
         user.update(userBean);
         return user;
+    }
+
+    public static void assertEmpty(Set<Clubber> quickList) {
+        assertNotNull(quickList);
+        assertTrue(quickList.isEmpty());
     }
 }
