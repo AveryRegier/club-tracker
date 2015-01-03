@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.club;
 
+import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
 import com.github.averyregier.club.domain.program.*;
 import com.github.averyregier.club.domain.program.adapter.AwardBuilder;
 import com.github.averyregier.club.domain.program.adapter.BookBuilder;
@@ -20,7 +21,7 @@ import static org.junit.Assert.*;
  */
 public class ClubberRecordTest {
 
-    private Clubber clubber = new MockClubber();
+    private Clubber clubber = new ClubberAdapter();
     private Listener me = new MockListener();
     private AwardBuilder extraCreditAwardBuilder = new AwardBuilder();
     Book book = new BookBuilder(1)

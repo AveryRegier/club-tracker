@@ -26,7 +26,6 @@ public class QuickListTest {
     @Before
     public void setup() {
         person = new PersonAdapter();
-        person.getUpdater().setGender(Person.Gender.MALE);
         program = new ProgramAdapter("en_US", null, "AWANA");
         club = program.addClub(program.getCurriculum().getSeries("TnT").get());
         listener = club.recruit(person);
@@ -40,7 +39,6 @@ public class QuickListTest {
 
     @Test
     public void oneClubberQuickList() {
-        Listener listener = club.recruit(person);
         listener.getUpdater().setGender(Person.Gender.MALE);
         Clubber clubber = registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.MALE);
         Set<Clubber> quickList = listener.getQuickList();
@@ -51,10 +49,7 @@ public class QuickListTest {
 
     @Test
     public void sameGenderPolicyQuickList() {
-        Person person = new PersonAdapter();
         person.getUpdater().setGender(Person.Gender.MALE);
-        ProgramAdapter program = new ProgramAdapter("en_US", null, "AWANA");
-        Club club = program.addClub(program.getCurriculum().getSeries("TnT").get());
 
         // in the future add a policy, for now, just make it default
 
@@ -67,17 +62,29 @@ public class QuickListTest {
 
     @Test
     public void noGenderNoAutoQuickList() {
-        Person person = new PersonAdapter();
-        ProgramAdapter program = new ProgramAdapter("en_US", null, "AWANA");
-        Club club = program.addClub(program.getCurriculum().getSeries("TnT").get());
-
         // in the future add a policy, for now, just make it default
 
         Listener listener = club.recruit(person);
         registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.FEMALE);
+        registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, null);
+        registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.MALE);
         Set<Clubber> quickList = listener.getQuickList();
         assertEmpty(quickList);
 
+    }
+
+    @Test
+    public void preferClubbersWorkedWithBefore() {
+        listener.getUpdater().setGender(Person.Gender.MALE);
+        HashSet<Clubber> expected = new HashSet<>();
+        Clubber clubber = registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.MALE);
+        expected.add(clubber);
+        clubber.getRecord(clubber.getNextSection()).ifPresent(r->r.sign(listener, ""));
+
+        Set<Clubber> quickList = listener.getQuickList();
+        assertNotNull(quickList);
+        assertEquals(expected.size(), quickList.size());
+        assertEquals(expected, quickList);
     }
 
     private Clubber registerClubber(ProgramAdapter program, AgeGroup.DefaultAgeGroup grade, Person.Gender gender) {

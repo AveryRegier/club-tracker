@@ -80,4 +80,9 @@ class SectionAdapter implements Section {
     public SectionGroup getContainer() {
         return group.get();
     }
+
+    @Override
+    public String toString() {
+        return getId();
+    }
 }

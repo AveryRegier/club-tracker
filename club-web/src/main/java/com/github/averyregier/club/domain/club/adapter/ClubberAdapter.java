@@ -1,9 +1,7 @@
 package com.github.averyregier.club.domain.club.adapter;
 
-import com.github.averyregier.club.domain.club.AwardPresentation;
-import com.github.averyregier.club.domain.club.Clubber;
-import com.github.averyregier.club.domain.club.ClubberRecord;
-import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
 
 import java.util.LinkedHashMap;
@@ -65,7 +63,23 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
 
     @Override
     public Optional<Section> getNextSection() {
-        return null;
+        return getClub()
+                .map(c -> getFirst(c).map(
+                        b -> b.getSections().stream()
+                                .filter(s -> !isSigned(s))
+                                .findFirst()
+                ).orElse(Optional.empty()))
+                .orElse(Optional.empty());
+    }
+
+    private boolean isSigned(Section s) {
+        return (records.containsKey(s) && records.get(s).getSigning().isPresent());
+    }
+
+    private Optional<Book> getFirst(Club c) {
+        return c.getCurriculum()
+                .recommendedBookList(getCurrentAgeGroup()).stream()
+                .findFirst();
     }
 
     @Override
