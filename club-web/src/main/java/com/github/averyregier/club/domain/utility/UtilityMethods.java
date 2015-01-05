@@ -2,6 +2,7 @@ package com.github.averyregier.club.domain.utility;
 
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -83,5 +84,14 @@ public class UtilityMethods {
         HashSet<T> toReturn = new HashSet<>(set);
         toReturn.removeAll(Arrays.asList(items));
         return toReturn.stream().findFirst();
+    }
+
+    public static <R> Optional<R> firstSuccess(Supplier<Optional<R>>... fns) {
+        for(Supplier<Optional<R>> fn: fns) {
+            Optional<R> result = fn.get();
+            if(result.isPresent()) return result;
+        }
+
+        return Optional.empty();
     }
 }

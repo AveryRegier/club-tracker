@@ -78,8 +78,8 @@ public abstract class ClubberRecord {
 
         void calculateAwards() {
             awards = getSection().getAwards().stream()
-                    .filter(r->isCompleted(r))
-                    .map(a->new AwardPresentationAdapter(a))
+                    .filter(ClubberRecord.this::isCompleted)
+                    .map(AwardPresentationAdapter::new)
                     .collect(Collectors.toSet());
         }
 
