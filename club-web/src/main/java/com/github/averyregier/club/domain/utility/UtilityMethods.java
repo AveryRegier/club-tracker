@@ -94,4 +94,10 @@ public class UtilityMethods {
 
         return Optional.empty();
     }
+
+    public static <T> List<T> reverse(List<T> original){
+        ArrayList<T> toReturn = new ArrayList<T>(original);
+        Collections.reverse(toReturn);
+        return toReturn;
+    }
 }

@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.club.adapter;
 
+import com.github.averyregier.club.TestUtility;
 import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.program.*;
 import org.junit.Before;
@@ -80,7 +81,7 @@ public class ClubberAdapterTest {
                 .recommendedBookList(clubber.getCurrentAgeGroup()).stream()
                 .flatMap(b->b.getSections().stream())
                 .filter(s->s.getSectionType().requiredFor(AccomplishmentLevel.book))
-                .filter(s->anyEqual(s.getContainer().getBook().sequence(), 0, 1))
+                .filter(s-> TestUtility.anyEqual(s.getContainer().getBook().sequence(), 0, 1))
                 .forEach(s->clubber.getRecord(Optional.of(s)).ifPresent(r -> r.sign(mockListener, "")));
 
         Optional<Section> section = clubber.getNextSection();
@@ -94,7 +95,7 @@ public class ClubberAdapterTest {
         clubber.getUpdater().setAgeGroup(AgeGroup.DefaultAgeGroup.SIXTH_GRADE);
         club.getCurriculum()
                 .recommendedBookList(clubber.getCurrentAgeGroup()).stream()
-                .flatMap(b->b.getSections().stream())
+                .flatMap(b -> b.getSections().stream())
                 .filter(s->s.getSectionType().requiredFor(AccomplishmentLevel.book))
                 .forEach(s->clubber.getRecord(Optional.of(s)).ifPresent(r -> r.sign(mockListener, "")));
 
@@ -103,13 +104,6 @@ public class ClubberAdapterTest {
         assertTrue(section.isPresent());
         assertFalse(section.get().getSectionType().requiredFor(AccomplishmentLevel.book));
         assertEquals(2, section.get().getContainer().getBook().sequence());
-    }
-
-    private boolean anyEqual(int item, int... expected) {
-        for(int i: expected) {
-            if(item == i) return true;
-        }
-        return false;
     }
 
     private Section getFirstSection(AgeGroup ageGroup) {

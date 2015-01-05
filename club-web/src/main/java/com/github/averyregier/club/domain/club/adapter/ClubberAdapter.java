@@ -4,6 +4,7 @@ import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,9 +35,9 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
         return records.values().stream()
                 .map(ClubberRecord::getSigning)
                 .filter(Optional::isPresent)
-                .map(s -> s.get().getCompletionAwards())
+                .map(s->s.get().getCompletionAwards())
                 .filter(r->r != null)
-                .flatMap(r->r.stream())
+                .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
 
@@ -65,27 +66,26 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
 
     @Override
     public Optional<Section> getNextSection() {
-        return getClub().map(c -> firstSuccess(
-                () -> getRequiredToMoveOn(c),
-                () -> getRequiredForBook(c),
-                () -> getExtraCredit(c)
-        )).orElse(Optional.empty());
+        return firstSuccess(
+                this::getRequiredToMoveOn,
+                this::getRequiredForBook,
+                this::getExtraCredit);
     }
 
-    private Optional<Section> getRequiredToMoveOn(Club c) {
-        return getClubberFutureSections(c)
-                .filter(s -> s.getSectionType().requiredToMoveOn())
+    private Optional<Section> getRequiredToMoveOn() {
+        return getClubberFutureSections()
+                .filter(s->s.getSectionType().requiredToMoveOn())
                 .findFirst();
     }
 
-    private Optional<Section> getRequiredForBook(Club c) {
-        return getClubberFutureSections(c)
-                .filter(s -> s.getSectionType().requiredFor(AccomplishmentLevel.book))
+    private Optional<Section> getRequiredForBook() {
+        return getClubberFutureSections()
+                .filter(s->s.getSectionType().requiredFor(AccomplishmentLevel.book))
                 .findFirst();
     }
 
-    private Optional<Section> getExtraCredit(Club c) {
-        return reverse(getCurrentBookList(c)).stream()
+    private Optional<Section> getExtraCredit() {
+        return UtilityMethods.reverse(getCurrentBookList()).stream()
                 .findFirst()
                 .map(b->b.getSections().stream()
                 .filter(s->!isSigned(s))
@@ -94,25 +94,21 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
                 .orElse(Optional.empty());
     }
 
-    public static <T> List<T> reverse(List<T> original){
-        ArrayList<T> toReturn = new ArrayList<T>(original);
-        Collections.reverse(toReturn);
-        return toReturn;
-    }
-
-    private Stream<Section> getClubberFutureSections(Club c) {
-        return getClubbersSections(c)
+    private Stream<Section> getClubberFutureSections() {
+        return getClubbersSections()
                 .filter(s -> !isSigned(s));
     }
 
-    private Stream<Section> getClubbersSections(Club c) {
-        return getCurrentBookList(c).stream()
+    private Stream<Section> getClubbersSections() {
+        return getCurrentBookList().stream()
                 .flatMap(b -> b.getSections().stream());
     }
 
-    private List<Book> getCurrentBookList(Club c) {
-        return c.getCurriculum()
-                .recommendedBookList(getCurrentAgeGroup());
+    private List<Book> getCurrentBookList() {
+        return getClub()
+                .map(c -> c.getCurriculum()
+                        .recommendedBookList(getCurrentAgeGroup()))
+                .orElse(Collections.emptyList());
     }
 
     private boolean isSigned(Section s) {

@@ -26,4 +26,11 @@ public class TestUtility {
         assertNotNull(quickList);
         assertTrue(quickList.isEmpty());
     }
+
+    public static boolean anyEqual(int item, int... expected) {
+        for(int i: expected) {
+            if(item == i) return true;
+        }
+        return false;
+    }
 }
