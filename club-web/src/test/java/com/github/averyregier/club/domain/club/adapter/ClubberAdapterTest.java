@@ -106,6 +106,24 @@ public class ClubberAdapterTest {
         assertEquals(2, section.get().getContainer().getBook().sequence());
     }
 
+    @Test
+    public void testFinishFirstBookBeforeMovingOn() {
+        clubber.getUpdater().setAgeGroup(AgeGroup.DefaultAgeGroup.SIXTH_GRADE);
+        club.getCurriculum()
+                .recommendedBookList(clubber.getCurrentAgeGroup()).stream()
+                .flatMap(b -> b.getSections().stream())
+                .filter(s->s.getSectionType().requiredToMoveOn())
+                .filter(s -> TestUtility.anyEqual(s.getContainer().getBook().sequence(), 0, 1))
+                .forEach(s->clubber.getRecord(Optional.of(s)).ifPresent(r -> r.sign(mockListener, "")));
+
+        Optional<Section> section = clubber.getNextSection();
+        assertNotNull(section);
+        assertTrue(section.isPresent());
+        assertFalse(section.get().getSectionType().requiredToMoveOn());
+        assertTrue(section.get().getSectionType().requiredFor(AccomplishmentLevel.book));
+        assertEquals(1, section.get().getContainer().getBook().sequence());
+    }
+
     private Section getFirstSection(AgeGroup ageGroup) {
         Optional<Book> firstBook = club.getCurriculum()
                 .recommendedBookList(ageGroup).stream().findFirst();

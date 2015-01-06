@@ -67,19 +67,28 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     @Override
     public Optional<Section> getNextSection() {
         return firstSuccess(
-                this::getRequiredToMoveOn,
-                this::getRequiredForBook,
+                this::getRequiredForBooks,
                 this::getExtraCredit);
     }
 
-    private Optional<Section> getRequiredToMoveOn() {
-        return getClubberFutureSections()
+    private Optional<Section> getRequiredForBooks() {
+        for(Book b: getCurrentBookList()) {
+            Optional<Section> section = firstSuccess(
+                    () -> getRequiredToMoveOn(b),
+                    () -> getRequiredForBook(b));
+            if(section.isPresent()) return section;
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Section> getRequiredToMoveOn(Book b) {
+        return getClubberFutureSections(b)
                 .filter(s->s.getSectionType().requiredToMoveOn())
                 .findFirst();
     }
 
-    private Optional<Section> getRequiredForBook() {
-        return getClubberFutureSections()
+    private Optional<Section> getRequiredForBook(Book b) {
+        return getClubberFutureSections(b)
                 .filter(s->s.getSectionType().requiredFor(AccomplishmentLevel.book))
                 .findFirst();
     }
@@ -94,14 +103,13 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
                 .orElse(Optional.empty());
     }
 
-    private Stream<Section> getClubberFutureSections() {
-        return getClubbersSections()
+    private Stream<Section> getClubberFutureSections(Book b) {
+        return getClubbersSections(b)
                 .filter(s -> !isSigned(s));
     }
 
-    private Stream<Section> getClubbersSections() {
-        return getCurrentBookList().stream()
-                .flatMap(b -> b.getSections().stream());
+    private Stream<Section> getClubbersSections(Book b) {
+        return b.getSections().stream();
     }
 
     private List<Book> getCurrentBookList() {
