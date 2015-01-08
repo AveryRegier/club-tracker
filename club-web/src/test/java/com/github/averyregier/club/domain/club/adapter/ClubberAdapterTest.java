@@ -2,10 +2,12 @@ package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.TestUtility;
 import com.github.averyregier.club.domain.club.Club;
+import com.github.averyregier.club.domain.club.ClubberRecord;
 import com.github.averyregier.club.domain.program.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -98,6 +100,12 @@ public class ClubberAdapterTest {
         Optional<Section> section = clubber.getNextSection();
         assertNotNull(section);
         assertTrue(section.isPresent());
+        List<ClubberRecord> nextSections = clubber.getNextSections(1);
+        assertNotNull(nextSections);
+        assertEquals(1, nextSections.size());
+        ClubberRecord record = nextSections.get(0);
+        assertEquals(section.get(), record.getSection());
+        assertFalse(record.getSigning().isPresent());
         return section;
     }
 

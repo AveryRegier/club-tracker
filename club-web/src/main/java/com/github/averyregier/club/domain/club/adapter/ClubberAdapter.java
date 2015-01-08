@@ -125,7 +125,12 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
 
     @Override
     public List<ClubberRecord> getNextSections(int max) {
-        return null;
+        if(max == 1) {
+            return getRecord(getNextSection())
+                    .map(Arrays::asList)
+                    .orElse(Collections.emptyList());
+        }
+        return Collections.emptyList();
     }
 
     @Override
