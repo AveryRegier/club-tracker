@@ -27,9 +27,7 @@ public class ClubberAdapterTest {
 
     @Test
     public void testGetFirstSection() {
-        Optional<Section> section = clubber.getNextSection();
-        assertNotNull(section);
-        assertTrue(section.isPresent());
+        Optional<Section> section = assertNextSection();
         Section firstSection = getFirstSection(clubber.getCurrentAgeGroup());
         assertEquals(firstSection, section.get());
     }
@@ -38,9 +36,7 @@ public class ClubberAdapterTest {
     public void testGetSecondSection() {
         Section firstSection = getFirstSection(clubber.getCurrentAgeGroup());
         clubber.getRecord(Optional.of(firstSection)).ifPresent(r -> r.sign(mockListener, ""));
-        Optional<Section> section = clubber.getNextSection();
-        assertNotNull(section);
-        assertTrue(section.isPresent());
+        Optional<Section> section = assertNextSection();
         Section secondSection = firstSection.getGroup().getSections().get(1);
         assertEquals(secondSection, section.get());
     }
@@ -54,9 +50,7 @@ public class ClubberAdapterTest {
                 .limit(20)
                 .forEach(s->clubber.getRecord(Optional.of(s)).ifPresent(r -> r.sign(mockListener, "")));
 
-        Optional<Section> section = clubber.getNextSection();
-        assertNotNull(section);
-        assertTrue(section.isPresent());
+        Optional<Section> section = assertNextSection();
         assertTrue(section.get().getSectionType().requiredToMoveOn());
     }
 
@@ -68,9 +62,7 @@ public class ClubberAdapterTest {
                 .filter(s->s.getSectionType().requiredToMoveOn())
                 .forEach(s->clubber.getRecord(Optional.of(s)).ifPresent(r -> r.sign(mockListener, "")));
 
-        Optional<Section> section = clubber.getNextSection();
-        assertNotNull(section);
-        assertTrue(section.isPresent());
+        Optional<Section> section = assertNextSection();
         assertFalse(section.get().getSectionType().requiredToMoveOn());
         assertTrue(section.get().getSectionType().requiredFor(AccomplishmentLevel.book));
     }
@@ -84,9 +76,7 @@ public class ClubberAdapterTest {
                 .filter(s-> TestUtility.anyEqual(s.getContainer().getBook().sequence(), 0, 1))
                 .forEach(s->clubber.getRecord(Optional.of(s)).ifPresent(r -> r.sign(mockListener, "")));
 
-        Optional<Section> section = clubber.getNextSection();
-        assertNotNull(section);
-        assertTrue(section.isPresent());
+        Optional<Section> section = assertNextSection();
         assertFalse(section.get().getSectionType().requiredFor(AccomplishmentLevel.book));
     }
 
@@ -99,11 +89,16 @@ public class ClubberAdapterTest {
                 .filter(s->s.getSectionType().requiredFor(AccomplishmentLevel.book))
                 .forEach(s->clubber.getRecord(Optional.of(s)).ifPresent(r -> r.sign(mockListener, "")));
 
+        Optional<Section> section = assertNextSection();
+        assertFalse(section.get().getSectionType().requiredFor(AccomplishmentLevel.book));
+        assertEquals(2, section.get().getContainer().getBook().sequence());
+    }
+
+    private Optional<Section> assertNextSection() {
         Optional<Section> section = clubber.getNextSection();
         assertNotNull(section);
         assertTrue(section.isPresent());
-        assertFalse(section.get().getSectionType().requiredFor(AccomplishmentLevel.book));
-        assertEquals(2, section.get().getContainer().getBook().sequence());
+        return section;
     }
 
     @Test
@@ -116,9 +111,7 @@ public class ClubberAdapterTest {
                 .filter(s -> TestUtility.anyEqual(s.getContainer().getBook().sequence(), 0, 1))
                 .forEach(s->clubber.getRecord(Optional.of(s)).ifPresent(r -> r.sign(mockListener, "")));
 
-        Optional<Section> section = clubber.getNextSection();
-        assertNotNull(section);
-        assertTrue(section.isPresent());
+        Optional<Section> section = assertNextSection();
         assertFalse(section.get().getSectionType().requiredToMoveOn());
         assertTrue(section.get().getSectionType().requiredFor(AccomplishmentLevel.book));
         assertEquals(1, section.get().getContainer().getBook().sequence());
