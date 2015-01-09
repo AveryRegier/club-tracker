@@ -88,9 +88,13 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     }
 
     private Optional<Section> getRequiredForBook(Book b) {
-        return getClubberFutureSections(b)
-                .filter(s->s.getSectionType().requiredFor(AccomplishmentLevel.book))
+        return getRequiredForBookStream(b)
                 .findFirst();
+    }
+
+    private Stream<Section> getRequiredForBookStream(Book b) {
+        return getClubberFutureSections(b)
+                .filter(s->s.getSectionType().requiredFor(AccomplishmentLevel.book));
     }
 
     private Optional<Section> getExtraCredit() {
@@ -129,8 +133,13 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
             return getRecord(getNextSection())
                     .map(Arrays::asList)
                     .orElse(Collections.emptyList());
+        } else {
+            return getCurrentBookList().stream()
+                    .flatMap(this::getRequiredForBookStream)
+                    .map(s -> getRecord(Optional.of(s)).get())
+                    .limit(max)
+                    .collect(Collectors.toList());
         }
-        return Collections.emptyList();
     }
 
     @Override

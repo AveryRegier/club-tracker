@@ -9,6 +9,8 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
@@ -131,4 +133,35 @@ public class ClubberAdapterTest {
         Optional<Section> firstSection = firstBook.get().getSections().stream().findFirst();
         return firstSection.get();
     }
+
+    @Test
+    public void testGetFirstSeveralSections() {
+        int numSections = 3;
+        List<ClubberRecord> nextSections = assertNextSections(numSections);
+
+        Section firstSection = getFirstSection(clubber.getCurrentAgeGroup());
+        assertEquals(firstSection, nextSections.get(0).getSection());
+    }
+
+    private List<ClubberRecord> assertNextSections(int numSections) {
+        List<ClubberRecord> nextSections = clubber.getNextSections(numSections);
+        assertNotNull(nextSections);
+        assertEquals(numSections, nextSections.size());
+        assertTrue(allSectionsUnique(nextSections));
+        assertTrue(nextSections.stream().allMatch(r -> !r.getSigning().isPresent()));
+        assertTrue(nextSections.stream().allMatch(r -> r.getClubber().equals(clubber)));
+        assertTrue(getSectionStream(nextSections)
+                .allMatch(s -> s.getSectionType().requiredFor(AccomplishmentLevel.book)));
+        return nextSections;
+    }
+
+    private boolean allSectionsUnique(List<ClubberRecord> nextSections) {
+        return getSectionStream(nextSections).collect(Collectors.toSet()).size() == nextSections.size();
+    }
+
+    private Stream<Section> getSectionStream(List<ClubberRecord> nextSections) {
+        return nextSections.stream().map(r->r.getSection());
+    }
+
+
 }
