@@ -4,10 +4,7 @@ import com.github.averyregier.club.domain.UserManager;
 import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.rest.RestAPI;
-import com.github.averyregier.club.view.ClubController;
-import com.github.averyregier.club.view.Login;
-import com.github.averyregier.club.view.RegistrationController;
-import com.github.averyregier.club.view.SetupController;
+import com.github.averyregier.club.view.*;
 import spark.servlet.SparkApplication;
 
 import java.sql.Connection;
@@ -42,6 +39,7 @@ public class ClubApplication implements SparkApplication {
 
         spark.Spark.staticFileLocation("/public");
 
+        new FastSetup().init(this);
         new Login().init(this);
         new SetupController().init(this);
         new RegistrationController().init(this);

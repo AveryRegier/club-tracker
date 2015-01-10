@@ -83,15 +83,7 @@ public class Login extends ModelMaker {
                     response.redirect("/login");
                 } else {
                     try {
-                        UserBean userBean = mapUser(provider.getUserProfile());
-                        User auser = null;
-                        Optional<User> userOptional = app.getUserManager().getUser(userBean.getUniqueId());
-                        if(userOptional.isPresent()) {
-                            auser = userOptional.get();
-                        } else {
-                            auser = app.getUserManager().createUser(userBean.getUniqueId());
-                        }
-                        auser.update(userBean);
+                        User auser = setupUser(app, provider.getUserProfile());
                         resetCookies(request, response, auser.getId(), auser);
 //                            return Login.this.registration(provider);
                     } catch (Exception e) {
@@ -106,7 +98,16 @@ public class Login extends ModelMaker {
         });
     }
 
-    private UserBean mapUser(Profile profile) {
+    public static User setupUser(ClubApplication app, Profile userProfile) {
+        UserBean userBean = mapUser(userProfile);
+        User user = app.getUserManager()
+                .getUser(userBean.getUniqueId())
+                .orElseGet(() -> app.getUserManager().createUser(userBean.getUniqueId()));
+        user.update(userBean);
+        return user;
+    }
+
+    private static UserBean mapUser(Profile profile) {
         UserBean user = new UserBean();
         user.setEmail(profile.getEmail());
         String firstName = profile.getFirstName();
@@ -134,7 +135,7 @@ public class Login extends ModelMaker {
         return user;
     }
 
-    private void mapSplitName(String fullName, UserBean user) {
+    private static void mapSplitName(String fullName, UserBean user) {
         String[] parts = fullName.trim().split("\\s");
         if(parts.length > 0) {
             user.setFirstName(parts[0]);
@@ -146,7 +147,7 @@ public class Login extends ModelMaker {
         }
     }
 
-    private boolean empty(String s) {
+    private static boolean empty(String s) {
         return s == null || s.trim().isEmpty();
     }
 
