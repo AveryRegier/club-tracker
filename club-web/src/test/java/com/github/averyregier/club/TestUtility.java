@@ -1,7 +1,6 @@
 package com.github.averyregier.club;
 
 import com.github.averyregier.club.domain.User;
-import com.github.averyregier.club.domain.club.Clubber;
 import com.github.averyregier.club.view.UserBean;
 
 import java.util.Set;
@@ -22,9 +21,9 @@ public class TestUtility {
         return user;
     }
 
-    public static void assertEmpty(Set<Clubber> quickList) {
-        assertNotNull(quickList);
-        assertTrue(quickList.isEmpty());
+    public static void assertEmpty(Set<?> set) {
+        assertNotNull(set);
+        assertTrue(set.isEmpty());
     }
 
     public static boolean anyEqual(int item, int... expected) {
