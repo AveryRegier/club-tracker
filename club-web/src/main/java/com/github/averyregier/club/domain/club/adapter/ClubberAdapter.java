@@ -98,13 +98,20 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     }
 
     private Optional<Section> getExtraCredit() {
-        return UtilityMethods.reverse(getCurrentBookList()).stream()
-                .findFirst()
-                .map(b->b.getSections().stream()
-                .filter(s->!isSigned(s))
-                .filter(s->!s.getSectionType().requiredFor(AccomplishmentLevel.book))
-                .findFirst())
+        return getAgeLevelBook()
+                .map(b -> getExtraCreditLeft(b).findFirst())
                 .orElse(Optional.empty());
+    }
+
+    private Optional<Book> getAgeLevelBook() {
+        return UtilityMethods.reverse(getCurrentBookList()).stream()
+                .findFirst();
+    }
+
+    private Stream<Section> getExtraCreditLeft(Book b) {
+        return b.getSections().stream()
+                .filter(s -> !isSigned(s))
+                .filter(s -> !s.getSectionType().requiredFor(AccomplishmentLevel.book));
     }
 
     private Stream<Section> getClubberFutureSections(Book b) {
@@ -134,11 +141,21 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
                     .map(Arrays::asList)
                     .orElse(Collections.emptyList());
         } else {
-            return getCurrentBookList().stream()
+            List<ClubberRecord> records = getCurrentBookList().stream()
                     .flatMap(this::getRequiredForBookStream)
                     .map(s -> getRecord(Optional.of(s)).get())
                     .limit(max)
                     .collect(Collectors.toList());
+            if(records.size() < max) {
+                int left = max - records.size();
+                records.addAll(getAgeLevelBook()
+                        .map(b -> getExtraCreditLeft(b)
+                                .limit(left)
+                                .map(s -> getRecord(Optional.of(s)).get())
+                                .collect(Collectors.toList()))
+                        .orElse(Collections.emptyList()));
+            }
+            return records;
         }
     }
 

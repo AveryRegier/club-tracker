@@ -4,6 +4,7 @@ import com.github.averyregier.club.TestUtility;
 import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.club.ClubberRecord;
 import com.github.averyregier.club.domain.program.*;
+import com.github.averyregier.club.domain.program.awana.TnTSectionTypes;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -136,11 +137,29 @@ public class ClubberAdapterTest {
 
     @Test
     public void testGetFirstSeveralSections() {
-        int numSections = 3;
-        List<ClubberRecord> nextSections = assertNextSections(numSections);
+        List<ClubberRecord> nextSections = assertNextSections(3);
+        assertTrue(getSectionStream(nextSections)
+                .allMatch(s -> s.getSectionType().requiredFor(AccomplishmentLevel.book)));
 
         Section firstSection = getFirstSection(clubber.getCurrentAgeGroup());
         assertEquals(firstSection, nextSections.get(0).getSection());
+    }
+
+    @Test
+    public void testNextSectionsExtraCredit() {
+        club.getCurriculum()
+                .recommendedBookList(clubber.getCurrentAgeGroup()).stream()
+                .flatMap(b->b.getSections().stream())
+                .filter(s->s.getSectionType().requiredFor(AccomplishmentLevel.book) &&
+                           s.getSectionType() != TnTSectionTypes.friend)
+                .filter(s-> TestUtility.anyEqual(s.getContainer().getBook().sequence(), 0, 1))
+                .forEach(s->clubber.getRecord(Optional.of(s)).ifPresent(r -> r.sign(mockListener, "")));
+
+        List<ClubberRecord> nextSections = assertNextSections(5);
+
+        assertTrue(getSectionStream(nextSections)
+                .allMatch(s -> !s.getSectionType().requiredFor(AccomplishmentLevel.book) ||
+                        s.getSectionType() == TnTSectionTypes.friend));
     }
 
     private List<ClubberRecord> assertNextSections(int numSections) {
@@ -150,8 +169,6 @@ public class ClubberAdapterTest {
         assertTrue(allSectionsUnique(nextSections));
         assertTrue(nextSections.stream().allMatch(r -> !r.getSigning().isPresent()));
         assertTrue(nextSections.stream().allMatch(r -> r.getClubber().equals(clubber)));
-        assertTrue(getSectionStream(nextSections)
-                .allMatch(s -> s.getSectionType().requiredFor(AccomplishmentLevel.book)));
         return nextSections;
     }
 
