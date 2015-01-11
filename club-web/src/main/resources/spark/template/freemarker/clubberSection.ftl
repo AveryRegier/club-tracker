@@ -28,13 +28,13 @@
                 <#assign signing=record.signing.get()>
                 <div class="inputField">
                     <label>Signed:</label>
-                    <div class="staticField">${signing.by().name.fullName}</div>
+                    <div class="staticField signature">${signing.by().name.fullName}</div>
                 </div>
                 <div class="inputField">
                     <label>Date:</label>
                     <div class="staticField">${signing.date}</div>
                 </div>
-                <#if signing.note??>
+                <#if (signing.note)??>
                     <div class="inputField">
                         <label>Note:</label>
                         <div class="staticField">${signing.note}</div>

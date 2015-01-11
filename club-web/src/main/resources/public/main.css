@@ -23,7 +23,7 @@ label {
 input, select, button, .staticField {
     font-family: 'Open Sans', Arial, Helvetica, sans-serif;
     display: inline-block;
-    float: left;
+    float: initial;
 }
 .actions{
     display: inline-block;
@@ -51,4 +51,16 @@ button {
     display: inline-block;
     float: left;
     clear: left;
+}
+.signature {
+    font-family: "Brush Script MT",cursive;
+    font-size: 250%;
+    font-weight: lighter;
+    border-bottom: 1px solid #000;
+    white-space: nowrap;
+}
+.staticField > ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
