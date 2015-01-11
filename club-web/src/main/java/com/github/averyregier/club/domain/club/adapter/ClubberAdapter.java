@@ -28,7 +28,7 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     }
 
     public Optional<ClubberRecord> getRecord(Optional<Section> maybeASection) {
-        return maybeASection.map(s -> mapToRecord(s));
+        return maybeASection.map(this::mapToRecord);
     }
 
     public List<AwardPresentation> getAwards() {

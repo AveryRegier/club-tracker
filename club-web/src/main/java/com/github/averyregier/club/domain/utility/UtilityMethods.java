@@ -1,6 +1,8 @@
 package com.github.averyregier.club.domain.utility;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -99,5 +101,14 @@ public class UtilityMethods {
         ArrayList<T> toReturn = new ArrayList<T>(original);
         Collections.reverse(toReturn);
         return toReturn;
+    }
+
+    public static String decode(String string) {
+        try {
+            return URLDecoder.decode(string, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return string;
+        }
     }
 }

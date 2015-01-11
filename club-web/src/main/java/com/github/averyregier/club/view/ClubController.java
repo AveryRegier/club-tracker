@@ -1,19 +1,26 @@
 package com.github.averyregier.club.view;
 
 import com.github.averyregier.club.application.ClubApplication;
+import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.Club;
+import com.github.averyregier.club.domain.club.Clubber;
+import com.github.averyregier.club.domain.club.ClubberRecord;
 import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.program.Section;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.ModelAndView;
+import spark.Request;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
-import static spark.Spark.get;
-import static spark.Spark.post;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.decode;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.map;
+import static spark.Spark.*;
 
 /**
  * Created by avery on 12/26/14.
@@ -65,6 +72,53 @@ public class ClubController extends ModelMaker {
             model.put("program", app.getProgram());
             return new ModelAndView(model, "my.ftl");
         }, new FreeMarkerEngine());
+
+        before("/protected/clubbers/:personId/sections/:sectionId", (request, response)-> {
+            if(request.requestMethod().equalsIgnoreCase("POST")){
+                User user = getUser(request);
+                String id = request.params(":personId");
+                Clubber clubber = findClubber(app, id);
+                ClubberRecord record = getClubberRecord(request, clubber);
+                if("true".equalsIgnoreCase(request.queryParams("sign"))) {
+                    record.sign(user.asListener().orElseThrow(IllegalStateException::new), request.queryParams("note"));
+                }
+                response.redirect(request.url());
+                halt();
+            }
+        });
+
+        get("/protected/clubbers/:personId/sections/:sectionId", (request, response)->{
+            User user = getUser(request);
+            String id = request.params(":personId");
+            Clubber clubber = findClubber(app, id);
+            ClubberRecord record = getClubberRecord(request, clubber);
+            Map<String, Object> model = map("me", (Object)user)
+                    .put("clubber", clubber)
+                    .put("section", record.getSection())
+                    .put("record", record)
+                    .build();
+            model.put("program", app.getProgram());
+            return new ModelAndView(model, "clubberSection.ftl");
+        }, new FreeMarkerEngine());
+    }
+
+    private ClubberRecord getClubberRecord(Request request, Clubber clubber) {
+        String sectionId = request.params(":sectionId");
+        Optional<Section> section = optMap(clubber.getClub(),
+                c -> c.getCurriculum().lookup(decode(sectionId)));
+        return clubber.getRecord(section).orElseThrow(IllegalArgumentException::new);
+    }
+
+    private <T,R> Optional<R> optMap(Optional<T> in, Function<T, Optional<R>> fn) {
+        return in.map(fn::apply).orElse(Optional.empty());
+    }
+
+    private Clubber findClubber(ClubApplication app, String id) {
+        return app.getProgram().getPersonManager()
+                        .lookup(id)
+                        .orElseThrow(IllegalArgumentException::new)
+                        .asClubber()
+                        .orElseThrow(IllegalArgumentException::new);
     }
 
 }
