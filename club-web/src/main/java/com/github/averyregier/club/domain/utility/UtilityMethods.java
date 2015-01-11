@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.URLDecoder;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -120,5 +121,9 @@ public class UtilityMethods {
             }
         }
         return null;
+    }
+
+    public static <T,R> Optional<R> optMap(Optional<T> in, Function<T, Optional<R>> fn) {
+        return in.map(fn::apply).orElse(Optional.empty());
     }
 }

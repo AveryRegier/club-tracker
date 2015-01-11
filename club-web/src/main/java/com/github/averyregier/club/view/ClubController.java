@@ -7,6 +7,7 @@ import com.github.averyregier.club.domain.club.Clubber;
 import com.github.averyregier.club.domain.club.ClubberRecord;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.program.Section;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.ModelAndView;
@@ -16,7 +17,6 @@ import spark.template.freemarker.FreeMarkerEngine;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 import static com.github.averyregier.club.domain.utility.UtilityMethods.decode;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.map;
@@ -104,13 +104,9 @@ public class ClubController extends ModelMaker {
 
     private ClubberRecord getClubberRecord(Request request, Clubber clubber) {
         String sectionId = request.params(":sectionId");
-        Optional<Section> section = optMap(clubber.getClub(),
+        Optional<Section> section = UtilityMethods.optMap(clubber.getClub(),
                 c -> c.getCurriculum().lookup(decode(sectionId)));
         return clubber.getRecord(section).orElseThrow(IllegalArgumentException::new);
-    }
-
-    private <T,R> Optional<R> optMap(Optional<T> in, Function<T, Optional<R>> fn) {
-        return in.map(fn::apply).orElse(Optional.empty());
     }
 
     private Clubber findClubber(ClubApplication app, String id) {
