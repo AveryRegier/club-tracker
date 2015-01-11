@@ -56,6 +56,12 @@ public class ClubberRecordTest {
     }
 
     @Test
+    public void signingWithEmptyNote() {
+        ClubberRecord classUnderTest = createClubberRecord(book.getSectionGroups().get(0).getSections().get(2));
+        assertSigning(classUnderTest, "", null);
+    }
+
+    @Test
     public void lastSectionSignedWinsAward() {
         assertGroupCompleted(1);
     }
@@ -125,14 +131,22 @@ public class ClubberRecordTest {
     }
 
     private Signing assertSigning(ClubberRecord record) {
+        return assertSigning(record, "Well Done!");
+    }
+
+    private Signing assertSigning(ClubberRecord record, String note) {
+        return assertSigning(record, note, note);
+    }
+
+    private Signing assertSigning(ClubberRecord record, String note, String expectedNote) {
         assertFalse(record.getSigning().isPresent());
-        Signing signing = record.sign(me, "Well Done!");
+        Signing signing = record.sign(me, note);
         assertNotNull(signing);
         assertTrue(record.getSigning().isPresent());
-        assertEquals(record.getSigning().get(), signing);
-        assertEquals(signing.by(), me);
-        assertEquals(signing.getDate(), LocalDate.now());
-        assertEquals(signing.getNote(), "Well Done!");
+        assertEquals(signing, record.getSigning().get());
+        assertEquals(me, signing.by());
+        assertEquals(LocalDate.now(), signing.getDate());
+        assertEquals(expectedNote, signing.getNote());
         return signing;
     }
 

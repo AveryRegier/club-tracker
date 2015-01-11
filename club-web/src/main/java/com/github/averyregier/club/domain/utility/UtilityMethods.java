@@ -111,4 +111,14 @@ public class UtilityMethods {
             return string;
         }
     }
+
+    public static String killWhitespace(String s) {
+        if(s != null) {
+            s = s.trim();
+            if(s.length() > 0) {
+                return s;
+            }
+        }
+        return null;
+    }
 }

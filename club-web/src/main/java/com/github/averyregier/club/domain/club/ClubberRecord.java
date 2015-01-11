@@ -5,6 +5,7 @@ import com.github.averyregier.club.domain.program.Catalogued;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionHolder;
 import com.github.averyregier.club.domain.utility.Named;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -53,7 +54,7 @@ public abstract class ClubberRecord {
 
         public RecordSigning(Listener byListener, String note) {
             this.byListener = byListener;
-            this.note = note;
+            this.note = UtilityMethods.killWhitespace(note);
         }
 
         @Override
