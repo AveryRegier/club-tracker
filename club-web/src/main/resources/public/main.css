@@ -13,12 +13,14 @@ body {
     margin-left: 10px;
 }
 label {
+    cursor: pointer;
+    cursor: hand;
+}
+.inputGroup label {
     display: inline-block;
     float: left;
     clear: left;
     width: 150px;
-    cursor: pointer;
-    cursor: hand;
 }
 input, select, button, .staticField {
     font-family: 'Open Sans', Arial, Helvetica, sans-serif;
@@ -63,4 +65,45 @@ button {
     list-style-type: none;
     margin: 0;
     padding: 0;
+}
+
+.tabs {
+  position: relative;
+  min-height: 90vh; /* This part sucks */
+  clear: both;
+  margin: 25px 0;
+}
+.tab {
+  float: left;
+}
+.tab label {
+  background: #eee;
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-left: -1px;
+  position: relative;
+  left: 1px;
+  line-height: 100%;
+}
+.tab [type=radio] {
+  display: none;
+}
+.content {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  background: white;
+  right: 0;
+  bottom: 0;
+  padding: 20px;
+  border: 1px solid #ccc;
+  overflow: auto;
+}
+[type=radio]:checked ~ label {
+  background: white;
+  border-bottom: 1px solid white;
+  z-index: 2;
+}
+[type=radio]:checked ~ label ~ .content {
+  z-index: 1;
 }
