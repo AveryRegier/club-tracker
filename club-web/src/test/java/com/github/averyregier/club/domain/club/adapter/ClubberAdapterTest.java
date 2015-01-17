@@ -179,6 +179,4 @@ public class ClubberAdapterTest {
     private Stream<Section> getSectionStream(List<ClubberRecord> nextSections) {
         return nextSections.stream().map(r->r.getSection());
     }
-
-
 }

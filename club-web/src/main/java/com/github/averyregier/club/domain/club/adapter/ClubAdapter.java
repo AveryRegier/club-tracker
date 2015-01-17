@@ -4,10 +4,8 @@ import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.Curriculum;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
 * Created by avery on 9/26/14.
@@ -70,5 +68,10 @@ abstract class ClubAdapter extends ClubGroupAdapter implements Club {
         ClubLeaderAdapter leader = new ClubLeaderAdapter(person);
         leader.setClub(this);
         return leader;
+    }
+
+    @Override
+    public Collection<AwardPresentation> getAwardsNotYetPresented() {
+        return getClubbers().stream().flatMap(c->c.getAwards().stream()).collect(Collectors.toList());
     }
 }
