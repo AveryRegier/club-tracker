@@ -10,6 +10,7 @@ import com.github.averyregier.club.domain.utility.UtilityMethods;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -85,9 +86,10 @@ public abstract class ClubberRecord {
         }
 
         private class AwardPresentationAdapter implements AwardPresentation {
-
+            private final String id = UUID.randomUUID().toString();
             private final Award award;
             private final Optional<Catalogued> token;
+            private Ceremony ceremony;
 
             public AwardPresentationAdapter(Award award) {
                 this.award = award;
@@ -111,7 +113,7 @@ public abstract class ClubberRecord {
 
             @Override
             public Ceremony presentedAt() {
-                return null;
+                return ceremony;
             }
 
             @Override
@@ -119,10 +121,25 @@ public abstract class ClubberRecord {
                 return token;
             }
 
+            @Override
+            public void presentAt(Ceremony ceremony) {
+                this.ceremony = ceremony;
+            }
+
             private Optional<Catalogued> select() {
                 return Optional.ofNullable(award.select(c->getClubber().getAwards().stream()
                         .filter(a -> a.token().isPresent())
                         .allMatch(a -> !a.token().get().equals(c))));
+            }
+
+            @Override
+            public String getId() {
+                return id;
+            }
+
+            @Override
+            public String getShortCode() {
+                return award.getName();
             }
         }
     }

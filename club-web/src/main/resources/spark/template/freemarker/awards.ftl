@@ -7,11 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+    <form method="post">
     <fieldset class="inputGroup">
         <legend class="inputGroupLabel">${club.shortName} Awards</legend>
         <div>
             <table>
                 <thead>
+                <th></th>
                 <th>Name</th>
                 <th>Accomplishment</th>
                 <th>Award</th>
@@ -19,18 +21,26 @@
                 <tbody>
                 <#list club.awardsNotYetPresented as presentation>
                     <tr>
-                        <td>${presentation.to().name.fullName}</td>
-                        <td>${presentation.forAccomplishment().name}</td>
+                        <td><input type="checkbox" name="award" id="${presentation.id}" value="${presentation.id}"></td>
                         <td>
+                            <label for="${presentation.id}">${presentation.to().name.fullName}</label></td>
+                        <td><label for="${presentation.id}">${presentation.forAccomplishment().name}</label></td>
+                        <td>
+                            <label for="${presentation.id}">
                             <#if !presentation.token().isPresent()>
                                 ${presentation.token().get().name}
                             </#if>
+                            </label>
                         </td>
                     </tr>
                 </#list>
                 </tbody>
             </table>
+            <div class="actions">
+                <button name="submit" type='submit' value="submit">Mark Presented</button>
+            </div>
         </div>
     </fieldset>
+    </form>
 </body>
 </html>

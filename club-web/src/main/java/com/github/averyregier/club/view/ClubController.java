@@ -2,10 +2,8 @@ package com.github.averyregier.club.view;
 
 import com.github.averyregier.club.application.ClubApplication;
 import com.github.averyregier.club.domain.User;
-import com.github.averyregier.club.domain.club.Club;
-import com.github.averyregier.club.domain.club.Clubber;
-import com.github.averyregier.club.domain.club.ClubberRecord;
-import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.club.adapter.CeremonyAdapter;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.slf4j.Logger;
@@ -14,10 +12,9 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.template.freemarker.FreeMarkerEngine;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
+import static com.github.averyregier.club.domain.utility.UtilityMethods.asLinkedSet;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.decode;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.map;
 import static spark.Spark.*;
@@ -67,6 +64,21 @@ public class ClubController extends ModelMaker {
             return null;
         });
 
+        before("/protected/club/:club/awards", (request, response)-> {
+            if(request.requestMethod().equalsIgnoreCase("POST")){
+                Optional<Club> club = app.getProgram().lookupClub(request.params(":club"));
+                if(club.isPresent()) {
+                    HashSet<String> awards = asLinkedSet(request.queryMap("award").values());
+                    Ceremony ceremony = new CeremonyAdapter();
+                    club.get().getAwardsNotYetPresented().stream()
+                        .filter(a -> awards.contains(a.getId()))
+                        .forEach(a -> a.presentAt(ceremony));
+                }
+                response.redirect(request.url());
+                halt();
+            }
+        });
+
         get("/protected/club/:club/awards", (request, response) -> {
             Optional<Club> club = app.getProgram().lookupClub(request.params(":club"));
             if(club.isPresent()) {
@@ -112,6 +124,16 @@ public class ClubController extends ModelMaker {
             model.put("program", app.getProgram());
             return new ModelAndView(model, "clubberSection.ftl");
         }, new FreeMarkerEngine());
+    }
+
+    private void markPresented(Optional<Club> club, Ceremony ceremony, String clubberId, String award) {
+        club.get().getProgram().getPersonManager().lookup(clubberId).ifPresent(p->{
+            p.asClubber().ifPresent(c->{
+                c.getAwards().stream()
+                        .filter(a -> a.forAccomplishment().getName().equals(award))
+                        .forEach(a -> a.presentAt(ceremony));
+            });
+        });
     }
 
     private ClubberRecord getClubberRecord(Request request, Clubber clubber) {
