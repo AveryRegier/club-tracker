@@ -33,7 +33,9 @@ public class FastSetup {
 
                     registerDoeFamily(user, program);
 
-                    registerSmithFamily(app);
+                    Family family = registerSmithFamily(app);
+
+                    signSomeSections(user, family);
                 }
             }
             goToMy(request, response, user);
@@ -42,7 +44,13 @@ public class FastSetup {
 
     }
 
-    private void registerSmithFamily(ClubApplication app) {
+    private void signSomeSections(User user, Family family) {
+        family.getClubbers().stream().flatMap(c->c
+                .getNextSections(10).stream())
+                .forEach(r->r.sign(user.asListener().get(), ""));
+    }
+
+    private Family registerSmithFamily(ClubApplication app) {
         Profile profile = new Profile();
         profile.setFirstName("Mary");
         profile.setLastName("Smith");
@@ -59,7 +67,7 @@ public class FastSetup {
         fields.put("child1.childName.surname", "Smith");
         fields.put("child1.gender", "MALE");
         fields.put("child1.ageGroup", "THIRD_GRADE");
-        Family family = program.updateRegistrationForm(fields).register(user);
+        return program.updateRegistrationForm(fields).register(user);
     }
 
     private void registerDoeFamily(User user, Program program) {
