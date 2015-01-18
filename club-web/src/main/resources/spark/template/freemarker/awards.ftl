@@ -13,15 +13,17 @@
         <div>
             <table>
                 <thead>
-                <th></th>
-                <th>Name</th>
-                <th>Accomplishment</th>
-                <th>Award</th>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Accomplishment</th>
+                    <th>Award</th>
                 </thead>
                 <tbody>
                 <#list club.awardsNotYetPresented as presentation>
-                    <tr>
-                        <td><input type="checkbox" name="award" id="${presentation.id}" value="${presentation.id}"></td>
+                    <tr class="selectable" id="tr.${presentation.id}">
+                        <td><input type="checkbox" name="award" id="${presentation.id}" value="${presentation.id}"
+                                onchange="var d = document.getElementById('tr.${presentation.id}');
+                                          d.className = this.checked ? 'selected selectable' : 'selectable';"></td>
                         <td>
                             <label for="${presentation.id}">${presentation.to().name.fullName}</label></td>
                         <td><label for="${presentation.id}">${presentation.forAccomplishment().name}</label></td>
@@ -29,6 +31,7 @@
                             <label for="${presentation.id}">
                             <#if !presentation.token().isPresent()>
                                 ${presentation.token().get().name}
+                            <#else>&nbsp;
                             </#if>
                             </label>
                         </td>

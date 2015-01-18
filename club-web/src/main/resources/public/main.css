@@ -107,3 +107,11 @@ button {
 [type=radio]:checked ~ label ~ .content {
   z-index: 1;
 }
+
+tr.selectable:hover {
+    background: WhiteSmoke;
+}
+
+tr.selected {
+    background: MintCream;
+}
