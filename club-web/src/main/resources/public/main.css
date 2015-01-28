@@ -1,3 +1,24 @@
+@media (max-width: 1000px) {
+    body {
+        margin: 0px;
+    }
+    header {
+        margin: 10px;
+    }
+    .list {
+        width: 100%;
+    }
+    .list-item-title {
+        display: block;
+    }
+    .list-item-detail {
+        display: block;
+    }
+    .list-item-checkbox {
+        padding-left: 10px;
+    }
+}
+
 body {
     font-family: 'Open Sans', Arial, Helvetica, sans-serif;
     line-height: 150%;
@@ -27,7 +48,7 @@ input, select, button, .staticField {
     display: inline-block;
     float: initial;
 }
-.actions{
+.actions {
     display: inline-block;
     float: left;
     clear: left;
@@ -108,10 +129,51 @@ button {
   z-index: 1;
 }
 
-tr.selectable:hover {
-    background: WhiteSmoke;
+@media (min-width: 1000px) {
+    .selectable:hover {
+        background: WhiteSmoke;
+    }
+}
+.selected {
+    background: MintCream;
 }
 
-tr.selected {
-    background: MintCream;
+.list {
+    display: table;
+    border-width: 1px;
+    border-collapse: collapse;
+}
+.list-item {
+    display: table-row;
+    text-align: left;
+}
+.list-item-content {
+    display: table-cell;
+    width = 100%;
+    border-bottom: 1px solid black !important;
+}
+.list-item-title {
+    font-weight: bold;
+}
+.list-item-detail {
+}
+.list-item-checkbox {
+    display: table-cell;
+    border-bottom: 1px solid black !important;
+}
+.list-header {
+    display: table-header-group;
+}
+.list-item-content ~ button {
+    align: right;
+}
+button.primary {
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+    background-color: #60b044;
+    background-image: -webkit-linear-gradient(#8add6d, #60b044);
+    background-image: linear-gradient(#8add6d, #60b044);
+    background-repeat: repeat-x;
+    border-color: #5ca941;
+    float: right;
 }

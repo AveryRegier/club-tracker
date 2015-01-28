@@ -8,42 +8,31 @@
 </head>
 <body>
     <form method="post">
-    <fieldset class="inputGroup">
-        <legend class="inputGroupLabel">${club.shortName} Awards</legend>
-        <div>
-            <table>
-                <thead>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Accomplishment</th>
-                    <th>Award</th>
-                </thead>
-                <tbody>
-                <#list club.awardsNotYetPresented as presentation>
-                    <tr class="selectable" id="tr.${presentation.id}">
-                        <td><input type="checkbox" name="award" id="${presentation.id}" value="${presentation.id}"
-                                onchange="var d = document.getElementById('tr.${presentation.id}');
-                                          d.className = this.checked ? 'selected selectable' : 'selectable';"></td>
-                        <td>
-                            <label for="${presentation.id}">${presentation.to().name.fullName}</label></td>
-                        <td><label for="${presentation.id}">${presentation.forAccomplishment().name}</label></td>
-                        <td>
-                            <label for="${presentation.id}">
-                            <#if !presentation.token().isPresent()>
-                                ${presentation.token().get().name}
-                            <#else>&nbsp;
-                            </#if>
-                            </label>
-                        </td>
-                    </tr>
-                </#list>
-                </tbody>
-            </table>
-            <div class="actions">
-                <button name="submit" type='submit' value="submit">Mark Presented</button>
-            </div>
+        <header>${club.shortName} Awards</header>
+        <div class="list">
+            <header class="list-header">
+                <div class="list-item-checkbox"></div>
+                <nav class="list-item-content">
+                    <button name="submit" type='submit' value="submit" class="primary">Mark Presented</button>
+                </nav>
+            </header>
+            <#list club.awardsNotYetPresented as presentation>
+                <label for="${presentation.id}" class="list-item selectable" id="label.${presentation.id}">
+                    <span class="list-item-checkbox">
+                       <input type="checkbox" name="award" id="${presentation.id}" value="${presentation.id}"
+                              onchange="var d = document.getElementById('label.${presentation.id}');
+                                  d.className = this.checked ? 'list-item selected selectable' : 'list-item selectable';">
+                    </span>
+                    <div class="list-item-content">
+                        <div class="list-item-title">${presentation.to().name.fullName}</div>
+                        <div class="list-item-detail">${presentation.forAccomplishment().name}</div>
+                        <#if !presentation.token().isPresent()>
+                            <div class="list-item-detail">${presentation.token().get().name}</div>
+                        </#if>
+                    </div>
+                </label>
+            </#list>
         </div>
-    </fieldset>
     </form>
 </body>
 </html>
