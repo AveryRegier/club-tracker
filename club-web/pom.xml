@@ -345,7 +345,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <file>target/classes/config.properties</file>
+                    <file>${project.build.outputDirectory}/config.properties</file>
                     <replacements>
                         <replacement>
                             <token>replacement-driver</token>
