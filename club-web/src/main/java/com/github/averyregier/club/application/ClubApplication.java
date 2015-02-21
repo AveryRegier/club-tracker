@@ -1,5 +1,6 @@
 package com.github.averyregier.club.application;
 
+import com.github.averyregier.club.broker.Connector;
 import com.github.averyregier.club.domain.UserManager;
 import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
@@ -7,9 +8,9 @@ import com.github.averyregier.club.rest.RestAPI;
 import com.github.averyregier.club.view.*;
 import spark.servlet.SparkApplication;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import static spark.Spark.exception;
 import static spark.SparkBase.setPort;
@@ -23,14 +24,18 @@ public class ClubApplication implements SparkApplication {
             setPort(Integer.parseInt(args[0]));
         }
         new ClubApplication().init();
-        createDatabaseConnection();
+    //    connect();
+
     }
 
     private final UserManager userManager = new UserManager();
     private Program program;
+    private Connector connector;
 
     @Override
     public void init() {
+        loadConfig();
+
         exception(Exception.class, (e, request, response) -> {
             response.status(404);
             response.body(e.getLocalizedMessage());
@@ -47,17 +52,18 @@ public class ClubApplication implements SparkApplication {
         new ClubController().init(this);
     }
 
-    public UserManager getUserManager() {
-        return userManager;
+    private void loadConfig() {
+        try {
+            Properties config = new Properties();
+            config.load(getClass().getResourceAsStream("config.properties"));
+            connector = new Connector(config);
+        } catch (IOException|ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static Connection createDatabaseConnection()
-            throws SQLException, ClassNotFoundException {
-        String driver = "org.apache.derby.jdbc.EmbeddedDriver";
-        Class.forName(driver);
-        String url = "jdbc:derby:clubDB;create=true";
-        Connection c = DriverManager.getConnection(url);
-        return c;
+    public UserManager getUserManager() {
+        return userManager;
     }
 
     public Program setupProgram(String organizationName, String curriculum, String acceptLanguage) {
@@ -68,5 +74,9 @@ public class ClubApplication implements SparkApplication {
 
     public Program getProgram() {
         return program;
+    }
+
+    public Connector getConnector() {
+        return connector;
     }
 }
