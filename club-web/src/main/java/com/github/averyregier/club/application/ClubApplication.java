@@ -1,5 +1,6 @@
 package com.github.averyregier.club.application;
 
+import com.github.averyregier.club.broker.ConfiguredConnector;
 import com.github.averyregier.club.broker.Connector;
 import com.github.averyregier.club.domain.UserManager;
 import com.github.averyregier.club.domain.club.Program;
@@ -56,7 +57,7 @@ public class ClubApplication implements SparkApplication {
         try {
             Properties config = new Properties();
             config.load(getClass().getResourceAsStream("config.properties"));
-            connector = new Connector(config);
+            connector = new ConfiguredConnector(config);
         } catch (IOException|ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

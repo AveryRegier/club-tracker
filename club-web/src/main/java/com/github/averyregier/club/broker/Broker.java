@@ -12,9 +12,9 @@ import java.util.function.Consumer;
  * Created by avery on 2/20/15.
  */
 public abstract class Broker<T> {
-    protected final Connector connector;
+    protected final ConfiguredConnector connector;
 
-    protected Broker(Connector connector) {
+    protected Broker(ConfiguredConnector connector) {
         this.connector = connector;
     }
 
