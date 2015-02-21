@@ -338,7 +338,7 @@
                 <version>1.5.3</version>
                 <executions>
                     <execution>
-                        <phase>prepare-package</phase>
+                        <phase>process-resources</phase>
                         <goals>
                             <goal>replace</goal>
                         </goals>
