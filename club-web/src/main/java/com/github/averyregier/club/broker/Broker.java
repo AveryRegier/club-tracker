@@ -12,9 +12,9 @@ import java.util.function.Consumer;
  * Created by avery on 2/20/15.
  */
 public abstract class Broker<T> {
-    protected final ConfiguredConnector connector;
+    protected final Connector connector;
 
-    protected Broker(ConfiguredConnector connector) {
+    protected Broker(Connector connector) {
         this.connector = connector;
     }
 
@@ -24,7 +24,7 @@ public abstract class Broker<T> {
 
     private void execute(Consumer<DSLContext> c) {
         try (Connection connection = connector.connect()) {
-            DSLContext create = DSL.using(connection, connector.dialect);
+            DSLContext create = DSL.using(connection, connector.getDialect());
 
             c.accept(create);
         } catch (SQLException e) {

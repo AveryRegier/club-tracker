@@ -23,7 +23,13 @@ public class ConfiguredConnector implements Connector {
         Class.forName(driver);
     }
 
-    Connection connect() throws SQLException {
+    @Override
+    public Connection connect() throws SQLException {
         return DriverManager.getConnection(url, user, password);
+    }
+
+    @Override
+    public SQLDialect getDialect() {
+        return dialect;
     }
 }
