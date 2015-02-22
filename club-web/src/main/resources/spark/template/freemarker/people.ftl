@@ -18,7 +18,9 @@
                         ${person.asListener().get().getClub().get().shortName}
                     </#if>
                 <#else>
-                    ${person.asClubber().get().getClub().get().shortName}
+                    <#if person.asClubber().get().getClub().isPresent()>
+                        ${person.asClubber().get().getClub().get().shortName}
+                    </#if>
                 </#if>
                 </td>
             </tr>
