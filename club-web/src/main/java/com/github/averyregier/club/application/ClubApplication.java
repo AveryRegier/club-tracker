@@ -10,6 +10,7 @@ import com.github.averyregier.club.view.*;
 import spark.servlet.SparkApplication;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -56,8 +57,11 @@ public class ClubApplication implements SparkApplication {
     private void loadConfig() {
         try {
             Properties config = new Properties();
-            config.load(getClass().getResourceAsStream("config.properties"));
-            connector = new ConfiguredConnector(config);
+            InputStream stream = getClass().getResourceAsStream("config.properties");
+            if(stream != null) {
+                config.load(stream);
+                connector = new ConfiguredConnector(config);
+            }
         } catch (IOException|ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
