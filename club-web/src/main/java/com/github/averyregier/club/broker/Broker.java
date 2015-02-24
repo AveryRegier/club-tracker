@@ -37,4 +37,8 @@ public abstract class Broker<T> {
     }
 
     protected abstract void persist(T thing, DSLContext create);
+
+    protected void fail(String reason) {
+        throw new DataAccessException(reason);
+    }
 }
