@@ -9,6 +9,8 @@ import com.github.averyregier.club.rest.RestAPI;
 import com.github.averyregier.club.view.*;
 import spark.servlet.SparkApplication;
 
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -20,11 +22,13 @@ import static spark.SparkBase.setPort;
 /**
  * Created by avery on 8/30/14.
  */
-public class ClubApplication implements SparkApplication {
+public class ClubApplication implements SparkApplication, ServletContextListener {
     public static void main(String... args) throws SQLException, ClassNotFoundException {
         if(args.length > 0) {
             setPort(Integer.parseInt(args[0]));
         }
+        spark.Spark.staticFileLocation("/public");
+
         new ClubApplication().init();
     //    connect();
 
@@ -36,6 +40,7 @@ public class ClubApplication implements SparkApplication {
 
     @Override
     public void init() {
+
         loadConfig();
 
         exception(Exception.class, (e, request, response) -> {
@@ -44,7 +49,6 @@ public class ClubApplication implements SparkApplication {
             e.printStackTrace();
         });
 
-        spark.Spark.staticFileLocation("/public");
 
         new FastSetup().init(this);
         new Login().init(this);
@@ -57,7 +61,7 @@ public class ClubApplication implements SparkApplication {
     private void loadConfig() {
         try {
             Properties config = new Properties();
-            InputStream stream = getClass().getResourceAsStream("config.properties");
+            InputStream stream = getClass().getResourceAsStream("/config.properties");
             if(stream != null) {
                 config.load(stream);
                 connector = new ConfiguredConnector(config);
@@ -83,5 +87,15 @@ public class ClubApplication implements SparkApplication {
 
     public Connector getConnector() {
         return connector;
+    }
+
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        spark.Spark.staticFileLocation("/public");
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+
     }
 }

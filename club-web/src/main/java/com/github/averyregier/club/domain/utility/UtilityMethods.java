@@ -75,7 +75,7 @@ public class UtilityMethods {
 
     public static Map<String, String> transformToSingleValueMap(Map<String, String[]> map) {
         return map.entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()[0]));
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue()[0]));
     }
 
     public static <K,V> MapBuilder<K,V> map(K firstKey, V firstValue) {

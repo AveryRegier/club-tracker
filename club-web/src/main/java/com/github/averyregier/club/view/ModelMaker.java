@@ -17,6 +17,7 @@ public class ModelMaker {
         return kvHashMap;
     }
 
+    @SuppressWarnings("unchecked")
     protected User getUser(Request request) {
         return ((Optional<User>) request.attribute("user")).get();
     }

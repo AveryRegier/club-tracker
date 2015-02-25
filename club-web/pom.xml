@@ -25,7 +25,7 @@
         <flyway.url>jdbc:hsqldb:file:clubDB/db</flyway.url>
         <flyway.driver>org.hsqldb.jdbcDriver</flyway.driver>
         <jooq.generator.database.name>org.jooq.util.hsqldb.HSQLDBDatabase</jooq.generator.database.name>
-        <jooq.dialect>HSSQLDB</jooq.dialect>
+        <jooq.dialect>HSQLDB</jooq.dialect>
         <flyway.user></flyway.user>
         <flyway.password></flyway.password>
         <flyway.placeholders.create_schema>CREATE SCHEMA ${schema} AUTHORIZATION DBA;</flyway.placeholders.create_schema>
@@ -191,10 +191,7 @@
                 <configuration>
                     <stopPort>9967</stopPort>
                     <stopKey>foo</stopKey>
-                    <webApp>
-                        <war>${basedir}/target/club.war</war>
-                        <contextPath>/club</contextPath>
-                    </webApp>
+                    <contextPath>/</contextPath>
                 </configuration>
             </plugin>
             <plugin>
@@ -282,6 +279,24 @@
                         </target>
                     </generator>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.9.1</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/jooq/</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
