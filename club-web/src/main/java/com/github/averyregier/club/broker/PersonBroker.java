@@ -44,7 +44,7 @@ public class PersonBroker extends Broker<Person> {
                 .build();
     }
 
-    private String nameField(Person person, Function<Name, String> getFriendlyName) {
-        return Optional.ofNullable(person.getName()).map(getFriendlyName).orElse(null);
+    private String nameField(Person person, Function<Name, String> fn) {
+        return Optional.ofNullable(person.getName()).map(fn).orElse(null);
     }
 }
