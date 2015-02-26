@@ -126,16 +126,6 @@ public class ClubController extends ModelMaker {
         }, new FreeMarkerEngine());
     }
 
-    private void markPresented(Optional<Club> club, Ceremony ceremony, String clubberId, String award) {
-        club.get().getProgram().getPersonManager().lookup(clubberId).ifPresent(p->{
-            p.asClubber().ifPresent(c->{
-                c.getAwards().stream()
-                        .filter(a -> a.forAccomplishment().getName().equals(award))
-                        .forEach(a -> a.presentAt(ceremony));
-            });
-        });
-    }
-
     private ClubberRecord getClubberRecord(Request request, Clubber clubber) {
         String sectionId = request.params(":sectionId");
         Optional<Section> section = UtilityMethods.optMap(clubber.getClub(),
@@ -150,5 +140,4 @@ public class ClubController extends ModelMaker {
                         .asClubber()
                         .orElseThrow(IllegalArgumentException::new);
     }
-
 }
