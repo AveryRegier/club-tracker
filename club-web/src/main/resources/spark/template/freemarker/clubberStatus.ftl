@@ -10,7 +10,7 @@
             <tr>
                 <td>${clubber.name.fullName}</td>
                 <#if clubber.club.isPresent()>
-                    <td>${clubber.club.get().shortName}</td>
+                    <td>${clubber.club.get().shortCode}</td>
                 <#else>
                     <td></td>
                 </#if>

@@ -29,8 +29,13 @@ abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     }
 
     @Override
-    public String getShortName() {
+    public String getShortCode() {
         return series.getShortCode();
+    }
+
+    @Override
+    public String getId() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -55,7 +60,7 @@ abstract class ClubAdapter extends ClubGroupAdapter implements Club {
 
     @Override
     public int compareTo(Club o) {
-        return getShortName().compareTo(o.getShortName());
+        return getShortCode().compareTo(o.getShortCode());
     }
 
     void addClubber(ClubberAdapter clubber) {

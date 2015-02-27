@@ -56,7 +56,7 @@ public class ClubController extends ModelMaker {
                         club.get().recruit(person.get());
                     }
                 }
-                response.redirect("/protected/club/"+club.get().getShortName());
+                response.redirect("/protected/club/"+club.get().getShortCode());
             } else {
                 response.redirect("/protected/program");
                 return null;
@@ -111,12 +111,12 @@ public class ClubController extends ModelMaker {
             }
         });
 
-        get("/protected/clubbers/:personId/sections/:sectionId", (request, response)->{
+        get("/protected/clubbers/:personId/sections/:sectionId", (request, response) -> {
             User user = getUser(request);
             String id = request.params(":personId");
             Clubber clubber = findClubber(app, id);
             ClubberRecord record = getClubberRecord(request, clubber);
-            Map<String, Object> model = map("me", (Object)user)
+            Map<String, Object> model = map("me", (Object) user)
                     .put("clubber", clubber)
                     .put("section", record.getSection())
                     .put("record", record)

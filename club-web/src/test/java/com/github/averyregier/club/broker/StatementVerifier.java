@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Created by avery on 2/22/15.
@@ -66,5 +67,11 @@ public class StatementVerifier {
 
     public Object get(int index) {
         return this.values.get(index);
+    }
+
+    void assertNullFields(int start, int end) {
+        for (int i = start; i <= end; i++) {
+            assertNull(Integer.toString(i), get(i));
+        }
     }
 }

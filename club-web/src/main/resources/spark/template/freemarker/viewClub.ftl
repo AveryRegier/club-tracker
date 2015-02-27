@@ -12,7 +12,7 @@
         <div class="inputGroupFields">
             <div class="inputField">
                 <label>Organization Name:</label>
-                <div class="staticField">${club.shortName}</div>
+                <div class="staticField">${club.shortCode}</div>
             </div>
             <div class="inputField">
                 <label>Program:</label>

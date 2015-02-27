@@ -13,7 +13,7 @@ import java.util.Set;
 public interface Club extends ClubGroup, Comparable<Club> {
     public Set<Policy> getPolicies();
     public Optional<Program> asProgram();
-    public String getShortName();
+    public String getShortCode();
     public ClubLeader assign(Person person, ClubLeader.LeadershipRole role);
     public Curriculum getCurriculum();
 

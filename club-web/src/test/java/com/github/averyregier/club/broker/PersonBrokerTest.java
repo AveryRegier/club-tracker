@@ -26,10 +26,10 @@ public class PersonBrokerTest {
         MockDataProvider provider = new MockDataProviderBuilder()
                 .updateCount(1)
                 .statement(StatementType.MERGE, (s) -> assertUUID(person, s))
-                .statement(StatementType.UPDATE, (s) -> assertNullFields(s, 0, 6))
+                .statement(StatementType.UPDATE, (s) -> s.assertNullFields(0, 6))
                 .statement(StatementType.INSERT, (s) -> {
                     assertUUID(person, s);
-                    assertNullFields(s, 1, 7);
+                    s.assertNullFields(1, 7);
                 })
                 .build();
 
@@ -106,12 +106,6 @@ public class PersonBrokerTest {
 
     private void assertUUID(PersonAdapter person, StatementVerifier s) {
         assertEquals(person.getId(), new String(s.get(PERSON.ID)));
-    }
-
-    private void assertNullFields(StatementVerifier s, int start, int end) {
-        for (int i = start; i <= end; i++) {
-            assertNull(Integer.toString(i), s.get(i));
-        }
     }
 
     private void assertPersonFields(PersonAdapter thing, StatementVerifier s) {

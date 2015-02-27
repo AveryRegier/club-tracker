@@ -1,6 +1,6 @@
 
 <div>
-    <form action="/protected/club/${club.shortName}/listeners" method="POST">
+    <form action="/protected/club/${club.shortCode}/listeners" method="POST">
     <table>
         <thead>
             <th>Name</th>
@@ -15,11 +15,11 @@
                     <#if !person.asListener().isPresent()>
                         <input type="checkbox" name="id" value="${person.id}">Make Listener
                     <#else>
-                        ${person.asListener().get().getClub().get().shortName}
+                        ${person.asListener().get().getClub().get().shortCode}
                     </#if>
                 <#else>
                     <#if person.asClubber().get().getClub().isPresent()>
-                        ${person.asClubber().get().getClub().get().shortName}
+                        ${person.asClubber().get().getClub().get().shortCode}
                     </#if>
                 </#if>
                 </td>

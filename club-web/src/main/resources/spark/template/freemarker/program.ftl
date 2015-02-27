@@ -18,7 +18,7 @@
         <div class="inputGroupFields">
             <div class="inputField">
                 <label for="organizationName">Organization Name:</label>
-                <input type="text" size="50" name="organizationName" id="organizationName" value="${program.shortName}"/>
+                <input type="text" size="50" name="organizationName" id="organizationName" value="${program.shortCode}"/>
             </div>
             <div class="inputField">
                 <label>Program:</label>
@@ -30,7 +30,7 @@
 
                     <UL>
                     <#list program.clubs as club>
-                        <LI>${club.shortName}</LI>
+                        <LI>${club.shortCode}</LI>
                     </#list>
                     </UL>
 

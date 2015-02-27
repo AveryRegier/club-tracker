@@ -101,7 +101,7 @@ public class RegistrationTest {
         assertTrue(clubber.getClub().isPresent());
         Club clubbersClub = clubber.getClub().get();
         assertTrue(program.getClubs().contains(clubbersClub));
-        assertEquals("TnT", clubbersClub.getShortName());
+        assertEquals("TnT", clubbersClub.getShortCode());
 //        assertTrue(clubber.getNextSection().isPresent());
 //        Section clubberSection = clubber.getNextSection().get();
 //        assertEquals(1, clubberSection.sequence());

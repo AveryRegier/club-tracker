@@ -193,7 +193,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     public Optional<Club> lookupClub(String shortCode) {
         if(shortCode.equals(this.organizationName)) return Optional.of(this);
         return clubs.stream()
-                .filter(c->shortCode.equals(c.getShortName()))
+                .filter(c->shortCode.equals(c.getShortCode()))
                 .findFirst()
                 .map(c->(Club)c);
     }
@@ -219,7 +219,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     }
 
     @Override
-    public String getShortName() {
+    public String getShortCode() {
         return organizationName;
     }
 

@@ -24,7 +24,7 @@ public class ProgramAdapterTest {
     @Test
     public void orgName() {
         ProgramAdapter classUnderTest = new ProgramAdapter(null, "An org name", null);
-        assertEquals("An org name", classUnderTest.getShortName());
+        assertEquals("An org name", classUnderTest.getShortCode());
     }
 
     @Test
@@ -45,7 +45,7 @@ public class ProgramAdapterTest {
         MasterCurriculum curriculum = new MasterCurriculum("foo", Collections.emptyList());
         classUnderTest.addClub(curriculum);
         assertFalse(classUnderTest.getClubs().isEmpty());
-        assertEquals("foo", classUnderTest.getClubs().iterator().next().getShortName());
+        assertEquals("foo", classUnderTest.getClubs().iterator().next().getShortCode());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class ProgramAdapterTest {
         assertTrue(clubber.getClub().isPresent());
         Club clubbersClub = clubber.getClub().get();
         assertTrue(program.getClubs().contains(clubbersClub));
-        assertEquals("TnT", clubbersClub.getShortName());
+        assertEquals("TnT", clubbersClub.getShortCode());
     }
 
     @Test

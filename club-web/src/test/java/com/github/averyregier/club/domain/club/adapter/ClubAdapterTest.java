@@ -35,7 +35,7 @@ public class ClubAdapterTest {
     public void testGetShortName() throws Exception {
         MasterCurriculum curriculum = new MasterCurriculum("a name", Collections.emptyList());
         Club classUnderTest = createClubAdapter(null, curriculum);
-        assertEquals("a name", classUnderTest.getShortName());
+        assertEquals("a name", classUnderTest.getShortCode());
     }
 
     @Test

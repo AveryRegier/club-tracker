@@ -32,19 +32,19 @@ public class PersonBroker extends Broker<Person> {
         }
     }
 
-    private Map<TableField<PersonRecord, String>, Object> mapFields(Person person) {
+    private Map<TableField<PersonRecord, ?>, Object> mapFields(Person person) {
         return JooqUtil.<PersonRecord>map()
-                .set(PERSON.GENDER, person.getGender().map(Enum::name).orElse(null))
+                .set(PERSON.GENDER, person.getGender().map(Enum::name))
                 .set(PERSON.FRIENDLY, nameField(person, Name::getFriendlyName))
                 .set(PERSON.GIVEN, nameField(person, Name::getGivenName))
                 .set(PERSON.SURNAME, nameField(person, Name::getSurname))
                 .set(PERSON.HONORIFIC, nameField(person, Name::getHonorificName))
                 .set(PERSON.TITLE, nameField(person, n -> n.getTitle().orElse(null)))
-                .set(PERSON.EMAIL, person.getEmail().orElse(null))
+                .set(PERSON.EMAIL, person.getEmail())
                 .build();
     }
 
-    private String nameField(Person person, Function<Name, String> fn) {
-        return Optional.ofNullable(person.getName()).map(fn).orElse(null);
+    private Optional<String> nameField(Person person, Function<Name, String> fn) {
+        return Optional.ofNullable(person.getName()).map(fn);
     }
 }

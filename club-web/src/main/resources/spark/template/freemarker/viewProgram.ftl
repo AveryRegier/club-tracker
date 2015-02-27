@@ -14,7 +14,7 @@
         <div class="inputGroupFields">
             <div class="inputField">
                 <label>Organization Name:</label>
-                <div class="staticField">${program.shortName}</div>
+                <div class="staticField">${program.shortCode}</div>
             </div>
             <div class="inputField">
                 <label>Program:</label>
@@ -26,7 +26,7 @@
 
                     <UL>
                     <#list program.clubs as club>
-                        <LI><a href="/protected/club/${club.shortName}">${club.shortName}</a></LI>
+                        <LI><a href="/protected/club/${club.shortCode}">${club.shortCode}</a></LI>
                     </#list>
                     </UL>
 

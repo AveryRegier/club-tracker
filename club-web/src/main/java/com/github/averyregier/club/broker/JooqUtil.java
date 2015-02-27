@@ -4,6 +4,7 @@ import org.jooq.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by avery on 2/19/15.
@@ -11,12 +12,12 @@ import java.util.Map;
 public class JooqUtil {
 
     public static class MapBuilder<R extends Record> {
-        private Map<TableField<R, String>, Object> map = new LinkedHashMap<>();
+        private Map<TableField<R, ?>, Object> map = new LinkedHashMap<>();
 
         /**
          * Set a value for a field in the <code>INSERT</code> statement.
          */
-        <T> MapBuilder<R> set(TableField<R, String> field, T value) {
+        <T> MapBuilder<R> set(TableField<R, T> field, T value) {
             map.put(field, value);
             return this;
         }
@@ -24,7 +25,15 @@ public class JooqUtil {
         /**
          * Set a value for a field in the <code>INSERT</code> statement.
          */
-        <T> MapBuilder<R> set(TableField<R, String> field, Field<T> value) {
+        <T> MapBuilder<R> set(TableField<R, T> field, Optional<T> value) {
+            map.put(field, value.orElse(null));
+            return this;
+        }
+
+        /**
+         * Set a value for a field in the <code>INSERT</code> statement.
+         */
+        <T> MapBuilder<R> set(TableField<R, T> field, Field<T> value) {
             map.put(field, value);
             return this;
         }
@@ -32,12 +41,12 @@ public class JooqUtil {
         /**
          * Set a value for a field in the <code>INSERT</code> statement.
          */
-        <T> MapBuilder<R> set(TableField<R, String> field, Select<? extends Record1<T>> value) {
+        <T> MapBuilder<R> set(TableField<R, T> field, Select<? extends Record1<T>> value) {
             map.put(field, value);
             return this;
         }
 
-        public Map<TableField<R, String>, Object> build() {
+        public Map<TableField<R, ?>, Object> build() {
             return map;
         }
 
