@@ -15,7 +15,6 @@ import java.util.function.Consumer;
 import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
 import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
 import static com.github.averyregier.club.db.tables.Club.CLUB;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by avery on 2/25/15.
@@ -82,6 +81,6 @@ public class ClubBrokerTest {
 
     private void assertFields(Club club, StatementVerifier s) {
         s.assertUUID(club.getParentGroup().orElse(null), CLUB.PARENT_CLUB_ID);
-        assertEquals(club.getCurriculum().getId(), s.get(CLUB.CURRICULUM));
+        s.assertFieldEquals(club.getCurriculum().getId(), CLUB.CURRICULUM);
     }
 }

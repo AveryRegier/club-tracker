@@ -110,13 +110,13 @@ public class PersonBrokerTest {
     }
 
     private void assertPersonFields(PersonAdapter thing, StatementVerifier s) {
-        assertEquals(thing.getGender().get().name(), s.get(PERSON.GENDER));
-        assertEquals(thing.getName().getFriendlyName(), s.get(PERSON.FRIENDLY));
-        assertEquals(thing.getName().getGivenName(), s.get(PERSON.GIVEN));
-        assertEquals(thing.getName().getSurname(), s.get(PERSON.SURNAME));
-        assertEquals(thing.getName().getHonorificName(), s.get(PERSON.HONORIFIC));
-        assertEquals(thing.getName().getTitle().get(), s.get(PERSON.TITLE));
-        assertEquals(thing.getEmail().get(), s.get(PERSON.EMAIL));
+        s.assertFieldEquals(thing.getGender().get().name(), PERSON.GENDER);
+        s.assertFieldEquals(thing.getName().getFriendlyName(), PERSON.FRIENDLY);
+        s.assertFieldEquals(thing.getName().getGivenName(), PERSON.GIVEN);
+        s.assertFieldEquals(thing.getName().getSurname(), PERSON.SURNAME);
+        s.assertFieldEquals(thing.getName().getHonorificName(), PERSON.HONORIFIC);
+        s.assertFieldEquals(thing.getName().getTitle().get(), PERSON.TITLE);
+        s.assertFieldEquals(thing.getEmail().get(), PERSON.EMAIL);
     }
 
     private PersonAdapter newPerson() {
