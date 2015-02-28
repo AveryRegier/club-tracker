@@ -35,6 +35,5 @@ public class ClubBroker extends Broker<Club> {
                 .set(CLUB.PARENT_CLUB_ID, club.getParentGroup().map(g -> g.getId().getBytes()).orElse(null))
                 .set(CLUB.CURRICULUM, club.getCurriculum().getId())
                 .build();
-
     }
 }

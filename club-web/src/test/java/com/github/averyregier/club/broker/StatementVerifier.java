@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
  * Created by avery on 2/22/15.
@@ -82,5 +80,9 @@ public class StatementVerifier {
         } else {
             assertNull(get(field));
         }
+    }
+
+    public <T> void assertFieldEquals(T value, Field<T> field) {
+        assertEquals(field.getName(), value, get(field));
     }
 }

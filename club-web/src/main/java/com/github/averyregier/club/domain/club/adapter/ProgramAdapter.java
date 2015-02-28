@@ -169,7 +169,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
 
     @Override
     public Locale getLocale() {
-        return Locale.forLanguageTag(acceptLanguage);
+        return acceptLanguage != null ? Locale.forLanguageTag(acceptLanguage) : null;
     }
 
     @Override
