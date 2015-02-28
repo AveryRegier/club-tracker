@@ -1,5 +1,6 @@
 package com.github.averyregier.club.broker;
 
+import com.github.averyregier.club.domain.utility.HasId;
 import org.jooq.Field;
 
 import java.util.ArrayList;
@@ -69,9 +70,17 @@ public class StatementVerifier {
         return this.values.get(index);
     }
 
-    void assertNullFields(int start, int end) {
-        for (int i = start; i <= end; i++) {
-            assertNull(Integer.toString(i), get(i));
+    void assertNullFields(Field<?>... fields) {
+        for(Field<?> field: fields) {
+            assertNull(field.getName(), get(field));
+        }
+    }
+
+    void assertUUID(HasId club, Field<byte[]> field) {
+        if(club != null) {
+            assertEquals(club.getId(), new String(get(field)));
+        } else {
+            assertNull(get(field));
         }
     }
 }

@@ -1,23 +1,21 @@
 package com.github.averyregier.club.broker;
 
-import com.github.averyregier.club.db.tables.records.ClubRecord;
 import com.github.averyregier.club.domain.club.Club;
-import com.github.averyregier.club.domain.club.ClubGroup;
 import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.club.adapter.MockClub;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.domain.program.awana.TnTCurriculum;
-import org.jooq.TableField;
 import org.jooq.exception.DataAccessException;
 import org.jooq.tools.jdbc.MockDataProvider;
 import org.junit.Test;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
+import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
 import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
 import static com.github.averyregier.club.db.tables.Club.CLUB;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 /**
  * Created by avery on 2/25/15.
@@ -28,15 +26,7 @@ public class ClubBrokerTest {
     public void testPersist() {
         final MockClub club = newClub();
 
-        MockDataProvider provider = new MockDataProviderBuilder()
-                .updateCount(1)
-                .statement(StatementType.MERGE, (s) -> assertUUID(club, s, CLUB.ID))
-                .statement(StatementType.UPDATE, (s) -> assertFields(club, s))
-                .statement(StatementType.INSERT, (s) -> {
-                    assertUUID(club, s, CLUB.ID);
-                    assertFields(club, s);
-                })
-                .build();
+        MockDataProvider provider = mergeProvider(assertUUID(club), assertFields(club));
 
         setup(provider).persist(club);
     }
@@ -45,22 +35,9 @@ public class ClubBrokerTest {
     public void testPersistProgramAsClub() {
         final Program program = newClub().getProgram();
 
-        MockDataProvider provider = new MockDataProviderBuilder()
-                .updateCount(1)
-                .statement(StatementType.MERGE, (s) -> assertUUID(program, s, CLUB.ID))
-                .statement(StatementType.UPDATE, (s) -> assertFields(program, s))
-                .statement(StatementType.INSERT, (s) -> {
-                    assertUUID(program, s, CLUB.ID);
-                    assertFields(program, s);
-                })
-                .build();
+        MockDataProvider provider = mergeProvider(assertUUID(program), assertFields(program));
 
         setup(provider).persist(program);
-    }
-
-    private void assertFields(Club club, StatementVerifier s) {
-        assertUUID(club.getParentGroup().orElse(null), s, CLUB.PARENT_CLUB_ID);
-        assertEquals(club.getCurriculum().getId(), s.get(CLUB.CURRICULUM));
     }
 
     @Test(expected = DataAccessException.class)
@@ -95,11 +72,16 @@ public class ClubBrokerTest {
         return new ClubBroker(mockConnector(provider));
     }
 
-    private void assertUUID(ClubGroup club, StatementVerifier s, TableField<ClubRecord, byte[]> field) {
-        if(club != null) {
-            assertEquals(club.getId(), new String(s.get(field)));
-        } else {
-            assertNull(s.get(field));
-        }
+    private Consumer<StatementVerifier> assertFields(Club club) {
+        return (s) -> assertFields(club, s);
+    }
+
+    private Consumer<StatementVerifier> assertUUID(Club club) {
+        return (s) -> s.assertUUID(club, CLUB.ID);
+    }
+
+    private void assertFields(Club club, StatementVerifier s) {
+        s.assertUUID(club.getParentGroup().orElse(null), CLUB.PARENT_CLUB_ID);
+        assertEquals(club.getCurriculum().getId(), s.get(CLUB.CURRICULUM));
     }
 }

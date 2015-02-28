@@ -12,7 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
+import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
 import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
 import static com.github.averyregier.club.db.tables.Person.PERSON;
 import static org.junit.Assert.*;
@@ -23,15 +25,7 @@ public class PersonBrokerTest {
     public void testPersistMerges() throws Exception {
         final PersonAdapter person = newPerson();
 
-        MockDataProvider provider = new MockDataProviderBuilder()
-                .updateCount(1)
-                .statement(StatementType.MERGE, (s) -> assertUUID(person, s))
-                .statement(StatementType.UPDATE, (s) -> s.assertNullFields(0, 6))
-                .statement(StatementType.INSERT, (s) -> {
-                    assertUUID(person, s);
-                    s.assertNullFields(1, 7);
-                })
-                .build();
+        MockDataProvider provider = mergeProvider(assertUUID(person), assertNullFields());
 
         setup(provider).persist(person);
     }
@@ -91,17 +85,24 @@ public class PersonBrokerTest {
             }
         });
 
-        MockDataProvider provider = new MockDataProviderBuilder()
-                .updateCount(1)
-                .statement(StatementType.MERGE, (s) -> assertUUID(person, s))
-                .statement(StatementType.UPDATE, (s) -> assertPersonFields(person, s))
-                .statement(StatementType.INSERT, (s) -> {
-                    assertUUID(person, s);
-                    assertPersonFields(person, s);
-                })
-                .build();
+        MockDataProvider provider = mergeProvider(assertUUID(person), assertFields(person));
 
         setup(provider).persist(person);
+    }
+
+
+    private Consumer<StatementVerifier> assertNullFields() {
+        return (s) -> s.assertNullFields(
+                PERSON.GENDER, PERSON.FRIENDLY, PERSON.GIVEN, PERSON.SURNAME,
+                PERSON.HONORIFIC, PERSON.TITLE, PERSON.EMAIL);
+    }
+
+    private Consumer<StatementVerifier> assertUUID(PersonAdapter person) {
+        return (s) -> assertUUID(person, s);
+    }
+
+    private Consumer<StatementVerifier> assertFields(PersonAdapter person) {
+        return (s) -> assertPersonFields(person, s);
     }
 
     private void assertUUID(PersonAdapter person, StatementVerifier s) {

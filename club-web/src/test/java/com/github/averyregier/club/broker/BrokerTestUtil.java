@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,7 +36,6 @@ public class BrokerTestUtil {
         };
     }
 
-
     public static List<String> parseColumnsFrom(String sql) {
         List<String> columns;
         columns = new ArrayList<>();
@@ -48,5 +48,17 @@ public class BrokerTestUtil {
             columns.add(column);
         }
         return columns;
+    }
+
+    static MockDataProvider mergeProvider(Consumer<StatementVerifier> idFn, Consumer<StatementVerifier> fieldsFn) {
+        return new MockDataProviderBuilder()
+                    .updateCount(1)
+                    .statement(StatementType.MERGE, idFn)
+                    .statement(StatementType.UPDATE, fieldsFn)
+                    .statement(StatementType.INSERT, (s) -> {
+                        idFn.accept(s);
+                        fieldsFn.accept(s);
+                    })
+                    .build();
     }
 }
