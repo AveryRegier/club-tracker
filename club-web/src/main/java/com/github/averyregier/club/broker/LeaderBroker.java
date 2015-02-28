@@ -25,7 +25,7 @@ public class LeaderBroker extends Broker<ClubLeader> {
                 .onDuplicateKeyUpdate()
                 .set(mapFields(leader))
                 .execute() != 1) {
-            fail("Person persistence failed: " + leader.getId());
+            fail("Leader persistence failed: " + leader.getId());
         }
     }
 
