@@ -11,14 +11,23 @@ import java.util.Optional;
 */
 class ClubLeaderAdapter extends ClubMemberAdapter implements ClubLeader {
 
-    public ClubLeaderAdapter(Person person) {
+    private final LeadershipRole leadershipRole;
+
+    public ClubLeaderAdapter(Person person, LeadershipRole leadershipRole, ClubAdapter club) {
         super(person);
+        this.leadershipRole = leadershipRole;
         person.getUpdater().setLeader(this);
+        setClub(club);
     }
 
     @Override
     public Program getProgram() {
         return getClub().map(c->c.getProgram()).orElse(null);
+    }
+
+    @Override
+    public LeadershipRole getLeadershipRole() {
+        return leadershipRole;
     }
 
     @Override

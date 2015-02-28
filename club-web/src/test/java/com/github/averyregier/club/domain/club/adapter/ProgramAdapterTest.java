@@ -159,7 +159,8 @@ public class ProgramAdapterTest {
         ProgramAdapter program = new ProgramAdapter("en_US", null, "AWANA");
         Club club = program.addClub(TnTCurriculum.get()); // should ignore the club even though it is present
         User user = new User();
-        ClubLeader leader = program.assign(user, ClubLeader.LeadershipRole.DIRECTOR);
+        ClubLeader.LeadershipRole leadershipRole = ClubLeader.LeadershipRole.random();
+        ClubLeader leader = program.assign(user, leadershipRole);
 
         assertNotNull(leader);
         assertTrue(user.asClubLeader().isPresent());
@@ -170,6 +171,8 @@ public class ProgramAdapterTest {
 
         assertTrue(leader.getClub().isPresent());
         assertEquals(program, leader.getClub().get());
+
+        assertEquals(leadershipRole, leader.getLeadershipRole());
     }
 
     @Test
@@ -177,7 +180,8 @@ public class ProgramAdapterTest {
         ProgramAdapter program = new ProgramAdapter("en_US", null, "AWANA");
         Club club = program.addClub(TnTCurriculum.get());
         User user = new User();
-        ClubLeader leader = club.assign(user, ClubLeader.LeadershipRole.DIRECTOR);
+        ClubLeader.LeadershipRole leadershipRole = ClubLeader.LeadershipRole.random();
+        ClubLeader leader = club.assign(user, leadershipRole);
 
         assertNotNull(leader);
         assertTrue(user.asClubLeader().isPresent());
@@ -188,5 +192,7 @@ public class ProgramAdapterTest {
 
         assertTrue(leader.getClub().isPresent());
         assertEquals(club, leader.getClub().get());
+
+        assertEquals(leadershipRole, leader.getLeadershipRole());
     }
 }

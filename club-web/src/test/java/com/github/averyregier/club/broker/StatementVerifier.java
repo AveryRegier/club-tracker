@@ -6,6 +6,7 @@ import org.jooq.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -74,9 +75,13 @@ public class StatementVerifier {
         }
     }
 
-    void assertUUID(HasId club, Field<byte[]> field) {
-        if(club != null) {
-            assertEquals(club.getId(), new String(get(field)));
+    void assertUUID(HasId identifiable, Field<byte[]> field) {
+        assertUUID(Optional.ofNullable(identifiable), field);
+    }
+
+    void assertUUID(Optional<? extends HasId> identifiable, Field<byte[]> field) {
+        if(identifiable.isPresent()) {
+            assertEquals(identifiable.get().getId(), new String(get(field)));
         } else {
             assertNull(get(field));
         }
