@@ -44,7 +44,6 @@ CREATE TABLE ${schema}.clubber (
     age_group VARCHAR(20) NOT NULL
 );
 
-
 CREATE TABLE ${schema}.listener (
     id uuid REFERENCES ${schema}.person NOT NULL,
     club_id uuid REFERENCES ${schema}.club NOT NULL,
