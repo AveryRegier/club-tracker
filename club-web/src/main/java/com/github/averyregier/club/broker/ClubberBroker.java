@@ -20,22 +20,22 @@ public class ClubberBroker extends Broker<Clubber> {
     }
 
     @Override
-    protected void persist(Clubber thing, DSLContext create) {
+    protected void persist(Clubber clubber, DSLContext create) {
         if(create.insertInto(CLUBBER)
-                .set(CLUBBER.ID, thing.getId().getBytes())
-                .set(mapFields(thing))
+                .set(CLUBBER.ID, clubber.getId().getBytes())
+                .set(mapFields(clubber))
                 .onDuplicateKeyUpdate()
-                .set(mapFields(thing))
+                .set(mapFields(clubber))
                 .execute() != 1) {
-            fail("Clubber persistence failed: " + thing.getId());
+            fail("Clubber persistence failed: " + clubber.getId());
         }
     }
 
-    private Map<TableField<ClubberRecord, ?>, Object> mapFields(Clubber thing) {
+    private Map<TableField<ClubberRecord, ?>, Object> mapFields(Clubber clubber) {
         return JooqUtil.<ClubberRecord>map()
-                .set(CLUBBER.CLUB_ID, thing.getClub().map(club->club.getId().getBytes()))
-                .set(CLUBBER.FAMILY_ID, thing.getFamily().map(family -> family.getId().getBytes()))
-                .set(CLUBBER.AGE_GROUP, Optional.ofNullable(thing.getCurrentAgeGroup()).map(AgeGroup::name))
+                .set(CLUBBER.CLUB_ID, clubber.getClub().map(club -> club.getId().getBytes()))
+                .set(CLUBBER.FAMILY_ID, clubber.getFamily().map(family -> family.getId().getBytes()))
+                .set(CLUBBER.AGE_GROUP, Optional.ofNullable(clubber.getCurrentAgeGroup()).map(AgeGroup::name))
                 .build();
     }
 }
