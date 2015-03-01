@@ -61,4 +61,11 @@ public class BrokerTestUtil {
                     })
                     .build();
     }
+    static MockDataProvider mergeProvider(Consumer<StatementVerifier> idFn) {
+        return new MockDataProviderBuilder()
+                .updateCount(1)
+                .statement(StatementType.MERGE, idFn)
+                .statement(StatementType.INSERT, idFn)
+                .build();
+    }
 }

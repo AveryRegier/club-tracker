@@ -4,11 +4,13 @@ import com.github.averyregier.club.domain.club.*;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /**
 * Created by avery on 11/30/14.
 */
 public class FamilyAdapter implements Family {
+    private String id = UUID.randomUUID().toString();
     private final LinkedHashSet<Parent> parents = new LinkedHashSet<>();
     private final LinkedHashSet<Clubber> clubbers = new LinkedHashSet<>();
 
@@ -46,5 +48,15 @@ public class FamilyAdapter implements Family {
     @Override
     public Set<Clubber> getClubbers() {
         return clubbers;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public String getShortCode() {
+        return parents.stream().findFirst().map(p->"The "+p.getName().getSurname()+" Family").orElse(getId());
     }
 }
