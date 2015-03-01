@@ -38,7 +38,7 @@ CREATE TABLE ${schema}.family (
 );
 
 CREATE TABLE ${schema}.clubber (
-    id uuid REFERENCES ${schema}.person NOT NULL,
+    id uuid REFERENCES ${schema}.person NOT NULL PRIMARY KEY,
     family_id uuid REFERENCES ${schema}.family,
     club_id uuid REFERENCES ${schema}.club,
     age_group VARCHAR(20) NOT NULL
@@ -51,7 +51,7 @@ CREATE TABLE ${schema}.listener (
 );
 
 CREATE TABLE ${schema}.parent (
-    id uuid REFERENCES ${schema}.person NOT NULL,
+    id uuid REFERENCES ${schema}.person NOT NULL PRIMARY KEY,
     family_id uuid REFERENCES ${schema}.family (id) NOT NULL
 );
 
