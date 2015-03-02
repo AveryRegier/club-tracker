@@ -14,7 +14,6 @@ import java.util.function.Consumer;
 import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
 import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
 import static com.github.averyregier.club.db.tables.Listener.LISTENER;
-import static org.junit.Assert.assertEquals;
 
 public class ListenerBrokerTest {
 
@@ -48,7 +47,7 @@ public class ListenerBrokerTest {
     }
 
     private void assertUUID(Listener person, StatementVerifier s) {
-        assertEquals(person.getId(), new String(s.get(LISTENER.ID)));
+        s.assertUUID(person.getId(), LISTENER.ID);
     }
 
     private void assertPersonFields(Listener thing, StatementVerifier s) {

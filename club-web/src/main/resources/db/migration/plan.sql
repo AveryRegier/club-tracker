@@ -57,7 +57,7 @@ CREATE TABLE ${schema}.parent (
 
 CREATE TABLE ${schema}.record (
     clubber_id uuid REFERENCES ${schema}.person NOT NULL,
-    club_id uuid REFERENCES ${schema}.club NOT NULL,
+    club_id uuid REFERENCES ${schema}.club,
     section_id VARCHAR(100) NOT NULL,
     signed_by uuid,
     sign_date DATE,

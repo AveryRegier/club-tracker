@@ -80,7 +80,7 @@ public class ClubBrokerTest {
     }
 
     private void assertFields(Club club, StatementVerifier s) {
-        s.assertUUID(club.getParentGroup().orElse(null), CLUB.PARENT_CLUB_ID);
+        s.assertUUID(club.getParentGroup(), CLUB.PARENT_CLUB_ID);
         s.assertFieldEquals(club.getCurriculum().getId(), CLUB.CURRICULUM);
     }
 }

@@ -28,6 +28,7 @@ public class StatementVerifier {
         this.fn = fn;
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> T getField(List<String> columns, List<Object> bindings, String name) {
         int i = 0;
         for (String columnName : columns) {
@@ -81,10 +82,15 @@ public class StatementVerifier {
 
     void assertUUID(Optional<? extends HasId> identifiable, Field<byte[]> field) {
         if(identifiable.isPresent()) {
-            assertEquals(identifiable.get().getId(), new String(get(field)));
+            String uuid = identifiable.get().getId();
+            assertUUID(uuid, field);
         } else {
             assertNull(get(field));
         }
+    }
+
+    void assertUUID(String uuid, Field<byte[]> field) {
+        assertEquals(uuid, new String(get(field)));
     }
 
     public <T> void assertFieldEquals(T value, Field<T> field) {

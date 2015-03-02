@@ -13,7 +13,6 @@ import java.util.function.Consumer;
 import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
 import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
 import static com.github.averyregier.club.db.tables.Clubber.CLUBBER;
-import static org.junit.Assert.assertEquals;
 
 public class ClubberBrokerTest {
 
@@ -64,7 +63,7 @@ public class ClubberBrokerTest {
     }
 
     private void assertUUID(Clubber person, StatementVerifier s) {
-        assertEquals(person.getId(), new String(s.get(CLUBBER.ID)));
+        s.assertUUID(person.getId(), CLUBBER.ID);
     }
 
     private void assertClubberFields(Clubber clubber, StatementVerifier s) {

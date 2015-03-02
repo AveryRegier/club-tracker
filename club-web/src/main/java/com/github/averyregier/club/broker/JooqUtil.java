@@ -50,6 +50,14 @@ public class JooqUtil {
             return map;
         }
 
+        public MapBuilder<R> setNull(TableField<R, ?>... fields) {
+            if(fields != null) {
+                for(TableField<R, ?> field: fields) {
+                    map.put(field, null);
+                }
+            }
+            return this;
+        }
     }
 
     public static <R extends Record> MapBuilder<R> map() {

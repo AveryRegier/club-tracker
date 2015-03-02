@@ -106,7 +106,7 @@ public class PersonBrokerTest {
     }
 
     private void assertUUID(PersonAdapter person, StatementVerifier s) {
-        assertEquals(person.getId(), new String(s.get(PERSON.ID)));
+        s.assertUUID(person.getId(), PERSON.ID);
     }
 
     private void assertPersonFields(PersonAdapter thing, StatementVerifier s) {

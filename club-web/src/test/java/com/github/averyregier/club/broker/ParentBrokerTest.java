@@ -14,7 +14,6 @@ import java.util.function.Consumer;
 import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
 import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
 import static com.github.averyregier.club.db.tables.Parent.PARENT;
-import static org.junit.Assert.assertEquals;
 
 public class ParentBrokerTest {
 
@@ -62,7 +61,7 @@ public class ParentBrokerTest {
     }
 
     private void assertUUID(Parent person, StatementVerifier s) {
-        assertEquals(person.getId(), new String(s.get(PARENT.ID)));
+        s.assertUUID(person.getId(), PARENT.ID);
     }
 
     private void assertParentFields(Parent parent, StatementVerifier s) {

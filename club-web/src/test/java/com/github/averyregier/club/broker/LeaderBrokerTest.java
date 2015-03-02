@@ -14,7 +14,6 @@ import java.util.function.Consumer;
 import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
 import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
 import static com.github.averyregier.club.db.tables.Leader.LEADER;
-import static org.junit.Assert.assertEquals;
 
 public class LeaderBrokerTest {
 
@@ -48,7 +47,7 @@ public class LeaderBrokerTest {
     }
 
     private void assertUUID(ClubLeader person, StatementVerifier s) {
-        assertEquals(person.getId(), new String(s.get(LEADER.ID)));
+        s.assertUUID(person.getId(), LEADER.ID);
     }
 
     private void assertPersonFields(ClubLeader thing, StatementVerifier s) {
