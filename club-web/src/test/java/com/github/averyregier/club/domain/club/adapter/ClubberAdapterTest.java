@@ -10,8 +10,6 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
@@ -138,7 +136,7 @@ public class ClubberAdapterTest {
     @Test
     public void testGetFirstSeveralSections() {
         List<ClubberRecord> nextSections = assertNextSections(3);
-        assertTrue(getSectionStream(nextSections)
+        assertTrue(DomainTestUtil.getSectionStream(nextSections)
                 .allMatch(s -> s.getSectionType().requiredFor(AccomplishmentLevel.book)));
 
         Section firstSection = getFirstSection(clubber.getCurrentAgeGroup());
@@ -157,26 +155,13 @@ public class ClubberAdapterTest {
 
         List<ClubberRecord> nextSections = assertNextSections(5);
 
-        assertTrue(getSectionStream(nextSections)
+        assertTrue(DomainTestUtil.getSectionStream(nextSections)
                 .allMatch(s -> !s.getSectionType().requiredFor(AccomplishmentLevel.book) ||
                         s.getSectionType() == TnTSectionTypes.friend));
     }
 
     private List<ClubberRecord> assertNextSections(int numSections) {
-        List<ClubberRecord> nextSections = clubber.getNextSections(numSections);
-        assertNotNull(nextSections);
-        assertEquals(numSections, nextSections.size());
-        assertTrue(allSectionsUnique(nextSections));
-        assertTrue(nextSections.stream().allMatch(r -> !r.getSigning().isPresent()));
-        assertTrue(nextSections.stream().allMatch(r -> r.getClubber().equals(clubber)));
-        return nextSections;
+        return DomainTestUtil.assertNextSections(clubber, numSections);
     }
 
-    private boolean allSectionsUnique(List<ClubberRecord> nextSections) {
-        return getSectionStream(nextSections).collect(Collectors.toSet()).size() == nextSections.size();
-    }
-
-    private Stream<Section> getSectionStream(List<ClubberRecord> nextSections) {
-        return nextSections.stream().map(r->r.getSection());
-    }
 }

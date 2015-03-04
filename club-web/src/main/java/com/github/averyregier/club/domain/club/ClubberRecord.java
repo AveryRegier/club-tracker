@@ -141,6 +141,11 @@ public abstract class ClubberRecord {
             public String getShortCode() {
                 return award.getName();
             }
+
+            @Override
+            public ClubberRecord record() {
+                return ClubberRecord.this;
+            }
         }
     }
 }

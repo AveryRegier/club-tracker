@@ -16,6 +16,7 @@ public interface AwardPresentation extends HasId {
     LocalDate earnedOn();
     Ceremony presentedAt();
     Optional<Catalogued> token();
+    ClubberRecord record();
 
     void presentAt(Ceremony ceremony);
 }

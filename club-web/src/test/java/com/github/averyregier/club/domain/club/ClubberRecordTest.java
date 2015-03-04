@@ -123,6 +123,11 @@ public class ClubberRecordTest {
     }
 
     private ClubberRecord sign(int group, int section) {
+        Book book1 = book;
+        return sign(book1, group, section);
+    }
+
+    private ClubberRecord sign(Book book, int group, int section) {
         SectionGroup sectionGroup = book.getSectionGroups().get(group - 1);
         ClubberRecord classUnderTest = createClubberRecord(
                 sectionGroup.getSections().get(section));
