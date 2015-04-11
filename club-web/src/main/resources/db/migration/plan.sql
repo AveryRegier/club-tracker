@@ -81,3 +81,12 @@ CREATE TABLE ${schema}.award (
     presented_at uuid REFERENCES ${schema}.ceremony,
     FOREIGN KEY (clubber_id, section_id) REFERENCES ${schema}.record (clubber_id, section_id)
 );
+
+CREATE TABLE ${schema}.provider (
+    provider_id VARCHAR(20) PRIMARY KEY,
+    site VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    image VARCHAR(250) NOT NULL,
+    client_key VARCHAR(500) NOT NULL,
+    secret VARCHAR(500) NOT NULL
+);
