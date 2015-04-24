@@ -10,6 +10,7 @@ import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import com.github.averyregier.club.domain.utility.builder.ChildBuilder;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static com.github.averyregier.club.domain.utility.InputField.Type.integer;
 import static com.github.averyregier.club.domain.utility.InputField.Type.text;
@@ -24,8 +25,8 @@ public enum StandardInputFields {
             return buildGroup(this)
                     .name("Name")
                     .field(f->f.name("Given").id("given").type(text))
-                    .field(f->f.name("Middle").id("middle").type(text))
-                    .field(f->f.name("Surname").id("surname").type(text))
+                    .field(f -> f.name("Middle").id("middle").type(text))
+                    .field(f -> f.name("Surname").id("surname").type(text))
                     .field(f->f.name("Friendly").id("friendly").type(text))
                     .field(f->f.name("Title").id("title").type(text)
                             .value("")
@@ -38,53 +39,17 @@ public enum StandardInputFields {
                             .value("II")
                             .value("III")
                             .value("IV"))
-                    .validate(m->Optional.of(new Name() {
-                        @Override
-                        public String getGivenName() {
-                            return (String)m.get("given");
-                        }
-
-                        @Override
-                        public String getSurname() {
-                            return (String)m.get("surname");
-                        }
-
-                        @Override
-                        public List<String> getMiddleNames() {
-                            String middle = (String) m.get("middle");
-                            return Arrays.<String>asList(middle);
-                        }
-
-                        @Override
-                        public Optional<String> getTitle() {
-                            return Optional.<String>ofNullable((String)m.get("title"));
-                        }
-
-                        @Override
-                        public String getFriendlyName() {
-                            return (String)m.get("friendly");
-                        }
-
-                        @Override
-                        public String getHonorificName() {
-                            return (String)m.get("honorific");
-                        }
-
-                        @Override
-                        public String getFullName() {
-                            return getGivenName()+" "+getSurname();
-                        }
-                    }))
-                    .map(p->{
+                    .validate(getNameFn())
+                    .map(p -> {
                         HashMap<String, String> model = new HashMap<>();
                         Name name1 = p.getName();
-                        if(name1 != null) {
+                        if (name1 != null) {
                             model.put("given", name1.getGivenName());
                             model.put("surname", name1.getSurname());
                         }
                         return model;
                     })
-                    .update((p,o)->p.getUpdater().setName((Name)o));
+                    .update((p, o) -> p.getUpdater().setName((Name) o));
         }
     },
     address {
@@ -175,43 +140,7 @@ public enum StandardInputFields {
                         .value("II")
                         .value("III")
                         .value("IV"))
-                .validate(m->Optional.of(new Name() {
-                    @Override
-                    public String getGivenName() {
-                        return (String)m.get("given");
-                    }
-
-                    @Override
-                    public String getSurname() {
-                        return (String)m.get("surname");
-                    }
-
-                    @Override
-                    public List<String> getMiddleNames() {
-                        String middle = (String) m.get("middle");
-                        return Arrays.<String>asList(middle);
-                    }
-
-                    @Override
-                    public Optional<String> getTitle() {
-                        return Optional.<String>ofNullable((String)m.get("title"));
-                    }
-
-                    @Override
-                    public String getFriendlyName() {
-                        return (String)m.get("friendly");
-                    }
-
-                    @Override
-                    public String getHonorificName() {
-                        return (String)m.get("honorific");
-                    }
-
-                    @Override
-                    public String getFullName() {
-                        return getGivenName()+" "+getSurname();
-                    }
-                }))
+                .validate(getNameFn())
                 .map(p->{
                     HashMap<String, String> model = new HashMap<>();
                     model.put("given", p.getName().getGivenName());
@@ -220,6 +149,7 @@ public enum StandardInputFields {
                 })
                 .update((p,o)->p.getUpdater().setName((Name)o));
         }
+
     };
 
     public abstract ChildBuilder<InputFieldGroup, InputFieldDesignator> create(Locale locale);
@@ -240,5 +170,44 @@ public enum StandardInputFields {
         return new InputFieldGroupBuilder().id(field.name());
     }
 
+    private static Function<Map<String, Object>, Optional<Object>> getNameFn() {
+        return m-> Optional.of(new Name() {
+            @Override
+            public String getGivenName() {
+                return (String) m.get("given");
+            }
+
+            @Override
+            public String getSurname() {
+                return (String) m.get("surname");
+            }
+
+            @Override
+            public List<String> getMiddleNames() {
+                String middle = (String) m.get("middle");
+                return Arrays.<String>asList(middle);
+            }
+
+            @Override
+            public Optional<String> getTitle() {
+                return Optional.<String>ofNullable((String) m.get("title"));
+            }
+
+            @Override
+            public String getFriendlyName() {
+                return (String) m.get("friendly");
+            }
+
+            @Override
+            public String getHonorificName() {
+                return (String) m.get("honorific");
+            }
+
+            @Override
+            public String getFullName() {
+                return getGivenName() + " " + getSurname();
+            }
+        });
+    }
 }
 
