@@ -56,12 +56,7 @@ public class ListenerBrokerTest {
 
     private Listener newListener() {
         String uuid = UUID.randomUUID().toString();
-        PersonAdapter person = new PersonAdapter() {
-            @Override
-            public String getId() {
-                return uuid;
-            }
-        };
+        PersonAdapter person = new PersonAdapter(uuid);
         return new MockClub(null, new ProgramAdapter(null, null, null)).recruit(person);
     }
 

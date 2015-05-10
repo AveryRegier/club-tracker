@@ -27,7 +27,7 @@ public class RegistrationController extends ModelMaker {
 
             User user = app.getUserManager().createUser(bean.getUniqueId());
             user.update(bean);
-            Login.resetCookies(request, response, user.getId(), user);
+            Login.resetCookies(request, response, user.getLoginInformation().getUniqueID(), user);
             return null;
 //            request.attribute("user", bean);
 //            return new spark.ModelAndView(new HashMap<>(), "registrationSuccess.ftl");

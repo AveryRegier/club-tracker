@@ -81,12 +81,8 @@ public class RecordBrokerTest {
 
     private ClubberRecord newRecord() {
         String uuid = UUID.randomUUID().toString();
-        return new ClubberAdapter(new PersonAdapter() {
-            @Override
-            public String getId() {
-                return uuid;
-            }
-        }).getRecord(Optional.of(TnTCurriculum.get()
+        return new ClubberAdapter(new PersonAdapter(uuid))
+            .getRecord(Optional.of(TnTCurriculum.get()
                 .getBooks().get(0)
                 .getSectionGroups().get(0)
                 .getSections().get(0))).get();

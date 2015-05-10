@@ -74,12 +74,7 @@ public class ClubberBrokerTest {
 
     private ClubberAdapter newClubber() {
         String uuid = UUID.randomUUID().toString();
-        return new ClubberAdapter(new PersonAdapter() {
-            @Override
-            public String getId() {
-                return uuid;
-            }
-        });
+        return new ClubberAdapter(new PersonAdapter(uuid));
     }
 
     private ClubberBroker setup(MockDataProvider provider) {

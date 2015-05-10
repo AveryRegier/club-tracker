@@ -85,7 +85,7 @@ public class FastSetup {
         context = context == null ? "" : context;
         String location = context + "/protected/my";
         request.session().attribute("location", location);
-        Login.resetCookies(request, response, user.getId(), user);
+        Login.resetCookies(request, response, user.getLoginInformation().getUniqueID(), user);
     }
 
     private User setupJohnDoe(ClubApplication app) {

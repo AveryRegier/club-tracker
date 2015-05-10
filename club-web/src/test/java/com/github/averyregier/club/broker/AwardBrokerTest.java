@@ -104,12 +104,8 @@ public class AwardBrokerTest {
 
     private AwardPresentation newAward() {
         String uuid = UUID.randomUUID().toString();
-        return new ClubberAdapter(new PersonAdapter() {
-            @Override
-            public String getId() {
-                return uuid;
-            }
-        }).getRecord(Optional.of(new CurriculumBuilder().book(0, b -> b
+        return new ClubberAdapter(new PersonAdapter(uuid))
+            .getRecord(Optional.of(new CurriculumBuilder().book(0, b -> b
                 .group(0, g -> g
                         .award(a -> a
                                 .name("An Award")

@@ -10,6 +10,7 @@ import java.util.Optional;
 * Created by avery on 12/28/14.
 */
 public class PersonAdapter implements Person, PersonUpdater {
+    private String uuid;
     private Name name;
     private Gender gender;
     private String email;
@@ -20,9 +21,17 @@ public class PersonAdapter implements Person, PersonUpdater {
     private Family family;
     private AgeGroup currentAgeGroup;
 
+    public PersonAdapter() {
+        this.uuid = null;
+    }
+
+    public PersonAdapter(String uuid) {
+        this.uuid = uuid;
+    }
+
     @Override
     public String getId() {
-        return null;
+        return uuid;
     }
 
     public Name getName() {

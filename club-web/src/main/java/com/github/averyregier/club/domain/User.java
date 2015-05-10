@@ -6,6 +6,8 @@ import com.github.averyregier.club.domain.club.adapter.PersonWrapper;
 import com.github.averyregier.club.view.UserBean;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +20,7 @@ public class User extends PersonWrapper implements Person {
     private Person person;
     private String auth;
     private String id;
+    private String providerID;
 
     public User() {
         this(new PersonAdapter());
@@ -25,6 +28,41 @@ public class User extends PersonWrapper implements Person {
 
     public User(Person personAdapter) {
         this.person = personAdapter;
+    }
+
+    public Login getLoginInformation() {
+        return new Login();
+    }
+
+    public class Login {
+
+        public Optional<Integer> getAuth() {
+            return auth == null ? Optional.empty() : Optional.of(toInt(decodeAuth()));
+        }
+
+        public String getID() {
+            return person.getId();
+        }
+
+        public String getProviderID() {
+            return providerID;
+        }
+
+        public String getUniqueID() {
+            return id;
+        }
+    }
+
+    private int toInt(byte[] bytes) {
+        return new BigInteger(bytes).intValue();
+    }
+
+    private byte[] decodeAuth() {
+        try {
+            return URLDecoder.decode(auth, "UTF-8").getBytes();
+        } catch (UnsupportedEncodingException e) {
+            return auth.getBytes();
+        }
     }
 
     public String resetAuth() {
@@ -50,7 +88,7 @@ public class User extends PersonWrapper implements Person {
 
     @Override
     public String getId() {
-        return id;
+        return person.getId();
     }
 
 
@@ -101,6 +139,7 @@ public class User extends PersonWrapper implements Person {
 
     public void update(final UserBean user) {
         this.id = user.getUniqueId();
+        this.providerID = user.getProviderId();
 
         setName(user.getFirstName(), user.getLastName());
 

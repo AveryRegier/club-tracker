@@ -121,12 +121,7 @@ public class PersonBrokerTest {
 
     private PersonAdapter newPerson() {
         String uuid = UUID.randomUUID().toString();
-        return new PersonAdapter() {
-            @Override
-            public String getId() {
-                return uuid;
-            }
-        };
+        return new PersonAdapter(uuid);
     }
 
     private PersonBroker setup(MockDataProvider provider) {

@@ -84,7 +84,7 @@ public class Login extends ModelMaker {
                 } else {
                     try {
                         User auser = setupUser(app, provider.getUserProfile());
-                        resetCookies(request, response, auser.getId(), auser);
+                        resetCookies(request, response, auser.getLoginInformation().getUniqueID(), auser);
 //                            return Login.this.registration(provider);
                     } catch (Exception e) {
                         throw new RuntimeException(e);

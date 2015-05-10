@@ -70,12 +70,7 @@ public class ParentBrokerTest {
 
     private Parent newParent() {
         String uuid = UUID.randomUUID().toString();
-        return new MockParent(new PersonAdapter() {
-            @Override
-            public String getId() {
-                return uuid;
-            }
-        });
+        return new MockParent(new PersonAdapter(uuid));
     }
 
     private ParentBroker setup(MockDataProvider provider) {

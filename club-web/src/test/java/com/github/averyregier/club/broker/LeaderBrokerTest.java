@@ -57,12 +57,7 @@ public class LeaderBrokerTest {
 
     private ClubLeader newLeader() {
         String uuid = UUID.randomUUID().toString();
-        PersonAdapter person = new PersonAdapter() {
-            @Override
-            public String getId() {
-                return uuid;
-            }
-        };
+        PersonAdapter person = new PersonAdapter(uuid);
         return new MockLeader(person, ClubLeader.LeadershipRole.random(), new MockClub(null, null));
     }
 

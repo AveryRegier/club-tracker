@@ -20,12 +20,7 @@ public class PersonManager {
 
     public Person createPerson() {
         String id = UUID.randomUUID().toString();
-        PersonAdapter personAdapter = new PersonAdapter() {
-            @Override
-            public String getId() {
-                return id;
-            }
-        };
+        PersonAdapter personAdapter = new PersonAdapter(id);
         people.put(id, personAdapter);
         return personAdapter;
     }
