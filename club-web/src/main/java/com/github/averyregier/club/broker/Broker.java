@@ -7,6 +7,7 @@ import org.jooq.impl.DSL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Created by avery on 2/20/15.
@@ -22,11 +23,21 @@ public abstract class Broker<T> {
         return connector.connect();
     }
 
-    private void execute(Consumer<DSLContext> c) {
+    protected void execute(Consumer<DSLContext> c) {
         try (Connection connection = connector.connect()) {
             DSLContext create = DSL.using(connection, connector.getDialect());
 
             c.accept(create);
+        } catch (SQLException e) {
+            throw new DataAccessException("Connection failure", e);
+        }
+    }
+
+    protected <T> T query(Function<DSLContext, T> c) {
+        try (Connection connection = connector.connect()) {
+            DSLContext create = DSL.using(connection, connector.getDialect());
+
+            return c.apply(create);
         } catch (SQLException e) {
             throw new DataAccessException("Connection failure", e);
         }

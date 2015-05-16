@@ -1,5 +1,7 @@
 package com.github.averyregier.club.broker;
 
+import org.jooq.DSLContext;
+import org.jooq.Result;
 import org.jooq.tools.jdbc.MockDataProvider;
 import org.jooq.tools.jdbc.MockExecuteContext;
 import org.jooq.tools.jdbc.MockResult;
@@ -9,7 +11,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
+import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
 import static org.junit.Assert.fail;
 
 /**
@@ -23,6 +27,19 @@ public class MockDataProviderBuilder {
 
     public MockDataProviderBuilder updateCount(int rows) {
         results.add(new MockResult(rows, null));
+        return this;
+    }
+
+    public MockDataProviderBuilder reply(Function<DSLContext, Result<?>> fn) {
+
+        new Broker<Void>(mockConnector(ctx->null)){
+            @Override
+            protected void persist(Void thing, DSLContext create) {
+
+            }
+        }.execute((create)->
+                results.add(new MockResult(-1, fn.apply(create))));
+
         return this;
     }
 
@@ -44,15 +61,7 @@ public class MockDataProviderBuilder {
     }
 
     public MockDataProviderBuilder statement(StatementType type) {
-        if (statements.isEmpty()) {
-            verifications.add((ctx) -> {
-                loadStatements(ctx);
-                statements.stream().forEach(s -> s.verify());
-            });
-        }
-        StatementVerifier svb = new StatementVerifier(type, null);
-        statements.add(svb);
-        return this;
+        return statement(type, null);
     }
 
     private void loadStatements(MockExecuteContext ctx) {

@@ -2,10 +2,17 @@ package com.github.averyregier.club.broker;
 
 import com.github.averyregier.club.db.tables.records.LoginRecord;
 import com.github.averyregier.club.domain.User;
+import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
+import com.github.averyregier.club.view.UserBean;
 import org.jooq.DSLContext;
+import org.jooq.Record2;
+import org.jooq.Result;
 import org.jooq.TableField;
+import org.jooq.exception.DataAccessException;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.github.averyregier.club.db.tables.Login.LOGIN;
 
@@ -35,5 +42,30 @@ public class LoginBroker extends Broker<User.Login> {
         return JooqUtil.<LoginRecord>map()
                 .set(LOGIN.AUTH, login.getAuth())
                 .build();
+    }
+
+    public Optional<User> find(String providerId, String uniqueID) {
+        return query((create)->{
+            Result<Record2<byte[], Integer>> result = create.select(LOGIN.ID, LOGIN.AUTH)
+                    .where(LOGIN.PROVIDER_ID.eq(providerId))
+                    .and(LOGIN.UNIQUE_ID.eq(uniqueID))
+                    .fetch();
+            return result.stream().findFirst().map(r->{
+                User user = new User(new PersonAdapter(convert(r.value1())));
+                UserBean bean = new UserBean();
+                bean.setUniqueId(uniqueID);
+                bean.setProviderId(providerId);
+                user.update(bean);
+                return user;
+            });
+        });
+    }
+
+    private String convert(byte[] bytes) {
+        try {
+            return new String(bytes, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 }
