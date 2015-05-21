@@ -29,7 +29,18 @@ public interface Person {
         public static Optional<Gender> lookup(String s) {
             if(s == null) return Optional.empty();
             try {
-                Gender gender = valueOf(s);
+                Gender gender = null;
+                if(s.length() == 1) {
+                    switch (s.charAt(0)) {
+                        case 'M':
+                            gender = MALE;
+                            break;
+                        case 'F':
+                            gender = FEMALE;
+                    }
+                } else {
+                    gender = valueOf(s);
+                }
                 return Optional.ofNullable(gender);
             } catch(IllegalArgumentException e) {
                 return Optional.empty();

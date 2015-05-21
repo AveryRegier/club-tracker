@@ -111,4 +111,5 @@ public class UserBrokerTest {
         assertEquals(providerId, user.getLoginInformation().getProviderID());
         assertEquals(uniqueID, user.getLoginInformation().getUniqueID());
     }
+
 }
