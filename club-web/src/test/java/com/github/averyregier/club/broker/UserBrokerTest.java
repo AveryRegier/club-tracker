@@ -1,6 +1,7 @@
 package com.github.averyregier.club.broker;
 
 import com.github.averyregier.club.db.tables.records.LoginRecord;
+import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import com.github.averyregier.club.view.UserBean;
@@ -105,9 +106,10 @@ public class UserBrokerTest {
     }
 
     private User assertFindUser(Integer auth) {
+        PersonManager manager = new PersonManager();
         String providerId = "Someone";
         String uniqueID = UUID.randomUUID().toString();
-        String id = UUID.randomUUID().toString();
+        String id = manager.createPerson().getId();
 
         MockDataProvider provider = new MockDataProviderBuilder().statement(StatementType.SELECT, (s)->{
             s.assertFieldEquals(providerId, LOGIN.PROVIDER_ID);
@@ -120,7 +122,7 @@ public class UserBrokerTest {
             return result;
         }).build();
 
-        User user = setup(provider).find(providerId, uniqueID).get();
+        User user = setup(provider).find(providerId, uniqueID, manager).get();
 
         assertEquals(id, user.getId());
         assertEquals(providerId, user.getLoginInformation().getProviderID());

@@ -1,8 +1,8 @@
 package com.github.averyregier.club.broker;
 
 import com.github.averyregier.club.db.tables.records.LoginRecord;
+import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.User;
-import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import com.github.averyregier.club.view.UserBean;
 import org.jooq.DSLContext;
 import org.jooq.Result;
@@ -43,7 +43,7 @@ public class LoginBroker extends Broker<User.Login> {
                 .build();
     }
 
-    public Optional<User> find(String providerId, String uniqueID) {
+    public Optional<User> find(String providerId, String uniqueID, final PersonManager manager) {
         return query((create)->{
             Result<LoginRecord> result = create.selectFrom(LOGIN)
                     .where(LOGIN.PROVIDER_ID.eq(providerId))
@@ -51,7 +51,7 @@ public class LoginBroker extends Broker<User.Login> {
                     .fetch();
             return result.stream().findFirst().map(r->{
                 User user = new User(
-                        new PersonAdapter(convert(r.getId())),
+                        manager.lookup(convert(r.getId())).get(),
                         r.getAuth());
                 UserBean bean = new UserBean();
                 bean.setUniqueId(uniqueID);
