@@ -17,6 +17,7 @@ import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
 import static com.github.averyregier.club.db.tables.Login.LOGIN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class UserBrokerTest {
 
@@ -89,27 +90,42 @@ public class UserBrokerTest {
 
     @Test
     public void testFindsByUniqueId() {
+        User user = assertFindUser(null);
+        assertFalse(user.getLoginInformation().getAuth().isPresent());
+    }
+
+    @Test
+    public void testFindsByUniqueIdWithAuth() {
+        User dummy = new User(null);
+        String auth = dummy.resetAuth();
+        Integer authInt = dummy.getLoginInformation().getAuth().get();
+        User user = assertFindUser(authInt);
+        assertTrue(user.getLoginInformation().getAuth().isPresent());
+        assertTrue(user.authenticate(auth));
+    }
+
+    private User assertFindUser(Integer auth) {
         String providerId = "Someone";
         String uniqueID = UUID.randomUUID().toString();
         String id = UUID.randomUUID().toString();
 
-        MockDataProvider proovider = new MockDataProviderBuilder().statement(StatementType.SELECT, (s)->{
+        MockDataProvider provider = new MockDataProviderBuilder().statement(StatementType.SELECT, (s)->{
             s.assertFieldEquals(providerId, LOGIN.PROVIDER_ID);
             s.assertFieldEquals(uniqueID, LOGIN.UNIQUE_ID);
         }).reply((create)->{
             Result<LoginRecord> result = create.newResult(LOGIN);
             result.add(create.newRecord(LOGIN));
-            result.get(0).setValue(LOGIN.ID, id.getBytes());
-            result.get(0).setValue(LOGIN.AUTH, null);
+            result.get(0).setId(id.getBytes());
+            result.get(0).setAuth(auth);
             return result;
         }).build();
 
-        User user = setup(proovider).find(providerId, uniqueID).get();
+        User user = setup(provider).find(providerId, uniqueID).get();
 
         assertEquals(id, user.getId());
-        assertFalse(user.getLoginInformation().getAuth().isPresent());
         assertEquals(providerId, user.getLoginInformation().getProviderID());
         assertEquals(uniqueID, user.getLoginInformation().getUniqueID());
+        return user;
     }
 
 }

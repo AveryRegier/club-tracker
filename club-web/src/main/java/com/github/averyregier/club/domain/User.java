@@ -1,12 +1,12 @@
 package com.github.averyregier.club.domain;
 
-import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.club.Name;
+import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import com.github.averyregier.club.domain.club.adapter.PersonWrapper;
 import com.github.averyregier.club.view.UserBean;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.Random;
  */
 public class User extends PersonWrapper implements Person {
     private Person person;
-    private String auth;
+    private Integer auth;
     private String id;
     private String providerID;
 
@@ -30,6 +30,11 @@ public class User extends PersonWrapper implements Person {
         this.person = personAdapter;
     }
 
+    public User(Person personAdapter, Integer initialAuth) {
+        this.person = personAdapter;
+        this.auth = initialAuth;
+    }
+
     public Login getLoginInformation() {
         return new Login();
     }
@@ -37,7 +42,7 @@ public class User extends PersonWrapper implements Person {
     public class Login {
 
         public Optional<Integer> getAuth() {
-            return auth == null ? Optional.empty() : Optional.of(toInt(decodeAuth()));
+            return Optional.ofNullable(auth);
         }
 
         public String getID() {
@@ -53,26 +58,34 @@ public class User extends PersonWrapper implements Person {
         }
     }
 
-    private int toInt(byte[] bytes) {
-        return new BigInteger(bytes).intValue();
+    private static int toInt(String auth) {
+        return Integer.parseInt(auth, Character.MAX_RADIX);
     }
 
-    private byte[] decodeAuth() {
+    private static String fromInt(Integer auth) {
+        return Integer.toString(auth, Character.MAX_RADIX);
+    }
+
+    private static String decodeAuth(String auth) {
         try {
-            return URLDecoder.decode(auth, "UTF-8").getBytes();
+            return URLDecoder.decode(auth, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            return auth.getBytes();
+            return auth;
         }
     }
 
     public String resetAuth() {
-        byte[] bytes = new byte[10];
-        new Random(System.currentTimeMillis()).nextBytes(bytes);
-        auth = new String(bytes);
-        try {
-            auth = URLEncoder.encode(auth, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        auth = new Random(System.currentTimeMillis()).nextInt();
+        return encodeAuth(fromInt(auth));
+    }
+
+    private static String encodeAuth(String auth) {
+        if(auth != null) {
+            try {
+                auth = URLEncoder.encode(auth, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
         return auth;
     }
@@ -83,7 +96,12 @@ public class User extends PersonWrapper implements Person {
     }
 
     public boolean authenticate(String auth) {
-        return auth != null && auth.equals(this.auth);
+        boolean allThere = auth != null && this.auth != null;
+        if (allThere) {
+            int attempted = toInt(decodeAuth(auth));
+            return attempted == this.auth;
+        }
+        return false;
     }
 
     @Override

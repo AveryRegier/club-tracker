@@ -5,7 +5,6 @@ import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import com.github.averyregier.club.view.UserBean;
 import org.jooq.DSLContext;
-import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.TableField;
 import org.jooq.exception.DataAccessException;
@@ -46,12 +45,14 @@ public class LoginBroker extends Broker<User.Login> {
 
     public Optional<User> find(String providerId, String uniqueID) {
         return query((create)->{
-            Result<Record2<byte[], Integer>> result = create.select(LOGIN.ID, LOGIN.AUTH)
+            Result<LoginRecord> result = create.selectFrom(LOGIN)
                     .where(LOGIN.PROVIDER_ID.eq(providerId))
                     .and(LOGIN.UNIQUE_ID.eq(uniqueID))
                     .fetch();
             return result.stream().findFirst().map(r->{
-                User user = new User(new PersonAdapter(convert(r.value1())));
+                User user = new User(
+                        new PersonAdapter(convert(r.getId())),
+                        r.getAuth());
                 UserBean bean = new UserBean();
                 bean.setUniqueId(uniqueID);
                 bean.setProviderId(providerId);
