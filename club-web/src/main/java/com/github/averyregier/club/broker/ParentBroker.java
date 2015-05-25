@@ -6,8 +6,10 @@ import org.jooq.DSLContext;
 import org.jooq.TableField;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static com.github.averyregier.club.db.tables.Parent.PARENT;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 
 /**
  * Created by avery on 2/28/15.
@@ -34,4 +36,14 @@ public class ParentBroker extends Broker<Parent> {
                 .set(PARENT.FAMILY_ID, thing.getFamily().map(family -> family.getId().getBytes()))
                 .build();
     }
+
+    public Optional<String> findFamily(String personId) {
+        return query((create)-> create
+                .selectFrom(PARENT)
+                .where(PARENT.ID.eq(personId.getBytes()))
+                .fetch().stream()
+                .findFirst()
+                .map(r -> convert(r.getFamilyId())));
+    }
+
 }

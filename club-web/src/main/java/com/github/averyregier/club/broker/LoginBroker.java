@@ -7,13 +7,12 @@ import com.github.averyregier.club.view.UserBean;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.TableField;
-import org.jooq.exception.DataAccessException;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Optional;
 
 import static com.github.averyregier.club.db.tables.Login.LOGIN;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 
 /**
  * Created by avery on 4/23/15.
@@ -51,8 +50,7 @@ public class LoginBroker extends Broker<User.Login> {
                     .fetch();
             return result.stream().findFirst().map(r->{
                 User user = new User(
-                        manager.lookup(convert(r.getId())).get(),
-                        r.getAuth());
+                        manager.lookup(convert(r.getId())).get(), r.getAuth());
                 UserBean bean = new UserBean();
                 bean.setUniqueId(uniqueID);
                 bean.setProviderId(providerId);
@@ -62,11 +60,4 @@ public class LoginBroker extends Broker<User.Login> {
         });
     }
 
-    private String convert(byte[] bytes) {
-        try {
-            return new String(bytes, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new DataAccessException(e.getMessage());
-        }
-    }
 }

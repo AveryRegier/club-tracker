@@ -1,5 +1,7 @@
 package com.github.averyregier.club.domain.utility;
 
+import org.jooq.exception.DataAccessException;
+
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.URLDecoder;
@@ -125,5 +127,13 @@ public class UtilityMethods {
 
     public static <T,R> Optional<R> optMap(Optional<T> in, Function<T, Optional<R>> fn) {
         return in.map(fn::apply).orElse(Optional.empty());
+    }
+
+    public static String convert(byte[] bytes) {
+        try {
+            return new String(bytes, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 }
