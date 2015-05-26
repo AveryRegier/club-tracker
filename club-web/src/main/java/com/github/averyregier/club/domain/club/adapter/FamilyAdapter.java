@@ -16,9 +16,9 @@ public class FamilyAdapter implements Family {
 
     public FamilyAdapter(Person firstPerson) {
         if(firstPerson.asParent().isPresent()) {
-            parents.add(firstPerson.asParent().get());
+            addParent(firstPerson.asParent().get());
         } else {
-            clubbers.add(firstPerson.asClubber().get());
+            addClubber(firstPerson.asClubber().get());
         }
     }
 

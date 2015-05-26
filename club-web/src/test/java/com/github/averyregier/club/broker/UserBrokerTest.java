@@ -1,11 +1,9 @@
 package com.github.averyregier.club.broker;
 
-import com.github.averyregier.club.db.tables.records.LoginRecord;
 import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import com.github.averyregier.club.view.UserBean;
-import org.jooq.Result;
 import org.jooq.exception.DataAccessException;
 import org.jooq.tools.jdbc.MockDataProvider;
 import org.junit.Test;
@@ -13,12 +11,9 @@ import org.junit.Test;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
-import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
+import static com.github.averyregier.club.broker.BrokerTestUtil.*;
 import static com.github.averyregier.club.db.tables.Login.LOGIN;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class UserBrokerTest {
 
@@ -111,23 +106,18 @@ public class UserBrokerTest {
         String uniqueID = UUID.randomUUID().toString();
         String id = manager.createPerson().getId();
 
-        MockDataProvider provider = new MockDataProviderBuilder().statement(StatementType.SELECT, (s)->{
+        MockDataProvider provider = selectOne((s) -> {
             s.assertFieldEquals(providerId, LOGIN.PROVIDER_ID);
             s.assertFieldEquals(uniqueID, LOGIN.UNIQUE_ID);
-        }).reply((create)->{
-            Result<LoginRecord> result = create.newResult(LOGIN);
-            result.add(create.newRecord(LOGIN));
-            result.get(0).setId(id.getBytes());
-            result.get(0).setAuth(auth);
-            return result;
-        }).build();
+        }, LOGIN, (r)-> {
+            r.setId(id.getBytes());
+            r.setAuth(auth);
+        });
 
         User user = setup(provider).find(providerId, uniqueID, manager).get();
-
         assertEquals(id, user.getId());
         assertEquals(providerId, user.getLoginInformation().getProviderID());
         assertEquals(uniqueID, user.getLoginInformation().getUniqueID());
         return user;
     }
-
 }

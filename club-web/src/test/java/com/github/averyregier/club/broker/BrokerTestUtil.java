@@ -1,6 +1,6 @@
 package com.github.averyregier.club.broker;
 
-import org.jooq.SQLDialect;
+import org.jooq.*;
 import org.jooq.tools.jdbc.MockConnection;
 import org.jooq.tools.jdbc.MockDataProvider;
 
@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,5 +68,24 @@ public class BrokerTestUtil {
                 .statement(StatementType.MERGE, idFn)
                 .statement(StatementType.INSERT, idFn)
                 .build();
+    }
+
+    static <R extends UpdatableRecord<R>> MockDataProvider selectOne(
+            Consumer<StatementVerifier> assertWhereFn,
+            Table<R> table,
+            Consumer<R> fn)
+    {
+        return select(assertWhereFn, (create) -> {
+            Result<R> result = create.newResult(table);
+            R record = create.newRecord(table);
+            result.add(record);
+            fn.accept(record);
+            return result;
+        });
+    }
+
+    static MockDataProvider select(Consumer<StatementVerifier> assertWhereFn, Function<DSLContext, Result<?>> addResultFn) {
+        return new MockDataProviderBuilder().statement(StatementType.SELECT,
+                assertWhereFn).reply(addResultFn).build();
     }
 }

@@ -1,11 +1,9 @@
 package com.github.averyregier.club.broker;
 
-import com.github.averyregier.club.db.tables.records.PersonRecord;
 import com.github.averyregier.club.domain.club.Name;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import com.github.averyregier.club.domain.program.AgeGroup;
-import org.jooq.Result;
 import org.jooq.exception.DataAccessException;
 import org.jooq.tools.jdbc.MockDataProvider;
 import org.junit.Test;
@@ -16,8 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
-import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
+import static com.github.averyregier.club.broker.BrokerTestUtil.*;
 import static com.github.averyregier.club.db.tables.Person.PERSON;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -135,11 +132,7 @@ public class PersonBrokerTest {
     public void testFindsById() {
         String id = UUID.randomUUID().toString();
 
-        MockDataProvider provider = new MockDataProviderBuilder().statement(StatementType.SELECT, (s)->{
-            s.assertUUID(id, PERSON.ID);
-        }).reply((create)->{
-            Result<PersonRecord> result = create.newResult(PERSON);
-            PersonRecord record = create.newRecord(PERSON);
+        MockDataProvider provider = selectOne((s) -> s.assertUUID(id, PERSON.ID), PERSON, (record) -> {
             record.setId(id.getBytes());
             record.setTitle("Dr.");
             record.setGiven("Joseph");
@@ -148,9 +141,7 @@ public class PersonBrokerTest {
             record.setFriendly("Joe");
             record.setGender("M");
             record.setEmail("dr.joe.jr@smith.com");
-            result.add(record);
-            return result;
-        }).build();
+        });
 
         Person person = setup(provider).find(id).get();
 
@@ -163,5 +154,4 @@ public class PersonBrokerTest {
         assertEquals("JR", person.getName().getHonorificName());
         assertEquals("Joe", person.getName().getFriendlyName());
     }
-
 }
