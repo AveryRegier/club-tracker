@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 /**
 * Created by avery on 9/26/14.
 */
-abstract class ClubAdapter extends ClubGroupAdapter implements Club {
+public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     private final Curriculum series;
     private Set<Clubber> clubbers = new HashSet<>();
 

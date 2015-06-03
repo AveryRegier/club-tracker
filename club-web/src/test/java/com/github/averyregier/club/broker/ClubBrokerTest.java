@@ -1,9 +1,12 @@
 package com.github.averyregier.club.broker;
 
+import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.club.adapter.MockClub;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
+import com.github.averyregier.club.domain.program.Curriculum;
+import com.github.averyregier.club.domain.program.Programs;
 import com.github.averyregier.club.domain.program.awana.TnTCurriculum;
 import org.jooq.exception.DataAccessException;
 import org.jooq.tools.jdbc.MockDataProvider;
@@ -12,9 +15,9 @@ import org.junit.Test;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
-import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
+import static com.github.averyregier.club.broker.BrokerTestUtil.*;
 import static com.github.averyregier.club.db.tables.Club.CLUB;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by avery on 2/25/15.
@@ -67,7 +70,7 @@ public class ClubBrokerTest {
         };
     }
 
-    private Broker<Club> setup(MockDataProvider provider) {
+    private ClubBroker setup(MockDataProvider provider) {
         return new ClubBroker(mockConnector(provider));
     }
 
@@ -82,5 +85,28 @@ public class ClubBrokerTest {
     private void assertFields(Club club, StatementVerifier s) {
         s.assertUUID(club.getParentGroup(), CLUB.PARENT_CLUB_ID);
         s.assertFieldEquals(club.getCurriculum().getId(), CLUB.CURRICULUM);
+    }
+
+    @Test
+    public void findClub() {
+        String clubId = UUID.randomUUID().toString();
+        ClubManager manager = new ClubManager();
+        Club parent = manager.createClub(null, Programs.AWANA.get());
+        String parentClubId = parent.getId();
+        Curriculum curriculum = Programs.find("TnT").get();
+        String curriculumId = curriculum.getId();
+
+        MockDataProvider provider = selectOne((s) -> {
+            s.assertUUID(clubId, CLUB.ID);
+        }, CLUB, (r)-> {
+            r.setId(clubId.getBytes());
+            r.setParentClubId(parentClubId.getBytes());
+            r.setCurriculum(curriculumId);
+        });
+
+        Club club = setup(provider).find(clubId, manager).get();
+        assertEquals(clubId, club.getId());
+        assertEquals(parent, club.getParentGroup().get());
+        assertEquals(curriculum, club.getCurriculum());
     }
 }

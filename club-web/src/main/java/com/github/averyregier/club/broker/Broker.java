@@ -52,4 +52,5 @@ public abstract class Broker<T> {
     protected void fail(String reason) {
         throw new DataAccessException(reason);
     }
+
 }
