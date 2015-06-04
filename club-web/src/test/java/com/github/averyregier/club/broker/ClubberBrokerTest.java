@@ -1,8 +1,13 @@
 package com.github.averyregier.club.broker;
 
+import com.github.averyregier.club.domain.ClubManager;
+import com.github.averyregier.club.domain.PersonManager;
+import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.club.Clubber;
+import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.*;
 import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.domain.program.Programs;
 import org.jooq.exception.DataAccessException;
 import org.jooq.tools.jdbc.MockDataProvider;
 import org.junit.Test;
@@ -10,9 +15,10 @@ import org.junit.Test;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
-import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
+import static com.github.averyregier.club.broker.BrokerTestUtil.*;
 import static com.github.averyregier.club.db.tables.Clubber.CLUBBER;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class ClubberBrokerTest {
 
@@ -79,5 +85,89 @@ public class ClubberBrokerTest {
 
     private ClubberBroker setup(MockDataProvider provider) {
         return new ClubberBroker(mockConnector(provider));
+    }
+
+    @Test
+    public void findClubber() {
+        PersonManager personManager = new PersonManager();
+        Person person = personManager.createPerson();
+        String familyId = UUID.randomUUID().toString();
+        ClubManager clubManager = new ClubManager();
+        Club club = clubManager.createClub(null, Programs.AWANA.get());
+
+        MockDataProvider provider = selectOne((s) -> {
+            s.assertUUID(person.getId(), CLUBBER.ID);
+        }, CLUBBER, (r)-> {
+            r.setId(person.getId().getBytes());
+            r.setFamilyId(familyId.getBytes());
+            r.setClubId(club.getId().getBytes());
+            r.setAgeGroup(AgeGroup.DefaultAgeGroup.THIRD_GRADE.name());
+        });
+
+        Clubber clubber = setup(provider).find(person.getId(), personManager, clubManager).get();
+        assertEquals(person.getId(), clubber.getId());
+        assertEquals(AgeGroup.DefaultAgeGroup.THIRD_GRADE, person.asClubber().get().getCurrentAgeGroup());
+        assertEquals(familyId, person.getFamily().get().getId());
+    }
+
+    @Test
+    public void findClubberNoFamily() {
+        PersonManager personManager = new PersonManager();
+        Person person = personManager.createPerson();
+        ClubManager clubManager = new ClubManager();
+        Club club = clubManager.createClub(null, Programs.AWANA.get());
+
+        MockDataProvider provider = selectOne((s) -> {
+            s.assertUUID(person.getId(), CLUBBER.ID);
+        }, CLUBBER, (r)-> {
+            r.setId(person.getId().getBytes());
+            r.setFamilyId(null);
+            r.setClubId(club.getId().getBytes());
+            r.setAgeGroup(AgeGroup.DefaultAgeGroup.THIRD_GRADE.name());
+        });
+
+        Clubber clubber = setup(provider).find(person.getId(), personManager, clubManager).get();
+        assertEquals(person.getId(), clubber.getId());
+        assertEquals(AgeGroup.DefaultAgeGroup.THIRD_GRADE, person.asClubber().get().getCurrentAgeGroup());
+
+        assertFalse(clubber.getFamily().isPresent());
+    }
+
+
+    @Test
+    public void findClubberNoClub() {
+        PersonManager personManager = new PersonManager();
+        Person person = personManager.createPerson();
+        ClubManager clubManager = new ClubManager();
+
+        MockDataProvider provider = selectOne((s) -> {
+            s.assertUUID(person.getId(), CLUBBER.ID);
+        }, CLUBBER, (r)-> {
+            r.setId(person.getId().getBytes());
+            r.setFamilyId(null);
+            r.setClubId(null);
+            r.setAgeGroup(AgeGroup.DefaultAgeGroup.THIRD_GRADE.name());
+        });
+
+        Clubber clubber = setup(provider).find(person.getId(), personManager, clubManager).get();
+        assertEquals(person.getId(), clubber.getId());
+
+        assertFalse(clubber.getClub().isPresent());
+    }
+
+
+    @Test
+    public void findNoClubber() {
+        PersonManager personManager = new PersonManager();
+        Person person = personManager.createPerson();
+        ClubManager clubManager = new ClubManager();
+
+        MockDataProvider provider = select((s) -> {
+            s.assertUUID(person.getId(), CLUBBER.ID);
+        }, (create)->create.newResult(CLUBBER));
+
+        assertFalse(setup(provider).find(person.getId(), personManager, clubManager).isPresent());
+
+        assertFalse(person.asClubber().isPresent());
     }
 }
