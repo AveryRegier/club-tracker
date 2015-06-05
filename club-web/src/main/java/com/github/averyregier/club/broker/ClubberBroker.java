@@ -14,6 +14,7 @@ import org.jooq.TableField;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static com.github.averyregier.club.db.tables.Clubber.CLUBBER;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
@@ -47,27 +48,33 @@ public class ClubberBroker extends Broker<Clubber> {
     }
 
     public Optional<Clubber> find(String clubberId, PersonManager personManager, ClubManager clubManager) {
-        return query(create-> {
+        Optional<Clubber> result = query(queryClubberMethod(clubberId, personManager, clubManager));
+        return result;
+    }
+
+    private Function<DSLContext, Optional<Clubber>> queryClubberMethod(
+            String clubberId, PersonManager personManager, ClubManager clubManager) {
+        return create -> {
             ClubberRecord record = create.selectFrom(CLUBBER)
                     .where(CLUBBER.ID.eq(clubberId.getBytes()))
                     .fetchOne();
-            if(record == null) return Optional.empty();
+            if (record == null) return Optional.empty();
 
             ClubberAdapter clubber = new ClubberAdapter(personManager.lookup(clubberId).get());
 
             byte[] clubId = record.getClubId();
-            if(clubId != null) {
+            if (clubId != null) {
                 clubber.setClub((ClubAdapter) clubManager.lookup(convert(clubId)).get());
             }
 
             clubber.getUpdater().setAgeGroup(AgeGroup.DefaultAgeGroup.valueOf(record.getAgeGroup()));
 
             byte[] familyId = record.getFamilyId();
-            if(familyId != null) {
+            if (familyId != null) {
                 Family family = new FamilyAdapter(convert(familyId), clubber);
                 clubber.getUpdater().setFamily(family);
             }
-            return Optional.of((Clubber)clubber);
-        });
+            return Optional.of(clubber);
+        };
     }
 }
