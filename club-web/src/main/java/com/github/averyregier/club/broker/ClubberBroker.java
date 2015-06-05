@@ -67,7 +67,7 @@ public class ClubberBroker extends Broker<Clubber> {
                 Family family = new FamilyAdapter(convert(familyId), clubber);
                 clubber.getUpdater().setFamily(family);
             }
-            return Optional.of(clubber);
+            return Optional.of((Clubber)clubber);
         });
     }
 }
