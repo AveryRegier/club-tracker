@@ -5,7 +5,9 @@ import com.github.averyregier.club.domain.club.Ceremony;
 import org.jooq.DSLContext;
 import org.jooq.TableField;
 
+import java.time.LocalDate;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.github.averyregier.club.db.tables.Ceremony.CEREMONY;
 
@@ -37,5 +39,36 @@ public class CeremonyBroker extends Broker<Ceremony> {
                         null)
                 .set(CEREMONY.NAME, ceremony.getName())
                 .build();
+    }
+
+    public Optional<Ceremony> find(String ceremonyId) {
+        return query(create->{
+            CeremonyRecord record = create.selectFrom(CEREMONY).where(CEREMONY.ID.eq(ceremonyId.getBytes())).fetchOne();
+            if(record == null) return Optional.empty();
+            LocalDate date = LocalDate.ofEpochDay(record.getPresentationDate().getTime());
+            String name = record.getName();
+            return Optional.of(new Ceremony() {
+
+                @Override
+                public String getName() {
+                    return name;
+                }
+
+                @Override
+                public String getId() {
+                    return ceremonyId;
+                }
+
+                @Override
+                public String getShortCode() {
+                    return getName();
+                }
+
+                @Override
+                public LocalDate presentationDate() {
+                    return date;
+                }
+            });
+        });
     }
 }

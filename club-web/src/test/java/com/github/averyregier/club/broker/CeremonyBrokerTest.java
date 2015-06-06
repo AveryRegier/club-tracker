@@ -6,11 +6,15 @@ import org.jooq.exception.DataAccessException;
 import org.jooq.tools.jdbc.MockDataProvider;
 import org.junit.Test;
 
+import java.time.LocalDate;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 
-import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
-import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
+import static com.github.averyregier.club.broker.BrokerTestUtil.*;
 import static com.github.averyregier.club.db.tables.Ceremony.CEREMONY;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CeremonyBrokerTest {
 
@@ -68,5 +72,23 @@ public class CeremonyBrokerTest {
 
     private CeremonyBroker setup(MockDataProvider provider) {
         return new CeremonyBroker(mockConnector(provider));
+    }
+
+    @Test
+    public void findCeremony() {
+        String ceremonyId = UUID.randomUUID().toString();
+        long date = LocalDate.now().toEpochDay();
+
+        MockDataProvider provider = selectOne((s) -> s.assertUUID(ceremonyId, CEREMONY.ID), CEREMONY, (r) -> {
+            r.setId(ceremonyId.getBytes());
+            r.setName("Foobar");
+            r.setPresentationDate(new java.sql.Date(date));
+        });
+        Optional<Ceremony> ceremony = setup(provider).find(ceremonyId);
+
+        assertTrue(ceremony.isPresent());
+        assertEquals("Foobar", ceremony.get().getName());
+        assertEquals(ceremonyId, ceremony.get().getId());
+        assertEquals(date, ceremony.get().presentationDate().toEpochDay());
     }
 }
