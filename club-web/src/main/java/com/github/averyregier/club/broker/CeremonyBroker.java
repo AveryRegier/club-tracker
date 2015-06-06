@@ -8,6 +8,7 @@ import org.jooq.TableField;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static com.github.averyregier.club.db.tables.Ceremony.CEREMONY;
 
@@ -42,9 +43,9 @@ public class CeremonyBroker extends Broker<Ceremony> {
     }
 
     public Optional<Ceremony> find(String ceremonyId) {
-        return query(create->{
+        Function<DSLContext, Optional<Ceremony>> fn = create -> {
             CeremonyRecord record = create.selectFrom(CEREMONY).where(CEREMONY.ID.eq(ceremonyId.getBytes())).fetchOne();
-            if(record == null) return Optional.empty();
+            if (record == null) return Optional.empty();
             LocalDate date = LocalDate.ofEpochDay(record.getPresentationDate().getTime());
             String name = record.getName();
             return Optional.of(new Ceremony() {
@@ -69,6 +70,8 @@ public class CeremonyBroker extends Broker<Ceremony> {
                     return date;
                 }
             });
-        });
+        };
+        Optional<Ceremony> query = query(fn);
+        return query;
     }
 }
