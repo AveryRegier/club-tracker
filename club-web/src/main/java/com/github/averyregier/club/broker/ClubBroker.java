@@ -41,15 +41,16 @@ public class ClubBroker extends Broker<Club> {
     }
 
     public Optional<Club> find(String clubId, ClubManager clubManager) {
-        return query(create->{
+        Optional<Club> result = query(create -> {
             ClubRecord record = create.selectFrom(CLUB)
                     .where(CLUB.ID.eq(clubId.getBytes()))
                     .fetchOne();
-            if(record == null) return Optional.empty();
+            if (record == null) return Optional.empty();
             return clubManager.injectClub(
                     convert(record.getId()),
                     convert(record.getParentClubId()),
                     record.getCurriculum());
         });
+        return result;
     }
 }
