@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
 * Created by avery on 12/28/14.
 */
-class ClubLeaderAdapter extends ClubMemberAdapter implements ClubLeader {
+public class ClubLeaderAdapter extends ClubMemberAdapter implements ClubLeader {
 
     private final LeadershipRole leadershipRole;
 
