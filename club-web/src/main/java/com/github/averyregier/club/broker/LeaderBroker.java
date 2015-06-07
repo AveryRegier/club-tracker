@@ -11,6 +11,7 @@ import org.jooq.TableField;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static com.github.averyregier.club.db.tables.Leader.LEADER;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
@@ -43,7 +44,7 @@ public class LeaderBroker extends Broker<ClubLeader> {
     }
 
     public Optional<ClubLeader> find(String id, PersonManager personManager, ClubManager clubManager) {
-        Optional<ClubLeader> result = query(create -> {
+        Function<DSLContext, Optional<ClubLeader>> fn = create -> {
             LeaderRecord record = create.selectFrom(LEADER).where(LEADER.ID.eq(id.getBytes())).fetchOne();
             if (record == null) return Optional.empty();
 
@@ -51,7 +52,8 @@ public class LeaderBroker extends Broker<ClubLeader> {
                     ClubLeader.LeadershipRole.valueOf(record.getRole()),
                     (ClubAdapter) clubManager.lookup(convert(record.getClubId())).get()
             ));
-        });
+        };
+        Optional<ClubLeader> result = query(fn);
         return result;
     }
 }

@@ -8,6 +8,7 @@ import org.jooq.TableField;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static com.github.averyregier.club.db.tables.Club.CLUB;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
@@ -41,7 +42,7 @@ public class ClubBroker extends Broker<Club> {
     }
 
     public Optional<Club> find(String clubId, ClubManager clubManager) {
-        Optional<Club> result = query(create -> {
+        Function<DSLContext, Optional<Club>> fn = create -> {
             ClubRecord record = create.selectFrom(CLUB)
                     .where(CLUB.ID.eq(clubId.getBytes()))
                     .fetchOne();
@@ -50,7 +51,8 @@ public class ClubBroker extends Broker<Club> {
                     convert(record.getId()),
                     convert(record.getParentClubId()),
                     record.getCurriculum());
-        });
+        };
+        Optional<Club> result = query(fn);
         return result;
     }
 }
