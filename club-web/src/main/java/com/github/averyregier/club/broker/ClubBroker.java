@@ -45,6 +45,7 @@ public class ClubBroker extends Broker<Club> {
             ClubRecord record = create.selectFrom(CLUB)
                     .where(CLUB.ID.eq(clubId.getBytes()))
                     .fetchOne();
+            if(record == null) return Optional.empty();
             return clubManager.injectClub(
                     convert(record.getId()),
                     convert(record.getParentClubId()),

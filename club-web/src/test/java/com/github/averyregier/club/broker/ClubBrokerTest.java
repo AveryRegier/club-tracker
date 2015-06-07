@@ -18,6 +18,7 @@ import java.util.function.Consumer;
 import static com.github.averyregier.club.broker.BrokerTestUtil.*;
 import static com.github.averyregier.club.db.tables.Club.CLUB;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Created by avery on 2/25/15.
@@ -108,5 +109,17 @@ public class ClubBrokerTest {
         assertEquals(clubId, club.getId());
         assertEquals(parent, club.getParentGroup().get());
         assertEquals(curriculum, club.getCurriculum());
+    }
+
+    @Test
+    public void findNoClub() {
+        String clubId = UUID.randomUUID().toString();
+        ClubManager manager = new ClubManager();
+
+        MockDataProvider provider = select((s) -> {
+            s.assertUUID(clubId, CLUB.ID);
+        }, (r) -> r.newResult(CLUB));
+
+        assertFalse(setup(provider).find(clubId, manager).isPresent());
     }
 }
