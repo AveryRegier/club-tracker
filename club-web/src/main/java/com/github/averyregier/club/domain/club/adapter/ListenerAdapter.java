@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 /**
 * Created by avery on 12/16/14.
 */
-class ListenerAdapter extends PersonWrapper implements Listener {
+public class ListenerAdapter extends PersonWrapper implements Listener {
     private final Person person;
     private ClubGroup clubGroup;
 

@@ -1,9 +1,14 @@
 package com.github.averyregier.club.broker;
 
+import com.github.averyregier.club.domain.ClubManager;
+import com.github.averyregier.club.domain.PersonManager;
+import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.club.Listener;
+import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.MockClub;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
+import com.github.averyregier.club.domain.program.Programs;
 import org.jooq.exception.DataAccessException;
 import org.jooq.tools.jdbc.MockDataProvider;
 import org.junit.Test;
@@ -11,9 +16,10 @@ import org.junit.Test;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
-import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
+import static com.github.averyregier.club.broker.BrokerTestUtil.*;
 import static com.github.averyregier.club.db.tables.Listener.LISTENER;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class ListenerBrokerTest {
 
@@ -62,5 +68,39 @@ public class ListenerBrokerTest {
 
     private ListenerBroker setup(MockDataProvider provider) {
         return new ListenerBroker(mockConnector(provider));
+    }
+
+    @Test
+    public void findNoListener() {
+        PersonManager personManager = new PersonManager();
+        Person person = personManager.createPerson();
+        ClubManager clubManager = new ClubManager();
+
+        MockDataProvider provider = select((s) -> {
+            s.assertUUID(person.getId(), LISTENER.ID);
+        }, (create)->create.newResult(LISTENER));
+
+        assertFalse(setup(provider).find(person.getId(), personManager, clubManager).isPresent());
+
+        assertFalse(person.asClubLeader().isPresent());
+    }
+
+    @Test
+    public void findListener() {
+        PersonManager personManager = new PersonManager();
+        Person person = personManager.createPerson();
+        ClubManager clubManager = new ClubManager();
+        Club club = clubManager.createClub(null, Programs.AWANA.get());
+
+        MockDataProvider provider = selectOne((s) -> {
+            s.assertUUID(person.getId(), LISTENER.ID);
+        }, LISTENER, r -> {
+            r.setId(person.getId().getBytes());
+            r.setClubId(club.getId().getBytes());
+        });
+
+        Listener listener = setup(provider).find(person.getId(), personManager, clubManager).get();
+        assertEquals(listener, person.asListener().get());
+        assertEquals(person.getId(), listener.getId());
     }
 }
