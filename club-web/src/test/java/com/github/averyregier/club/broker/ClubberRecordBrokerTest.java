@@ -19,7 +19,7 @@ import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
 import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
 import static com.github.averyregier.club.db.tables.Record.RECORD;
 
-public class RecordBrokerTest {
+public class ClubberRecordBrokerTest {
 
     @Test
     public void testPersistMerges() throws Exception {
