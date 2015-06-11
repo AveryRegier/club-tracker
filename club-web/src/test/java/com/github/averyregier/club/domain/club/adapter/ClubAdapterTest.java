@@ -14,7 +14,7 @@ public class ClubAdapterTest {
 
     @Test
     public void testAsProgram() throws Exception {
-        ProgramAdapter program = new ProgramAdapter(null, null, null);
+        ProgramAdapter program = new ProgramAdapter();
         Club classUnderTest = DomainTestUtil.createClubAdapter(program, null);
         Optional<Program> programOptional = classUnderTest.asProgram();
         assertNotNull(programOptional);
@@ -37,14 +37,14 @@ public class ClubAdapterTest {
 
     @Test
     public void testGetParentGroup() throws Exception {
-        ProgramAdapter program = new ProgramAdapter(null, null, null);
+        ProgramAdapter program = new ProgramAdapter();
         Club classUnderTest = DomainTestUtil.createClubAdapter(program, null);
         assertEquals(program, classUnderTest.getParentGroup().get());
     }
 
     @Test
     public void testGetProgram() throws Exception {
-        ProgramAdapter program = new ProgramAdapter(null, null, null);
+        ProgramAdapter program = new ProgramAdapter();
         Club classUnderTest = DomainTestUtil.createClubAdapter(program, null);
         assertEquals(program, classUnderTest.getProgram());
     }

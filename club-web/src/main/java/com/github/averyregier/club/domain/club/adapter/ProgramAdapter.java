@@ -24,6 +24,9 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     private SortedSet<ClubAdapter> clubs = new TreeSet<>();
     private PersonManager personManager;
 
+    public ProgramAdapter() {
+        this(null,null,(String)null);
+    }
     public ProgramAdapter(String acceptLanguage, String organizationName, String curriculum) {
         super(curriculum != null ? Programs.valueOf(curriculum).get() : null);
         this.acceptLanguage = acceptLanguage;

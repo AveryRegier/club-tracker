@@ -45,7 +45,7 @@ public class RecordBrokerTest {
     public void testPersistsCorrectValues() throws Exception {
         final ClubberRecord record = newRecord();
 
-        record.sign(new MockClub(null, new ProgramAdapter(null, null, null)).recruit(record.getClubber()), "Well Done!");
+        record.sign(new MockClub(null, new ProgramAdapter()).recruit(record.getClubber()), "Well Done!");
 
         MockDataProvider provider = mergeProvider(assertPrimaryKey(record), assertFields(record));
 
