@@ -5,6 +5,7 @@ import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import org.jooq.DSLContext;
+import org.jooq.Result;
 import org.jooq.TableField;
 
 import java.util.Map;
@@ -43,14 +44,13 @@ public class OrganizationBroker extends Broker<Program> {
 
     public Optional<Program> find(String id, ClubManager manager) {
         return query(create-> {
-            OrganizationRecord record = create.selectFrom(ORGANIZATION)
+            Result<OrganizationRecord> records = create.selectFrom(ORGANIZATION)
                     .where(ORGANIZATION.ID.eq(id.getBytes()))
-                    .fetchOne();
-            if(record == null) return Optional.empty();
-            return Optional.of(new ProgramAdapter(
-                    record.getLocale(),
-                    record.getOrganizationname(),
-                    manager.lookup(convert(record.getClubId()))) {
+                    .fetch();
+            return records.stream().findFirst().map(r->new ProgramAdapter(
+                    r.getLocale(),
+                    r.getOrganizationname(),
+                    manager.lookup(convert(r.getClubId()))) {
                 @Override
                 public String getId() {
                     return id;
