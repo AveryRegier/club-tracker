@@ -1,7 +1,9 @@
 package com.github.averyregier.club.broker;
 
 import com.github.averyregier.club.db.tables.records.OrganizationRecord;
+import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.club.Program;
+import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import org.jooq.DSLContext;
 import org.jooq.TableField;
 
@@ -9,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.github.averyregier.club.db.tables.Organization.ORGANIZATION;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 
 /**
  * Created by avery on 2/27/15.
@@ -36,5 +39,23 @@ public class OrganizationBroker extends Broker<Program> {
                 .set(ORGANIZATION.ORGANIZATIONNAME, program.getShortCode())
                 .set(ORGANIZATION.LOCALE, Optional.ofNullable(program.getLocale()).map(Object::toString).orElse(null))
                 .build();
+    }
+
+    public Optional<Program> find(String id, ClubManager manager) {
+        return query(create-> {
+            OrganizationRecord record = create.selectFrom(ORGANIZATION)
+                    .where(ORGANIZATION.ID.eq(id.getBytes()))
+                    .fetchOne();
+            if(record == null) return Optional.empty();
+            return Optional.of(new ProgramAdapter(
+                    record.getLocale(),
+                    record.getOrganizationname(),
+                    manager.lookup(convert(record.getClubId()))) {
+                @Override
+                public String getId() {
+                    return id;
+                }
+            });
+        });
     }
 }

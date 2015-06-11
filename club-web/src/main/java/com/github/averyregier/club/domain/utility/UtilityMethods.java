@@ -8,6 +8,8 @@ import java.net.URLDecoder;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -135,5 +137,27 @@ public class UtilityMethods {
         } catch (UnsupportedEncodingException e) {
             throw new DataAccessException(e.getMessage());
         }
+    }
+
+    private static final Pattern localeMatcher = Pattern.compile
+            ("^([^_]*)(_([^_]*)(_#(.*))?)?$");
+
+    public static Locale parseLocale(String value) {
+        if(value == null) return null;
+        Matcher matcher = localeMatcher.matcher(value.replace('-', '_'));
+        return matcher.find()
+                ? isEmpty(matcher.group(5))
+                ? isEmpty(matcher.group(3))
+                ? isEmpty(matcher.group(1))
+                ? null
+                : new Locale(matcher.group(1))
+                : new Locale(matcher.group(1), matcher.group(3))
+                : new Locale(matcher.group(1), matcher.group(3),
+                matcher.group(5))
+                : null;
+    }
+
+    public static boolean isEmpty(String s) {
+        return s == null || s.trim().isEmpty();
     }
 }

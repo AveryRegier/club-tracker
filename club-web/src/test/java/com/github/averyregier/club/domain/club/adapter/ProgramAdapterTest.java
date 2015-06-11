@@ -17,20 +17,20 @@ import static org.junit.Assert.*;
 public class ProgramAdapterTest {
     @Test
     public void noClubsToStartWith() {
-        ProgramAdapter classUnderTest = new ProgramAdapter(null, null, null);
+        ProgramAdapter classUnderTest = new ProgramAdapter(null, null, (String)null);
         assertTrue(classUnderTest.getClubs().isEmpty());
     }
 
     @Test
     public void orgName() {
-        ProgramAdapter classUnderTest = new ProgramAdapter(null, "An org name", null);
+        ProgramAdapter classUnderTest = new ProgramAdapter(null, "An org name", (String)null);
         assertEquals("An org name", classUnderTest.getShortCode());
     }
 
     @Test
     public void locale() {
-        ProgramAdapter classUnderTest = new ProgramAdapter("en_GB", null, null);
-        assertEquals(Locale.forLanguageTag("en_GB"), classUnderTest.getLocale());
+        ProgramAdapter classUnderTest = new ProgramAdapter("en_GB", null, (String)null);
+        assertEquals(new Locale("en", "GB"), classUnderTest.getLocale());
     }
 
     @Test
@@ -41,7 +41,7 @@ public class ProgramAdapterTest {
 
     @Test
     public void addClub() {
-        ProgramAdapter classUnderTest = new ProgramAdapter(null, null, null);
+        ProgramAdapter classUnderTest = new ProgramAdapter(null, null, (String)null);
         MasterCurriculum curriculum = new MasterCurriculum("foo", Collections.emptyList());
         classUnderTest.addClub(curriculum);
         assertFalse(classUnderTest.getClubs().isEmpty());

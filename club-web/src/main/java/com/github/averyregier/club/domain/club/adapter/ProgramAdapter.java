@@ -13,9 +13,7 @@ import com.github.averyregier.club.domain.utility.adapter.StandardInputFields;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.github.averyregier.club.domain.utility.UtilityMethods.getOther;
-import static com.github.averyregier.club.domain.utility.UtilityMethods.prefix;
-import static com.github.averyregier.club.domain.utility.UtilityMethods.putAll;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
 
 /**
 * Created by avery on 9/23/14.
@@ -30,6 +28,13 @@ public class ProgramAdapter extends ClubAdapter implements Program {
         super(curriculum != null ? Programs.valueOf(curriculum).get() : null);
         this.acceptLanguage = acceptLanguage;
         this.organizationName = organizationName;
+    }
+
+    public ProgramAdapter(String acceptLanguage, String organizationname, Optional<Club> club) {
+        super(club.map(c->c.getCurriculum()).orElse(null));
+        this.acceptLanguage = acceptLanguage;
+        this.organizationName = organizationname;
+
     }
 
     @Override
@@ -169,7 +174,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
 
     @Override
     public Locale getLocale() {
-        return acceptLanguage != null ? Locale.forLanguageTag(acceptLanguage) : null;
+        return UtilityMethods.parseLocale(acceptLanguage);
     }
 
     @Override
