@@ -33,7 +33,7 @@ public class ParentBroker extends Broker<Parent> {
 
     private Map<TableField<ParentRecord, ?>, Object> mapFields(Parent thing) {
         return JooqUtil.<ParentRecord>map()
-                .set(PARENT.FAMILY_ID, thing.getFamily().map(family -> family.getId().getBytes()))
+                .setHasId(PARENT.FAMILY_ID, thing.getFamily())
                 .build();
     }
 

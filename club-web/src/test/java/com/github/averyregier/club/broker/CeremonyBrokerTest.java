@@ -2,6 +2,7 @@ package com.github.averyregier.club.broker;
 
 import com.github.averyregier.club.domain.club.Ceremony;
 import com.github.averyregier.club.domain.club.adapter.CeremonyAdapter;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.jooq.exception.DataAccessException;
 import org.jooq.tools.jdbc.MockDataProvider;
 import org.junit.Test;
@@ -67,7 +68,7 @@ public class CeremonyBrokerTest {
 
     private void assertClubberFields(Ceremony ceremony, StatementVerifier s) {
         s.assertFieldEquals(ceremony.getName(), CEREMONY.NAME);
-        s.assertFieldEquals(new java.sql.Date(ceremony.presentationDate().toEpochDay()), CEREMONY.PRESENTATION_DATE);
+        s.assertFieldEquals(UtilityMethods.toSqlDate(ceremony.presentationDate()), CEREMONY.PRESENTATION_DATE);
     }
 
     private CeremonyBroker setup(MockDataProvider provider) {

@@ -31,16 +31,12 @@ public class AwardBroker extends Broker<AwardPresentation> {
     }
 
     private Map<TableField<AwardRecord, ?>, Object> mapFields(AwardPresentation award) {
-        JooqUtil.MapBuilder<AwardRecord> map = JooqUtil.<AwardRecord>map()
-                .set(AWARD.CLUBBER_ID, award.to().getId().getBytes())
+        return JooqUtil.<AwardRecord>map()
+                .set(AWARD.CLUBBER_ID, award.to().getId())
                 .set(AWARD.SECTION_ID, award.record().getSection().getId())
                 .set(AWARD.TOKEN, award.token().map(Named::getName))
-                .set(AWARD.ACCOMPLISHMENT, award.forAccomplishment().getName());
-        if(award.presentedAt() != null) {
-            map.set(AWARD.PRESENTED_AT, award.presentedAt().getId().getBytes());
-        } else {
-            map.setNull(AWARD.PRESENTED_AT);
-        }
-        return map.build();
+                .set(AWARD.ACCOMPLISHMENT, award.forAccomplishment().getName())
+                .set(AWARD.PRESENTED_AT, award.presentedAt())
+                .build();
     }
 }

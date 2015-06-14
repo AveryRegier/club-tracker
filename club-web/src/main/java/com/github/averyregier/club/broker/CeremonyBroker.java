@@ -35,9 +35,7 @@ public class CeremonyBroker extends Broker<Ceremony> {
 
     private Map<TableField<CeremonyRecord, ?>, Object> mapFields(Ceremony ceremony) {
         return JooqUtil.<CeremonyRecord>map()
-                .set(CEREMONY.PRESENTATION_DATE, ceremony.presentationDate() != null ?
-                        new java.sql.Date(ceremony.presentationDate().toEpochDay()):
-                        null)
+                .set(CEREMONY.PRESENTATION_DATE, ceremony.presentationDate())
                 .set(CEREMONY.NAME, ceremony.getName())
                 .build();
     }

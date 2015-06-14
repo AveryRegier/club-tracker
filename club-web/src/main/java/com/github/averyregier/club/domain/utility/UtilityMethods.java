@@ -5,6 +5,7 @@ import org.jooq.exception.DataAccessException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.URLDecoder;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -132,6 +133,7 @@ public class UtilityMethods {
     }
 
     public static String convert(byte[] bytes) {
+        if(bytes == null) return null;
         try {
             return new String(bytes, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -159,5 +161,10 @@ public class UtilityMethods {
 
     public static boolean isEmpty(String s) {
         return s == null || s.trim().isEmpty();
+    }
+
+    public static java.sql.Date toSqlDate(LocalDate date) {
+        if(date == null) return null;
+        return new java.sql.Date(date.toEpochDay() * 24 * 60 * 60 * 1000);
     }
 }

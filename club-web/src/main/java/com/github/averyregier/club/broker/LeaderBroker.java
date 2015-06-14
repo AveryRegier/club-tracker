@@ -39,7 +39,7 @@ public class LeaderBroker extends Broker<ClubLeader> {
     private Map<TableField<LeaderRecord, ?>, Object> mapFields(ClubLeader leader) {
         return JooqUtil.<LeaderRecord>map()
                 .set(LEADER.ROLE, leader.getLeadershipRole().name())
-                .set(LEADER.CLUB_ID, leader.getClub().map(club -> club.getId().getBytes()))
+                .setHasId(LEADER.CLUB_ID, leader.getClub())
                 .build();
     }
 

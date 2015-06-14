@@ -36,9 +36,9 @@ public class OrganizationBroker extends Broker<Program> {
 
     private Map<TableField<OrganizationRecord, ?>, Object> mapFields(Program program) {
         return JooqUtil.<OrganizationRecord>map()
-                .set(ORGANIZATION.CLUB_ID, program.getId().getBytes())
+                .set(ORGANIZATION.CLUB_ID, program)
                 .set(ORGANIZATION.ORGANIZATIONNAME, program.getShortCode())
-                .set(ORGANIZATION.LOCALE, Optional.ofNullable(program.getLocale()).map(Object::toString).orElse(null))
+                .set(ORGANIZATION.LOCALE, Optional.ofNullable(program.getLocale()).map(Object::toString))
                 .build();
     }
 

@@ -64,6 +64,27 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
         };
     }
 
+    public ClubberRecord addRecord(final Section s, final Signing signing) {
+        ClubberRecord record = new ClubberRecord() {
+            @Override
+            public Section getSection() {
+                return s;
+            }
+
+            @Override
+            public Clubber getClubber() {
+                return ClubberAdapter.this;
+            }
+
+            @Override
+            public Optional<Signing> getSigning() {
+                return Optional.of(signing);
+            }
+        };
+        records.put(s, record);
+        return record;
+    }
+
     @Override
     public Optional<Section> getNextSection() {
         return firstSuccess(

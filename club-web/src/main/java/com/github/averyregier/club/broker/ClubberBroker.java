@@ -41,8 +41,8 @@ public class ClubberBroker extends Broker<Clubber> {
 
     private Map<TableField<ClubberRecord, ?>, Object> mapFields(Clubber clubber) {
         return JooqUtil.<ClubberRecord>map()
-                .set(CLUBBER.CLUB_ID, clubber.getClub().map(club -> club.getId().getBytes()))
-                .set(CLUBBER.FAMILY_ID, clubber.getFamily().map(family -> family.getId().getBytes()))
+                .setHasId(CLUBBER.CLUB_ID, clubber.getClub())
+                .setHasId(CLUBBER.FAMILY_ID, clubber.getFamily())
                 .set(CLUBBER.AGE_GROUP, Optional.ofNullable(clubber.getCurrentAgeGroup()).map(AgeGroup::name))
                 .build();
     }

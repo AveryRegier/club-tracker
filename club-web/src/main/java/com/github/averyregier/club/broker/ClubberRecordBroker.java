@@ -1,14 +1,22 @@
 package com.github.averyregier.club.broker;
 
 import com.github.averyregier.club.db.tables.records.RecordRecord;
-import com.github.averyregier.club.domain.club.ClubberRecord;
-import com.github.averyregier.club.domain.club.Signing;
+import com.github.averyregier.club.domain.PersonManager;
+import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
+import com.github.averyregier.club.domain.program.Section;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.jooq.DSLContext;
+import org.jooq.Result;
 import org.jooq.TableField;
 
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.db.tables.Record.RECORD;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 
 /**
  * Created by avery on 3/1/15.
@@ -35,13 +43,73 @@ public class ClubberRecordBroker extends Broker<ClubberRecord> {
         JooqUtil.MapBuilder<RecordRecord> map = JooqUtil.<RecordRecord>map();
         if(record.getSigning().isPresent()) {
             Signing signing = record.getSigning().get();
-            map .set(RECORD.CLUB_ID, signing.by().getClub().map(club -> club.getId().getBytes()))
-                .set(RECORD.SIGNED_BY, signing.by().getId().getBytes())
-                .set(RECORD.SIGN_DATE, new java.sql.Date(signing.getDate().toEpochDay()))
+            map .setHasId(RECORD.CLUB_ID, signing.by().getClub())
+                .set(RECORD.SIGNED_BY, signing.by().getId())
+                .set(RECORD.SIGN_DATE, signing.getDate())
                 .set(RECORD.NOTE, signing.getNote());
         } else {
             map.setNull(RECORD.CLUB_ID, RECORD.SIGNED_BY, RECORD.SIGN_DATE, RECORD.NOTE);
         }
         return map.build();
+    }
+
+    public Collection<ClubberRecord> find(Clubber  clubber, PersonManager manager) {
+        if(!clubber.getClub().isPresent()) return Collections.emptyList();
+        return query(create -> {
+            Result<RecordRecord> records = create.selectFrom(RECORD)
+                    .where(RECORD.CLUBBER_ID.eq(clubber.getId().getBytes()))
+                    .and(RECORD.CLUB_ID.eq(clubber.getClub().get().getId().getBytes()))
+                    .fetch();
+            return records.stream().map(r -> {
+                String sectionId = r.getSectionId();
+                String listenerId = convert(r.getSignedBy());
+                ClubberRecord clubberRecord;
+                Section section = findSection(sectionId, clubber);
+                if (listenerId == null) {
+                    clubberRecord = clubber.getRecord(
+                            Optional.of(section)).get();
+                } else {
+                    final Listener byListener = findListener(listenerId, manager);
+                    final LocalDate localDate = r.getSignDate().toLocalDate();
+                    String note = r.getNote();
+                    clubberRecord = ((ClubberAdapter) clubber).addRecord(section, new Signing() {
+                        @Override
+                        public LocalDate getDate() {
+                            return localDate;
+                        }
+
+                        @Override
+                        public Listener by() {
+                            return byListener;
+                        }
+
+                        @Override
+                        public String getNote() {
+                            return note;
+                        }
+
+                        @Override
+                        public Set<AwardPresentation> getCompletionAwards() {
+                            return null;
+                        }
+                    });
+                }
+                return clubberRecord;
+            }).collect(Collectors.toList());
+        });
+    }
+
+    private Section findSection(String sectionId, Clubber clubber) {
+        return clubber.getClub().get().getCurriculum().lookup(sectionId)
+        .orElseThrow(illegal("section " + sectionId + " does not exist"));
+    }
+
+    private Listener findListener(String listenerId, PersonManager manager) {
+        Optional<Listener> listener = UtilityMethods.optMap(manager.lookup(listenerId), Person::asListener);
+        return listener.orElseThrow(illegal("Listener " + listenerId + " is not a listener"));
+    }
+
+    private Supplier<IllegalArgumentException> illegal(String message) {
+        return () -> new IllegalArgumentException(message);
     }
 }

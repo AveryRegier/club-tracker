@@ -38,7 +38,7 @@ public class ListenerBroker extends Broker<Listener> {
 
     private Map<TableField<ListenerRecord, ?>, Object> mapFields(Listener listener) {
         return JooqUtil.<ListenerRecord>map()
-                .set(LISTENER.CLUB_ID, listener.getClub().map(club -> club.getId().getBytes()))
+                .setHasId(LISTENER.CLUB_ID, listener.getClub())
                 .build();
     }
 

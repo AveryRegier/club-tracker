@@ -36,7 +36,7 @@ public class ClubBroker extends Broker<Club> {
 
     private Map<TableField<ClubRecord, ?>, Object> mapFields(Club club) {
         return JooqUtil.<ClubRecord>map()
-                .set(CLUB.PARENT_CLUB_ID, club.getParentGroup().map(g -> g.getId().getBytes()).orElse(null))
+                .setHasId(CLUB.PARENT_CLUB_ID, club.getParentGroup())
                 .set(CLUB.CURRICULUM, club.getCurriculum().getId())
                 .build();
     }
