@@ -1,10 +1,7 @@
 package com.github.averyregier.club.domain.program.awana;
 
 import com.github.averyregier.club.domain.program.Curriculum;
-import com.github.averyregier.club.domain.program.adapter.AwardBuilder;
-import com.github.averyregier.club.domain.program.adapter.BookBuilder;
-import com.github.averyregier.club.domain.program.adapter.CurriculumBuilder;
-import com.github.averyregier.club.domain.program.adapter.SectionGroupBuilder;
+import com.github.averyregier.club.domain.program.adapter.*;
 
 import java.util.function.UnaryOperator;
 
@@ -67,10 +64,7 @@ public class TnTCurriculum {
              .catalog("80434", "Ea.")
              .catalog("80422", "Pkg.")
              .award(r -> r.sequence(s->s
-                             .item(i->i.name("T&T Alpha Award")
-                                     .catalog("MV-TTAlphaAwardandPin", "Award and Pin")
-                                     .catalog("79530", "Award")
-                                     .catalog("79548", "Replacement Pin"))))
+                             .item(i-> alpha(i))))
              .typeAssigner((g, s) -> {
                  if (s == 0) return parent;
                  else if (s > 7) return extaCredit;
@@ -90,13 +84,8 @@ public class TnTCurriculum {
              .catalog("80493", "Ea.")
              .catalog("80506", "Pkg.")
              .award(r -> r.sequence(s->s
-                     .item(i->i.name("T&T Alpha Award")
-                             .catalog("MV-TTAlphaAwardandPin", "Award and Pin")
-                             .catalog("79530", "Award")
-                             .catalog("79548", "Replacement Pin"))
-                     .item(i->i.name("T&T Excellence Award")
-                             .catalog("79556", "Award and Pin")
-                             .catalog("79564", "Replacement Pin"))))
+                     .item(i-> alpha(i))
+                     .item(i-> excellence(i))))
              .typeAssigner((g, s) -> {
                  if (s == 0) return parent;
                  else if (s > 7) return extaCredit;
@@ -139,16 +128,9 @@ public class TnTCurriculum {
              .catalog("80557", "Ea.")
              .catalog("80565", "Pkg.")
              .award(r -> r.sequence(s->s
-                            .item(i->i.name("T&T Alpha Award")
-                                      .catalog("MV-TTAlphaAwardandPin", "Award and Pin")
-                                      .catalog("79530", "Award")
-                                      .catalog("79548", "Replacement Pin"))
-                            .item(i->i.name("T&T Excellence Award")
-                                      .catalog("79556", "Award and Pin")
-                                      .catalog("79564", "Replacement Pin"))
-                            .item(i->i.name("T&T Challenge Award")
-                                    .catalog("79572", "Award and Pin")
-                                    .catalog("79581", "Replacement Pin"))))
+                            .item(i-> alpha(i))
+                            .item(i-> excellence(i))
+                            .item(i-> challenge(i))))
              .typeAssigner((g, s) -> {
                  if (s == 0) return parent;
                  else if (s > 7) return extaCredit;
@@ -168,19 +150,10 @@ public class TnTCurriculum {
              .catalog("80611", "Ea.")
              .catalog("80629", "Pkg.")
              .award(r -> r.sequence(s->s
-                           .item(i->i.name("T&T Alpha Award")
-                                     .catalog("MV-TTAlphaAwardandPin", "Award and Pin")
-                                     .catalog("79530", "Award")
-                                     .catalog("79548", "Replacement Pin"))
-                           .item(i->i.name("T&T Excellence Award")
-                                     .catalog("79556", "Award and Pin")
-                                     .catalog("79564", "Replacement Pin"))
-                           .item(i->i.name("T&T Challenge Award")
-                                     .catalog("79572", "Award and Pin")
-                                     .catalog("79581", "Replacement Pin"))
-                           .item(i->i.name("T&T Timothy Award")
-                                     .catalog("79599", "Award and Pin")
-                                     .catalog("79601", "Replacement Pin"))))
+                           .item(i-> alpha(i))
+                           .item(i-> excellence(i))
+                           .item(i-> challenge(i))
+                           .item(i-> timothy(i))))
              .typeAssigner((g, s) -> {
                  if (s == 0) return parent;
                  else if (s > 7) return extaCredit;
@@ -189,6 +162,31 @@ public class TnTCurriculum {
              });
             return tntStructure(b);
         };
+    }
+
+    private static CatalogueBuilder alpha(CatalogueBuilder i) {
+        return i.name("T&T Alpha Award")
+                .catalog("MV-TTAlphaAwardandPin", "Award and Pin")
+                .catalog("79530", "Award")
+                .catalog("79548", "Replacement Pin");
+    }
+
+    private static CatalogueBuilder excellence(CatalogueBuilder i) {
+        return i.name("T&T Excellence Award")
+                  .catalog("79556", "Award and Pin")
+                  .catalog("79564", "Replacement Pin");
+    }
+
+    private static CatalogueBuilder challenge(CatalogueBuilder i) {
+        return i.name("T&T Challenge Award")
+                .catalog("79572", "Award and Pin")
+                .catalog("79581", "Replacement Pin");
+    }
+
+    private static CatalogueBuilder timothy(CatalogueBuilder i) {
+        return i.name("T&T Timothy Award")
+                .catalog("79599", "Award and Pin")
+                .catalog("79601", "Replacement Pin");
     }
 
     private static BookBuilder tntStructure(BookBuilder builder) {
