@@ -16,7 +16,7 @@ import static com.github.averyregier.club.db.tables.Provider.PROVIDER;
  * Created by avery on 4/11/15.
  */
 public class ProviderBroker extends Broker<Provider> {
-    protected ProviderBroker(Connector connector) {
+    public ProviderBroker(Connector connector) {
         super(connector);
     }
 

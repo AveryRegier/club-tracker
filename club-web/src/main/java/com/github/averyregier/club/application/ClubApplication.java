@@ -36,7 +36,7 @@ public class ClubApplication implements SparkApplication, ServletContextListener
 
     private final UserManager userManager = new UserManager();
     private Program program;
-    private Connector connector;
+    private ConfiguredConnector connector;
 
     @Override
     public void init() {
@@ -49,7 +49,9 @@ public class ClubApplication implements SparkApplication, ServletContextListener
             e.printStackTrace();
         });
 
+        if(connector != null) connector.migrate();
 
+        new InitialSetup().init(this);
         new FastSetup().init(this);
         new Login().init(this);
         new SetupController().init(this);

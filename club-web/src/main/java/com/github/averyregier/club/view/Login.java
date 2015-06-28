@@ -1,7 +1,9 @@
 package com.github.averyregier.club.view;
 
 import com.github.averyregier.club.application.ClubApplication;
+import com.github.averyregier.club.broker.ProviderBroker;
 import com.github.averyregier.club.domain.User;
+import com.github.averyregier.club.domain.login.Provider;
 import org.brickred.socialauth.AuthProvider;
 import org.brickred.socialauth.Profile;
 import org.brickred.socialauth.SocialAuthConfig;
@@ -12,11 +14,13 @@ import spark.Response;
 import spark.Session;
 import spark.template.freemarker.FreeMarkerEngine;
 
-import java.io.InputStream;
-import java.util.HashMap;
+import java.io.StringReader;
+import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
 import static spark.Spark.*;
 
 /**
@@ -55,10 +59,12 @@ public class Login extends ModelMaker {
         new ConsumerService().init(app);
 
         get("/login", (request, response) ->
-                new spark.ModelAndView(new HashMap<>(), "index.ftl"), new FreeMarkerEngine());
+                new spark.ModelAndView(toMap("providers",
+                        getProviders(app)
+                        ), "index.ftl"), new FreeMarkerEngine());
 
         get("/socialauth", (request, response) -> {
-            SocialAuthManager manager = getSocialAuthManager(request);
+            SocialAuthManager manager = getSocialAuthManager(request, app);
 
             String returnToUrl = request.url().replace("socialauth", "authSuccess");
             System.out.println(returnToUrl);
@@ -74,7 +80,7 @@ public class Login extends ModelMaker {
         });
 
         get("/authSuccess", (request, response) -> {
-            SocialAuthManager manager = getSocialAuthManager(request);
+            SocialAuthManager manager = getSocialAuthManager(request, app);
             try {
                 manager.connect(request.queryMap().toMap().entrySet().stream()
                         .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()[0])));
@@ -96,6 +102,10 @@ public class Login extends ModelMaker {
             }
             return null;
         });
+    }
+
+    private List<Provider> getProviders(ClubApplication app) {
+        return new ProviderBroker(app.getConnector()).find();
     }
 
     public static User setupUser(ClubApplication app, Profile userProfile) {
@@ -179,7 +189,7 @@ public class Login extends ModelMaker {
                 "registrationForm.ftl");
     }
 
-    private SocialAuthManager getSocialAuthManager(Request request) {
+    private SocialAuthManager getSocialAuthManager(Request request, ClubApplication app) {
         SocialAuthManager manager;
         Session session = request.session(true);
         if (session.attribute("socialAuthManager") != null) {
@@ -190,10 +200,20 @@ public class Login extends ModelMaker {
 //                }
         } else {
             try {
-                InputStream in = Login.class.getClassLoader()
-                        .getResourceAsStream("oauth_consumer.properties");
+                List<Provider> providers = getProviders(app);
+                String propString = providers.stream().map(p -> {
+                    return "#" + p.getName() + "\n" +
+                            p.getSite() + ".consumer_key = " + p.getClientKey() + "\n" +
+                            p.getSite() + ".consumer_secret = " + p.getSecret() + "\n";
+                }).collect(joining("\n"));
+
+//                InputStream in = Login.class.getClassLoader()
+//                        .getResourceAsStream("oauth_consumer.properties");
+
                 SocialAuthConfig conf = SocialAuthConfig.getDefault();
-                conf.load(in);
+                Properties properties = new Properties();
+                properties.load(new StringReader(propString));
+                conf.setApplicationProperties(properties);
                 manager = new SocialAuthManager();
                 manager.setSocialAuthConfig(conf);
                 session.attribute("socialAuthManager", manager);
