@@ -7,15 +7,18 @@ import org.jooq.SQLDialect;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Properties;
 
-import static com.github.averyregier.club.domain.utility.UtilityMethods.map;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.subMap;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.toStrings;
 
 public class ConfiguredConnector implements Connector {
     protected final SQLDialect dialect;
     protected final String url;
     protected final String user;
     protected final String password;
+    private final Map<String, String> placeholders;
 
     public ConfiguredConnector(Properties config) throws ClassNotFoundException {
         password = UtilityMethods.killWhitespace(config.getProperty("jdbc.password"));
@@ -23,6 +26,7 @@ public class ConfiguredConnector implements Connector {
         dialect = SQLDialect.valueOf(config.getProperty("jooq.dialect"));
         user = UtilityMethods.killWhitespace(config.getProperty("jdbc.user"));
         String driver = config.getProperty("jdbc.driver");
+        placeholders = toStrings(subMap("placeholder", config));
         Class.forName(driver);
     }
 
@@ -39,13 +43,7 @@ public class ConfiguredConnector implements Connector {
     public void migrate() {
         Flyway flyway = new Flyway();
         flyway.setDataSource(url, user, password);
-
-        flyway.setPlaceholders(
-                map("setup", "CREATE TYPE UUID AS BINARY(16);")
-                        .put("generate_uuid", "")
-                        .put("schema", "club")
-                        .put("create_schema", "CREATE SCHEMA club AUTHORIZATION DBA;")
-                        .build());
+        flyway.setPlaceholders(placeholders);
         flyway.migrate();
     }
 }

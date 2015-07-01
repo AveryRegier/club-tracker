@@ -69,13 +69,20 @@ public class UtilityMethods {
         return putAll(new HashMap<>(), prefix, subModel);
     }
 
-    public static <R> Map<String, R> subMap(String prefix, Map<String, R> map) {
+    public static <R> Map<String, R> subMap(String prefix, Map<?, R> map) {
         return map.entrySet().stream()
-                .filter(e->e.getValue() != null)
-                .filter(e -> e.getKey().split("\\.")[0].equals(prefix))
+                .filter(e -> e.getValue() != null)
+                .filter(e -> e.getKey() != null)
+                .filter(e -> e.getKey().toString().split("\\.")[0].equals(prefix))
                 .collect(Collectors.toMap(
-                        e -> e.getKey().substring(prefix.length() + 1),
+                        e -> e.getKey().toString().substring(prefix.length() + 1),
                         Map.Entry::getValue));
+    }
+
+    public static <R> Map<R, String> toStrings(Map<R, ?> input) {
+        return input.entrySet().stream()
+                .filter(e->e.getValue() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, e->e.getValue().toString()));
     }
 
     public static Map<String, String> transformToSingleValueMap(Map<String, String[]> map) {

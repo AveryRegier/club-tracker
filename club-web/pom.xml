@@ -26,7 +26,7 @@
         <flyway.driver>org.hsqldb.jdbcDriver</flyway.driver>
         <jooq.generator.database.name>org.jooq.util.hsqldb.HSQLDBDatabase</jooq.generator.database.name>
         <jooq.dialect>HSQLDB</jooq.dialect>
-        <flyway.user></flyway.user>
+        <flyway.user>SA</flyway.user>
         <flyway.password></flyway.password>
         <flyway.placeholders.create_schema>CREATE SCHEMA ${schema} AUTHORIZATION DBA;</flyway.placeholders.create_schema>
         <flyway.placeholders.setup>CREATE TYPE UUID AS BINARY(16);</flyway.placeholders.setup>
@@ -332,6 +332,22 @@
                         <replacement>
                             <token>replacement-dialect</token>
                             <value>${jooq.dialect}</value>
+                        </replacement>
+                        <replacement>
+                            <token>replacement-setup</token>
+                            <value>${flyway.placeholders.setup}</value>
+                        </replacement>
+                        <replacement>
+                            <token>replacement-generate_uuid</token>
+                            <value>${flyway.placeholders.generate_uuid}</value>
+                        </replacement>
+                        <replacement>
+                            <token>replacement-schema</token>
+                            <value>${flyway.placeholders.schema}</value>
+                        </replacement>
+                        <replacement>
+                            <token>replacement-create_schema</token>
+                            <value>${flyway.placeholders.create_schema}</value>
                         </replacement>
                     </replacements>
                 </configuration>
