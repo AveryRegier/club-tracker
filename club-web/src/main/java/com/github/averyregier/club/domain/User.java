@@ -56,6 +56,30 @@ public class User extends PersonWrapper implements Person {
         public String getUniqueID() {
             return id;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if(obj != null && obj instanceof Login) {
+                Login other = (Login) obj;
+                return safeEquals(getAuth(), other.getAuth()) &&
+                        safeEquals(getID(), other.getID()) &&
+                        safeEquals(getProviderID(), other.getProviderID()) &&
+                        safeEquals(getUniqueID(), other.getUniqueID());
+            }
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return getProviderID()+","+getID()+","+getUniqueID()+","+getAuth();
+        }
+    }
+
+    private boolean safeEquals(Object a, Object b) {
+        if(a == b) return true;
+        if(a == null) return false;
+        if(b == null) return false;
+        return a.equals(b);
     }
 
     private static int toInt(String auth) {

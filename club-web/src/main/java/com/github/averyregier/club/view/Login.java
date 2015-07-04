@@ -16,6 +16,7 @@ import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.StringReader;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -27,9 +28,10 @@ import static spark.Spark.*;
  * Created by avery on 8/30/14.
  */
 public class Login extends ModelMaker {
-    public static void resetCookies(Request req, Response httpResponse, String identifier, User user) {
+    public static void resetCookies(Request req, Response httpResponse, String providerId, String identifier, User user) {
         httpResponse.cookie("auth", user.resetAuth(), 60 * 60 * 3, false);
         httpResponse.cookie("userID", identifier, 60*60*3, false);
+        httpResponse.cookie("provider", providerId, 60*60*3, false);
         String location = req.session().attribute("location");
         if(location == null) {
             location = "/protected/hello";
@@ -38,12 +40,20 @@ public class Login extends ModelMaker {
         req.session().removeAttribute("location");
     }
 
-    public void init(final ClubApplication app) {
+    public static void resetCookies(Request req, Response res, User user) {
+        resetCookies(req, res,
+                user.getLoginInformation().getProviderID(),
+                user.getLoginInformation().getUniqueID(),
+                user);
+    }
+
+        public void init(final ClubApplication app) {
         before("/protected/*", (request, response) -> {
             // ... check if authenticated
             String auth = request.cookie("auth");
             if(auth != null) {
-                Optional<User> user = app.getUserManager().getUser(request.cookie("userID"));
+                Optional<User> user = app.getUserManager().getUser(
+                        request.cookie("provider"), request.cookie("userID"));
                 if(user.isPresent() && user.get().authenticate(auth)) {
                     request.attribute("user", user);
                     return;
@@ -82,15 +92,14 @@ public class Login extends ModelMaker {
         get("/authSuccess", (request, response) -> {
             SocialAuthManager manager = getSocialAuthManager(request, app);
             try {
-                manager.connect(request.queryMap().toMap().entrySet().stream()
-                        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()[0])));
+                manager.connect(getRequestParams(request));
                 AuthProvider provider = manager.getCurrentAuthProvider();
-                if(manager == null || provider == null) {
+                if(provider == null) {
                     response.redirect("/login");
                 } else {
                     try {
                         User auser = setupUser(app, provider.getUserProfile());
-                        resetCookies(request, response, auser.getLoginInformation().getUniqueID(), auser);
+                        resetCookies(request, response, auser);
 //                            return Login.this.registration(provider);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -104,6 +113,11 @@ public class Login extends ModelMaker {
         });
     }
 
+    private Map<String, String> getRequestParams(Request request) {
+        return request.queryMap().toMap().entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue()[0]));
+    }
+
     private List<Provider> getProviders(ClubApplication app) {
         return new ProviderBroker(app.getConnector()).find();
     }
@@ -111,8 +125,9 @@ public class Login extends ModelMaker {
     public static User setupUser(ClubApplication app, Profile userProfile) {
         UserBean userBean = mapUser(userProfile);
         User user = app.getUserManager()
-                .getUser(userBean.getUniqueId())
-                .orElseGet(() -> app.getUserManager().createUser(userBean.getUniqueId()));
+                .getUser(userProfile.getProviderId(), userBean.getUniqueId())
+                .orElseGet(() -> app.getUserManager().createUser(
+                        userProfile.getProviderId(), userBean.getUniqueId()));
         user.update(userBean);
         return user;
     }
@@ -190,15 +205,9 @@ public class Login extends ModelMaker {
     }
 
     private SocialAuthManager getSocialAuthManager(Request request, ClubApplication app) {
-        SocialAuthManager manager;
         Session session = request.session(true);
-        if (session.attribute("socialAuthManager") != null) {
-            manager = session.attribute("socialAuthManager");
-//                if ("signout".equals(mode)) {
-//                    manager.disconnectProvider(id);
-//                    return "home";
-//                }
-        } else {
+        SocialAuthManager manager = session.attribute("socialAuthManager");
+        if (manager == null) {
             try {
                 List<Provider> providers = getProviders(app);
                 String propString = providers.stream().map(p -> {

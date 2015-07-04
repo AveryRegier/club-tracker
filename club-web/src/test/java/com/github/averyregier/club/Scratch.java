@@ -29,7 +29,7 @@ public class Scratch {
     @Before
     public void setup() {
         userManager = new UserManager();
-        User diane = userManager.createUser("Diane");
+        User diane = userManager.createUser("provider", "Diane");
         diane.getUpdater().setGender(Person.Gender.FEMALE);
 
         ProgramAdapter program = new ProgramAdapter("en_US", null, "AWANA");
@@ -38,7 +38,7 @@ public class Scratch {
 
         club.recruit(diane);
 
-        User parent = userManager.createUser("Parent");
+        User parent = userManager.createUser("provider", "Parent");
         Map<String, String> values = UtilityMethods.map("child1.childName.friendly", "Betty")
                 .put("child1.ageGroup", "THIRD_GRADE")
                 .put("child1.gender", "FEMALE")
@@ -57,7 +57,7 @@ public class Scratch {
 
     @Test
     public void checkoffList() {
-        Optional<User> user = userManager.getUser("Diane");
+        Optional<User> user = userManager.getUser("provider", "Diane");
         if(user.isPresent() && user.get().asListener().isPresent()) {
             Listener me = user.get().asListener().get();
             {

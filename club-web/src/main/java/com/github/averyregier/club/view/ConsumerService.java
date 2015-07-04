@@ -52,6 +52,7 @@ public class ConsumerService extends ModelMaker {
 	}		
 
     public void init(ClubApplication app) {
+        // This is for open id login
         post("/consumer", "application/x-www-form-urlencoded", (httpRequest, httpResponse) -> {
             try {
                 if ("true".equals(httpRequest.queryParams("is_return"))) {
@@ -91,7 +92,7 @@ public class ConsumerService extends ModelMaker {
         HashMap<Object, Object> model = new HashMap<>();
         Identifier identifier = this.verifyResponse(req, model, params);
         if (identifier != null) {
-            app.getUserManager().getUser(identifier.getIdentifier()).ifPresent(u->{
+            app.getUserManager().getUser("OpenID", identifier.getIdentifier()).ifPresent(u->{
                 if(model.containsKey("attributes")) {
                     Map attributes = (Map)model.get("attributes");
                     if (attributes.containsKey("first") || attributes.containsKey("last")) {
@@ -100,7 +101,7 @@ public class ConsumerService extends ModelMaker {
                         u.setName(first, last);
                     }
                 }
-                Login.resetCookies(req, httpResponse, identifier.getIdentifier(), u);
+                Login.resetCookies(req, httpResponse, "OpenID", identifier.getIdentifier(), u);
             });
 
             //model.put("identifier", identifier.getIdentifier());

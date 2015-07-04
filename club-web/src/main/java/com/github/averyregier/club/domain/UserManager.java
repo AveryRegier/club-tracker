@@ -1,5 +1,7 @@
 package com.github.averyregier.club.domain;
 
+import com.github.averyregier.club.view.UserBean;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -8,41 +10,44 @@ import java.util.Optional;
  * Created by avery on 9/2/14.
  */
 public class UserManager {
-    final Map<String, User> users = new HashMap<>();
-    private final PersonManager personManager = new PersonManager();
+    private final Map<String, User> users = new HashMap<>();
+    protected final PersonManager personManager;
 
-//    public String authenticate(String userID, String password) {
-//        try {
-//            return getUserObject(userID).checkPassword(password);
-//        } catch (IllegalArgumentException e) {
-//            System.err.println("Login with unknown user "+userID+" attempted.");
-//            return null;
-//        }
-//    }
+    public UserManager() {
+        this(new PersonManager());
+    }
 
-    private User getUserObject(String userID) {
-        User user = users.get(userID);
-        if(user == null)  {
-            user = new User(personManager.createPerson());
-            User old = users.putIfAbsent(userID, user);
-            if(old != null) {
-                user = old;
-            }
-//            new PlayerGetByLoginBroker(sp, userID).execute();
-//            user = users.get(userID);
-//            if(user == null) throw new IllegalArgumentException("User "+userID+" does not appear to exist.");
-//            fillUser(user);
+    public UserManager(PersonManager personManager) {
+        this.personManager = personManager;
+    }
+
+    private User getUserObject(String providerId, String userID) {
+        return getUser(providerId, userID).orElseGet(() -> {
+            User u = new User(personManager.createPerson());
+            UserBean bean = new UserBean();
+            bean.setProviderId(providerId);
+            bean.setUniqueId(userID);
+            u.update(bean);
+            u = putUser(userID, u);
+            return u;
+        });
+    }
+
+    protected User putUser(String userID, User user) {
+        User old = users.putIfAbsent(userID, user);
+        if(old != null) {
+            user = old;
         }
         return user;
     }
 
-    public Optional<User> getUser(String userID) {
+    public Optional<User> getUser(String providerId, String userID) {
         User user = users.get(userID);
         return Optional.ofNullable(user);
     }
 
-    public User createUser(String userID) {
-        return getUserObject(userID);
+    public User createUser(String providerId, String userID) {
+        return getUserObject(providerId, userID);
     }
 
     public PersonManager getPersonManager() {

@@ -21,4 +21,6 @@ public class ModelMaker {
     protected User getUser(Request request) {
         return ((Optional<User>) request.attribute("user")).get();
     }
+
+
 }

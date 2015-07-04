@@ -57,6 +57,7 @@ public class FastSetup {
         profile.setGender("female");
         profile.setEmail("mary.smith@example.com");
         profile.setValidatedId("Example-ID-For-Mary-Smith");
+        profile.setProviderId("example");
         User user = Login.setupUser(app, profile);
 
         Program program = app.getProgram();
@@ -85,7 +86,7 @@ public class FastSetup {
         context = context == null ? "" : context;
         String location = context + "/protected/my";
         request.session().attribute("location", location);
-        Login.resetCookies(request, response, user.getLoginInformation().getUniqueID(), user);
+        Login.resetCookies(request, response, user);
     }
 
     private User setupJohnDoe(ClubApplication app) {
@@ -95,6 +96,7 @@ public class FastSetup {
         profile.setGender("male");
         profile.setEmail("john.doe@example.com");
         profile.setValidatedId("Example-ID-For-John-Doe");
+        profile.setProviderId("example");
         return Login.setupUser(app, profile);
     }
 }
