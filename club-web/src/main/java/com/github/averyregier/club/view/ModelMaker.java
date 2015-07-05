@@ -6,6 +6,7 @@ import spark.Request;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by avery on 9/27/14.
@@ -23,4 +24,8 @@ public class ModelMaker {
     }
 
 
+    protected Map<String, String> getRequestParams(Request request) {
+        return request.queryMap().toMap().entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue()[0]));
+    }
 }

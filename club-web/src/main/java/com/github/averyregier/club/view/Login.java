@@ -16,10 +16,8 @@ import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.StringReader;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 import static spark.Spark.*;
@@ -28,26 +26,20 @@ import static spark.Spark.*;
  * Created by avery on 8/30/14.
  */
 public class Login extends ModelMaker {
-    public static void resetCookies(Request req, Response httpResponse, String providerId, String identifier, User user) {
-        httpResponse.cookie("auth", user.resetAuth(), 60 * 60 * 3, false);
-        httpResponse.cookie("userID", identifier, 60*60*3, false);
-        httpResponse.cookie("provider", providerId, 60*60*3, false);
+
+    public static void resetCookies(Request req, Response res, User user) {
+        res.cookie("auth", user.getCurrentAuth(), 60 * 60 * 3, false);
+        res.cookie("userID", user.getLoginInformation().getUniqueID(), 60 * 60 * 3, false);
+        res.cookie("provider", user.getLoginInformation().getProviderID(), 60 * 60 * 3, false);
         String location = req.session().attribute("location");
         if(location == null) {
             location = "/protected/hello";
         }
-        httpResponse.redirect(location);
+        res.redirect(location);
         req.session().removeAttribute("location");
     }
 
-    public static void resetCookies(Request req, Response res, User user) {
-        resetCookies(req, res,
-                user.getLoginInformation().getProviderID(),
-                user.getLoginInformation().getUniqueID(),
-                user);
-    }
-
-        public void init(final ClubApplication app) {
+    public void init(final ClubApplication app) {
         before("/protected/*", (request, response) -> {
             // ... check if authenticated
             String auth = request.cookie("auth");
@@ -97,13 +89,8 @@ public class Login extends ModelMaker {
                 if(provider == null) {
                     response.redirect("/login");
                 } else {
-                    try {
-                        User auser = setupUser(app, provider.getUserProfile());
-                        resetCookies(request, response, auser);
-//                            return Login.this.registration(provider);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    User auser = setupUser(app, provider.getUserProfile());
+                    resetCookies(request, response, auser);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -113,23 +100,12 @@ public class Login extends ModelMaker {
         });
     }
 
-    private Map<String, String> getRequestParams(Request request) {
-        return request.queryMap().toMap().entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue()[0]));
-    }
-
     private List<Provider> getProviders(ClubApplication app) {
         return new ProviderBroker(app.getConnector()).find();
     }
 
     public static User setupUser(ClubApplication app, Profile userProfile) {
-        UserBean userBean = mapUser(userProfile);
-        User user = app.getUserManager()
-                .getUser(userProfile.getProviderId(), userBean.getUniqueId())
-                .orElseGet(() -> app.getUserManager().createUser(
-                        userProfile.getProviderId(), userBean.getUniqueId()));
-        user.update(userBean);
-        return user;
+        return app.getUserManager().syncUser(mapUser(userProfile));
     }
 
     private static UserBean mapUser(Profile profile) {
@@ -157,6 +133,7 @@ public class Login extends ModelMaker {
         user.setLocation(profile.getLocation());
         user.setProfileImageURL(profile.getProfileImageURL());
         user.setUniqueId(profile.getValidatedId());
+        user.setProviderId(profile.getProviderId());
         return user;
     }
 

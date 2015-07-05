@@ -7,6 +7,7 @@ import java.lang.reflect.Array;
 import java.net.URLDecoder;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -81,7 +82,7 @@ public class UtilityMethods {
 
     public static <R> Map<R, String> toStrings(Map<R, ?> input) {
         return input.entrySet().stream()
-                .filter(e->e.getValue() != null)
+                .filter(e -> e.getValue() != null)
                 .collect(Collectors.toMap(Map.Entry::getKey, e->e.getValue().toString()));
     }
 
@@ -135,6 +136,13 @@ public class UtilityMethods {
         return null;
     }
 
+    public static void ifPresent(String string, Consumer<String> fn) {
+        String s = killWhitespace(string);
+        if(s != null && fn != null) {
+            fn.accept(s);
+        }
+    }
+
     public static <T,R> Optional<R> optMap(Optional<T> in, Function<T, Optional<R>> fn) {
         return in.map(fn::apply).orElse(Optional.empty());
     }
@@ -173,5 +181,12 @@ public class UtilityMethods {
     public static java.sql.Date toSqlDate(LocalDate date) {
         if(date == null) return null;
         return new java.sql.Date(date.toEpochDay() * 24 * 60 * 60 * 1000);
+    }
+
+    public static boolean safeEquals(Object a, Object b) {
+        if(a == b) return true;
+        if(a == null) return false;
+        if(b == null) return false;
+        return a.equals(b);
     }
 }

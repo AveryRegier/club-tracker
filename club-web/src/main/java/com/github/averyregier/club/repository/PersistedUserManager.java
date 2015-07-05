@@ -4,6 +4,7 @@ import com.github.averyregier.club.broker.LoginBroker;
 import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.UserManager;
+import com.github.averyregier.club.view.UserBean;
 import org.jooq.exception.DataAccessException;
 
 import java.util.Optional;
@@ -41,17 +42,22 @@ public class PersistedUserManager extends UserManager {
     }
 
     @Override
-    public User createUser(String providerId, String userID) {
-        return super.createUser(providerId, userID);
+    public User createUser(UserBean bean) {
+        return super.createUser(bean);
     }
 
     @Override
     protected User putUser(String userID, User user) {
         try {
-            getLoginBroker().persist(user.getLoginInformation());
+            update(user);
             return super.putUser(userID, user);
         } catch(DataAccessException e) {
             return getUser(user.getLoginInformation().getProviderID(), userID).orElseThrow(()->e);
         }
+    }
+
+    @Override
+    protected void update(User user) {
+        getLoginBroker().persist(user.getLoginInformation());
     }
 }

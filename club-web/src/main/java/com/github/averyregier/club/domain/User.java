@@ -4,6 +4,7 @@ import com.github.averyregier.club.domain.club.Name;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import com.github.averyregier.club.domain.club.adapter.PersonWrapper;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 import com.github.averyregier.club.view.UserBean;
 
 import java.io.UnsupportedEncodingException;
@@ -12,6 +13,9 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.Consumer;
+
+import static com.github.averyregier.club.domain.utility.UtilityMethods.safeEquals;
 
 /**
  * Created by avery on 9/2/14.
@@ -75,13 +79,6 @@ public class User extends PersonWrapper implements Person {
         }
     }
 
-    private boolean safeEquals(Object a, Object b) {
-        if(a == b) return true;
-        if(a == null) return false;
-        if(b == null) return false;
-        return a.equals(b);
-    }
-
     private static int toInt(String auth) {
         return Integer.parseInt(auth, Character.MAX_RADIX);
     }
@@ -100,6 +97,10 @@ public class User extends PersonWrapper implements Person {
 
     public String resetAuth() {
         auth = new Random(System.currentTimeMillis()).nextInt();
+        return getCurrentAuth();
+    }
+
+    public String getCurrentAuth() {
         return encodeAuth(fromInt(auth));
     }
 
@@ -179,17 +180,38 @@ public class User extends PersonWrapper implements Person {
         });
     }
 
-    public void update(final UserBean user) {
-        this.id = user.getUniqueId();
-        this.providerID = user.getProviderId();
+    public boolean update(final UserBean user) {
+        boolean changed =
+                change(this.id, user.getUniqueId(), v->this.id = v) |
+                change(this.providerID, user.getProviderId(), v->this.providerID = v);
 
+        // TODO implement changed for name and generally clean it up
         setName(user.getFirstName(), user.getLastName());
 
         String gender1 = user.getGender();
-        if(gender1 != null) {
-            person.getUpdater().setGender(Gender.valueOf(gender1.toUpperCase()));
+        if(!UtilityMethods.isEmpty(gender1)) {
+            changed = changed |
+                    change(getGender().orElse(null),
+                           Gender.valueOf(gender1.toUpperCase()),
+                           (g)->getUpdater().setGender(g));
         }
-        person.getUpdater().setEmail(user.getEmail());
+        String email = user.getEmail();
+        if(!UtilityMethods.isEmpty(email)) {
+            person.getUpdater().setEmail(email);
+            changed = changed |
+                    change(getEmail().orElse(null),
+                            email,
+                            (e)->getUpdater().setEmail(e));
+        }
+        return changed;
+    }
+
+    private <T> boolean change(T current, T newValue, Consumer<T> fn) {
+        if(!safeEquals(current, newValue)) {
+            fn.accept(newValue);
+            return true;
+        }
+        return false;
     }
 
     private String combineName(Object first, Object last) {

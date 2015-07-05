@@ -23,14 +23,10 @@ public class RegistrationController extends ModelMaker {
         post("/submitRegistration", (request, response) -> {
             logger.info("Submitting registration");
 
-            UserBean bean = mapUser(request);
+            UserBean bean = mapUser(request.cookie("provider"), request);
 
-            User user = app.getUserManager().createUser("provider", bean.getUniqueId());
-            user.update(bean);
-            Login.resetCookies(request, response,
-                    user.getLoginInformation().getProviderID(),
-                    user.getLoginInformation().getUniqueID(),
-                    user);
+            User user = app.getUserManager().syncUser(bean);
+            Login.resetCookies(request, response, user);
             return null;
 //            request.attribute("user", bean);
 //            return new spark.ModelAndView(new HashMap<>(), "registrationSuccess.ftl");
@@ -72,8 +68,9 @@ public class RegistrationController extends ModelMaker {
         }, new FreeMarkerEngine());
     }
 
-    private UserBean mapUser(Request request) {
+    private UserBean mapUser(String provider, Request request) {
         UserBean user = new UserBean();
+        user.setProviderId(provider);
         user.setEmail(request.queryParams("email"));
         user.setName(request.queryParams("name"));
         user.setDob(request.queryParams("dob"));

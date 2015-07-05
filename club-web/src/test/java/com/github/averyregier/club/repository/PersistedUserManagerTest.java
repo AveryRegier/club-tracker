@@ -4,7 +4,9 @@ import com.github.averyregier.club.broker.LoginBroker;
 import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
+import com.github.averyregier.club.view.UserBean;
 import org.jooq.exception.DataAccessException;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -22,11 +24,26 @@ public class PersistedUserManagerTest {
 
     public static final String ANY_ID = "an_id";
     public static final String ANY_PROVIDER = "provider";
+    public static final String ANY_EMAIL = "any@email.com";
+
+    private UserBean bean;
+    private LoginBroker broker;
+    private PersonManager personManager;
+    private PersistedUserManager manager;
+
+    @Before
+    public void setup() {
+        bean = new UserBean();
+        bean.setProviderId(ANY_PROVIDER);
+        bean.setUniqueId(ANY_ID);
+
+        broker = mock(LoginBroker.class);
+        personManager = mock(PersonManager.class);
+        manager = new PersistedUserManager(personManager, () -> broker);
+    }
 
     @Test
     public void getUserNotFound() {
-        LoginBroker broker = mock(LoginBroker.class);
-        PersistedUserManager manager = new PersistedUserManager(() -> broker);
         when(broker.find(eq(ANY_PROVIDER), eq(ANY_ID), any())).thenReturn(Optional.empty());
 
         assertFalse(manager.getUser(ANY_PROVIDER, ANY_ID).isPresent());
@@ -40,27 +57,64 @@ public class PersistedUserManagerTest {
     public void getUserFoundAndCached() {
         User result = new User();
 
-        LoginBroker broker = mock(LoginBroker.class);
-        PersistedUserManager manager = new PersistedUserManager(() -> broker);
         when(broker.find(eq(ANY_PROVIDER), eq(ANY_ID), any())).thenReturn(Optional.of(result));
 
-        assertFound(result, manager, ANY_PROVIDER, ANY_ID);
-        assertFound(result, manager, ANY_PROVIDER, ANY_ID);
+        assertFound(result, ANY_PROVIDER, ANY_ID);
+        assertFound(result, ANY_PROVIDER, ANY_ID);
 
         verify(broker, times(1)).find(eq(ANY_PROVIDER), eq(ANY_ID), any());
         verifyNoMoreInteractions(broker);
     }
 
     @Test
+    public void syncUserFoundAndCachedWithNewAuth() {
+        PersonAdapter person = new PersonAdapter(UUID.randomUUID().toString());
+        User result = new User(person);
+
+        when(broker.find(eq(ANY_PROVIDER), eq(ANY_ID), eq(personManager))).thenReturn(Optional.of(result));
+
+        bean.setEmail(ANY_EMAIL);
+        assertSynced(result);
+        assertEquals(ANY_EMAIL, person.getEmail().get());
+
+        String anotherEmail = "another@email.com";
+        bean.setEmail(anotherEmail);
+        assertSynced(result);
+        assertEquals(anotherEmail, person.getEmail().get());
+
+        verify(broker, times(1)).persist(eq(result.getLoginInformation()));
+        verify(broker, times(1)).find(eq(ANY_PROVIDER), eq(ANY_ID), any());
+        verifyNoMoreInteractions(broker);
+    }
+
+    @Test
+    public void syncUserFoundAndCachedWithExistingAuth() {
+        PersonAdapter person = new PersonAdapter(UUID.randomUUID().toString());
+        User result = new User(person);
+        result.update(bean);
+        result.resetAuth();
+
+        when(broker.find(eq(ANY_PROVIDER), eq(ANY_ID), eq(personManager))).thenReturn(Optional.of(result));
+
+        bean.setEmail(ANY_EMAIL);
+        assertSynced(result);
+        assertEquals(ANY_EMAIL, person.getEmail().get());
+        assertTrue(result.getLoginInformation().getAuth().isPresent());
+
+        assertSynced(result);
+
+        verify(broker, times(1)).find(eq(ANY_PROVIDER), eq(ANY_ID), any());
+        verifyNoMoreInteractions(broker);
+    }
+
+
+    @Test
     public void createUserPersistedAndCached() {
-        LoginBroker broker = mock(LoginBroker.class);
-        PersonManager personManager = mock(PersonManager.class);
-        PersistedUserManager manager = new PersistedUserManager(personManager, () -> broker);
         PersonAdapter person = new PersonAdapter(UUID.randomUUID().toString());
         when(broker.find(eq(ANY_PROVIDER), eq(ANY_ID), eq(personManager))).thenReturn(Optional.empty());
         when(personManager.createPerson()).thenReturn(person);
 
-        User user = manager.createUser(ANY_PROVIDER, ANY_ID);
+        User user = manager.createUser(bean);
         assertEquals(person, user.getUpdater());
         assertEquals(ANY_PROVIDER, user.getLoginInformation().getProviderID());
         assertEquals(ANY_ID, user.getLoginInformation().getUniqueID());
@@ -71,7 +125,30 @@ public class PersistedUserManagerTest {
         verify(broker, times(1)).persist(eq(user.getLoginInformation()));
         verify(personManager).createPerson();
 
-        assertFound(user, manager, ANY_PROVIDER, ANY_ID);
+        assertFound(user, ANY_PROVIDER, ANY_ID);
+
+        verifyNoMoreInteractions(broker);
+    }
+
+    @Test
+    public void syncUserPersistedAndCached() {
+        bean.setEmail(ANY_EMAIL);
+        PersonAdapter person = new PersonAdapter(UUID.randomUUID().toString());
+        when(broker.find(eq(ANY_PROVIDER), eq(ANY_ID), eq(personManager))).thenReturn(Optional.empty());
+        when(personManager.createPerson()).thenReturn(person);
+
+        User user = manager.syncUser(bean);
+        assertEquals(person, user.getUpdater());
+        assertEquals(ANY_PROVIDER, user.getLoginInformation().getProviderID());
+        assertEquals(ANY_ID, user.getLoginInformation().getUniqueID());
+        assertEquals(person.getId(), user.getLoginInformation().getID());
+        assertEquals(ANY_EMAIL, person.getEmail().get());
+
+        verify(broker, times(1)).find(eq(ANY_PROVIDER), eq(ANY_ID), any());
+        verify(broker, times(1)).persist(eq(user.getLoginInformation()));
+        verify(personManager).createPerson();
+
+        assertFound(user, ANY_PROVIDER, ANY_ID);
 
         verifyNoMoreInteractions(broker);
     }
@@ -80,12 +157,9 @@ public class PersistedUserManagerTest {
     public void createUserWontCreateTwiceWhenFoundOnDb() {
         User result = new User();
 
-        LoginBroker broker = mock(LoginBroker.class);
-        PersonManager personManager = mock(PersonManager.class);
-        PersistedUserManager manager = new PersistedUserManager(personManager, () -> broker);
         when(broker.find(eq(ANY_PROVIDER), eq(ANY_ID), eq(personManager))).thenReturn(Optional.of(result));
 
-        User user = manager.createUser(ANY_PROVIDER, ANY_ID);
+        User user = manager.createUser(bean);
         assertEquals(result, user);
 
         verify(broker, times(1)).find(eq(ANY_PROVIDER), eq(ANY_ID), any());
@@ -97,13 +171,11 @@ public class PersistedUserManagerTest {
     public void createUserWontCreateTwiceWhenAlreadyCached() {
         User result = new User();
 
-        LoginBroker broker = mock(LoginBroker.class);
-        PersistedUserManager manager = new PersistedUserManager(() -> broker);
         when(broker.find(eq(ANY_PROVIDER), eq(ANY_ID), any())).thenReturn(Optional.of(result));
 
-        assertFound(result, manager, ANY_PROVIDER, ANY_ID);
+        assertFound(result, ANY_PROVIDER, ANY_ID);
 
-        User user = manager.createUser(ANY_PROVIDER, ANY_ID);
+        User user = manager.createUser(bean);
         assertEquals(result, user);
 
         verify(broker, times(1)).find(eq(ANY_PROVIDER), eq(ANY_ID), any());
@@ -114,32 +186,26 @@ public class PersistedUserManagerTest {
     public void createUserWontCreateTwiceWhenErrorOnDb() {
         User result = new User();
 
-        LoginBroker broker = mock(LoginBroker.class);
-        PersonManager personManager = mock(PersonManager.class);
-        PersistedUserManager manager = new PersistedUserManager(personManager, () -> broker);
         PersonAdapter person = new PersonAdapter(UUID.randomUUID().toString());
         when(broker.find(eq(ANY_PROVIDER), eq(ANY_ID), eq(personManager)))
                 .thenReturn(Optional.empty(), Optional.of(result));
         when(personManager.createPerson()).thenReturn(person);
         doThrow(DataAccessException.class).when(broker).persist(any());
 
-        User user = manager.createUser(ANY_PROVIDER, ANY_ID);
+        User user = manager.createUser(bean);
         assertEquals(result, user);
 
         verify(broker, times(2)).find(eq(ANY_PROVIDER), eq(ANY_ID), eq(personManager));
         verify(broker, times(1)).persist(argThat((a) -> matches((User.Login) a)));
         verify(personManager).createPerson();
 
-        assertFound(user, manager, ANY_PROVIDER, ANY_ID);
+        assertFound(user, ANY_PROVIDER, ANY_ID);
 
         verifyNoMoreInteractions(broker);
     }
 
     @Test
     public void createUserFailsWhenDbIsDownOrInconsistent() {
-        LoginBroker broker = mock(LoginBroker.class);
-        PersonManager personManager = mock(PersonManager.class);
-        PersistedUserManager manager = new PersistedUserManager(personManager, () -> broker);
         PersonAdapter person = new PersonAdapter(UUID.randomUUID().toString());
         when(broker.find(eq(ANY_PROVIDER), eq(ANY_ID), eq(personManager)))
                 .thenReturn(Optional.empty());
@@ -147,7 +213,7 @@ public class PersistedUserManagerTest {
         doThrow(DataAccessException.class).when(broker).persist(any());
 
         try {
-            User user = manager.createUser(ANY_PROVIDER, ANY_ID);
+            User user = manager.createUser(bean);
             fail("Should have thrown an error");
         } catch(DataAccessException e) {
             //expected
@@ -164,9 +230,15 @@ public class PersistedUserManagerTest {
         return a.getUniqueID().equals(ANY_ID) && a.getProviderID().equals(ANY_PROVIDER);
     }
 
-    private void assertFound(User result, PersistedUserManager manager, String provider, String userID) {
+    private void assertFound(User result, String provider, String userID) {
         Optional<User> user = manager.getUser(provider, userID);
         assertTrue(user.isPresent());
         assertEquals(result, user.get());
+    }
+
+    private void assertSynced(User result) {
+        User user = manager.syncUser(bean);
+        assertEquals(result, user);
+        assertTrue(result.getLoginInformation().getAuth().isPresent());
     }
 }

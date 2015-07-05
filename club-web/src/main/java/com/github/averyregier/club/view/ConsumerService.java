@@ -1,6 +1,7 @@
 package com.github.averyregier.club.view;
 
 import com.github.averyregier.club.application.ClubApplication;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.openid4java.OpenIDException;
 import org.openid4java.association.AssociationSessionType;
 import org.openid4java.consumer.ConsumerManager;
@@ -23,10 +24,8 @@ import spark.template.freemarker.FreeMarkerEngine;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
@@ -85,30 +84,40 @@ public class ConsumerService extends ModelMaker {
         }, new FreeMarkerEngine());
 	}
 
-	private ModelAndView processReturn(Request req, Response httpResponse, ClubApplication app, ParameterList params)
+	private ModelAndView processReturn(Request req, Response res, ClubApplication app, ParameterList params)
 				throws ServletException, IOException
     {
         // verify response to ensure the communication has not been tampered with
         HashMap<Object, Object> model = new HashMap<>();
         Identifier identifier = this.verifyResponse(req, model, params);
         if (identifier != null) {
-            app.getUserManager().getUser("OpenID", identifier.getIdentifier()).ifPresent(u->{
-                if(model.containsKey("attributes")) {
-                    Map attributes = (Map)model.get("attributes");
-                    if (attributes.containsKey("first") || attributes.containsKey("last")) {
-                        Object first = attributes.get("first");
-                        Object last = attributes.get("last");
-                        u.setName(first, last);
-                    }
-                }
-                Login.resetCookies(req, httpResponse, "OpenID", identifier.getIdentifier(), u);
-            });
+            UserBean bean = mapUser(model, identifier);
 
+            Login.resetCookies(req, res, app.getUserManager().syncUser(bean));
+            return null;
             //model.put("identifier", identifier.getIdentifier());
 //            return new ModelAndView(model, "return.ftl");
 		}
         return new ModelAndView(new HashMap<>(), "index.ftl");
 
+    }
+
+    private UserBean mapUser(HashMap<Object, Object> model, Identifier identifier) {
+        UserBean bean = new UserBean();
+        bean.setProviderId("OpenID");
+        bean.setUniqueId(identifier.getIdentifier());
+        if(model.containsKey("attributes")) {
+            Map attributes = (Map)model.get("attributes");
+            mapAttribute(attributes, "first", bean::setFirstName);
+            mapAttribute(attributes, "last", bean::setLastName);
+            mapAttribute(attributes, "email", bean::setEmail);
+            mapAttribute(attributes, "gender", bean::setGender);
+        }
+        return bean;
+    }
+
+    private void mapAttribute(Map attributes, String attribute, Consumer<String> setter) {
+        UtilityMethods.ifPresent(Optional.of(attributes.get(attribute)).map(Object::toString).orElse(null), setter);
     }
 
     @SuppressWarnings("unchecked")
