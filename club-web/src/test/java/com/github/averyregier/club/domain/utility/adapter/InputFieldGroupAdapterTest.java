@@ -156,12 +156,12 @@ public class InputFieldGroupAdapterTest {
     public void validate() {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .id("name")
-                .field(f -> f.id("given").type(InputField.Type.text))
+                .field(f -> f.id("first").type(InputField.Type.text))
                 .field(f -> f.id("last").type(InputField.Type.text))
-                .validate(m -> Optional.of(m.get("given").toString() + m.get("last").toString()))
+                .validate(m -> Optional.of(m.get("first").toString() + m.get("last").toString()))
                 .build();
         HashMap<String, String> map = new HashMap<>();
-        map.put("given", "First");
+        map.put("first", "First");
         map.put("last", "Last");
 
         assertEquals("FirstLast", classUnderTest.validate(map).get());
@@ -171,12 +171,12 @@ public class InputFieldGroupAdapterTest {
     public void validationFailure() {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .id("name")
-                .field(f -> f.id("given").type(InputField.Type.text).required())
+                .field(f -> f.id("first").type(InputField.Type.text).required())
                 .field(f -> f.id("last").type(InputField.Type.integer).required())
-                .validate(m -> Optional.of(m.get("given").toString() + m.get("last").toString()))
+                .validate(m -> Optional.of(m.get("first").toString() + m.get("last").toString()))
                 .build();
         HashMap<String, String> map = new HashMap<>();
-        map.put("given", "First");
+        map.put("first", "First");
         map.put("last", "Last");
 
         assertFalse(classUnderTest.validate(map).isPresent());
@@ -186,17 +186,17 @@ public class InputFieldGroupAdapterTest {
     public void defaultValidation() {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .id("name")
-                .field(f -> f.id("given").type(InputField.Type.text))
+                .field(f -> f.id("first").type(InputField.Type.text))
                 .field(f -> f.id("age").type(InputField.Type.integer))
                 .build();
         HashMap<String, String> map = new HashMap<>();
-        map.put("given", "First");
+        map.put("first", "First");
         map.put("age", "13");
 
         Optional<Object> result = classUnderTest.validate(map);
         assertTrue(result.isPresent());
         assertTrue(result.get() instanceof Map);
-        assertEquals("First", ((Map) result.get()).get("given"));
+        assertEquals("First", ((Map) result.get()).get("first"));
         assertEquals(13, ((Map)result.get()).get("age"));
     }
 
@@ -206,13 +206,13 @@ public class InputFieldGroupAdapterTest {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .id("upper")
                 .group(g->g.id("name")
-                    .field(f -> f.id("given").type(InputField.Type.text).required())
+                    .field(f -> f.id("first").type(InputField.Type.text).required())
                     .field(f -> f.id("last").type(InputField.Type.integer).required())
-                    .validate(m -> Optional.of(m.get("given").toString() + m.get("last").toString())))
+                    .validate(m -> Optional.of(m.get("first").toString() + m.get("last").toString())))
                 .validate(m -> Optional.of(m.get("name")))
                 .build();
         HashMap<String, String> map = new HashMap<>();
-        map.put("name.given", "First");
+        map.put("name.first", "First");
         map.put("name.last", "Last");
 
         assertFalse(classUnderTest.validate(map).isPresent());
@@ -223,13 +223,13 @@ public class InputFieldGroupAdapterTest {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .id("upper")
                 .group(g -> g.id("name")
-                        .field(f -> f.id("given").type(InputField.Type.text).required())
+                        .field(f -> f.id("first").type(InputField.Type.text).required())
                         .field(f -> f.id("last").type(InputField.Type.text).required())
-                        .validate(m -> Optional.of(m.get("given").toString() + m.get("last").toString())))
+                        .validate(m -> Optional.of(m.get("first").toString() + m.get("last").toString())))
                 .validate(m -> Optional.of(m.get("name")).map(s -> s.toString().toUpperCase()))
                 .build();
         HashMap<String, String> map = new HashMap<>();
-        map.put("name.given", "First");
+        map.put("name.first", "First");
         map.put("name.last", "Last");
 
         assertEquals("FIRSTLAST", classUnderTest.validate(map).get());
@@ -239,18 +239,18 @@ public class InputFieldGroupAdapterTest {
     public void map() {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .id("name")
-                .field(f -> f.id("given").type(InputField.Type.text))
+                .field(f -> f.id("first").type(InputField.Type.text))
                 .field(f -> f.id("last").type(InputField.Type.text))
                 .map(p -> {
                     HashMap<String, String> map = new HashMap<>();
-                    map.put("given", p.getName().getGivenName());
+                    map.put("first", p.getName().getGivenName());
                     map.put("last", p.getName().getSurname());
                     return map;
                 })
                 .build();
 
         HashMap<String, String> expected = new HashMap<>();
-        expected.put("given", "First");
+        expected.put("first", "First");
         expected.put("last", "Last");
 
         User user = new User();
@@ -264,7 +264,7 @@ public class InputFieldGroupAdapterTest {
     public void defaultGroupMap() {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .id("name")
-                .field(f -> f.id("given")
+                .field(f -> f.id("first")
                         .type(InputField.Type.text)
                         .map(p->p.getName().getGivenName()))
                 .field(f -> f.id("last")
@@ -273,7 +273,7 @@ public class InputFieldGroupAdapterTest {
                 .build();
 
         HashMap<String, String> expected = new HashMap<>();
-        expected.put("given", "First");
+        expected.put("first", "First");
         expected.put("last", "Last");
 
         User user = new User();
@@ -287,7 +287,7 @@ public class InputFieldGroupAdapterTest {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .group(g->g
                     .id("name")
-                    .field(f -> f.id("given")
+                    .field(f -> f.id("first")
                             .type(InputField.Type.text)
                             .map(p->p.getName().getGivenName()))
                     .field(f -> f.id("last")
@@ -296,7 +296,7 @@ public class InputFieldGroupAdapterTest {
                 .build();
 
         HashMap<String, String> expected = new HashMap<>();
-        expected.put("name.given", "First");
+        expected.put("name.first", "First");
         expected.put("name.last", "Last");
 
         User user = new User();
@@ -310,20 +310,20 @@ public class InputFieldGroupAdapterTest {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .group(g->g
                         .id("name")
-                        .field(f -> f.id("given")
+                        .field(f -> f.id("first")
                                 .type(InputField.Type.text)
                                 .required())
                         .field(f -> f.id("last")
                                 .type(InputField.Type.text)))
                 .build();
 
-        Map<String, String> map = UtilityMethods.map("name.given", "Green").build();
+        Map<String, String> map = UtilityMethods.map("name.first", "Green").build();
         Optional<Object> result = classUnderTest.validate(map);
         assertTrue(result.isPresent());
         Map resultMap = (Map) result.get();
         assertEquals(1, resultMap.size());
         Map nameMap = (Map) resultMap.get("name");
-        assertEquals("Green", nameMap.get("given"));
+        assertEquals("Green", nameMap.get("first"));
     }
 
     @Test
@@ -331,14 +331,14 @@ public class InputFieldGroupAdapterTest {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .group(g -> g
                         .id("name")
-                        .field(f -> f.id("given")
+                        .field(f -> f.id("first")
                                 .type(InputField.Type.text))
                         .field(f -> f.id("last")
                                 .type(InputField.Type.text)
                                 .required()))
                 .build();
 
-        Map<String, String> map = UtilityMethods.map("name.given", "Green").build();
+        Map<String, String> map = UtilityMethods.map("name.first", "Green").build();
         Optional<Object> result = classUnderTest.validate(map);
         assertFalse(result.isPresent());
     }
@@ -347,13 +347,13 @@ public class InputFieldGroupAdapterTest {
     public void update() {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .id("name")
-                .field(f -> f.id("given").type(InputField.Type.text))
+                .field(f -> f.id("first").type(InputField.Type.text))
                 .field(f -> f.id("last").type(InputField.Type.text))
                 .update((p, r) -> {
                     p.getUpdater().setName(new Name() {
                         @Override
                         public String getGivenName() {
-                            return (String)((Map)r).get("given");
+                            return (String)((Map)r).get("first");
                         }
 
                         @Override
@@ -365,7 +365,7 @@ public class InputFieldGroupAdapterTest {
                 .build();
 
         HashMap<String, String> validatedInput = new HashMap<>();
-        validatedInput.put("given", "First");
+        validatedInput.put("first", "First");
         validatedInput.put("last", "Last");
 
         User user = new User();
@@ -438,7 +438,7 @@ public class InputFieldGroupAdapterTest {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .group(g -> g
                         .id("name")
-                        .field(f -> f.id("given")
+                        .field(f -> f.id("first")
                                 .type(InputField.Type.text)
                                 .update((p, o) -> fail()))
                         .field(f -> f.id("last")
@@ -450,7 +450,7 @@ public class InputFieldGroupAdapterTest {
                 .build();
 
         HashMap<String, String> input = new HashMap<>();
-        input.put("person.given", "First");
+        input.put("person.first", "First");
         input.put("person.last", "Last");
 
         User user = new User();
