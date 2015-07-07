@@ -67,19 +67,19 @@ public class UserBean {
 	private String uniqueId;
 
 	/**
-	 * Retrieves the first name
+	 * Retrieves the given name
 	 * 
-	 * @return String the first name
+	 * @return String the given name
 	 */
 	public String getFirstName() {
 		return firstName;
 	}
 
 	/**
-	 * Updates the first name
+	 * Updates the given name
 	 * 
 	 * @param firstName
-	 *            the first name of user
+	 *            the given name of user
 	 */
 	public void setFirstName(final String firstName) {
 		this.firstName = firstName;

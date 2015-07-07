@@ -33,6 +33,7 @@ public interface Name {
     }
 
     public default String getFullName() {
-        return "";
+        return (getGivenName() + " " + getSurname()).trim();
     }
+
 }

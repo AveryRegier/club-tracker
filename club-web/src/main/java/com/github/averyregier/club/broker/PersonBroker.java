@@ -3,13 +3,12 @@ package com.github.averyregier.club.broker;
 import com.github.averyregier.club.db.tables.records.PersonRecord;
 import com.github.averyregier.club.domain.club.Name;
 import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.club.adapter.NameBuilder;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.TableField;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -60,42 +59,13 @@ public class PersonBroker extends Broker<Person> {
                 PersonAdapter person = new PersonAdapter(id);
                 Person.Gender.lookup(r.getGender()).ifPresent(person::setGender);
                 person.setEmail(r.getEmail());
-                person.setName(new Name() {
-                    @Override
-                    public String getGivenName() {
-                        return r.getGiven();
-                    }
-
-                    @Override
-                    public String getSurname() {
-                        return r.getSurname();
-                    }
-
-                    @Override
-                    public List<String> getMiddleNames() {
-                        return Collections.emptyList();
-                    }
-
-                    @Override
-                    public Optional<String> getTitle() {
-                        return Optional.ofNullable(r.getTitle());
-                    }
-
-                    @Override
-                    public String getFriendlyName() {
-                        return r.getFriendly();
-                    }
-
-                    @Override
-                    public String getHonorificName() {
-                        return r.getHonorific();
-                    }
-
-                    @Override
-                    public String getFullName() {
-                        return null;
-                    }
-                });
+                person.setName(new NameBuilder()
+                        .given(r.getGiven())
+                        .surname(r.getSurname())
+                        .title(r.getTitle())
+                        .friendly(r.getFriendly())
+                        .honorific(r.getHonorific())
+                        .build());
                 return person;
             });
         });

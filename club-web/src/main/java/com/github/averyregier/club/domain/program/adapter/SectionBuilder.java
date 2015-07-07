@@ -70,7 +70,7 @@ public class SectionBuilder implements Builder<Section> {
     }
 
     void identifyFutureGroup(Later<SectionGroup> futureGroup) {
-        if(this.futureGroup == null) { // only attach to the first one
+        if(this.futureGroup == null) { // only attach to the given one
             this.futureGroup = futureGroup;
         }
     }

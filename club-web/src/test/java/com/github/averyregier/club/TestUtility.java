@@ -3,11 +3,11 @@ package com.github.averyregier.club;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.view.UserBean;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Consumer;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by avery on 12/27/14.
@@ -21,9 +21,18 @@ public class TestUtility {
         return user;
     }
 
-    public static void assertEmpty(Set<?> set) {
+    public static void assertEmpty(Collection<?> set) {
         assertNotNull(set);
         assertTrue(set.isEmpty());
+    }
+
+    public static void assertEmpty(String value) {
+        assertEquals("", value);
+    }
+
+    public static void assertEmpty(Optional<?> optional) {
+        assertNotNull(optional);
+        assertFalse(optional.isPresent());
     }
 
     public static boolean anyEqual(int item, int... expected) {

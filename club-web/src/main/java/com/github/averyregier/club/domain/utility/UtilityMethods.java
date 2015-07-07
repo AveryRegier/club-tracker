@@ -189,4 +189,16 @@ public class UtilityMethods {
         if(b == null) return false;
         return a.equals(b);
     }
+
+    public static <T> boolean change(T current, T newValue, Consumer<T> fn) {
+        if(!safeEquals(current, newValue)) {
+            fn.accept(newValue);
+            return true;
+        }
+        return false;
+    }
+
+    public static String orEmpty(String surname) {
+        return surname != null ? surname : "";
+    }
 }
