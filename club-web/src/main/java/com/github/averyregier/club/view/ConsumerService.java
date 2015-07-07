@@ -108,7 +108,7 @@ public class ConsumerService extends ModelMaker {
         bean.setUniqueId(identifier.getIdentifier());
         if(model.containsKey("attributes")) {
             Map attributes = (Map)model.get("attributes");
-            mapAttribute(attributes, "given", bean::setFirstName);
+            mapAttribute(attributes, "first", bean::setFirstName);
             mapAttribute(attributes, "last", bean::setLastName);
             mapAttribute(attributes, "email", bean::setEmail);
             mapAttribute(attributes, "gender", bean::setGender);
@@ -149,8 +149,8 @@ public class ConsumerService extends ModelMaker {
             fetch.addAttribute("email", // attribute alias
                 "http://schema.openid.net/contact/email", // type URI
                 true); // required
-            fetch.addAttribute("given", // attribute alias
-                    "http://schema.openid.net/namePerson/given", // type URI
+            fetch.addAttribute("first", // attribute alias
+                    "http://schema.openid.net/namePerson/first", // type URI
                     true); // required
             fetch.addAttribute("last", // attribute alias
                     "http://schema.openid.net/namePerson/last", // type URI
