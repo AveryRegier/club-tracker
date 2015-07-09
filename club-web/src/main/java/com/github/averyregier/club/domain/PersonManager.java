@@ -4,12 +4,13 @@ import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by avery on 9/6/2014.
  */
 public class PersonManager {
-    private Map<String, Person> people = new LinkedHashMap<String, Person>();
+    protected Map<String, Person> people = new ConcurrentHashMap<>();
     public Optional<Person> lookup(String id) {
         return Optional.ofNullable(people.get(id));
     }
@@ -20,8 +21,19 @@ public class PersonManager {
 
     public Person createPerson() {
         String id = UUID.randomUUID().toString();
-        PersonAdapter personAdapter = new PersonAdapter(id);
-        people.put(id, personAdapter);
-        return personAdapter;
+        PersonAdapter person = new PersonAdapter(id);
+        cacheNew(person);
+        return person;
     }
+
+    protected void cacheNew(PersonAdapter person) {
+        update(person);
+        people.put(person.getId(), person);
+    }
+
+    public void sync(Person person) {
+        update(person);
+    }
+
+    protected void update(Person person) {}
 }
