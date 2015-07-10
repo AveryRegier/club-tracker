@@ -46,7 +46,7 @@ public class UserManager {
     }
 
     public User createUser(UserBean bean) {
-        return getUserObject(bean, (u)->{});
+        return getUserObject(bean, (u) -> {});
     }
 
     public PersonManager getPersonManager() {
@@ -61,17 +61,16 @@ public class UserManager {
     }
 
     public User syncUser(UserBean bean) {
-        User user = getUserObject(bean, (u) -> u.resetAuth());
-        boolean changed = false;
-        if(!user.getLoginInformation().getAuth().isPresent()) {
-            user.resetAuth();
-            changed = true;
+        User user = getUserObject(bean, User::resetAuth);
+        if(user.updateLogin(bean) | user.resetAuthIfNeeded()) {
+            updateLogin(user);
         }
-        if(user.update(bean) | changed) {
-            update(user);
+        if(user.updateIdentity(bean)) {
+            updateIdentity(user);
         }
         return user;
     }
 
-    protected void update(User user) {}
+    protected void updateLogin(User user) {}
+    protected void updateIdentity(User user) {}
 }

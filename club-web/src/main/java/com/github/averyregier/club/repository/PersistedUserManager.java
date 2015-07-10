@@ -16,10 +16,6 @@ import java.util.function.Supplier;
 public class PersistedUserManager extends UserManager {
     private Supplier<LoginBroker> brokerSupplier;
 
-    public PersistedUserManager(Supplier<LoginBroker> brokerSupplier) {
-        this.brokerSupplier = brokerSupplier;
-    }
-
     public PersistedUserManager(PersonManager personManager, Supplier<LoginBroker> brokerSupplier) {
         super(personManager);
         this.brokerSupplier = brokerSupplier;
@@ -49,15 +45,21 @@ public class PersistedUserManager extends UserManager {
     @Override
     protected User putUser(String userID, User user) {
         try {
-            update(user);
+            updateLogin(user);
             return super.putUser(userID, user);
         } catch(DataAccessException e) {
-            return getUser(user.getLoginInformation().getProviderID(), userID).orElseThrow(()->e);
+            return getUser(user.getLoginInformation().getProviderID(), userID)
+                    .orElseThrow(()->e);
         }
     }
 
     @Override
-    protected void update(User user) {
+    protected void updateLogin(User user) {
         getLoginBroker().persist(user.getLoginInformation());
+    }
+
+    @Override
+    protected void updateIdentity(User user) {
+        personManager.sync(user);
     }
 }

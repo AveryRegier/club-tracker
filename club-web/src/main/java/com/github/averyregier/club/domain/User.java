@@ -42,6 +42,14 @@ public class User extends PersonWrapper implements Person {
         return new Login();
     }
 
+    boolean resetAuthIfNeeded() {
+        if(auth == null) {
+            resetAuth();
+            return true;
+        }
+        return false;
+    }
+
     public class Login {
 
         public Optional<Integer> getAuth() {
@@ -148,32 +156,41 @@ public class User extends PersonWrapper implements Person {
     }
 
     public boolean update(final UserBean user) {
-        boolean changed =
-                change(this.id, user.getUniqueId(), v -> this.id = v) |
-                change(this.providerID, user.getProviderId(), v -> this.providerID = v);
+        return updateLogin(user) |
+               updateIdentity(user);
+    }
 
+    public boolean updateIdentity(final UserBean user) {
+        return updateName(user) |
+               updateGender(user.getGender()) |
+               updateEmail(user.getEmail());
+    }
+
+    private boolean updateEmail(String email) {
+        return !UtilityMethods.isEmpty(email) &&
+               change(getEmail().orElse(null),
+                       email,
+                       (e) -> getUpdater().setEmail(e));
+    }
+
+    private boolean updateGender(String gender1) {
+        return !UtilityMethods.isEmpty(gender1) &&
+               change(getGender().orElse(null),
+                       Gender.valueOf(gender1.toUpperCase()),
+                       (g) -> getUpdater().setGender(g));
+    }
+
+    private boolean updateName(UserBean user) {
         NameBuilder nameBuilder = new NameBuilder(getName(), false)
                 .given(user.getFirstName())
                 .surname(user.getLastName());
-        changed = changed | nameBuilder.isChanged();
         person.getUpdater().setName(nameBuilder.build());
+        return nameBuilder.isChanged();
+    }
 
-        String gender1 = user.getGender();
-        if(!UtilityMethods.isEmpty(gender1)) {
-            changed = changed |
-                    change(getGender().orElse(null),
-                            Gender.valueOf(gender1.toUpperCase()),
-                            (g) -> getUpdater().setGender(g));
-        }
-        String email = user.getEmail();
-        if(!UtilityMethods.isEmpty(email)) {
-            person.getUpdater().setEmail(email);
-            changed = changed |
-                    change(getEmail().orElse(null),
-                            email,
-                            (e) -> getUpdater().setEmail(e));
-        }
-        return changed;
+    public boolean updateLogin(UserBean user) {
+        return change(this.id, user.getUniqueId(), v -> this.id = v) |
+               change(this.providerID, user.getProviderId(), v -> this.providerID = v);
     }
 
 }

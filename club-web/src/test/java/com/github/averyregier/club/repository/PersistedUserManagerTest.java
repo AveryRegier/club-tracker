@@ -51,6 +51,7 @@ public class PersistedUserManagerTest {
 
         verify(broker, times(2)).find(eq(ANY_PROVIDER), eq(ANY_ID), any());
         verifyNoMoreInteractions(broker);
+        verifyNoMoreInteractions(personManager);
     }
 
     @Test
@@ -64,6 +65,7 @@ public class PersistedUserManagerTest {
 
         verify(broker, times(1)).find(eq(ANY_PROVIDER), eq(ANY_ID), any());
         verifyNoMoreInteractions(broker);
+        verifyNoMoreInteractions(personManager);
     }
 
     @Test
@@ -76,15 +78,18 @@ public class PersistedUserManagerTest {
         bean.setEmail(ANY_EMAIL);
         assertSynced(result);
         assertEquals(ANY_EMAIL, person.getEmail().get());
+        verify(personManager).sync(eq(result));
 
         String anotherEmail = "another@email.com";
         bean.setEmail(anotherEmail);
         assertSynced(result);
         assertEquals(anotherEmail, person.getEmail().get());
+        verify(personManager, times(2)).sync(eq(result));
 
         verify(broker, times(1)).persist(eq(result.getLoginInformation()));
         verify(broker, times(1)).find(eq(ANY_PROVIDER), eq(ANY_ID), any());
         verifyNoMoreInteractions(broker);
+        verifyNoMoreInteractions(personManager);
     }
 
     @Test
@@ -100,11 +105,13 @@ public class PersistedUserManagerTest {
         assertSynced(result);
         assertEquals(ANY_EMAIL, person.getEmail().get());
         assertTrue(result.getLoginInformation().getAuth().isPresent());
+        verify(personManager).sync(eq(result));
 
         assertSynced(result);
 
         verify(broker, times(1)).find(eq(ANY_PROVIDER), eq(ANY_ID), any());
         verifyNoMoreInteractions(broker);
+        verifyNoMoreInteractions(personManager);
     }
 
 
@@ -128,6 +135,7 @@ public class PersistedUserManagerTest {
         assertFound(user, ANY_PROVIDER, ANY_ID);
 
         verifyNoMoreInteractions(broker);
+        verifyNoMoreInteractions(personManager);
     }
 
     @Test
@@ -151,6 +159,7 @@ public class PersistedUserManagerTest {
         assertFound(user, ANY_PROVIDER, ANY_ID);
 
         verifyNoMoreInteractions(broker);
+        verifyNoMoreInteractions(personManager);
     }
 
     @Test
@@ -165,6 +174,7 @@ public class PersistedUserManagerTest {
         verify(broker, times(1)).find(eq(ANY_PROVIDER), eq(ANY_ID), any());
 
         verifyNoMoreInteractions(broker);
+        verifyNoMoreInteractions(personManager);
     }
 
     @Test
@@ -180,6 +190,7 @@ public class PersistedUserManagerTest {
 
         verify(broker, times(1)).find(eq(ANY_PROVIDER), eq(ANY_ID), any());
         verifyNoMoreInteractions(broker);
+        verifyNoMoreInteractions(personManager);
     }
 
     @Test
@@ -202,6 +213,7 @@ public class PersistedUserManagerTest {
         assertFound(user, ANY_PROVIDER, ANY_ID);
 
         verifyNoMoreInteractions(broker);
+        verifyNoMoreInteractions(personManager);
     }
 
     @Test
@@ -224,6 +236,7 @@ public class PersistedUserManagerTest {
         verify(personManager).createPerson();
 
         verifyNoMoreInteractions(broker);
+        verifyNoMoreInteractions(personManager);
     }
 
     private boolean matches(User.Login a) {
