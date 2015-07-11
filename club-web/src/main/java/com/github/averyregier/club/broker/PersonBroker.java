@@ -37,7 +37,7 @@ public class PersonBroker extends Broker<Person> {
 
     private Map<TableField<PersonRecord, ?>, Object> mapFields(Person person) {
         return JooqUtil.<PersonRecord>map()
-                .set(PERSON.GENDER, person.getGender().map(Enum::name))
+                .set(PERSON.GENDER, person.getGender().map(Person.Gender::getPersistenceValue))
                 .set(PERSON.FRIENDLY, nameField(person, Name::getFriendlyName))
                 .set(PERSON.GIVEN, nameField(person, Name::getGivenName))
                 .set(PERSON.SURNAME, nameField(person, Name::getSurname))

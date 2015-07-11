@@ -110,7 +110,7 @@ public class PersonBrokerTest {
     }
 
     private void assertPersonFields(PersonAdapter thing, StatementVerifier s) {
-        s.assertFieldEquals(thing.getGender().get().name(), PERSON.GENDER);
+        s.assertFieldEquals(thing.getGender().get().getPersistenceValue(), PERSON.GENDER);
         s.assertFieldEquals(thing.getName().getFriendlyName(), PERSON.FRIENDLY);
         s.assertFieldEquals(thing.getName().getGivenName(), PERSON.GIVEN);
         s.assertFieldEquals(thing.getName().getSurname(), PERSON.SURNAME);

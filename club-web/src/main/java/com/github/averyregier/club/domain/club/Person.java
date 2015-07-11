@@ -46,6 +46,10 @@ public interface Person {
                 return Optional.empty();
             }
         }
+
+        public String getPersistenceValue() {
+            return name().substring(0,1);
+        }
     }
     String getId();
     public Name getName();

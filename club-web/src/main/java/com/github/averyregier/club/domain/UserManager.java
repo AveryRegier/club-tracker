@@ -26,7 +26,7 @@ public class UserManager {
         return getUser(bean.getProviderId(), bean.getUniqueId()).orElseGet(() -> {
             User u = new User(personManager.createPerson());
             setupFn.accept(u);
-            u.update(bean);
+            u.updateLogin(bean);
             u = putUser(bean.getUniqueId(), u);
             return u;
         });

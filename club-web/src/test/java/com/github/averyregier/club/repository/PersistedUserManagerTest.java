@@ -155,6 +155,7 @@ public class PersistedUserManagerTest {
         verify(broker, times(1)).find(eq(ANY_PROVIDER), eq(ANY_ID), any());
         verify(broker, times(1)).persist(eq(user.getLoginInformation()));
         verify(personManager).createPerson();
+        verify(personManager).sync(user);
 
         assertFound(user, ANY_PROVIDER, ANY_ID);
 
