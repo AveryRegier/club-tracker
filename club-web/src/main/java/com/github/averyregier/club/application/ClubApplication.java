@@ -2,9 +2,14 @@ package com.github.averyregier.club.application;
 
 import com.github.averyregier.club.broker.ConfiguredConnector;
 import com.github.averyregier.club.broker.Connector;
+import com.github.averyregier.club.broker.LoginBroker;
+import com.github.averyregier.club.broker.PersonBroker;
+import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.UserManager;
 import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
+import com.github.averyregier.club.repository.PersistedPersonManager;
+import com.github.averyregier.club.repository.PersistedUserManager;
 import com.github.averyregier.club.rest.RestAPI;
 import com.github.averyregier.club.view.*;
 import spark.servlet.SparkApplication;
@@ -34,7 +39,13 @@ public class ClubApplication implements SparkApplication, ServletContextListener
 
     }
 
-    private final UserManager userManager = new UserManager();
+    private final UserManager userManager = createUserManager();
+
+    private PersistedUserManager createUserManager() {
+        PersonManager personManager = new PersistedPersonManager(() -> new PersonBroker(connector));
+        return new PersistedUserManager(personManager, ()->new LoginBroker(connector));
+    }
+
     private Program program;
     private ConfiguredConnector connector;
 

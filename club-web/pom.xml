@@ -29,7 +29,7 @@
         <flyway.user>SA</flyway.user>
         <flyway.password></flyway.password>
         <flyway.placeholders.create_schema>CREATE SCHEMA ${schema} AUTHORIZATION DBA;</flyway.placeholders.create_schema>
-        <flyway.placeholders.setup>CREATE TYPE UUID AS BINARY(16);</flyway.placeholders.setup>
+        <flyway.placeholders.setup>CREATE TYPE UUID AS BINARY(36);</flyway.placeholders.setup>
         <flyway.placeholders.schema>${schema}</flyway.placeholders.schema>
 
         <flyway.placeholders.generate_uuid></flyway.placeholders.generate_uuid>
