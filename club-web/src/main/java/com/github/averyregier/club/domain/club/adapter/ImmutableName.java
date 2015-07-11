@@ -58,6 +58,6 @@ class ImmutableName implements Name {
     @Override
     // freemarker doesn't like default methods
     public String getFullName() {
-        return (getGivenName() + " " + getSurname()).trim();
+        return Name.super.getFullName();
     }
 }
