@@ -54,4 +54,10 @@ class ImmutableName implements Name {
     public List<String> getMiddleNames() {
         return middleValue;
     }
+
+    @Override
+    // freemarker doesn't like default methods
+    public String getFullName() {
+        return (getGivenName() + " " + getSurname()).trim();
+    }
 }
