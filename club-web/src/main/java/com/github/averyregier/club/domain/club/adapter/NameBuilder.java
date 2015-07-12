@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.github.averyregier.club.domain.utility.TrackedField.track;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
 import static java.util.Collections.unmodifiableList;
 
@@ -29,12 +30,12 @@ public class NameBuilder {
 
     private void forNewName() {
         this.override = true;
-        this.given = new TrackedString("");
-        this.surname = new TrackedString("");
-        this.friendly = new TrackedString("");
-        this.honorific = new TrackedString("");
-        this.title = new TrackedField<>(Optional.empty());
-        this.middle = new TrackedField<>(Collections.emptyList());
+        this.given = track("");
+        this.surname = track("");
+        this.friendly = track("");
+        this.honorific = track("");
+        this.title = track(Optional.empty());
+        this.middle = track(Collections.emptyList());
     }
 
     public NameBuilder(Name initialName, boolean override) {
@@ -42,12 +43,12 @@ public class NameBuilder {
             forNewName();
         } else {
             this.override = override;
-            this.given = new TrackedString(initialName.getGivenName());
-            this.surname = new TrackedString(initialName.getSurname());
-            this.friendly = new TrackedString(initialName.getFriendlyName());
-            this.honorific = new TrackedString(initialName.getHonorificName());
-            this.title = new TrackedField<>(initialName.getTitle());
-            this.middle = new TrackedField<>(unmodifiableList(initialName.getMiddleNames()));
+            this.given = track(initialName.getGivenName());
+            this.surname = track(initialName.getSurname());
+            this.friendly = track(initialName.getFriendlyName());
+            this.honorific = track(initialName.getHonorificName());
+            this.title = track(initialName.getTitle());
+            this.middle = track(unmodifiableList(initialName.getMiddleNames()));
         }
     }
 

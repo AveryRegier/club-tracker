@@ -42,4 +42,12 @@ public class TrackedField<T> {
             setValue(fn.get());
         }
     }
+
+    public static <T> TrackedField<T> track(T defaultValue) {
+        return new TrackedField<>(defaultValue);
+    }
+
+    public static TrackedString track(String defaultValue ) {
+        return new TrackedString(defaultValue);
+    }
 }
