@@ -1,10 +1,12 @@
 package com.github.averyregier.club.broker;
 
 import com.github.averyregier.club.db.tables.records.PersonRecord;
+import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.club.Name;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.NameBuilder;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
+import com.github.averyregier.club.repository.PersistedPerson;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.TableField;
@@ -51,12 +53,12 @@ public class PersonBroker extends Broker<Person> {
         return Optional.ofNullable(person.getName()).map(fn);
     }
 
-    public Optional<Person> find(String id) {
+    public Optional<Person> find(String id, PersonManager manager) {
         return query((create)->{
 
             Result<PersonRecord> result = create.selectFrom(PERSON).where(PERSON.ID.eq(id.getBytes())).fetch();
             return result.stream().findFirst().map(r->{
-                PersonAdapter person = new PersonAdapter(id);
+                PersonAdapter person = new PersistedPerson(connector, id, manager);
                 Person.Gender.lookup(r.getGender()).ifPresent(person::setGender);
                 person.setEmail(r.getEmail());
                 person.setName(new NameBuilder()

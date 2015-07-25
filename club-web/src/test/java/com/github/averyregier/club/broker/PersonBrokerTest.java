@@ -143,7 +143,7 @@ public class PersonBrokerTest {
             record.setEmail("dr.joe.jr@smith.com");
         });
 
-        Person person = setup(provider).find(id).get();
+        Person person = setup(provider).find(id, null).get();
 
         assertEquals(id, person.getId());
         assertEquals("dr.joe.jr@smith.com", person.getEmail().get());

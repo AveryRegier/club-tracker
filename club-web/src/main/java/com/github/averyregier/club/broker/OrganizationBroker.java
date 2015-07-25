@@ -3,7 +3,7 @@ package com.github.averyregier.club.broker;
 import com.github.averyregier.club.db.tables.records.OrganizationRecord;
 import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.club.Program;
-import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
+import com.github.averyregier.club.repository.PersistedProgram;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.TableField;
@@ -47,15 +47,14 @@ public class OrganizationBroker extends Broker<Program> {
             Result<OrganizationRecord> records = create.selectFrom(ORGANIZATION)
                     .where(ORGANIZATION.ID.eq(id.getBytes()))
                     .fetch();
-            return records.stream().findFirst().map(r->new ProgramAdapter(
-                    r.getLocale(),
-                    r.getOrganizationname(),
-                    manager.lookup(convert(r.getClubId()))) {
-                @Override
-                public String getId() {
-                    return id;
-                }
-            });
+            return records.stream().findFirst().map(
+                    r -> new PersistedProgram(
+                                connector,
+                                r.getLocale(),
+                                r.getOrganizationname(),
+                                manager.lookup(convert(r.getClubId())),
+                                id));
         });
     }
+
 }

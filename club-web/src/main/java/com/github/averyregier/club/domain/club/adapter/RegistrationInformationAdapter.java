@@ -49,15 +49,19 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
                             int childNumber = Integer.parseInt(matcher.group(2));
                             Clubber child = findClubber(family, childNumber);
                             section.update(child, theResults);
-                            getProgram().register((ClubberAdapter)child);
+                            getProgram().register((ClubberAdapter) child);
                             break;
                     }
                 }
             }
         }
 
+        syncFamily(family);
+
         return family;
     }
+
+    protected void syncFamily(Family family) {}
 
     private Person createPerson() {
         return getProgram().getPersonManager().createPerson();

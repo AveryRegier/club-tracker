@@ -285,6 +285,12 @@ public class ProgramAdapter extends ClubAdapter implements Program {
         ProgramAdapter getProgram() {
             return ProgramAdapter.this;
         }
+
+        @Override
+        protected void syncFamily(Family family) {
+            ProgramAdapter.this.syncFamily(family);
+        }
     }
 
+    protected void syncFamily(Family family) {}
 }

@@ -201,4 +201,23 @@ public class UtilityMethods {
     public static String orEmpty(String surname) {
         return surname != null ? surname : "";
     }
+
+    public static <T> Optional<T> orElseMaybe(Optional<T> opt, Supplier<Optional<T>> supplier) {
+        if(!opt.isPresent()) {
+            return supplier.get();
+        }
+        return opt;
+    }
+
+    public static <T> Supplier<T> once(Supplier<T> supplier) {
+        return new SupplyOnce<>(supplier);
+    }
+
+    public static <T> Supplier<Optional<T>> setOnce(Supplier<Optional<T>> supplier, Consumer<T> setter) {
+        return once(() -> {
+            Optional<T> result = supplier.get();
+            result.ifPresent(setter);
+            return result;
+        });
+    }
 }

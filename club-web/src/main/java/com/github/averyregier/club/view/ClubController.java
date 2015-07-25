@@ -134,7 +134,7 @@ public class ClubController extends ModelMaker {
     }
 
     private Clubber findClubber(ClubApplication app, String id) {
-        return app.getProgram().getPersonManager()
+        return app.getPersonManager()
                         .lookup(id)
                         .orElseThrow(IllegalArgumentException::new)
                         .asClubber()

@@ -111,4 +111,8 @@ public class ClubApplication implements SparkApplication, ServletContextListener
     public void contextDestroyed(ServletContextEvent sce) {
 
     }
+
+    public PersonManager getPersonManager() {
+        return userManager.getPersonManager();
+    }
 }

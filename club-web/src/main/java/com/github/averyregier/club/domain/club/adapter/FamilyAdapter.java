@@ -19,11 +19,15 @@ public class FamilyAdapter implements Family {
         addPerson(firstPerson);
     }
 
-    private void addPerson(Person firstPerson) {
-        if(firstPerson.asParent().isPresent()) {
-            addParent(firstPerson.asParent().get());
+    public FamilyAdapter(String id) {
+        this.id = id;
+    }
+
+    protected void addPerson(Person person) {
+        if(person.asParent().isPresent()) {
+            addParent(person.asParent().get());
         } else {
-            addClubber(firstPerson.asClubber().get());
+            addClubber(person.asClubber().get());
         }
     }
 
@@ -46,16 +50,6 @@ public class FamilyAdapter implements Family {
     }
 
     @Override
-    public Family update(RegistrationInformation information) {
-        return this;
-    }
-
-    @Override
-    public RegistrationInformation getRegistration() {
-        return null;
-    }
-
-    @Override
     public Set<Clubber> getClubbers() {
         return clubbers;
     }
@@ -63,10 +57,5 @@ public class FamilyAdapter implements Family {
     @Override
     public String getId() {
         return id;
-    }
-
-    @Override
-    public String getShortCode() {
-        return parents.stream().findFirst().map(p->"The "+p.getName().getSurname()+" Family").orElse(getId());
     }
 }
