@@ -33,24 +33,24 @@ public class RegistrationController extends ModelMaker {
         });
 
         before("/protected/*/*", (request, response) -> {
-            if(app.getProgram() == null) {
+            if(!app.hasPrograms()) {
                 response.redirect("/protected/setup");
                 halt();
             }
         });
 
-        get("/protected/*/family", (request, response) ->{
+        get("/protected/:id/family", (request, response) ->{
             User user = getUser(request);
             return new spark.ModelAndView(
-                    toMap("regInfo", app.getProgram().createRegistrationForm(user)),
+                    toMap("regInfo", app.getProgram(request.params(":id")).createRegistrationForm(user)),
                     "family.ftl");
         }, new FreeMarkerEngine());
 
-        before("/protected/*/family", (request, response) -> {
+        before("/protected/:id/family", (request, response) -> {
             if ("submit".equals(request.queryParams("submit"))) {
                 logger.info("Submitting family registration");
                 Map<String, String> collect = UtilityMethods.transformToSingleValueMap(request.queryMap().toMap());
-                RegistrationInformation form = app.getProgram().updateRegistrationForm(collect);
+                RegistrationInformation form = app.getProgram(request.params(":id")).updateRegistrationForm(collect);
                 User user = getUser(request);
                 Family family = form.register(user);
                 response.redirect("/protected/my");
@@ -58,10 +58,10 @@ public class RegistrationController extends ModelMaker {
             }
         });
 
-        post("/protected/*/family", (request, response) -> {
+        post("/protected/:id/family", (request, response) -> {
             logger.info("Adding additional family members");
             Map<String, String> collect = UtilityMethods.transformToSingleValueMap(request.queryMap().toMap());
-            RegistrationInformation form = app.getProgram().updateRegistrationForm(collect);
+            RegistrationInformation form = app.getProgram(request.params(":id")).updateRegistrationForm(collect);
             return new spark.ModelAndView(
                     toMap("regInfo", form),
                     "family.ftl");

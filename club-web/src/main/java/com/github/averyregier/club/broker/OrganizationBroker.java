@@ -3,16 +3,17 @@ package com.github.averyregier.club.broker;
 import com.github.averyregier.club.db.tables.records.OrganizationRecord;
 import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.club.Program;
-import com.github.averyregier.club.repository.PersistedProgram;
+import com.github.averyregier.club.domain.program.Programs;
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.TableField;
 
 import java.util.Map;
 import java.util.Optional;
 
+import static com.github.averyregier.club.db.tables.Club.CLUB;
 import static com.github.averyregier.club.db.tables.Organization.ORGANIZATION;
-import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 
 /**
  * Created by avery on 2/27/15.
@@ -42,18 +43,19 @@ public class OrganizationBroker extends Broker<Program> {
                 .build();
     }
 
-    public Optional<Program> find(String id, ClubManager manager) {
+    public Optional<Program> find(String id, ClubManager clubManager) {
         return query(create-> {
-            Result<OrganizationRecord> records = create.selectFrom(ORGANIZATION)
+            Result<Record> records = create.selectFrom(ORGANIZATION.join(CLUB)
+                                .on(ORGANIZATION.CLUB_ID.eq(CLUB.ID)))
                     .where(ORGANIZATION.ID.eq(id.getBytes()))
                     .fetch();
             return records.stream().findFirst().map(
-                    r -> new PersistedProgram(
-                                connector,
-                                r.getLocale(),
-                                r.getOrganizationname(),
-                                manager.lookup(convert(r.getClubId())),
-                                id));
+                    r -> clubManager.loadProgram(
+                            connector,
+                            r.getValue(ORGANIZATION.LOCALE),
+                            r.getValue(ORGANIZATION.ORGANIZATIONNAME),
+                            Programs.find(r.getValue(CLUB.CURRICULUM)).orElseThrow(IllegalArgumentException::new),
+                            id));
         });
     }
 

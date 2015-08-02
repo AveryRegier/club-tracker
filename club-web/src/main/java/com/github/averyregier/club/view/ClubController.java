@@ -12,11 +12,12 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.template.freemarker.FreeMarkerEngine;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
 
-import static com.github.averyregier.club.domain.utility.UtilityMethods.asLinkedSet;
-import static com.github.averyregier.club.domain.utility.UtilityMethods.decode;
-import static com.github.averyregier.club.domain.utility.UtilityMethods.map;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
 import static spark.Spark.*;
 
 /**
@@ -28,14 +29,14 @@ public class ClubController extends ModelMaker {
 
 
     public void init(ClubApplication app) {
-        get("/protected/viewProgram", (request, response) -> {
+        get("/protected/:id/viewProgram", (request, response) -> {
             HashMap<Object, Object> model = new HashMap<>();
-            model.put("program", app.getProgram());
+            model.put("program", app.getProgram(request.params(":id")));
             return new ModelAndView(model, "viewProgram.ftl");
         }, new FreeMarkerEngine());
 
         get("/protected/club/:club", (request, response) -> {
-            Optional<Club> club = app.getProgram().lookupClub(request.params(":club"));
+            Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
             if(club.isPresent()) {
                 HashMap<Object, Object> model = new HashMap<>();
                 model.put("club", club.get());
@@ -47,7 +48,7 @@ public class ClubController extends ModelMaker {
         }, new FreeMarkerEngine());
 
         post("/protected/club/:club/listeners", (request, response) -> {
-            Optional<Club> club = app.getProgram().lookupClub(request.params(":club"));
+            Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
             if(club.isPresent()) {
                 String[] ids = request.queryParams("id").split(",");
                 for(String id: ids) {
@@ -66,7 +67,7 @@ public class ClubController extends ModelMaker {
 
         before("/protected/club/:club/awards", (request, response)-> {
             if(request.requestMethod().equalsIgnoreCase("POST")){
-                Optional<Club> club = app.getProgram().lookupClub(request.params(":club"));
+                Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
                 if(club.isPresent()) {
                     HashSet<String> awards = asLinkedSet(request.queryMap("award").values());
                     Ceremony ceremony = new CeremonyAdapter();
@@ -80,7 +81,7 @@ public class ClubController extends ModelMaker {
         });
 
         get("/protected/club/:club/awards", (request, response) -> {
-            Optional<Club> club = app.getProgram().lookupClub(request.params(":club"));
+            Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
             if(club.isPresent()) {
                 HashMap<Object, Object> model = new HashMap<>();
                 model.put("club", club.get());
@@ -92,8 +93,9 @@ public class ClubController extends ModelMaker {
         }, new FreeMarkerEngine());
 
         get("/protected/my", (request, response) -> {
-            Map<String, Object> model = toMap("me", getUser(request));
-            model.put("program", app.getProgram());
+            User user = getUser(request);
+            Map<String, Object> model = toMap("me", user);
+            model.put("programs", app.getPrograms(user));
             return new ModelAndView(model, "my.ftl");
         }, new FreeMarkerEngine());
 
@@ -121,7 +123,6 @@ public class ClubController extends ModelMaker {
                     .put("section", record.getSection())
                     .put("record", record)
                     .build();
-            model.put("program", app.getProgram());
             return new ModelAndView(model, "clubberSection.ftl");
         }, new FreeMarkerEngine());
     }

@@ -3,7 +3,6 @@ package com.github.averyregier.club.broker;
 import com.github.averyregier.club.db.tables.Clubber;
 import com.github.averyregier.club.db.tables.Parent;
 import com.github.averyregier.club.domain.club.Family;
-import org.jooq.Condition;
 import org.jooq.DSLContext;
 
 import java.util.stream.Stream;
@@ -21,21 +20,20 @@ public class FamilyBroker extends Broker<Family> {
 
     @Override
     protected void persist(Family family, DSLContext create) {
-        if(create.insertInto(FAMILY)
+        create.insertInto(FAMILY)
                 .set(FAMILY.ID, family.getId().getBytes())
                 .onDuplicateKeyIgnore()
-                .execute() != 1) {
-            fail("Family persistence failed: " + family.getId());
-        }
-
+                .execute();
     }
 
     public Stream<String> getAllFamilyMembers(String familyId) {
-        return query(create -> {
-            Condition isPartOfFamily = Parent.PARENT.FAMILY_ID.eq(familyId.getBytes());
-            return create.select(Parent.PARENT.ID).where(isPartOfFamily)
-                    .union(create.select(Clubber.CLUBBER.ID).where(isPartOfFamily)).fetch()
-                    .stream().map(r -> convert(r.value1()));
-        });
+        return query(create -> create
+                .select(Parent.PARENT.ID)
+                .from(Parent.PARENT)
+                .where(Parent.PARENT.FAMILY_ID.eq(familyId.getBytes()))
+                .union(create.select(Clubber.CLUBBER.ID)
+                        .from(Clubber.CLUBBER)
+                        .where(Clubber.CLUBBER.FAMILY_ID.eq(familyId.getBytes()))).fetch()
+                .stream().map(r -> convert(r.value1())));
     }
 }

@@ -38,23 +38,23 @@ public class SetupController extends ModelMaker {
             Program program = app.setupProgram(organizationName, curriculum, acceptLanguage);
             program.assign(getUser(request), ClubLeader.LeadershipRole.valueOf(myRole));
 
-            response.redirect("/protected/program");
+            response.redirect("/protected/program/"+program.getId());
             return null;
         });
 
-        before("/protected/program", (request, response)->{
-            if(app.getProgram() == null) {
+        before("/protected/program/:id", (request, response)->{
+            if(app.getProgram(request.params(":id")) == null) {
                 response.redirect("/protected/setup");
                 halt();
             }
         });
 
-        get("/protected/program", (request, response) ->
-                new ModelAndView(toMap("program", app.getProgram()), "program.ftl"),
+        get("/protected/program/:id", (request, response) ->
+                new ModelAndView(toMap("program", app.getProgram(request.params(":id"))), "program.ftl"),
                 new FreeMarkerEngine());
 
-        post("/protected/program", (request, response) -> {
-            Program program = app.getProgram();
+        post("/protected/program/:id", (request, response) -> {
+            Program program = app.getProgram(request.params(":id"));
 
             String clubId = request.queryParams("addClub");
             if(clubId != null && clubId.trim().length() != 0) {
@@ -68,7 +68,7 @@ public class SetupController extends ModelMaker {
             String organizationName = request.queryParams("organizationName");
             program.setName(organizationName);
 
-            response.redirect("/protected/program");
+            response.redirect("/protected/program/"+program.getId());
             return null;
         });
     }

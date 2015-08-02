@@ -1,11 +1,13 @@
 package com.github.averyregier.club.domain;
 
+import com.github.averyregier.club.broker.Connector;
 import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.club.ClubGroup;
 import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
+import com.github.averyregier.club.repository.PersistedProgram;
 
 import java.util.*;
 
@@ -15,7 +17,11 @@ import java.util.*;
 public class ClubManager {
     private Map<String, Club> clubs = new LinkedHashMap<String, Club>();
     public Optional<Club> lookup(String id) {
-        return Optional.ofNullable(clubs.get(id));
+        return Optional.ofNullable(clubs.computeIfAbsent(id, this::find));
+    }
+
+    protected Club find(String id) {
+        return null;
     }
 
     public Collection<Club> getClubs() {
@@ -25,18 +31,30 @@ public class ClubManager {
     public Club createClub(ClubGroup parent, Curriculum series) {
         String id = UUID.randomUUID().toString();
         ClubAdapter clubAdapter = new PersistedClub(series, id, parent);
+        persist(clubAdapter);
         clubs.put(id, clubAdapter);
         return clubAdapter;
     }
 
-    public Optional<Club> injectClub(String id, String parentId, String curriculum) {
-        Optional<Curriculum> series = Programs.find(curriculum);
-        return series.map(s -> {
-            Club clubAdapter = new PersistedClub(
-                    s, id, (ClubGroup) clubs.get(parentId));
-            clubs.put(id, clubAdapter);
-            return clubAdapter;
-        });
+    protected void persist(Club club) {
+
+    }
+
+    public Optional<Club> constructClub(String id, String parentId, String curriculum) {
+        return Programs.find(curriculum).map(s ->
+                new PersistedClub(s, id, (ClubGroup) clubs.get(parentId)));
+    }
+
+    public Program createProgram(Connector connector, String acceptLanguage, String organizationName, Curriculum curriculum, String id) {
+        PersistedProgram program = new PersistedProgram(connector, acceptLanguage, organizationName, curriculum, id, this);
+        persist(program);
+        clubs.put(program.getId(), program);
+        return program;
+    }
+    public Program loadProgram(Connector connector, String acceptLanguage, String organizationName, Curriculum curriculum, String id) {
+        PersistedProgram program = new PersistedProgram(connector, acceptLanguage, organizationName, curriculum, id, this);
+        clubs.put(program.getId(), program);
+        return program;
     }
 
     private static class PersistedClub extends ClubAdapter {

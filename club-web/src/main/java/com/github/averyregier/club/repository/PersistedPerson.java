@@ -46,7 +46,8 @@ public class PersistedPerson extends PersonAdapter {
 
     @Override
     public Optional<Parent> asParent() {
-        return orElseMaybe(super.asParent(), parentLookup);
+        if(!knowsFamily()) return parentLookup.get();
+        return super.asParent();
     }
 
     @Override

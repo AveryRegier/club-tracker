@@ -58,6 +58,10 @@ public class PersonAdapter implements Person, PersonUpdater {
         return Optional.ofNullable(parent);
     }
 
+    protected boolean knowsFamily() {
+        return parent != null || clubber != null || family != null;
+    }
+
     @Override
     public Optional<Listener> asListener() {
         return Optional.ofNullable(listener);

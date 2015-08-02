@@ -1,13 +1,13 @@
 package com.github.averyregier.club.application;
 
-import com.github.averyregier.club.broker.ConfiguredConnector;
-import com.github.averyregier.club.broker.Connector;
-import com.github.averyregier.club.broker.LoginBroker;
-import com.github.averyregier.club.broker.PersonBroker;
+import com.github.averyregier.club.broker.*;
+import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.PersonManager;
+import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.UserManager;
 import com.github.averyregier.club.domain.club.Program;
-import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
+import com.github.averyregier.club.domain.program.Programs;
+import com.github.averyregier.club.repository.PersistedClubManager;
 import com.github.averyregier.club.repository.PersistedPersonManager;
 import com.github.averyregier.club.repository.PersistedUserManager;
 import com.github.averyregier.club.rest.RestAPI;
@@ -19,7 +19,11 @@ import javax.servlet.ServletContextListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static spark.Spark.exception;
 import static spark.SparkBase.setPort;
@@ -40,13 +44,14 @@ public class ClubApplication implements SparkApplication, ServletContextListener
     }
 
     private final UserManager userManager = createUserManager();
+    private ClubManager clubManager;
 
     private PersistedUserManager createUserManager() {
         PersonManager personManager = new PersistedPersonManager(() -> new PersonBroker(connector));
         return new PersistedUserManager(personManager, ()->new LoginBroker(connector));
     }
 
-    private Program program;
+    private Map<String, Program> programs = new ConcurrentHashMap<>();
     private ConfiguredConnector connector;
 
     @Override
@@ -61,6 +66,7 @@ public class ClubApplication implements SparkApplication, ServletContextListener
         });
 
         if(connector != null) connector.migrate();
+        clubManager = new PersistedClubManager(connector);
 
         new InitialSetup().init(this);
         new FastSetup().init(this);
@@ -89,13 +95,22 @@ public class ClubApplication implements SparkApplication, ServletContextListener
     }
 
     public Program setupProgram(String organizationName, String curriculum, String acceptLanguage) {
-        program = new ProgramAdapter(acceptLanguage, organizationName, curriculum);
+        String id = UUID.randomUUID().toString();
+        return setupProgramWithId(organizationName, curriculum, acceptLanguage, id);
+    }
+
+    public Program setupProgramWithId(String organizationName, String curriculum, String acceptLanguage, String id) {
+        Program program = clubManager.createProgram(getConnector(), acceptLanguage, organizationName,
+                Programs.find(curriculum).orElseThrow(IllegalArgumentException::new), id);
         program.setPersonManager(userManager.getPersonManager());
+        new OrganizationBroker(getConnector()).persist(program);
+        programs.put(program.getId(), program);
         return program;
     }
 
-    public Program getProgram() {
-        return program;
+    public Program getProgram(String id) {
+        return programs.computeIfAbsent(id,
+                (key)->new OrganizationBroker(getConnector()).find(key, getClubManager()).orElse(null));
     }
 
     public Connector getConnector() {
@@ -114,5 +129,17 @@ public class ClubApplication implements SparkApplication, ServletContextListener
 
     public PersonManager getPersonManager() {
         return userManager.getPersonManager();
+    }
+
+    public boolean hasPrograms() {
+        return !programs.isEmpty();
+    }
+
+    public ClubManager getClubManager() {
+        return clubManager;
+    }
+
+    public Collection<Program> getPrograms(User user) {
+        return programs.values(); // for now, but need a way to find only the relevant ones
     }
 }

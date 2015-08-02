@@ -1,19 +1,27 @@
 package com.github.averyregier.club.broker;
 
 import com.github.averyregier.club.domain.ClubManager;
-import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
+import org.jooq.DSLContext;
+import org.jooq.Record7;
+import org.jooq.Result;
+import org.jooq.SQLDialect;
 import org.jooq.exception.DataAccessException;
+import org.jooq.impl.DSL;
 import org.jooq.tools.jdbc.MockDataProvider;
+import org.jooq.tools.jdbc.MockExecuteContext;
+import org.jooq.tools.jdbc.MockResult;
 import org.junit.Test;
 
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static com.github.averyregier.club.broker.BrokerTestUtil.*;
+import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
+import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
+import static com.github.averyregier.club.db.tables.Club.CLUB;
 import static com.github.averyregier.club.db.tables.Organization.ORGANIZATION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -95,24 +103,48 @@ public class OrganizationBrokerTest {
 
     @Test
     public void findProgram() {
+        ClubManager clubManager = new ClubManager();
         String id = UUID.randomUUID().toString();
-        ClubManager manager = new ClubManager();
         Curriculum curriculum = Programs.AWANA.get();
-        Club club = manager.createClub(null, curriculum);
-        String clubId = club.getId();
         String orgName = "An Org";
         String locale = "en_US";
+        DSLContext create = DSL.using(SQLDialect.HSQLDB);
+        MockDataProvider provider = ctx -> {
+            assertWhere(id, ctx);
+            // TODO: assert the join
+            // TODO: refactor this mess
+            Result<Record7<byte[], String, String, byte[], byte[], byte[], String>> result =
+                    create.newResult(
+                        ORGANIZATION.ID,
+                        ORGANIZATION.ORGANIZATIONNAME,
+                        ORGANIZATION.LOCALE,
+                        ORGANIZATION.CLUB_ID,
+                        CLUB.ID,
+                        CLUB.PARENT_CLUB_ID,
+                        CLUB.CURRICULUM);
 
-        MockDataProvider provider = selectOne((s) -> {
-            s.assertUUID(id, ORGANIZATION.ID);
-        }, ORGANIZATION, (r)-> {
-            r.setId(id.getBytes());
-            r.setClubId(clubId.getBytes());
-            r.setOrganizationname(orgName);
-            r.setLocale(locale);
-        });
+            Record7<byte[], String, String, byte[], byte[], byte[], String> record =
+                    create.newRecord(
+                        ORGANIZATION.ID,
+                        ORGANIZATION.ORGANIZATIONNAME,
+                        ORGANIZATION.LOCALE,
+                        ORGANIZATION.CLUB_ID,
+                        CLUB.ID,
+                        CLUB.PARENT_CLUB_ID,
+                        CLUB.CURRICULUM);
+            result.add(record);
 
-        Program program = setup(provider).find(id, manager).get();
+            record.setValue(ORGANIZATION.ID, id.getBytes());
+            record.setValue(ORGANIZATION.CLUB_ID, id.getBytes());
+            record.setValue(ORGANIZATION.ORGANIZATIONNAME, orgName);
+            record.setValue(ORGANIZATION.LOCALE, locale);
+            record.setValue(CLUB.ID, id.getBytes());
+            record.setValue(CLUB.PARENT_CLUB_ID, null);
+            record.setValue(CLUB.CURRICULUM, curriculum.getId());
+            return new MockResult[] {new MockResult(1, result)};
+        };
+
+        Program program = setup(provider).find(id, clubManager).get();
         assertEquals(id, program.getId());
         assertFalse(program.getParentGroup().isPresent());
         assertEquals(curriculum, program.getCurriculum());
@@ -123,12 +155,23 @@ public class OrganizationBrokerTest {
     @Test
     public void findNoProgram() {
         String id = UUID.randomUUID().toString();
-        ClubManager manager = new ClubManager();
 
-        MockDataProvider provider = select((s) -> {
-            s.assertUUID(id, ORGANIZATION.ID);
-        }, (r) -> r.newResult(ORGANIZATION));
+        MockDataProvider provider = ctx -> {
+            assertWhere(id, ctx);
+            return emptyResults();
+        };
 
-        assertFalse(setup(provider).find(id, manager).isPresent());
+        assertFalse(setup(provider).find(id, null).isPresent());
+    }
+
+    private MockResult[] emptyResults() {
+        MockResult[] results = new MockResult[1];
+        results[0] = new MockResult(0, null);
+        return results;
+    }
+
+    private void assertWhere(String id, MockExecuteContext ctx) {
+        Object[] bindings = ctx.bindings();
+        assertEquals(id, new String((byte[]) bindings[bindings.length-1]));
     }
 }

@@ -26,7 +26,7 @@
 
                     <UL>
                     <#list program.clubs as club>
-                        <LI><a href="/protected/club/${club.shortCode}">${club.shortCode}</a></LI>
+                        <LI><a href="/protected/club/${club.id}">${club.shortCode}</a></LI>
                     </#list>
                     </UL>
 

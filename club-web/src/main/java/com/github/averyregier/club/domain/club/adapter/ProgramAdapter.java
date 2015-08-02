@@ -40,6 +40,13 @@ public class ProgramAdapter extends ClubAdapter implements Program {
 
     }
 
+    public ProgramAdapter(String acceptLanguage, String organizationname, Curriculum curriculum) {
+        super(curriculum);
+        this.acceptLanguage = acceptLanguage;
+        this.organizationName = organizationname;
+
+    }
+
     @Override
     public Set<Club> getClubs() {
         return Collections.unmodifiableSet(downcast(clubs));
@@ -182,14 +189,18 @@ public class ProgramAdapter extends ClubAdapter implements Program {
 
     @Override
     public Club addClub(final Curriculum series) {
-        ClubAdapter club = new ClubAdapter(series) {
-            @Override
-            public Program getProgram() {
-                return ProgramAdapter.this;
-            }
-        };
+        ClubAdapter club = createClub(series);
         clubs.add(club);
         return club;
+    }
+
+    protected ClubAdapter createClub(final Curriculum series) {
+        return new ClubAdapter(series) {
+                @Override
+                public Program getProgram() {
+                    return ProgramAdapter.this;
+                }
+            };
     }
 
     @Override

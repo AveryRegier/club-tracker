@@ -1,18 +1,22 @@
 package com.github.averyregier.club.domain.club.adapter;
 
-import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.club.Clubber;
+import com.github.averyregier.club.domain.club.Family;
+import com.github.averyregier.club.domain.club.Parent;
+import com.github.averyregier.club.domain.club.Person;
 
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
 * Created by avery on 11/30/14.
 */
 public class FamilyAdapter implements Family {
     private String id;
-    private final LinkedHashSet<Parent> parents = new LinkedHashSet<>();
-    private final LinkedHashSet<Clubber> clubbers = new LinkedHashSet<>();
+    private final LinkedHashSet<Person> members = new LinkedHashSet<>();
 
     public FamilyAdapter(Person firstPerson) {
         id = UUID.randomUUID().toString();
@@ -24,11 +28,7 @@ public class FamilyAdapter implements Family {
     }
 
     protected void addPerson(Person person) {
-        if(person.asParent().isPresent()) {
-            addParent(person.asParent().get());
-        } else {
-            addClubber(person.asClubber().get());
-        }
+        members.add(person);
     }
 
     public FamilyAdapter(String uuid, Person firsPerson) {
@@ -37,21 +37,28 @@ public class FamilyAdapter implements Family {
     }
 
     protected void addParent(Parent parent) {
-        parents.add(parent);
+        addPerson(parent);
     }
 
-    protected void addClubber(Clubber clubber) {
-        clubbers.add(clubber);
+    protected void addClubber(Clubber clubber) {addPerson(clubber);
     }
 
     @Override
     public Set<Parent> getParents() {
-        return parents;
+        return members.stream()
+                .map(Person::asParent)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @Override
     public Set<Clubber> getClubbers() {
-        return clubbers;
+        return members.stream()
+                .map(Person::asClubber)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @Override

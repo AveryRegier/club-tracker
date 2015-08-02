@@ -1,6 +1,6 @@
 
 <div>
-    <form action="/protected/club/${club.shortCode}/listeners" method="POST">
+    <form action="/protected/club/${club.id}/listeners" method="POST">
     <table>
         <thead>
             <th>Name</th>

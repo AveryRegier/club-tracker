@@ -8,7 +8,6 @@ import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.Result;
-import org.jooq.exception.DataAccessException;
 import org.jooq.tools.jdbc.MockDataProvider;
 import org.junit.Test;
 
@@ -32,7 +31,6 @@ public class FamilyBrokerTest {
         setup(mergeProvider((s) -> s.assertUUID(family, FAMILY.ID))).persist(family);
     }
 
-    @Test(expected = DataAccessException.class)
     public void testUpdatesNothing() throws Exception {
         final Family family = newFamily();
 

@@ -1,16 +1,19 @@
 package com.github.averyregier.club.view;
 
 import com.github.averyregier.club.application.ClubApplication;
+import com.github.averyregier.club.broker.ProviderBroker;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.ClubLeader;
 import com.github.averyregier.club.domain.club.Family;
 import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.club.RegistrationInformation;
+import com.github.averyregier.club.domain.login.Provider;
 import org.brickred.socialauth.Profile;
 import spark.Request;
 import spark.Response;
 
 import java.util.Map;
+import java.util.UUID;
 
 import static spark.Spark.before;
 import static spark.Spark.halt;
@@ -21,11 +24,13 @@ import static spark.Spark.halt;
 public class FastSetup {
     public void init(ClubApplication app) {
         before("/test-setup", (request, response) -> {
+            new ProviderBroker(app.getConnector()).persist(new Provider("example", "Example", "", "", "", ""));
             User user = setupJohnDoe(app);
             synchronized (this) {
-                if (app.getProgram() == null) {
+                String demoId = new UUID(1, 1).toString();
+                if (app.getProgram(demoId) == null) {
 
-                    Program program = app.setupProgram("ABC", "AWANA", "en_US");
+                    Program program = app.setupProgramWithId("ABC", "AWANA", "en_US", demoId);
                     program.getCurriculum().getSeries().stream().forEach(program::addClub);
 
                     program.assign(user, ClubLeader.LeadershipRole.COMMANDER);
@@ -33,7 +38,7 @@ public class FastSetup {
 
                     registerDoeFamily(user, program);
 
-                    Family family = registerSmithFamily(app);
+                    Family family = registerSmithFamily(app, program);
 
                     signSomeSections(user, family);
                 }
@@ -50,7 +55,7 @@ public class FastSetup {
                 .forEach(r->r.sign(user.asListener().get(), ""));
     }
 
-    private Family registerSmithFamily(ClubApplication app) {
+    private Family registerSmithFamily(ClubApplication app, Program program) {
         Profile profile = new Profile();
         profile.setFirstName("Mary");
         profile.setLastName("Smith");
@@ -59,8 +64,6 @@ public class FastSetup {
         profile.setValidatedId("Example-ID-For-Mary-Smith");
         profile.setProviderId("example");
         User user = Login.setupUser(app, profile);
-
-        Program program = app.getProgram();
 
         RegistrationInformation form = program.createRegistrationForm(user);
         Map<String, String> fields = form.getFields();
