@@ -1,7 +1,7 @@
 package com.github.averyregier.club.repository;
 
+import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.broker.ClubberBroker;
-import com.github.averyregier.club.broker.Connector;
 import com.github.averyregier.club.broker.FamilyBroker;
 import com.github.averyregier.club.broker.ParentBroker;
 import com.github.averyregier.club.domain.PersonManager;
@@ -22,18 +22,17 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.setOnce;
  * Created by avery on 7/11/15.
  */
 public class PersistedPerson extends PersonAdapter {
-    private final Connector connector;
     private final String id;
     private PersonManager manager;
     private Supplier<Optional<String>> parentFamilyLookup = lookupFamilyFn();
     private Supplier<Optional<Parent>> parentLookup = lookupParentFn();
     private Supplier<Optional<Clubber>> clubberLookup =lookupClubberFn();
+    private ClubFactory factory;
 
-    public PersistedPerson(Connector connector, String id, PersonManager manager) {
+    public PersistedPerson(ClubFactory factory, String id) {
         super(id);
-        this.connector = connector;
+        this.factory = factory;
         this.id = id;
-        this.manager = manager;
     }
 
     @Override
@@ -62,18 +61,18 @@ public class PersistedPerson extends PersonAdapter {
     }
 
     private Supplier<Optional<Clubber>> lookupClubberFn() {
-        return setOnce(() -> new ClubberBroker(connector).find(getId(), manager, null),
+        return setOnce(() -> new ClubberBroker(factory).find(getId()),
                 this::setClubber);
     }
 
     private Supplier<Optional<String>> lookupFamilyFn() {
-        return setOnce(() -> new ParentBroker(connector).findFamily(getId()),
+        return setOnce(() -> new ParentBroker(factory.getConnector()).findFamily(getId()),
                 (id) -> setFamily(loadFamily(id)));
     }
 
     private PersistedFamily loadFamily(String id) {
         return new PersistedFamily(id,
-                new FamilyBroker(connector)
+                new FamilyBroker(factory.getConnector())
                         .getAllFamilyMembers(id)
                         .map(i -> manager.lookup(i).get())
                         .collect(Collectors.toList()));

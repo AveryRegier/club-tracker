@@ -31,7 +31,7 @@ import static spark.SparkBase.setPort;
 /**
  * Created by avery on 8/30/14.
  */
-public class ClubApplication implements SparkApplication, ServletContextListener {
+public class ClubApplication implements SparkApplication, ServletContextListener, ClubFactory {
     public static void main(String... args) throws SQLException, ClassNotFoundException {
         if(args.length > 0) {
             setPort(Integer.parseInt(args[0]));
@@ -44,10 +44,10 @@ public class ClubApplication implements SparkApplication, ServletContextListener
     }
 
     private final UserManager userManager = createUserManager();
-    private ClubManager clubManager;
+    private final ClubManager clubManager = new PersistedClubManager(this);
 
     private PersistedUserManager createUserManager() {
-        PersonManager personManager = new PersistedPersonManager(() -> new PersonBroker(connector));
+        PersonManager personManager = new PersistedPersonManager(() -> new PersonBroker(this));
         return new PersistedUserManager(personManager, ()->new LoginBroker(connector));
     }
 
@@ -66,7 +66,6 @@ public class ClubApplication implements SparkApplication, ServletContextListener
         });
 
         if(connector != null) connector.migrate();
-        clubManager = new PersistedClubManager(connector);
 
         new InitialSetup().init(this);
         new FastSetup().init(this);
@@ -90,17 +89,19 @@ public class ClubApplication implements SparkApplication, ServletContextListener
         }
     }
 
+    @Override
     public UserManager getUserManager() {
         return userManager;
     }
 
+    @Override
     public Program setupProgram(String organizationName, String curriculum, String acceptLanguage) {
         String id = UUID.randomUUID().toString();
         return setupProgramWithId(organizationName, curriculum, acceptLanguage, id);
     }
 
     public Program setupProgramWithId(String organizationName, String curriculum, String acceptLanguage, String id) {
-        Program program = clubManager.createProgram(getConnector(), acceptLanguage, organizationName,
+        Program program = clubManager.createProgram(acceptLanguage, organizationName,
                 Programs.find(curriculum).orElseThrow(IllegalArgumentException::new), id);
         program.setPersonManager(userManager.getPersonManager());
         new OrganizationBroker(getConnector()).persist(program);
@@ -108,11 +109,13 @@ public class ClubApplication implements SparkApplication, ServletContextListener
         return program;
     }
 
+    @Override
     public Program getProgram(String id) {
         return programs.computeIfAbsent(id,
                 (key)->new OrganizationBroker(getConnector()).find(key, getClubManager()).orElse(null));
     }
 
+    @Override
     public Connector getConnector() {
         return connector;
     }
@@ -127,18 +130,22 @@ public class ClubApplication implements SparkApplication, ServletContextListener
 
     }
 
+    @Override
     public PersonManager getPersonManager() {
         return userManager.getPersonManager();
     }
 
+    @Override
     public boolean hasPrograms() {
         return !programs.isEmpty();
     }
 
+    @Override
     public ClubManager getClubManager() {
         return clubManager;
     }
 
+    @Override
     public Collection<Program> getPrograms(User user) {
         return programs.values(); // for now, but need a way to find only the relevant ones
     }

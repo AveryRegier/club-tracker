@@ -21,7 +21,7 @@ public class PersistedPersonManager extends PersonManager {
     public Optional<Person> lookup(String id) {
         return Optional.ofNullable(
                 people.computeIfAbsent(id,
-                        key -> getPersonBroker().find(id, this).orElse(null)));
+                        key -> getPersonBroker().find(id).orElse(null)));
     }
 
     private PersonBroker getPersonBroker() {

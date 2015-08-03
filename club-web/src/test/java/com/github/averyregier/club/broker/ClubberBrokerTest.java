@@ -1,5 +1,6 @@
 package com.github.averyregier.club.broker;
 
+import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.club.Club;
@@ -19,6 +20,8 @@ import static com.github.averyregier.club.broker.BrokerTestUtil.*;
 import static com.github.averyregier.club.db.tables.Clubber.CLUBBER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ClubberBrokerTest {
 
@@ -28,7 +31,7 @@ public class ClubberBrokerTest {
 
         MockDataProvider provider = mergeProvider(assertUUID(clubber), assertNullFields());
 
-        setup(provider).persist(clubber);
+        setup(provider, null, null).persist(clubber);
     }
 
     @Test(expected = DataAccessException.class)
@@ -39,7 +42,7 @@ public class ClubberBrokerTest {
                 .updateCount(0)
                 .build();
 
-        setup(provider).persist(clubber);
+        setup(provider, null, null).persist(clubber);
     }
 
     @Test
@@ -51,7 +54,7 @@ public class ClubberBrokerTest {
 
         MockDataProvider provider = mergeProvider(assertUUID(clubber), assertFields(clubber));
 
-        setup(provider).persist(clubber);
+        setup(provider, null, null).persist(clubber);
     }
 
 
@@ -83,8 +86,12 @@ public class ClubberBrokerTest {
         return new ClubberAdapter(new PersonAdapter(uuid));
     }
 
-    private ClubberBroker setup(MockDataProvider provider) {
-        return new ClubberBroker(mockConnector(provider));
+    private ClubberBroker setup(MockDataProvider provider, PersonManager personManager, ClubManager clubManager) {
+        ClubFactory factory = mock(ClubFactory.class);
+        when(factory.getClubManager()).thenReturn(clubManager);
+        when(factory.getPersonManager()).thenReturn(personManager);
+        when(factory.getConnector()).thenReturn(mockConnector(provider));
+        return new ClubberBroker(factory);
     }
 
     @Test
@@ -104,7 +111,7 @@ public class ClubberBrokerTest {
             r.setAgeGroup(AgeGroup.DefaultAgeGroup.THIRD_GRADE.name());
         });
 
-        Clubber clubber = setup(provider).find(person.getId(), personManager, clubManager).get();
+        Clubber clubber = setup(provider, personManager, clubManager).find(person.getId()).get();
         assertEquals(person.getId(), clubber.getId());
         assertEquals(AgeGroup.DefaultAgeGroup.THIRD_GRADE, person.asClubber().get().getCurrentAgeGroup());
         assertEquals(familyId, person.getFamily().get().getId());
@@ -126,7 +133,7 @@ public class ClubberBrokerTest {
             r.setAgeGroup(AgeGroup.DefaultAgeGroup.THIRD_GRADE.name());
         });
 
-        Clubber clubber = setup(provider).find(person.getId(), personManager, clubManager).get();
+        Clubber clubber = setup(provider, personManager, clubManager).find(person.getId()).get();
         assertEquals(person.getId(), clubber.getId());
         assertEquals(AgeGroup.DefaultAgeGroup.THIRD_GRADE, person.asClubber().get().getCurrentAgeGroup());
 
@@ -149,7 +156,7 @@ public class ClubberBrokerTest {
             r.setAgeGroup(AgeGroup.DefaultAgeGroup.THIRD_GRADE.name());
         });
 
-        Clubber clubber = setup(provider).find(person.getId(), personManager, clubManager).get();
+        Clubber clubber = setup(provider, personManager, clubManager).find(person.getId()).get();
         assertEquals(person.getId(), clubber.getId());
 
         assertFalse(clubber.getClub().isPresent());
@@ -166,7 +173,7 @@ public class ClubberBrokerTest {
             s.assertUUID(person.getId(), CLUBBER.ID);
         }, (create)->create.newResult(CLUBBER));
 
-        assertFalse(setup(provider).find(person.getId(), personManager, clubManager).isPresent());
+        assertFalse(setup(provider, personManager, clubManager).find(person.getId()).isPresent());
 
         assertFalse(person.asClubber().isPresent());
     }

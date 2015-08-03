@@ -1,6 +1,6 @@
 package com.github.averyregier.club.domain;
 
-import com.github.averyregier.club.broker.Connector;
+import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.club.ClubGroup;
 import com.github.averyregier.club.domain.club.Program;
@@ -16,6 +16,16 @@ import java.util.*;
  */
 public class ClubManager {
     private Map<String, Club> clubs = new LinkedHashMap<String, Club>();
+    protected ClubFactory factory;
+
+    public ClubManager() {
+        this.factory = null; // for testing scenarios only
+    }
+
+    public ClubManager(ClubFactory factory) {
+        this.factory = factory;
+    }
+
     public Optional<Club> lookup(String id) {
         return Optional.ofNullable(clubs.computeIfAbsent(id, this::find));
     }
@@ -45,14 +55,14 @@ public class ClubManager {
                 new PersistedClub(s, id, (ClubGroup) clubs.get(parentId)));
     }
 
-    public Program createProgram(Connector connector, String acceptLanguage, String organizationName, Curriculum curriculum, String id) {
-        PersistedProgram program = new PersistedProgram(connector, acceptLanguage, organizationName, curriculum, id, this);
+    public Program createProgram(String acceptLanguage, String organizationName, Curriculum curriculum, String id) {
+        PersistedProgram program = new PersistedProgram(factory, acceptLanguage, organizationName, curriculum, id, this);
         persist(program);
         clubs.put(program.getId(), program);
         return program;
     }
-    public Program loadProgram(Connector connector, String acceptLanguage, String organizationName, Curriculum curriculum, String id) {
-        PersistedProgram program = new PersistedProgram(connector, acceptLanguage, organizationName, curriculum, id, this);
+    public Program loadProgram(String acceptLanguage, String organizationName, Curriculum curriculum, String id) {
+        PersistedProgram program = new PersistedProgram(factory, acceptLanguage, organizationName, curriculum, id, this);
         clubs.put(program.getId(), program);
         return program;
     }

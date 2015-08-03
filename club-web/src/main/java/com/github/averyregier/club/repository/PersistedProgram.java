@@ -1,5 +1,6 @@
 package com.github.averyregier.club.repository;
 
+import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.broker.*;
 import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.club.Family;
@@ -11,27 +12,28 @@ import com.github.averyregier.club.domain.program.Curriculum;
  * Created by avery on 7/11/15.
  */
 public class PersistedProgram extends ProgramAdapter {
-    private Connector connector;
+    private ClubFactory factory;
     private final String id;
     private final ClubManager manager;
 
-    public PersistedProgram(Connector connector, String locale, String orgName, Curriculum curriculum, String id, ClubManager manager) {
+    public PersistedProgram(ClubFactory factory, String locale, String orgName, Curriculum curriculum, String id, ClubManager manager) {
         super(locale, orgName, curriculum);
-        this.connector = connector;
+        this.factory = factory;
         this.id = id;
         this.manager = manager;
     }
 
     @Override
     protected void syncFamily(Family family) {
+        Connector connector = factory.getConnector();
         new FamilyBroker(connector).persist(family);
         family.getParents().forEach(p -> {
-            new PersonBroker(connector).persist(p);
+            new PersonBroker(factory).persist(p);
             new ParentBroker(connector).persist(p);
         });
         family.getClubbers().forEach(c -> {
-            new PersonBroker(connector).persist(c);
-            new ClubberBroker(connector).persist(c);
+            new PersonBroker(factory).persist(c);
+            new ClubberBroker(factory).persist(c);
         });
     }
 

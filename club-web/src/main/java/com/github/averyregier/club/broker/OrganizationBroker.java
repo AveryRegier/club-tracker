@@ -51,7 +51,6 @@ public class OrganizationBroker extends Broker<Program> {
                     .fetch();
             return records.stream().findFirst().map(
                     r -> clubManager.loadProgram(
-                            connector,
                             r.getValue(ORGANIZATION.LOCALE),
                             r.getValue(ORGANIZATION.ORGANIZATIONNAME),
                             Programs.find(r.getValue(CLUB.CURRICULUM)).orElseThrow(IllegalArgumentException::new),

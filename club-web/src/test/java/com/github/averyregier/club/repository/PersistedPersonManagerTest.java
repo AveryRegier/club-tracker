@@ -34,30 +34,30 @@ public class PersistedPersonManagerTest {
     @Test
     public void getPersonNotFound() {
 
-        when(broker.find(eq(ANY_ID), eq(manager))).thenReturn(Optional.empty());
+        when(broker.find(eq(ANY_ID))).thenReturn(Optional.empty());
 
         assertFalse(manager.lookup(ANY_ID).isPresent());
         assertFalse(manager.lookup(ANY_ID).isPresent());
 
-        verify(broker, times(2)).find(eq(ANY_ID), eq(manager));
+        verify(broker, times(2)).find(eq(ANY_ID));
         verifyNoMoreInteractions(broker);
     }
 
     @Test
     public void getPersonFoundAndCached() {
         PersonAdapter person = new PersonAdapter(ANY_ID);
-        when(broker.find(eq(ANY_ID), eq(manager))).thenReturn(Optional.of(person));
+        when(broker.find(eq(ANY_ID))).thenReturn(Optional.of(person));
 
         assertTrue(manager.lookup(ANY_ID).isPresent());
         assertTrue(manager.lookup(ANY_ID).isPresent());
 
-        verify(broker, times(1)).find(eq(ANY_ID), eq(manager));
+        verify(broker, times(1)).find(eq(ANY_ID));
         verifyNoMoreInteractions(broker);
     }
 
     @Test
     public void getPersonFails() {
-        when(broker.find(eq(ANY_ID), eq(manager)))
+        when(broker.find(eq(ANY_ID)))
                 .thenThrow(DataAccessException.class);
 
         try {
@@ -67,7 +67,7 @@ public class PersistedPersonManagerTest {
             // expected
         }
 
-        verify(broker, times(1)).find(eq(ANY_ID), eq(manager));
+        verify(broker, times(1)).find(eq(ANY_ID));
         verifyNoMoreInteractions(broker);
     }
 
@@ -98,9 +98,9 @@ public class PersistedPersonManagerTest {
 
     private PersonAdapter setupCachedPerson() {
         PersonAdapter person = new PersonAdapter(ANY_ID);
-        when(broker.find(eq(ANY_ID), eq(manager))).thenReturn(Optional.of(person));
+        when(broker.find(eq(ANY_ID))).thenReturn(Optional.of(person));
         assertEquals(person, manager.lookup(person.getId()).orElse(null));
-        verify(broker, times(1)).find(eq(ANY_ID), eq(manager));
+        verify(broker, times(1)).find(eq(ANY_ID));
         return person;
     }
 }

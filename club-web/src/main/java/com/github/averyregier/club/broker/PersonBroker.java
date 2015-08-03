@@ -1,7 +1,7 @@
 package com.github.averyregier.club.broker;
 
+import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.db.tables.records.PersonRecord;
-import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.club.Name;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.NameBuilder;
@@ -22,8 +22,11 @@ import static com.github.averyregier.club.db.tables.Person.PERSON;
 */
 public class PersonBroker extends Broker<Person> {
 
-    public PersonBroker(Connector connector) {
-        super(connector);
+    private ClubFactory factory;
+
+    public PersonBroker(ClubFactory factory) {
+        super(factory.getConnector());
+        this.factory = factory;
     }
 
     protected void persist(Person person, DSLContext create) {
@@ -53,12 +56,12 @@ public class PersonBroker extends Broker<Person> {
         return Optional.ofNullable(person.getName()).map(fn);
     }
 
-    public Optional<Person> find(String id, PersonManager manager) {
+    public Optional<Person> find(String id) {
         return query((create)->{
 
             Result<PersonRecord> result = create.selectFrom(PERSON).where(PERSON.ID.eq(id.getBytes())).fetch();
             return result.stream().findFirst().map(r->{
-                PersonAdapter person = new PersistedPerson(connector, id, manager);
+                PersonAdapter person = new PersistedPerson(factory, id);
                 Person.Gender.lookup(r.getGender()).ifPresent(person::setGender);
                 person.setEmail(r.getEmail());
                 person.setName(new NameBuilder()

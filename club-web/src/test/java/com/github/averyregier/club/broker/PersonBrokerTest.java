@@ -1,5 +1,6 @@
 package com.github.averyregier.club.broker;
 
+import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.domain.club.Name;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
@@ -18,6 +19,8 @@ import static com.github.averyregier.club.broker.BrokerTestUtil.*;
 import static com.github.averyregier.club.db.tables.Person.PERSON;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class PersonBrokerTest {
 
@@ -125,7 +128,9 @@ public class PersonBrokerTest {
     }
 
     private PersonBroker setup(MockDataProvider provider) {
-        return new PersonBroker(mockConnector(provider));
+        ClubFactory factory = mock(ClubFactory.class);
+        when(factory.getConnector()).thenReturn(mockConnector(provider));
+        return new PersonBroker(factory);
     }
 
     @Test
@@ -143,7 +148,7 @@ public class PersonBrokerTest {
             record.setEmail("dr.joe.jr@smith.com");
         });
 
-        Person person = setup(provider).find(id, null).get();
+        Person person = setup(provider).find(id).get();
 
         assertEquals(id, person.getId());
         assertEquals("dr.joe.jr@smith.com", person.getEmail().get());
