@@ -24,17 +24,15 @@ public abstract class ClubGroupAdapter implements ClubGroup {
             getParentGroup().get().recruit(person);
         }
         ListenerAdapter listener = findListener(person);
-        listeners.add(listener);
         listener.setClubGroup(this);
+        persist(listener);
+        listeners.add(listener);
         return listener;
     }
 
+    protected void persist(Listener listener) {}
+
     private ListenerAdapter findListener(Person person) {
-        if (person.asListener().isPresent()) {
-            return (ListenerAdapter)person.asListener().get();
-        } else {
-            ListenerAdapter listener = new ListenerAdapter(person);
-            return listener;
-        }
+        return (ListenerAdapter) person.asListener().orElseGet(() -> new ListenerAdapter(person));
     }
 }

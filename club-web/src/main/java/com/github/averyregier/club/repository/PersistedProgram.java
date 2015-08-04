@@ -4,6 +4,7 @@ import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.broker.*;
 import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.club.Family;
+import com.github.averyregier.club.domain.club.Listener;
 import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.domain.program.Curriculum;
@@ -45,5 +46,10 @@ public class PersistedProgram extends ProgramAdapter {
     @Override
     protected ClubAdapter createClub(Curriculum series) {
         return (ClubAdapter)manager.createClub(this, series);
+    }
+
+    @Override
+    protected void persist(Listener listener) {
+        new ListenerBroker(factory.getConnector()).persist(listener);
     }
 }

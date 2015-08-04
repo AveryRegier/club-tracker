@@ -3,15 +3,19 @@ package com.github.averyregier.club.broker;
 import com.github.averyregier.club.db.tables.records.ListenerRecord;
 import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.PersonManager;
+import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.club.Listener;
 import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
 import com.github.averyregier.club.domain.club.adapter.ListenerAdapter;
 import org.jooq.DSLContext;
 import org.jooq.TableField;
 
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.db.tables.Listener.LISTENER;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
@@ -48,11 +52,25 @@ public class ListenerBroker extends Broker<Listener> {
             if (record == null) return Optional.empty();
 
             ClubAdapter clubAdapter = (ClubAdapter) clubManager.lookup(convert(record.getClubId())).get();
-            ListenerAdapter listener = new ListenerAdapter(personManager.lookup(id).get());
-            listener.setClubGroup(clubAdapter);
+            ListenerAdapter listener = map(id, personManager, clubAdapter);
             return Optional.of(listener);
         };
         Optional<Listener> result = query(fn);
         return result;
+    }
+
+    private ListenerAdapter map(String id, PersonManager personManager, Club club) {
+        ListenerAdapter listener = new ListenerAdapter(personManager.lookup(id).get());
+        listener.setClubGroup(club);
+        return listener;
+    }
+
+    public Set<Listener> find(Club club, PersonManager personManager) {
+        return query(create-> create
+                .selectFrom(LISTENER)
+                .where(LISTENER.CLUB_ID.eq(club.getId().getBytes()))
+                .fetch().stream()
+                .map(record-> map(convert(record.getId()), personManager, club))
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
     }
 }

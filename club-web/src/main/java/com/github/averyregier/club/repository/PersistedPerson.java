@@ -3,10 +3,11 @@ package com.github.averyregier.club.repository;
 import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.broker.ClubberBroker;
 import com.github.averyregier.club.broker.FamilyBroker;
+import com.github.averyregier.club.broker.ListenerBroker;
 import com.github.averyregier.club.broker.ParentBroker;
-import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.club.Clubber;
 import com.github.averyregier.club.domain.club.Family;
+import com.github.averyregier.club.domain.club.Listener;
 import com.github.averyregier.club.domain.club.Parent;
 import com.github.averyregier.club.domain.club.adapter.ParentAdapter;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
@@ -23,10 +24,10 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.setOnce;
  */
 public class PersistedPerson extends PersonAdapter {
     private final String id;
-    private PersonManager manager;
     private Supplier<Optional<String>> parentFamilyLookup = lookupFamilyFn();
     private Supplier<Optional<Parent>> parentLookup = lookupParentFn();
     private Supplier<Optional<Clubber>> clubberLookup =lookupClubberFn();
+    private Supplier<Optional<Listener>> listenerLookup = lookupListenerFn();
     private ClubFactory factory;
 
     public PersistedPerson(ClubFactory factory, String id) {
@@ -54,6 +55,11 @@ public class PersistedPerson extends PersonAdapter {
         return orElseMaybe(super.asClubber(), clubberLookup);
     }
 
+    @Override
+    public Optional<Listener> asListener() {
+        return orElseMaybe(super.asListener(), listenerLookup);
+    }
+
     private Supplier<Optional<Parent>> lookupParentFn() {
         return setOnce(() -> parentFamilyLookup.get()
                         .map((f) -> new ParentAdapter(this)),
@@ -74,8 +80,14 @@ public class PersistedPerson extends PersonAdapter {
         return new PersistedFamily(id,
                 new FamilyBroker(factory.getConnector())
                         .getAllFamilyMembers(id)
-                        .map(i -> manager.lookup(i).get())
+                        .map(i -> factory.getPersonManager().lookup(i).get())
                         .collect(Collectors.toList()));
+    }
+
+    private Supplier<Optional<Listener>> lookupListenerFn() {
+        return setOnce(() -> new ListenerBroker(factory.getConnector())
+                        .find(getId(), factory.getPersonManager(), factory.getClubManager()),
+                this::setListener);
     }
 
 }

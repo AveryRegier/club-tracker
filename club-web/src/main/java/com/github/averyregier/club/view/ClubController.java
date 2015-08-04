@@ -57,7 +57,7 @@ public class ClubController extends ModelMaker {
                         club.get().recruit(person.get());
                     }
                 }
-                response.redirect("/protected/club/"+club.get().getShortCode());
+                response.redirect("/protected/club/"+club.get().getId());
             } else {
                 response.redirect("/protected/program");
                 return null;

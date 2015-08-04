@@ -3,6 +3,7 @@ package com.github.averyregier.club.domain;
 import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.club.ClubGroup;
+import com.github.averyregier.club.domain.club.Listener;
 import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
 import com.github.averyregier.club.domain.program.Curriculum;
@@ -10,6 +11,7 @@ import com.github.averyregier.club.domain.program.Programs;
 import com.github.averyregier.club.repository.PersistedProgram;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * Created by avery on 9/6/2014.
@@ -46,9 +48,9 @@ public class ClubManager {
         return clubAdapter;
     }
 
-    protected void persist(Club club) {
+    protected void persist(Club club) {}
 
-    }
+    protected void persist(Listener listener) {}
 
     public Optional<Club> constructClub(String id, String parentId, String curriculum) {
         return Programs.find(curriculum).map(s ->
@@ -67,7 +69,7 @@ public class ClubManager {
         return program;
     }
 
-    private static class PersistedClub extends ClubAdapter {
+    private class PersistedClub extends ClubAdapter {
         private final String id;
         private final ClubGroup parent;
 
@@ -93,5 +95,19 @@ public class ClubManager {
                     .map(ClubGroup::getProgram)
                     .orElse(null);
         }
+
+        @Override
+        protected void persist(Listener listener) {
+            ClubManager.this.persist(listener);
+        }
+
+        @Override
+        public Set<Listener> getListeners() {
+            return ClubManager.this.getListeners(this, ()->super.getListeners());
+        }
+    }
+
+    protected Set<Listener> getListeners(Club club, Supplier<Set<Listener>> fn) {
+        return fn.get();
     }
 }

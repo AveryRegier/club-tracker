@@ -1,5 +1,6 @@
 package com.github.averyregier.club.broker;
 
+import com.github.averyregier.club.db.tables.records.ListenerRecord;
 import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.club.Club;
@@ -9,10 +10,14 @@ import com.github.averyregier.club.domain.club.adapter.MockClub;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.domain.program.Programs;
+import org.jooq.DSLContext;
+import org.jooq.Result;
 import org.jooq.exception.DataAccessException;
 import org.jooq.tools.jdbc.MockDataProvider;
 import org.junit.Test;
 
+import java.util.Iterator;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -78,7 +83,7 @@ public class ListenerBrokerTest {
 
         MockDataProvider provider = select((s) -> {
             s.assertUUID(person.getId(), LISTENER.ID);
-        }, (create)->create.newResult(LISTENER));
+        }, (create) -> create.newResult(LISTENER));
 
         assertFalse(setup(provider).find(person.getId(), personManager, clubManager).isPresent());
 
@@ -100,7 +105,43 @@ public class ListenerBrokerTest {
         });
 
         Listener listener = setup(provider).find(person.getId(), personManager, clubManager).get();
-        assertEquals(listener, person.asListener().get());
-        assertEquals(person.getId(), listener.getId());
+        assertListener(person, listener);
     }
+
+    @Test
+    public void findClubListeners() {
+        PersonManager personManager = new PersonManager();
+        Person person1 = personManager.createPerson();
+        Person person2 = personManager.createPerson();
+        ClubManager clubManager = new ClubManager();
+        Club club = clubManager.createClub(null, Programs.AWANA.get());
+
+        MockDataProvider provider = select((s) -> {
+            s.assertUUID(club.getId(), LISTENER.CLUB_ID);
+        }, (create) -> {
+            Result<ListenerRecord> result = create.newResult(LISTENER);
+            addClubListenerRecord(person1, club, create, result);
+            addClubListenerRecord(person2, club, create, result);
+            return result;
+        });
+
+        Set<Listener> listeners = setup(provider).find(club, personManager);
+        Iterator<Listener> iterator = listeners.iterator();
+        assertListener(person1, iterator.next());
+        assertListener(person2, iterator.next());
+        assertFalse(iterator.hasNext());
+    }
+
+    private void assertListener(Person person1, Listener listener) {
+        assertEquals(listener, person1.asListener().get());
+        assertEquals(person1.getId(), listener.getId());
+    }
+
+    private void addClubListenerRecord(Person person, Club club, DSLContext create, Result<ListenerRecord> result) {
+        ListenerRecord record = create.newRecord(LISTENER);
+        result.add(record);
+        record.setClubId(club.getId().getBytes());
+        record.setId(person.getId().getBytes());
+    }
+
 }
