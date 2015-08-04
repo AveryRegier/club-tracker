@@ -52,14 +52,14 @@ public class ListenerBroker extends Broker<Listener> {
             if (record == null) return Optional.empty();
 
             ClubAdapter clubAdapter = (ClubAdapter) clubManager.lookup(convert(record.getClubId())).get();
-            ListenerAdapter listener = map(id, personManager, clubAdapter);
+            Listener listener = map(id, personManager, clubAdapter);
             return Optional.of(listener);
         };
         Optional<Listener> result = query(fn);
         return result;
     }
 
-    private ListenerAdapter map(String id, PersonManager personManager, Club club) {
+    private Listener map(String id, PersonManager personManager, Club club) {
         ListenerAdapter listener = new ListenerAdapter(personManager.lookup(id).get());
         listener.setClubGroup(club);
         return listener;
