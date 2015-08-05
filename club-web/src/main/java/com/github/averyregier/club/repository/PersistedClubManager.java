@@ -2,9 +2,11 @@ package com.github.averyregier.club.repository;
 
 import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.broker.ClubBroker;
+import com.github.averyregier.club.broker.LeaderBroker;
 import com.github.averyregier.club.broker.ListenerBroker;
 import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.club.Club;
+import com.github.averyregier.club.domain.club.ClubLeader;
 import com.github.averyregier.club.domain.club.Listener;
 
 import java.util.Set;
@@ -39,5 +41,10 @@ public class PersistedClubManager extends ClubManager {
         Set<Listener> set = new ListenerBroker(factory.getConnector()).find(club, factory.getPersonManager());
         fn.get().addAll(set);
         return set;
+    }
+
+    @Override
+    protected void persist(ClubLeader leader) {
+        new LeaderBroker(factory.getConnector()).persist(leader);
     }
 }

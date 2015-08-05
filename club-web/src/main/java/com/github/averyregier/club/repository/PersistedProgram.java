@@ -3,8 +3,10 @@ package com.github.averyregier.club.repository;
 import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.broker.*;
 import com.github.averyregier.club.domain.ClubManager;
+import com.github.averyregier.club.domain.club.ClubLeader;
 import com.github.averyregier.club.domain.club.Family;
 import com.github.averyregier.club.domain.club.Listener;
+import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.domain.program.Curriculum;
@@ -51,5 +53,12 @@ public class PersistedProgram extends ProgramAdapter {
     @Override
     protected void persist(Listener listener) {
         new ListenerBroker(factory.getConnector()).persist(listener);
+    }
+
+    @Override
+    public ClubLeader assign(Person person, ClubLeader.LeadershipRole role) {
+        ClubLeader leader = super.assign(person, role);
+        new LeaderBroker(factory.getConnector()).persist(leader);
+        return leader;
     }
 }

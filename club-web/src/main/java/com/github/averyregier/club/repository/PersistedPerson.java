@@ -1,14 +1,8 @@
 package com.github.averyregier.club.repository;
 
 import com.github.averyregier.club.application.ClubFactory;
-import com.github.averyregier.club.broker.ClubberBroker;
-import com.github.averyregier.club.broker.FamilyBroker;
-import com.github.averyregier.club.broker.ListenerBroker;
-import com.github.averyregier.club.broker.ParentBroker;
-import com.github.averyregier.club.domain.club.Clubber;
-import com.github.averyregier.club.domain.club.Family;
-import com.github.averyregier.club.domain.club.Listener;
-import com.github.averyregier.club.domain.club.Parent;
+import com.github.averyregier.club.broker.*;
+import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.ParentAdapter;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 
@@ -28,6 +22,7 @@ public class PersistedPerson extends PersonAdapter {
     private Supplier<Optional<Parent>> parentLookup = lookupParentFn();
     private Supplier<Optional<Clubber>> clubberLookup =lookupClubberFn();
     private Supplier<Optional<Listener>> listenerLookup = lookupListenerFn();
+    private Supplier<Optional<ClubLeader>> leaderLookup = lookupLeaderFn();
     private ClubFactory factory;
 
     public PersistedPerson(ClubFactory factory, String id) {
@@ -60,6 +55,11 @@ public class PersistedPerson extends PersonAdapter {
         return orElseMaybe(super.asListener(), listenerLookup);
     }
 
+    @Override
+    public Optional<ClubLeader> asClubLeader() {
+        return orElseMaybe(super.asClubLeader(), leaderLookup);
+    }
+
     private Supplier<Optional<Parent>> lookupParentFn() {
         return setOnce(() -> parentFamilyLookup.get()
                         .map((f) -> new ParentAdapter(this)),
@@ -90,4 +90,9 @@ public class PersistedPerson extends PersonAdapter {
                 this::setListener);
     }
 
+    private Supplier<Optional<ClubLeader>> lookupLeaderFn() {
+        return setOnce(() -> new LeaderBroker(factory.getConnector())
+                        .find(getId(), factory.getPersonManager(), factory.getClubManager()),
+                this::setLeader);
+    }
 }

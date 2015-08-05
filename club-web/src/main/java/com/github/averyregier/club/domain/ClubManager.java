@@ -1,10 +1,7 @@
 package com.github.averyregier.club.domain;
 
 import com.github.averyregier.club.application.ClubFactory;
-import com.github.averyregier.club.domain.club.Club;
-import com.github.averyregier.club.domain.club.ClubGroup;
-import com.github.averyregier.club.domain.club.Listener;
-import com.github.averyregier.club.domain.club.Program;
+import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
@@ -105,7 +102,18 @@ public class ClubManager {
         public Set<Listener> getListeners() {
             return ClubManager.this.getListeners(this, ()->super.getListeners());
         }
+
+        @Override
+        public ClubLeader assign(Person person, ClubLeader.LeadershipRole role) {
+            ClubLeader leader = super.assign(person, role);
+            ClubManager.this.persist(leader);
+            return leader;
+        }
+
+
     }
+
+    protected void persist(ClubLeader leader) {}
 
     protected Set<Listener> getListeners(Club club, Supplier<Set<Listener>> fn) {
         return fn.get();
