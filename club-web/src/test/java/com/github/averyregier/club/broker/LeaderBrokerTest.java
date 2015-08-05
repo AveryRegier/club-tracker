@@ -54,11 +54,11 @@ public class LeaderBrokerTest {
 
     private void assertUUID(ClubLeader person, StatementVerifier s) {
         s.assertUUID(person.getId(), LEADER.ID);
+        s.assertUUID(person.getClub(), LEADER.CLUB_ID);
     }
 
     private void assertPersonFields(ClubLeader thing, StatementVerifier s) {
         s.assertFieldEquals(thing.getLeadershipRole().name(), LEADER.ROLE);
-        s.assertUUID(thing.getClub(), LEADER.CLUB_ID);
     }
 
     private ClubLeader newLeader() {

@@ -52,7 +52,7 @@ public class MockDataProviderBuilder {
         if (statements.isEmpty()) {
             verifications.add((ctx) -> {
                 loadStatements(ctx);
-                statements.stream().forEach(s -> s.verify());
+                statements.stream().forEach(StatementVerifier::verify);
             });
         }
         StatementVerifier svb = new StatementVerifier(type, fn);

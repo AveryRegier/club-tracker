@@ -8,10 +8,9 @@ import com.github.averyregier.club.domain.club.Listener;
 import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
 import com.github.averyregier.club.domain.club.adapter.ListenerAdapter;
 import org.jooq.DSLContext;
-import org.jooq.TableField;
 
 import java.util.LinkedHashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -30,26 +29,21 @@ public class ListenerBroker extends Broker<Listener> {
 
     @Override
     protected void persist(Listener listener, DSLContext create) {
-        if(create.insertInto(LISTENER)
+        create.insertInto(LISTENER)
                 .set(LISTENER.ID, listener.getId().getBytes())
-                .set(mapFields(listener))
-                .onDuplicateKeyUpdate()
-                .set(mapFields(listener))
-                .execute() != 1) {
-            fail("Listener persistence failed: " + listener.getId());
-        }
-    }
-
-    private Map<TableField<ListenerRecord, ?>, Object> mapFields(Listener listener) {
-        return JooqUtil.<ListenerRecord>map()
-                .setHasId(LISTENER.CLUB_ID, listener.getClub())
-                .build();
+                .set(LISTENER.CLUB_ID, listener.getClub().get().getId().getBytes())
+                .onDuplicateKeyIgnore()
+                .execute();
     }
 
     public Optional<Listener> find(String id, PersonManager personManager, ClubManager clubManager) {
         Function<DSLContext, Optional<Listener>> fn = create -> {
-            ListenerRecord record = create.selectFrom(LISTENER).where(LISTENER.ID.eq(id.getBytes())).fetchOne();
-            if (record == null) return Optional.empty();
+            List<ListenerRecord> collect = create.selectFrom(LISTENER)
+                    .where(LISTENER.ID.eq(id.getBytes()))
+                    .fetch().stream()
+                    .collect(Collectors.toList());
+            if (collect.isEmpty()) return Optional.empty();
+            ListenerRecord record = collect.get(collect.size()-1);
 
             ClubAdapter clubAdapter = (ClubAdapter) clubManager.lookup(convert(record.getClubId())).get();
             Listener listener = map(id, personManager, clubAdapter);
@@ -70,7 +64,7 @@ public class ListenerBroker extends Broker<Listener> {
                 .selectFrom(LISTENER)
                 .where(LISTENER.CLUB_ID.eq(club.getId().getBytes()))
                 .fetch().stream()
-                .map(record-> map(convert(record.getId()), personManager, club))
+                .map(record -> map(convert(record.getId()), personManager, club))
                 .collect(Collectors.toCollection(LinkedHashSet::new)));
     }
 }

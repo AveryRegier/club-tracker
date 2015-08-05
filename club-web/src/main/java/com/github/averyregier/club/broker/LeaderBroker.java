@@ -28,6 +28,7 @@ public class LeaderBroker extends Broker<ClubLeader> {
     protected void persist(ClubLeader leader, DSLContext create) {
         if(create.insertInto(LEADER)
                 .set(LEADER.ID, leader.getId().getBytes())
+                .set(LEADER.CLUB_ID, leader.getClub().map(c->c.getId().getBytes()).orElse(null))
                 .set(mapFields(leader))
                 .onDuplicateKeyUpdate()
                 .set(mapFields(leader))
@@ -39,7 +40,6 @@ public class LeaderBroker extends Broker<ClubLeader> {
     private Map<TableField<LeaderRecord, ?>, Object> mapFields(ClubLeader leader) {
         return JooqUtil.<LeaderRecord>map()
                 .set(LEADER.ROLE, leader.getLeadershipRole().name())
-                .setHasId(LEADER.CLUB_ID, leader.getClub())
                 .build();
     }
 
