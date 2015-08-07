@@ -7,7 +7,6 @@ import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.jooq.DSLContext;
-import org.jooq.Result;
 import org.jooq.TableField;
 
 import java.time.LocalDate;
@@ -55,48 +54,50 @@ public class ClubberRecordBroker extends Broker<ClubberRecord> {
 
     public Collection<ClubberRecord> find(Clubber  clubber, PersonManager manager) {
         if(!clubber.getClub().isPresent()) return Collections.emptyList();
-        return query(create -> {
-            Result<RecordRecord> records = create.selectFrom(RECORD)
-                    .where(RECORD.CLUBBER_ID.eq(clubber.getId().getBytes()))
-                    .and(RECORD.CLUB_ID.eq(clubber.getClub().get().getId().getBytes()))
-                    .fetch();
-            return records.stream().map(r -> {
-                String sectionId = r.getSectionId();
-                String listenerId = convert(r.getSignedBy());
-                ClubberRecord clubberRecord;
-                Section section = findSection(sectionId, clubber);
-                if (listenerId == null) {
-                    clubberRecord = clubber.getRecord(
-                            Optional.of(section)).get();
-                } else {
-                    final Listener byListener = findListener(listenerId, manager);
-                    final LocalDate localDate = r.getSignDate().toLocalDate();
-                    String note = r.getNote();
-                    clubberRecord = ((ClubberAdapter) clubber).addRecord(section, new Signing() {
-                        @Override
-                        public LocalDate getDate() {
-                            return localDate;
-                        }
+        return query(create -> create
+                .selectFrom(RECORD)
+                .where(RECORD.CLUBBER_ID.eq(clubber.getId().getBytes()))
+                .and(RECORD.CLUB_ID.eq(clubber.getClub().get().getId().getBytes()))
+                .fetch().stream()
+                .map(r -> mapClubberRecord(clubber, manager, r))
+                .collect(Collectors.toList()));
+    }
 
-                        @Override
-                        public Listener by() {
-                            return byListener;
-                        }
-
-                        @Override
-                        public String getNote() {
-                            return note;
-                        }
-
-                        @Override
-                        public Set<AwardPresentation> getCompletionAwards() {
-                            return null;
-                        }
-                    });
+    private ClubberRecord mapClubberRecord(Clubber clubber, PersonManager manager, RecordRecord r) {
+        String sectionId = r.getSectionId();
+        String listenerId = convert(r.getSignedBy());
+        ClubberRecord clubberRecord;
+        Section section = findSection(sectionId, clubber);
+        if (listenerId == null) {
+            clubberRecord = clubber.getRecord(
+                    Optional.of(section)).get();
+        } else {
+            final Listener byListener = findListener(listenerId, manager);
+            final LocalDate localDate = r.getSignDate().toLocalDate();
+            String note = r.getNote();
+            clubberRecord = ((ClubberAdapter) clubber).addRecord(section, new Signing() {
+                @Override
+                public LocalDate getDate() {
+                    return localDate;
                 }
-                return clubberRecord;
-            }).collect(Collectors.toList());
-        });
+
+                @Override
+                public Listener by() {
+                    return byListener;
+                }
+
+                @Override
+                public String getNote() {
+                    return note;
+                }
+
+                @Override
+                public Set<AwardPresentation> getCompletionAwards() {
+                    return null;
+                }
+            });
+        }
+        return clubberRecord;
     }
 
     private Section findSection(String sectionId, Clubber clubber) {

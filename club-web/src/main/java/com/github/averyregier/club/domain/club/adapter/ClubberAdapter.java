@@ -42,12 +42,7 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     }
 
     private ClubberRecord mapToRecord(Section section) {
-        ClubberRecord record  = records.get(section);
-        if(record == null) {
-            record = createRecord(section);
-            records.put(section, record);
-        }
-        return record;
+        return records.computeIfAbsent(section, (s)-> createRecord(section));
     }
 
     private ClubberRecord createRecord(final Section s) {
