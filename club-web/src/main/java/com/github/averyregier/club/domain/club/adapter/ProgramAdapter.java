@@ -34,7 +34,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     }
 
     public ProgramAdapter(String acceptLanguage, String organizationname, Optional<Club> club) {
-        super(club.map(c->c.getCurriculum()).orElse(null));
+        super(club.map(Club::getCurriculum).orElse(null));
         this.acceptLanguage = acceptLanguage;
         this.organizationName = organizationname;
 
@@ -234,7 +234,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
 
     @Override
     public Optional<Program> asProgram() {
-        return null;
+        return Optional.of(this);
     }
 
     @Override

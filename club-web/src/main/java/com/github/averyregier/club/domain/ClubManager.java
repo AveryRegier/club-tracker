@@ -15,7 +15,7 @@ import java.util.function.Supplier;
  * Created by avery on 9/6/2014.
  */
 public class ClubManager {
-    private Map<String, Club> clubs = new LinkedHashMap<String, Club>();
+    private Map<String, Club> clubs = new LinkedHashMap<>();
     protected ClubFactory factory;
 
     public ClubManager() {
@@ -33,9 +33,8 @@ public class ClubManager {
     protected Club find(String id) {
         return null;
     }
-
-    public Collection<Club> getClubs() {
-        return clubs.values();
+    protected Program findProgram(String id) {
+        return null;
     }
 
     public Club createClub(ClubGroup parent, Curriculum series) {
@@ -51,8 +50,13 @@ public class ClubManager {
     protected void persist(Listener listener) {}
 
     public Optional<Club> constructClub(String id, String parentId, String curriculum) {
-        return Programs.find(curriculum).map(s ->
-                new PersistedClub(s, id, (ClubGroup) clubs.get(parentId)));
+        return Programs.find(curriculum).map(s -> {
+            if(parentId == null) {
+                Program program = findProgram(id);
+                if(program != null) return program;
+            }
+            return new PersistedClub(s, id, clubs.computeIfAbsent(parentId, this::find));
+        });
     }
 
     public Program createProgram(String acceptLanguage, String organizationName, Curriculum curriculum, String id) {
@@ -65,6 +69,11 @@ public class ClubManager {
         PersistedProgram program = new PersistedProgram(factory, acceptLanguage, organizationName, curriculum, id, this);
         clubs.put(program.getId(), program);
         return program;
+    }
+
+    public boolean hasPrograms() {
+        // should find this from the database
+        return clubs.values().stream().anyMatch(c -> c.asProgram().isPresent());
     }
 
     private class PersistedClub extends ClubAdapter {
@@ -101,7 +110,7 @@ public class ClubManager {
 
         @Override
         public Set<Listener> getListeners() {
-            return ClubManager.this.getListeners(this, ()->super.getListeners());
+            return ClubManager.this.getListeners(this, super::getListeners);
         }
 
         @Override

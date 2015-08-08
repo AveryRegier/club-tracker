@@ -20,13 +20,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static spark.Spark.exception;
-import static spark.SparkBase.setPort;
+import static spark.SparkBase.port;
 
 /**
  * Created by avery on 8/30/14.
@@ -34,7 +35,7 @@ import static spark.SparkBase.setPort;
 public class ClubApplication implements SparkApplication, ServletContextListener, ClubFactory {
     public static void main(String... args) throws SQLException, ClassNotFoundException {
         if(args.length > 0) {
-            setPort(Integer.parseInt(args[0]));
+            port(Integer.parseInt(args[0]));
         }
         spark.Spark.staticFileLocation("/public");
 
@@ -51,7 +52,6 @@ public class ClubApplication implements SparkApplication, ServletContextListener
         return new PersistedUserManager(personManager, ()->new LoginBroker(connector));
     }
 
-    private Map<String, Program> programs = new ConcurrentHashMap<>();
     private ConfiguredConnector connector;
 
     @Override
@@ -105,14 +105,16 @@ public class ClubApplication implements SparkApplication, ServletContextListener
                 Programs.find(curriculum).orElseThrow(IllegalArgumentException::new), id);
         program.setPersonManager(userManager.getPersonManager());
         new OrganizationBroker(getConnector()).persist(program);
-        programs.put(program.getId(), program);
         return program;
     }
 
     @Override
     public Program getProgram(String id) {
-        return programs.computeIfAbsent(id,
-                (key)->new OrganizationBroker(getConnector()).find(key, getClubManager()).orElse(null));
+        return getClubManager()
+                .lookup(id)
+                .filter(c -> c instanceof Program)
+                .map(c -> (Program) c)
+                .orElse(null);
     }
 
     @Override
@@ -137,7 +139,7 @@ public class ClubApplication implements SparkApplication, ServletContextListener
 
     @Override
     public boolean hasPrograms() {
-        return !programs.isEmpty();
+        return getClubManager().hasPrograms();
     }
 
     @Override
@@ -147,6 +149,10 @@ public class ClubApplication implements SparkApplication, ServletContextListener
 
     @Override
     public Collection<Program> getPrograms(User user) {
-        return programs.values(); // for now, but need a way to find only the relevant ones
+        return user.getClubs().stream()
+                .flatMap(c -> Optional.ofNullable(c.getProgram())
+                    .map(Stream::of).orElse(Stream.empty()))
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

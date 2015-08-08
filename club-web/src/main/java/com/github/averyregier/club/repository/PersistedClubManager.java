@@ -4,10 +4,12 @@ import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.broker.ClubBroker;
 import com.github.averyregier.club.broker.LeaderBroker;
 import com.github.averyregier.club.broker.ListenerBroker;
+import com.github.averyregier.club.broker.OrganizationBroker;
 import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.club.ClubLeader;
 import com.github.averyregier.club.domain.club.Listener;
+import com.github.averyregier.club.domain.club.Program;
 
 import java.util.Set;
 import java.util.function.Supplier;
@@ -34,6 +36,11 @@ public class PersistedClubManager extends ClubManager {
     @Override
     protected Club find(String id) {
         return new ClubBroker(factory.getConnector()).find(id, this).orElse(null);
+    }
+
+    @Override
+    protected Program findProgram(String id) {
+        return new OrganizationBroker(factory.getConnector()).find(id, factory.getClubManager()).orElse(null);
     }
 
     @Override
