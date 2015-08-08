@@ -1,6 +1,9 @@
 package com.github.averyregier.club.domain.club.adapter;
 
-import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.club.AwardPresentation;
+import com.github.averyregier.club.domain.club.Clubber;
+import com.github.averyregier.club.domain.club.ClubberRecord;
+import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
@@ -32,7 +35,7 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     }
 
     public List<AwardPresentation> getAwards() {
-        return records.values().stream()
+        return getRecords().values().stream()
                 .map(ClubberRecord::getSigning)
                 .filter(Optional::isPresent)
                 .map(s->s.get().getCompletionAwards())
@@ -41,15 +44,23 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
                 .collect(Collectors.toList());
     }
 
-    private ClubberRecord mapToRecord(Section section) {
-        return records.computeIfAbsent(section, (s)-> createRecord(section));
+    protected LinkedHashMap<Section, ClubberRecord> getRecords() {
+        return records;
     }
 
-    private ClubberRecord createRecord(final Section s) {
+    private ClubberRecord mapToRecord(Section section) {
+        return getRecords().computeIfAbsent(section, (s) -> findRecord(section));
+    }
+
+    protected ClubberRecord findRecord(final Section s) {
+        return createUnsignedRecord(s);
+    }
+
+    private ClubberRecord createUnsignedRecord(final Section section) {
         return new ClubberRecord() {
             @Override
             public Section getSection() {
-                return s;
+                return section;
             }
 
             @Override
@@ -57,27 +68,6 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
                 return ClubberAdapter.this;
             }
         };
-    }
-
-    public ClubberRecord addRecord(final Section s, final Signing signing) {
-        ClubberRecord record = new ClubberRecord() {
-            @Override
-            public Section getSection() {
-                return s;
-            }
-
-            @Override
-            public Clubber getClubber() {
-                return ClubberAdapter.this;
-            }
-
-            @Override
-            public Optional<Signing> getSigning() {
-                return Optional.of(signing);
-            }
-        };
-        records.put(s, record);
-        return record;
     }
 
     @Override
@@ -147,7 +137,7 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     }
 
     private boolean isSigned(Section s) {
-        return records.containsKey(s) && records.get(s).getSigning().isPresent();
+        return getRecords().containsKey(s) && getRecords().get(s).getSigning().isPresent();
     }
 
     @Override

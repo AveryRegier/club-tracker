@@ -24,6 +24,7 @@ public class PersistedProgram extends ProgramAdapter {
         this.factory = factory;
         this.id = id;
         this.manager = manager;
+        setPersonManager(factory.getPersonManager());
     }
 
     @Override

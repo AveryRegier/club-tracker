@@ -3,7 +3,6 @@ package com.github.averyregier.club.broker;
 import com.github.averyregier.club.db.tables.records.RecordRecord;
 import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.club.*;
-import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.jooq.DSLContext;
@@ -66,16 +65,71 @@ public class ClubberRecordBroker extends Broker<ClubberRecord> {
     private ClubberRecord mapClubberRecord(Clubber clubber, PersonManager manager, RecordRecord r) {
         String sectionId = r.getSectionId();
         String listenerId = convert(r.getSignedBy());
+        final Section section = findSection(sectionId, clubber);
         ClubberRecord clubberRecord;
-        Section section = findSection(sectionId, clubber);
         if (listenerId == null) {
-            clubberRecord = clubber.getRecord(
-                    Optional.of(section)).get();
+            clubberRecord = new ClubberRecord() {
+                @Override
+                public Section getSection() {
+                    return section;
+                }
+
+                @Override
+                public Clubber getClubber() {
+                    return clubber;
+                }
+            };
         } else {
-            final Listener byListener = findListener(listenerId, manager);
-            final LocalDate localDate = r.getSignDate().toLocalDate();
+            Listener byListener = findListener(listenerId, manager);
+            LocalDate localDate = r.getSignDate().toLocalDate();
             String note = r.getNote();
-            clubberRecord = ((ClubberAdapter) clubber).addRecord(section, new Signing() {
+            clubberRecord = new PersistedClubberRecord(section, clubber, localDate, byListener, note);
+        }
+        return clubberRecord;
+    }
+
+    private Section findSection(String sectionId, Clubber clubber) {
+        return clubber.getClub().get().getCurriculum().lookup(sectionId)
+        .orElseThrow(illegal("section " + sectionId + " does not exist"));
+    }
+
+    private Listener findListener(String listenerId, PersonManager manager) {
+        Optional<Listener> listener = UtilityMethods.optMap(manager.lookup(listenerId), Person::asListener);
+        return listener.orElseThrow(illegal("Listener " + listenerId + " is not a listener"));
+    }
+
+    private Supplier<IllegalArgumentException> illegal(String message) {
+        return () -> new IllegalArgumentException(message);
+    }
+
+    private class PersistedClubberRecord extends ClubberRecord {
+        private final Section section;
+        private final Clubber clubber;
+        private final LocalDate localDate;
+        private final Listener byListener;
+        private final String note;
+
+        public PersistedClubberRecord(Section section, Clubber clubber, LocalDate localDate, Listener byListener, String note) {
+            this.section = section;
+            this.clubber = clubber;
+            this.localDate = localDate;
+            this.byListener = byListener;
+            this.note = note;
+        }
+
+        @Override
+        public Section getSection() {
+            return section;
+        }
+
+        @Override
+        public Clubber getClubber() {
+            return clubber;
+        }
+
+        @Override
+        public Optional<Signing> getSigning() {
+            return Optional.of(new Signing() {
                 @Override
                 public LocalDate getDate() {
                     return localDate;
@@ -93,24 +147,9 @@ public class ClubberRecordBroker extends Broker<ClubberRecord> {
 
                 @Override
                 public Set<AwardPresentation> getCompletionAwards() {
-                    return null;
+                    return new LinkedHashSet<>(new AwardBroker(connector).find(clubber, section));
                 }
             });
         }
-        return clubberRecord;
-    }
-
-    private Section findSection(String sectionId, Clubber clubber) {
-        return clubber.getClub().get().getCurriculum().lookup(sectionId)
-        .orElseThrow(illegal("section " + sectionId + " does not exist"));
-    }
-
-    private Listener findListener(String listenerId, PersonManager manager) {
-        Optional<Listener> listener = UtilityMethods.optMap(manager.lookup(listenerId), Person::asListener);
-        return listener.orElseThrow(illegal("Listener " + listenerId + " is not a listener"));
-    }
-
-    private Supplier<IllegalArgumentException> illegal(String message) {
-        return () -> new IllegalArgumentException(message);
     }
 }

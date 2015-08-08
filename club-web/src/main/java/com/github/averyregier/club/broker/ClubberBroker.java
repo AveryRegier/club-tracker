@@ -8,6 +8,7 @@ import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
 import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
 import com.github.averyregier.club.domain.club.adapter.FamilyAdapter;
 import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.repository.PersistedClubber;
 import org.jooq.DSLContext;
 import org.jooq.TableField;
 
@@ -61,7 +62,7 @@ public class ClubberBroker extends Broker<Clubber> {
                     .fetchOne();
             if (record == null) return Optional.empty();
 
-            ClubberAdapter clubber = new ClubberAdapter(factory.getPersonManager().lookup(clubberId).get());
+            ClubberAdapter clubber = new PersistedClubber(factory, factory.getPersonManager().lookup(clubberId).get());
 
             byte[] clubId = record.getClubId();
             if (clubId != null) {
