@@ -73,11 +73,15 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
         if(clubber.isPresent()) {
             child = clubber.get();
         } else {
-            child = new ClubberAdapter(createPerson());
+            child = createClubber();
             family.addClubber(child);
             child.getUpdater().setFamily(family);
         }
         return child;
+    }
+
+    protected ClubberAdapter createClubber() {
+        return new ClubberAdapter(createPerson());
     }
 
     abstract ProgramAdapter getProgram();

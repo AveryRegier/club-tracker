@@ -56,7 +56,7 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
         return createUnsignedRecord(s);
     }
 
-    private ClubberRecord createUnsignedRecord(final Section section) {
+    protected ClubberRecord createUnsignedRecord(final Section section) {
         return new ClubberRecord() {
             @Override
             public Section getSection() {

@@ -1,7 +1,6 @@
 package com.github.averyregier.club.view;
 
 import com.github.averyregier.club.application.ClubApplication;
-import com.github.averyregier.club.broker.ClubberRecordBroker;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.CeremonyAdapter;
@@ -109,7 +108,6 @@ public class ClubController extends ModelMaker {
                 if("true".equalsIgnoreCase(request.queryParams("sign"))) {
                     record.sign(user.asListener().orElseThrow(IllegalStateException::new), request.queryParams("note"));
                 }
-                new ClubberRecordBroker(app.getConnector()).persist(record);
                 response.redirect(request.url());
                 halt();
             }

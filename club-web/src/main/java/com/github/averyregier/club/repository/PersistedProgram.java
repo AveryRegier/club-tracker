@@ -8,6 +8,7 @@ import com.github.averyregier.club.domain.club.Family;
 import com.github.averyregier.club.domain.club.Listener;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
+import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.domain.program.Curriculum;
 
@@ -39,6 +40,11 @@ public class PersistedProgram extends ProgramAdapter {
             new PersonBroker(factory).persist(c);
             new ClubberBroker(factory).persist(c);
         });
+    }
+
+    @Override
+    protected ClubberAdapter createClubber() {
+        return new PersistedClubber(factory, factory.getPersonManager().createPerson());
     }
 
     @Override

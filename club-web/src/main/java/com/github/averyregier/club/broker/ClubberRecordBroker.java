@@ -5,6 +5,7 @@ import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
+import com.github.averyregier.club.repository.PersistingClubberRecord;
 import org.jooq.DSLContext;
 import org.jooq.TableField;
 
@@ -51,7 +52,7 @@ public class ClubberRecordBroker extends Broker<ClubberRecord> {
         return map.build();
     }
 
-    public Collection<ClubberRecord> find(Clubber  clubber, PersonManager manager) {
+    public Collection<ClubberRecord> find(Clubber clubber, PersonManager manager) {
         if(!clubber.getClub().isPresent()) return Collections.emptyList();
         return query(create -> create
                 .selectFrom(RECORD)
@@ -68,17 +69,7 @@ public class ClubberRecordBroker extends Broker<ClubberRecord> {
         final Section section = findSection(sectionId, clubber);
         ClubberRecord clubberRecord;
         if (listenerId == null) {
-            clubberRecord = new ClubberRecord() {
-                @Override
-                public Section getSection() {
-                    return section;
-                }
-
-                @Override
-                public Clubber getClubber() {
-                    return clubber;
-                }
-            };
+            clubberRecord = new PersistingClubberRecord(clubber, section, connector);
         } else {
             Listener byListener = findListener(listenerId, manager);
             LocalDate localDate = r.getSignDate().toLocalDate();

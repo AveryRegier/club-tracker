@@ -30,4 +30,10 @@ public class PersistedClubber extends ClubberAdapter {
                 .forEach(r->map.put(r.getSection(), r));
         return map;
     }
+
+    @Override
+    protected ClubberRecord createUnsignedRecord(Section section) {
+        return new PersistingClubberRecord(this, section, factory.getConnector());
+    }
+
 }

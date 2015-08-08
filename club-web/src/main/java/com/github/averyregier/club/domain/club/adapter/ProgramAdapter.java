@@ -298,9 +298,18 @@ public class ProgramAdapter extends ClubAdapter implements Program {
         }
 
         @Override
+        protected ClubberAdapter createClubber() {
+            return ProgramAdapter.this.createClubber();
+        }
+
+        @Override
         protected void syncFamily(Family family) {
             ProgramAdapter.this.syncFamily(family);
         }
+    }
+
+    protected ClubberAdapter createClubber() {
+        return null;
     }
 
     protected void syncFamily(Family family) {}
