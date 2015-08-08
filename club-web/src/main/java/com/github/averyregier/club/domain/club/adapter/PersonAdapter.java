@@ -129,4 +129,9 @@ public class PersonAdapter implements Person, PersonUpdater {
     public void setAgeGroup(AgeGroup ageGroup) {
         this.currentAgeGroup = ageGroup;
     }
+
+    @Override
+    public Optional<Clubber> asClubberNow() {
+        return Optional.ofNullable(clubber);
+    }
 }

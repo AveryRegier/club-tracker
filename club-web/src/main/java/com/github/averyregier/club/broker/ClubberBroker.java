@@ -2,9 +2,10 @@ package com.github.averyregier.club.broker;
 
 import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.db.tables.records.ClubberRecord;
+import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.club.Clubber;
 import com.github.averyregier.club.domain.club.Family;
-import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
+import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
 import com.github.averyregier.club.domain.club.adapter.FamilyAdapter;
 import com.github.averyregier.club.domain.program.AgeGroup;
@@ -12,9 +13,12 @@ import com.github.averyregier.club.repository.PersistedClubber;
 import org.jooq.DSLContext;
 import org.jooq.TableField;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.db.tables.Clubber.CLUBBER;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
@@ -55,6 +59,16 @@ public class ClubberBroker extends Broker<Clubber> {
         return result;
     }
 
+    public Collection<Clubber> find(Club club) {
+        return query(create->create
+                .selectFrom(CLUBBER)
+                .where(CLUBBER.CLUB_ID.eq(club.getId().getBytes()))
+                .fetch().stream()
+                .map(r-> mapClubber(convert(r.getId()), r, ()->club))
+                .collect(Collectors.toList()));
+    }
+
+
     private Function<DSLContext, Optional<Clubber>> queryClubberMethod(String clubberId) {
         return create -> {
             ClubberRecord record = create.selectFrom(CLUBBER)
@@ -62,11 +76,22 @@ public class ClubberBroker extends Broker<Clubber> {
                     .fetchOne();
             if (record == null) return Optional.empty();
 
-            ClubberAdapter clubber = new PersistedClubber(factory, factory.getPersonManager().lookup(clubberId).get());
+            return Optional.of(mapClubber(clubberId, record, ()->{
+                byte[] clubId = record.getClubId();
+                return factory.getClubManager().lookup(convert(clubId)).orElse(null);
+            }));
+        };
+    }
 
-            byte[] clubId = record.getClubId();
-            if (clubId != null) {
-                clubber.setClub((ClubAdapter) factory.getClubManager().lookup(convert(clubId)).get());
+    private Clubber mapClubber(String clubberId, ClubberRecord record, Supplier<Club> clubFinder) {
+        Person person = factory.getPersonManager().lookup(clubberId).get();
+
+        return person.getUpdater().asClubberNow().orElseGet(() -> {
+            ClubberAdapter clubber = new PersistedClubber(factory, person);
+
+            Club club = clubFinder.get();
+            if (club != null) {
+                clubber.setClub(club);
             }
 
             clubber.getUpdater().setAgeGroup(AgeGroup.DefaultAgeGroup.valueOf(record.getAgeGroup()));
@@ -76,7 +101,7 @@ public class ClubberBroker extends Broker<Clubber> {
                 Family family = new FamilyAdapter(convert(familyId), clubber);
                 clubber.getUpdater().setFamily(family);
             }
-            return Optional.of(clubber);
-        };
+            return clubber;
+        });
     }
 }

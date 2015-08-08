@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 */
 public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     private final Curriculum series;
-    private Set<Clubber> clubbers = new HashSet<>();
+    private Set<Clubber> clubbers;
 
     public ClubAdapter(Curriculum series) {
         this.series = series;
@@ -55,8 +55,18 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
 
     @Override
     public Set<Clubber> getClubbers() {
+        ensureClubbersInitialized();
         return Collections.unmodifiableSet(clubbers);
     }
+
+    private synchronized void ensureClubbersInitialized() {
+        if(clubbers == null) clubbers = initializeClubbers();
+    }
+
+    protected HashSet<Clubber> initializeClubbers() {
+        return new HashSet<>();
+    }
+
 
     @Override
     public int compareTo(Club o) {
@@ -64,6 +74,7 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     }
 
     void addClubber(ClubberAdapter clubber) {
+        ensureClubbersInitialized();
         this.clubbers.add(clubber);
         clubber.setClub(this);
     }

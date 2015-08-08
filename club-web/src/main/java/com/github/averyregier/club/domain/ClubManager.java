@@ -1,6 +1,7 @@
 package com.github.averyregier.club.domain;
 
 import com.github.averyregier.club.application.ClubFactory;
+import com.github.averyregier.club.broker.ClubberBroker;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
 import com.github.averyregier.club.domain.program.Curriculum;
@@ -110,7 +111,10 @@ public class ClubManager {
             return leader;
         }
 
-
+        @Override
+        protected HashSet<Clubber> initializeClubbers() {
+            return new LinkedHashSet<>(new ClubberBroker(factory).find(this));
+        }
     }
 
     protected void persist(ClubLeader leader) {}

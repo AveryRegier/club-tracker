@@ -2,6 +2,8 @@ package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.program.AgeGroup;
 
+import java.util.Optional;
+
 /**
  * Created by avery on 12/28/14.
  */
@@ -23,4 +25,6 @@ public interface PersonUpdater {
     void setEmail(String emailAddress);
 
     void setGender(Person.Gender gender);
+
+    Optional<Clubber> asClubberNow();
 }

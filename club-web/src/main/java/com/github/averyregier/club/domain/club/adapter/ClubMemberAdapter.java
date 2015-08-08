@@ -11,7 +11,7 @@ import java.util.Optional;
  * Created by avery on 12/28/14.
  */
 public class ClubMemberAdapter extends PersonWrapper implements ClubMember {
-    private ClubAdapter club;
+    private Club club;
     private final Person person;
 
     public ClubMemberAdapter(Person person) {
@@ -38,7 +38,7 @@ public class ClubMemberAdapter extends PersonWrapper implements ClubMember {
         return person;
     }
 
-    public void setClub(ClubAdapter club) {
+    public void setClub(Club club) {
         this.club = club;
     }
 }
