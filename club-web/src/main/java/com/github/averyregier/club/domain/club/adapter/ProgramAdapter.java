@@ -309,7 +309,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     }
 
     protected ClubberAdapter createClubber() {
-        return null;
+        return new ClubberAdapter(personManager.createPerson());
     }
 
     protected void syncFamily(Family family) {}
