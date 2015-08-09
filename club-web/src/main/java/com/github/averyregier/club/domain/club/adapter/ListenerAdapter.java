@@ -66,4 +66,14 @@ public class ListenerAdapter extends PersonWrapper implements Listener {
     protected Person getPerson() {
         return person;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Listener && getId().equals(((Listener) obj).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
+    }
 }
