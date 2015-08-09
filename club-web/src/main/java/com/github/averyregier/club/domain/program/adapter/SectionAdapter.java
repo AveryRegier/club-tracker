@@ -39,7 +39,7 @@ class SectionAdapter implements Section {
 
     @Override
     public Set<Award> getAwards() {
-        return awards.stream().map(r->r.get())
+        return awards.stream().map(Later::get)
                 .filter(isValidAward())
                 .collect(UtilityMethods.toLinkedSet());
     }
