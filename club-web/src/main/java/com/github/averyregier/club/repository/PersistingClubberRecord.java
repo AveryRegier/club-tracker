@@ -1,5 +1,6 @@
 package com.github.averyregier.club.repository;
 
+import com.github.averyregier.club.broker.AwardBroker;
 import com.github.averyregier.club.broker.ClubberRecordBroker;
 import com.github.averyregier.club.broker.Connector;
 import com.github.averyregier.club.domain.club.Clubber;
@@ -36,6 +37,8 @@ public class PersistingClubberRecord extends ClubberRecord {
     public Signing sign(Listener byListener, String note) {
         Signing sign = super.sign(byListener, note);
         new ClubberRecordBroker(connector).persist(this);
+        AwardBroker broker = new AwardBroker(connector);
+        sign.getCompletionAwards().forEach(broker::persist);
         return sign;
     }
 }
