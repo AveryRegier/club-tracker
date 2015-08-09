@@ -20,6 +20,7 @@ public abstract class ClubGroupAdapter implements ClubGroup {
 
     @Override
     public Listener recruit(Person person) {
+        getListeners();
         if(getParentGroup().isPresent()) {
             getParentGroup().get().recruit(person);
         }

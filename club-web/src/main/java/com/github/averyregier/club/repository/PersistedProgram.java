@@ -12,6 +12,7 @@ import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.domain.program.Curriculum;
 
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -79,5 +80,12 @@ public class PersistedProgram extends ProgramAdapter {
                 .stream()
                 .map(c->(ClubAdapter)c)
                 .collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    @Override
+    public Set<Listener> getListeners() {
+        super.getListeners().addAll(new ListenerBroker(factory.getConnector())
+                .find(this, factory.getPersonManager()));
+        return super.getListeners();
     }
 }
