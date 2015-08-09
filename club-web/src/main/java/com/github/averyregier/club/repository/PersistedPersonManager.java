@@ -4,6 +4,7 @@ import com.github.averyregier.club.broker.PersonBroker;
 import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.club.Person;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -22,6 +23,11 @@ public class PersistedPersonManager extends PersonManager {
         return Optional.ofNullable(
                 people.computeIfAbsent(id,
                         key -> getPersonBroker().find(id).orElse(null)));
+    }
+
+    @Override
+    public Collection<Person> getPeople() {
+        return getPersonBroker().findAll();
     }
 
     private PersonBroker getPersonBroker() {

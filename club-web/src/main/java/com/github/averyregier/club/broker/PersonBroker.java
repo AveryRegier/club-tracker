@@ -11,11 +11,14 @@ import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.TableField;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.db.tables.Person.PERSON;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 
 /**
 * Created by avery on 2/14/15.
@@ -57,10 +60,10 @@ public class PersonBroker extends Broker<Person> {
     }
 
     public Optional<Person> find(String id) {
-        return query((create)->{
+        return query((create) -> {
 
             Result<PersonRecord> result = create.selectFrom(PERSON).where(PERSON.ID.eq(id.getBytes())).fetch();
-            return result.stream().findFirst().map(r->{
+            return result.stream().findFirst().map(r -> {
                 PersonAdapter person = new PersistedPerson(factory, id);
                 Person.Gender.lookup(r.getGender()).ifPresent(person::setGender);
                 person.setEmail(r.getEmail());
@@ -73,6 +76,25 @@ public class PersonBroker extends Broker<Person> {
                         .build());
                 return person;
             });
+        });
+    }
+
+    public Collection<Person> findAll() {
+        return query((create) -> {
+            Result<PersonRecord> result = create.selectFrom(PERSON).fetch();
+            return result.stream().map(r -> {
+                PersonAdapter person = new PersistedPerson(factory, convert(r.getId()));
+                Person.Gender.lookup(r.getGender()).ifPresent(person::setGender);
+                person.setEmail(r.getEmail());
+                person.setName(new NameBuilder()
+                        .given(r.getGiven())
+                        .surname(r.getSurname())
+                        .title(r.getTitle())
+                        .friendly(r.getFriendly())
+                        .honorific(r.getHonorific())
+                        .build());
+                return person;
+            }).collect(Collectors.toList());
         });
     }
 }
