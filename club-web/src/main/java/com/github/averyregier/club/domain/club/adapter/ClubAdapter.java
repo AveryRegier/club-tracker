@@ -88,7 +88,7 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     public Collection<AwardPresentation> getAwardsNotYetPresented() {
         return getClubbers().stream()
                 .flatMap(c->c.getAwards().stream())
-                .filter(a->a.presentedAt() == null)
+                .filter(AwardPresentation::notPresented)
                 .collect(Collectors.toList());
     }
 }

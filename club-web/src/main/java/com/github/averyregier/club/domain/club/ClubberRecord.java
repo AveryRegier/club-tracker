@@ -124,6 +124,7 @@ public abstract class ClubberRecord {
             @Override
             public void presentAt(Ceremony ceremony) {
                 this.ceremony = ceremony;
+                persistAward(this);
             }
 
             private Optional<Catalogued> select() {
@@ -146,6 +147,13 @@ public abstract class ClubberRecord {
             public ClubberRecord record() {
                 return ClubberRecord.this;
             }
+
+            @Override
+            public boolean notPresented() {
+                return ceremony == null;
+            }
         }
     }
+
+    protected void persistAward(AwardPresentation awardPresentation) {}
 }

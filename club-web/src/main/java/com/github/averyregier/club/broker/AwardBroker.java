@@ -1,19 +1,17 @@
 package com.github.averyregier.club.broker;
 
 import com.github.averyregier.club.db.tables.records.AwardRecord;
-import com.github.averyregier.club.domain.club.*;
-import com.github.averyregier.club.domain.program.Award;
-import com.github.averyregier.club.domain.program.Catalogued;
+import com.github.averyregier.club.domain.club.AwardPresentation;
+import com.github.averyregier.club.domain.club.Clubber;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.utility.Named;
+import com.github.averyregier.club.repository.PersistedAwardPresentation;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.TableField;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.db.tables.Award.AWARD;
@@ -59,72 +57,9 @@ public class AwardBroker extends Broker<AwardPresentation> {
                 String id = convert(record.getId());
                 String token = record.getToken();
                 String presentationId = convert(record.getPresentedAt());
-                return new AwardPresentation() {
-
-                    @Override
-                    public String getId() {
-                        return id;
-                    }
-
-                    @Override
-                    public String getShortCode() {
-                        return findAward().map(Named::getName).orElse(accomplishment);
-                    }
-
-                    @Override
-                    public Person to() {
-                        return clubber;
-                    }
-
-                    @Override
-                    public Named forAccomplishment() {
-                        return findAward()
-                                .map(a -> (Named) a)
-                                .orElse(() -> accomplishment);
-                    }
-
-                    private Optional<Award> findAward() {
-                        return section.getAwards().stream()
-                                .filter(a -> a.getName().equals(accomplishment))
-                                .findFirst();
-                    }
-
-                    @Override
-                    public LocalDate earnedOn() {
-                        return Optional.ofNullable(record())
-                                .map(r -> r.getSigning()
-                                        .map(Signing::getDate))
-                                .orElse(Optional.empty())
-                                .orElseThrow(IllegalStateException::new);
-                    }
-
-                    @Override
-                    public Ceremony presentedAt() {
-                        if (presentationId == null) {
-                            return null;
-                        }
-                        throw new UnsupportedOperationException("not yet implemented");
-                    }
-
-                    @Override
-                    public Optional<Catalogued> token() {
-                        if (token == null) return Optional.empty();
-                        return Optional.of(findAward()
-                                .map(a -> a.select(t -> t.getName().equalsIgnoreCase(token)))
-                                .orElse(() -> token));
-                    }
-
-                    @Override
-                    public ClubberRecord record() {
-                        return clubber.getRecord(Optional.ofNullable(section)).orElse(null);
-                    }
-
-                    @Override
-                    public void presentAt(Ceremony ceremony) {
-                        throw new UnsupportedOperationException("not yet implemented");
-                    }
-                };
+                return new PersistedAwardPresentation(connector, presentationId, id, accomplishment, clubber, section, token);
             }).collect(Collectors.toList());
         });
     }
+
 }

@@ -3,10 +3,7 @@ package com.github.averyregier.club.repository;
 import com.github.averyregier.club.broker.AwardBroker;
 import com.github.averyregier.club.broker.ClubberRecordBroker;
 import com.github.averyregier.club.broker.Connector;
-import com.github.averyregier.club.domain.club.Clubber;
-import com.github.averyregier.club.domain.club.ClubberRecord;
-import com.github.averyregier.club.domain.club.Listener;
-import com.github.averyregier.club.domain.club.Signing;
+import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.Section;
 
 /**
@@ -40,5 +37,10 @@ public class PersistingClubberRecord extends ClubberRecord {
         AwardBroker broker = new AwardBroker(connector);
         sign.getCompletionAwards().forEach(broker::persist);
         return sign;
+    }
+
+    @Override
+    protected void persistAward(AwardPresentation awardPresentation) {
+        new AwardBroker(connector).persist(awardPresentation);
     }
 }

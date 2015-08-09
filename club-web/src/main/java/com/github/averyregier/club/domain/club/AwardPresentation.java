@@ -19,4 +19,6 @@ public interface AwardPresentation extends HasId {
     ClubberRecord record();
 
     void presentAt(Ceremony ceremony);
+
+    boolean notPresented();
 }

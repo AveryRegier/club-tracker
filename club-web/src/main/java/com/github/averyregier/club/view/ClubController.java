@@ -1,6 +1,7 @@
 package com.github.averyregier.club.view;
 
 import com.github.averyregier.club.application.ClubApplication;
+import com.github.averyregier.club.broker.CeremonyBroker;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.CeremonyAdapter;
@@ -71,6 +72,7 @@ public class ClubController extends ModelMaker {
                 if(club.isPresent()) {
                     HashSet<String> awards = asLinkedSet(request.queryMap("award").values());
                     Ceremony ceremony = new CeremonyAdapter();
+                    new CeremonyBroker(app.getConnector()).persist(ceremony);
                     club.get().getAwardsNotYetPresented().stream()
                         .filter(a -> awards.contains(a.getId()))
                         .forEach(a -> a.presentAt(ceremony));
