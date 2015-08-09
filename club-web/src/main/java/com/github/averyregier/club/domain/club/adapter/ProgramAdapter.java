@@ -21,7 +21,7 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
 public class ProgramAdapter extends ClubAdapter implements Program {
     private final String acceptLanguage;
     private String organizationName;
-    private SortedSet<ClubAdapter> clubs = new TreeSet<>();
+    private SortedSet<ClubAdapter> clubs;
     private PersonManager personManager;
 
     public ProgramAdapter() {
@@ -49,7 +49,18 @@ public class ProgramAdapter extends ClubAdapter implements Program {
 
     @Override
     public Set<Club> getClubs() {
-        return Collections.unmodifiableSet(downcast(clubs));
+        return Collections.unmodifiableSet(downcast(clubs()));
+    }
+
+    private synchronized SortedSet<ClubAdapter> clubs() {
+        if(clubs == null) {
+            clubs = loadClubs();
+        }
+        return clubs;
+    }
+
+    protected TreeSet<ClubAdapter> loadClubs() {
+        return new TreeSet<>();
     }
 
     @SuppressWarnings("unchecked")
@@ -190,7 +201,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     @Override
     public Club addClub(final Curriculum series) {
         ClubAdapter club = createClub(series);
-        clubs.add(club);
+        clubs().add(club);
         return club;
     }
 
@@ -211,7 +222,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     @Override
     public Optional<Club> lookupClub(String shortCode) {
         if(shortCode.equals(this.organizationName)) return Optional.of(this);
-        return clubs.stream()
+        return clubs().stream()
                 .filter(c->shortCode.equals(c.getShortCode()))
                 .findFirst()
                 .map(c->(Club)c);
@@ -259,7 +270,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
 
     @Override
     public Set<Clubber> getClubbers() {
-        return clubs.stream().flatMap(c->c.getClubbers().stream()).collect(Collectors.toSet());
+        return clubs().stream().flatMap(c->c.getClubbers().stream()).collect(Collectors.toSet());
     }
 
     @Override
@@ -268,7 +279,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     }
 
     void register(ClubberAdapter clubber) {
-        clubs.stream()
+        clubs().stream()
                 .filter(c -> !c.getCurriculum().recommendedBookList(clubber.getCurrentAgeGroup()).isEmpty())
                 .forEach(c -> c.addClubber(clubber));
     }

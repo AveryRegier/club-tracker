@@ -12,6 +12,9 @@ import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.domain.program.Curriculum;
 
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
 /**
  * Created by avery on 7/11/15.
  */
@@ -67,5 +70,14 @@ public class PersistedProgram extends ProgramAdapter {
         ClubLeader leader = super.assign(person, role);
         new LeaderBroker(factory.getConnector()).persist(leader);
         return leader;
+    }
+
+    @Override
+    protected TreeSet<ClubAdapter> loadClubs() {
+        return new ClubBroker(factory.getConnector())
+                .findChildren(this, factory.getClubManager())
+                .stream()
+                .map(c->(ClubAdapter)c)
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 }

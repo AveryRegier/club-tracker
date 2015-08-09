@@ -59,6 +59,10 @@ public class ClubManager {
         });
     }
 
+    public Optional<Club> constructClub(String id, Club parent, String curriculum) {
+        return Programs.find(curriculum).map(s -> new PersistedClub(s, id, parent));
+    }
+
     public Program createProgram(String acceptLanguage, String organizationName, Curriculum curriculum, String id) {
         PersistedProgram program = new PersistedProgram(factory, acceptLanguage, organizationName, curriculum, id, this);
         persist(program);

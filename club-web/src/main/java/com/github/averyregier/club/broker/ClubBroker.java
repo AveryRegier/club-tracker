@@ -6,6 +6,7 @@ import com.github.averyregier.club.domain.club.Club;
 import org.jooq.DSLContext;
 import org.jooq.TableField;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -31,7 +32,6 @@ public class ClubBroker extends Broker<Club> {
                 .execute() != 1) {
             fail("Club persistence failed: " + club.getId());
         }
-
     }
 
     private Map<TableField<ClubRecord, ?>, Object> mapFields(Club club) {
@@ -54,5 +54,16 @@ public class ClubBroker extends Broker<Club> {
         };
         Optional<Club> result = query(fn);
         return result;
+    }
+
+    public Collection<Club> findChildren(Club parentClub, ClubManager clubManager) {
+        return query((Function<DSLContext, Collection<Club>>) create -> create
+                .selectFrom(CLUB)
+                .where(CLUB.PARENT_CLUB_ID.eq(parentClub.getId().getBytes()))
+                .fetch()
+                .map(record -> clubManager.constructClub(
+                        convert(record.getId()),
+                        parentClub,
+                        record.getCurriculum()).get()));
     }
 }
