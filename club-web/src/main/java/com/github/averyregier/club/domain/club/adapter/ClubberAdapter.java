@@ -19,7 +19,7 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.firstSuc
  * Created by avery on 11/30/14.
  */
 public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
-    private LinkedHashMap<Section, ClubberRecord> records = new LinkedHashMap<>();
+    private LinkedHashMap<Section, ClubberRecord> records;
 
     public ClubberAdapter() {
         this(new PersonAdapter());
@@ -44,7 +44,14 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
                 .collect(Collectors.toList());
     }
 
-    protected LinkedHashMap<Section, ClubberRecord> getRecords() {
+    protected LinkedHashMap<Section, ClubberRecord> loadRecords() {
+        return new LinkedHashMap<>();
+    }
+
+    private synchronized Map<Section, ClubberRecord> getRecords() {
+        if(records == null) {
+            records = loadRecords();
+        }
         return records;
     }
 

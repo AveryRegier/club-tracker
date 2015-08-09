@@ -22,7 +22,7 @@ public class PersistedClubber extends ClubberAdapter {
     }
 
     @Override
-    protected LinkedHashMap<Section, ClubberRecord> getRecords() {
+    protected LinkedHashMap<Section, ClubberRecord> loadRecords() {
         LinkedHashMap<Section, ClubberRecord> map = new LinkedHashMap<>();
         new ClubberRecordBroker(factory.getConnector())
                 .find(this, factory.getPersonManager())
