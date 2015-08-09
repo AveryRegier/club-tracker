@@ -1,14 +1,11 @@
 package com.github.averyregier.club.broker;
 
-import com.github.averyregier.club.domain.ClubManager;
-import com.github.averyregier.club.domain.club.Program;
 import org.jooq.DSLContext;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -27,7 +24,7 @@ public abstract class Broker<T> {
     }
 
     protected void execute(Consumer<DSLContext> c) {
-        try (Connection connection = connector.connect()) {
+        try (Connection connection = connect()) {
             DSLContext create = DSL.using(connection, connector.getDialect());
 
             c.accept(create);
@@ -37,7 +34,7 @@ public abstract class Broker<T> {
     }
 
     protected <T> T query(Function<DSLContext, T> c) {
-        try (Connection connection = connector.connect()) {
+        try (Connection connection = connect()) {
             DSLContext create = DSL.using(connection, connector.getDialect());
 
             return c.apply(create);
