@@ -74,6 +74,7 @@ public class ListenerAdapter extends PersonWrapper implements Listener {
 
     @Override
     public int hashCode() {
-        return getId().hashCode();
+        String id = getId();
+        return id != null ? id.hashCode() : super.hashCode();
     }
 }
