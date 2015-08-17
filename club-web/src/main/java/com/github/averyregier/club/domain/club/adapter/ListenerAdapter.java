@@ -17,7 +17,7 @@ public class ListenerAdapter extends PersonWrapper implements Listener {
     private ClubGroup clubGroup;
 
     public ListenerAdapter(Person person) {
-        this.person = person;
+        this.person = person.getUpdater().asPerson();
         person.getUpdater().setListener(this);
     }
 

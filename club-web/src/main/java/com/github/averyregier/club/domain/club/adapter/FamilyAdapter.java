@@ -27,20 +27,13 @@ public class FamilyAdapter implements Family {
         this.id = id;
     }
 
-    protected void addPerson(Person person) {
-        members.add(person);
+    public void addPerson(Person person) {
+        members.add(person.getUpdater().asPerson());
     }
 
     public FamilyAdapter(String uuid, Person firsPerson) {
         this.id = uuid;
         addPerson(firsPerson);
-    }
-
-    protected void addParent(Parent parent) {
-        addPerson(parent);
-    }
-
-    protected void addClubber(Clubber clubber) {addPerson(clubber);
     }
 
     @Override

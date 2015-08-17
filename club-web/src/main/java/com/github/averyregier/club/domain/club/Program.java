@@ -1,7 +1,6 @@
 package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.PersonManager;
-import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.program.Curriculum;
 
 import java.util.Locale;
@@ -14,17 +13,19 @@ import java.util.Set;
  */
 public interface Program extends Club {
     Set<Club> getClubs();
-    RegistrationInformation createRegistrationForm(User user);
+    RegistrationInformation createRegistrationForm(Person user);
+    RegistrationInformation createRegistrationForm();
     RegistrationInformation updateRegistrationForm(Map<String, String> values);
+
     Locale getLocale();
 
     Club addClub(Curriculum series);
 
+
     void setName(String organizationName);
 
-
     Optional<Club> lookupClub(String shortCode);
-
     void setPersonManager(PersonManager personManager);
+
     PersonManager getPersonManager();
 }

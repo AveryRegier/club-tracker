@@ -18,4 +18,6 @@ public interface Family extends Group, HasId {
                 .orElse(getId());
     }
 
+    void addPerson(Person person);
+
 }

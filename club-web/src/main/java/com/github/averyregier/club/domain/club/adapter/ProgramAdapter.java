@@ -1,7 +1,6 @@
 package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.PersonManager;
-import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.Curriculum;
@@ -69,7 +68,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     }
 
     @Override
-    public RegistrationInformation createRegistrationForm(User user) {
+    public RegistrationInformation createRegistrationForm(Person user) {
         if(user.getFamily().isPresent()) {
             return createRegistrationForm(user.getFamily().get(), user);
         }
@@ -82,7 +81,18 @@ public class ProgramAdapter extends ClubAdapter implements Program {
         return new ProgramRegistrationInformation(list, map);
     }
 
-    private RegistrationInformation createRegistrationForm(Family family, User user) {
+    @Override
+    public RegistrationInformation createRegistrationForm() {
+        InputFieldGroup parent = buildParentFields();
+        InputFieldGroup child1 = buildChildFields(new InputFieldGroupBuilder().id("child1").name("About Child"));
+
+        InputField action = StandardInputFields.action.createField(getLocale()).build();
+        List<InputFieldDesignator> list = Arrays.asList(parent, child1, action);
+
+        return new ProgramRegistrationInformation(list, Collections.emptyMap());
+    }
+
+    private RegistrationInformation createRegistrationForm(Family family, Person user) {
         List<InputFieldDesignator> list = new ArrayList<>();
         InputFieldGroup me = buildMeFields();
         list.add(me);
@@ -115,6 +125,10 @@ public class ProgramAdapter extends ClubAdapter implements Program {
         return buildPersonFields(new InputFieldGroupBuilder().id("me").name("About Myself"));
     }
 
+    private InputFieldGroup buildParentFields() {
+        return buildPersonFields(new InputFieldGroupBuilder().id("parent").name("About Parent"));
+    }
+
     private InputFieldGroup buildPersonFields(InputFieldGroupBuilder builder) {
         return builder
                 .group(StandardInputFields.name.createGroup(getLocale()))
@@ -133,7 +147,15 @@ public class ProgramAdapter extends ClubAdapter implements Program {
 
     @Override
     public RegistrationInformation updateRegistrationForm(Map<String, String> values) {
-        InputFieldGroup me = buildMeFields();
+        String parentGroupKey;
+        InputFieldGroup me;
+        if(values.keySet().stream().anyMatch(k->k.startsWith("me."))) {
+            me = buildMeFields();
+            parentGroupKey = "me";
+        } else {
+            me = buildParentFields();
+            parentGroupKey = "parent";
+        }
         Map<String, String> fields = new HashMap<>(values);
         String actionName = fields.remove("action");
         Action action = actionName != null ? Action.valueOf(actionName) : null;
@@ -146,8 +168,8 @@ public class ProgramAdapter extends ClubAdapter implements Program {
         } else if(action == Action.spouse) {
             addSpouse(list);
             hasSpouse = true;
-            fields.put("spouse.gender", Person.Gender.lookup(values.get("me.gender")).map(g -> g.opposite().name()).orElse(null));
-            fields.put("spouse.name.surname", values.get("me.name.surname"));
+            fields.put("spouse.gender", Person.Gender.lookup(values.get(parentGroupKey+".gender")).map(g -> g.opposite().name()).orElse(null));
+            fields.put("spouse.name.surname", values.get(parentGroupKey+".name.surname"));
         }
 
         int num = getNextChildNumber(values);
@@ -156,7 +178,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
         }
         if(action == Action.child) {
             addChild(list, num);
-            fields.put("child" + num + ".childName.surname", values.get("me.name.surname"));
+            fields.put("child" + num + ".childName.surname", values.get(parentGroupKey+".name.surname"));
         }
 
         if(hasSpouse) {

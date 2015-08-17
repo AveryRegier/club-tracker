@@ -20,6 +20,7 @@ public class PersonAdapter implements Person, PersonUpdater {
     private Clubber clubber;
     private Family family;
     private AgeGroup currentAgeGroup;
+    private User login;
 
     public PersonAdapter() {
         this.uuid = null;
@@ -45,7 +46,7 @@ public class PersonAdapter implements Person, PersonUpdater {
 
     @Override
     public Optional<User> getLogin() {
-        return Optional.empty();
+        return Optional.ofNullable(login);
     }
 
     @Override
@@ -58,8 +59,8 @@ public class PersonAdapter implements Person, PersonUpdater {
         return Optional.ofNullable(parent);
     }
 
-    protected boolean knowsFamily() {
-        return parent != null || clubber != null || family != null;
+    protected boolean knowsPlaceInFamily() {
+        return parent != null || clubber != null;
     }
 
     @Override
@@ -133,5 +134,30 @@ public class PersonAdapter implements Person, PersonUpdater {
     @Override
     public Optional<Clubber> asClubberNow() {
         return Optional.ofNullable(clubber);
+    }
+
+    @Override
+    public Person asPerson() {
+        return this;
+    }
+
+    @Override
+    public boolean knowsFamily() {
+        return family != null;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return uuid != null && obj instanceof PersonAdapter ?  uuid.equals(((PersonAdapter)obj).uuid) : super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid != null ? uuid.hashCode() : super.hashCode();
+    }
+
+    @Override
+    public void setLogin(User login) {
+        this.login = login;
     }
 }

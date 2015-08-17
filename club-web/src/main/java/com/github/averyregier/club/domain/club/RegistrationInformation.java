@@ -1,6 +1,5 @@
 package com.github.averyregier.club.domain.club;
 
-import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 
 import java.util.LinkedHashMap;
@@ -29,5 +28,7 @@ public interface RegistrationInformation {
         return results;
     }
 
-    Family register(User user);
+    Family register(Person person);
+
+    Family register();
 }

@@ -1,14 +1,16 @@
 package com.github.averyregier.club.repository;
 
 import com.github.averyregier.club.application.ClubFactory;
-import com.github.averyregier.club.broker.*;
+import com.github.averyregier.club.broker.ClubberBroker;
+import com.github.averyregier.club.broker.LeaderBroker;
+import com.github.averyregier.club.broker.ListenerBroker;
+import com.github.averyregier.club.broker.ParentBroker;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.ParentAdapter;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.domain.utility.UtilityMethods.orElseMaybe;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.setOnce;
@@ -33,15 +35,18 @@ public class PersistedPerson extends PersonAdapter {
 
     @Override
     public Optional<Family> getFamily() {
-        if(!asParent().isPresent()) {
-            asClubber();
-        }
-        return super.getFamily();
+        Optional<Family> family = super.getFamily();
+        if(!family.isPresent()) {
+            if (!asParent().isPresent()) {
+                asClubber();
+            }
+            return super.getFamily();
+        } else return family;
     }
 
     @Override
     public Optional<Parent> asParent() {
-        if(!knowsFamily()) return parentLookup.get();
+        if(!knowsPlaceInFamily()) return parentLookup.get();
         return super.asParent();
     }
 
@@ -73,15 +78,11 @@ public class PersistedPerson extends PersonAdapter {
 
     private Supplier<Optional<String>> lookupFamilyFn() {
         return setOnce(() -> new ParentBroker(factory.getConnector()).findFamily(getId()),
-                (id) -> setFamily(loadFamily(id)));
+                (id) -> loadFamily(id).ifPresent(f->setFamily(f)));
     }
 
-    private PersistedFamily loadFamily(String id) {
-        return new PersistedFamily(id,
-                new FamilyBroker(factory.getConnector())
-                        .getAllFamilyMembers(id)
-                        .map(i -> factory.getPersonManager().lookup(i).get())
-                        .collect(Collectors.toList()));
+    private Optional<Family> loadFamily(String id) {
+        return factory.getPersonManager().lookupFamily(id);
     }
 
     private Supplier<Optional<Listener>> lookupListenerFn() {

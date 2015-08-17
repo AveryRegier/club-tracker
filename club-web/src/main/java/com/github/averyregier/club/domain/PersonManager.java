@@ -1,10 +1,16 @@
 package com.github.averyregier.club.domain;
 
+import com.github.averyregier.club.domain.club.Family;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static com.github.averyregier.club.domain.utility.UtilityMethods.stream;
 
 /**
  * Created by avery on 9/6/2014.
@@ -36,4 +42,12 @@ public class PersonManager {
     }
 
     protected void update(Person person) {}
+
+    public Optional<Family> lookupFamily(String familyId) {
+        return people.values().stream()
+                .filter(p->p.getUpdater().knowsFamily())
+                .flatMap(p -> stream(p.getFamily()))
+                .filter(f->f.getId().equals(familyId))
+                .findFirst();
+    }
 }

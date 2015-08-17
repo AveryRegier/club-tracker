@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.club.adapter;
 
+import com.github.averyregier.club.domain.club.ClubGroup;
 import com.github.averyregier.club.domain.club.ClubLeader;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.Program;
@@ -22,7 +23,7 @@ public class ClubLeaderAdapter extends ClubMemberAdapter implements ClubLeader {
 
     @Override
     public Program getProgram() {
-        return getClub().map(c->c.getProgram()).orElse(null);
+        return getClub().map(ClubGroup::getProgram).orElse(null);
     }
 
     @Override

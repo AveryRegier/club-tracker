@@ -1,6 +1,7 @@
 package com.github.averyregier.club.domain.club.adapter;
 
-import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.club.Parent;
+import com.github.averyregier.club.domain.club.Person;
 
 import java.util.Optional;
 
@@ -11,7 +12,7 @@ public class ParentAdapter extends PersonWrapper implements Parent {
     private final Person person;
 
     public ParentAdapter(Person person) {
-        this.person = person;
+        this.person = person.getUpdater().asPerson();
         person.getUpdater().setParent(this);
     }
 

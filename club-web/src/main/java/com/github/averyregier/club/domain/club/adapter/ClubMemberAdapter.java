@@ -15,7 +15,7 @@ public class ClubMemberAdapter extends PersonWrapper implements ClubMember {
     private final Person person;
 
     public ClubMemberAdapter(Person person) {
-        this.person = person;
+        this.person = person.getUpdater().asPerson();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.github.averyregier.club.repository;
 
+import com.github.averyregier.club.broker.FamilyBroker;
 import com.github.averyregier.club.broker.PersonBroker;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
@@ -21,43 +22,44 @@ public class PersistedPersonManagerTest {
     public static final String ANY_ID = UUID.randomUUID().toString();
     public static final String ANY_EMAIL = "any@email.com";
 
-    private PersonBroker broker;
+    private PersonBroker personBroker;
+    private FamilyBroker familyBroker;
     private PersistedPersonManager manager;
 
     @Before
     public void setup() {
 
-        broker = mock(PersonBroker.class);
-        manager = new PersistedPersonManager(() -> broker);
+        personBroker = mock(PersonBroker.class);
+        manager = new PersistedPersonManager(() -> personBroker, () -> familyBroker);
     }
 
     @Test
     public void getPersonNotFound() {
 
-        when(broker.find(eq(ANY_ID))).thenReturn(Optional.empty());
+        when(personBroker.find(eq(ANY_ID))).thenReturn(Optional.empty());
 
         assertFalse(manager.lookup(ANY_ID).isPresent());
         assertFalse(manager.lookup(ANY_ID).isPresent());
 
-        verify(broker, times(2)).find(eq(ANY_ID));
-        verifyNoMoreInteractions(broker);
+        verify(personBroker, times(2)).find(eq(ANY_ID));
+        verifyNoMoreInteractions(personBroker);
     }
 
     @Test
     public void getPersonFoundAndCached() {
         PersonAdapter person = new PersonAdapter(ANY_ID);
-        when(broker.find(eq(ANY_ID))).thenReturn(Optional.of(person));
+        when(personBroker.find(eq(ANY_ID))).thenReturn(Optional.of(person));
 
         assertTrue(manager.lookup(ANY_ID).isPresent());
         assertTrue(manager.lookup(ANY_ID).isPresent());
 
-        verify(broker, times(1)).find(eq(ANY_ID));
-        verifyNoMoreInteractions(broker);
+        verify(personBroker, times(1)).find(eq(ANY_ID));
+        verifyNoMoreInteractions(personBroker);
     }
 
     @Test
     public void getPersonFails() {
-        when(broker.find(eq(ANY_ID)))
+        when(personBroker.find(eq(ANY_ID)))
                 .thenThrow(DataAccessException.class);
 
         try {
@@ -67,8 +69,8 @@ public class PersistedPersonManagerTest {
             // expected
         }
 
-        verify(broker, times(1)).find(eq(ANY_ID));
-        verifyNoMoreInteractions(broker);
+        verify(personBroker, times(1)).find(eq(ANY_ID));
+        verifyNoMoreInteractions(personBroker);
     }
 
     @Test
@@ -77,8 +79,8 @@ public class PersistedPersonManagerTest {
 
         assertEquals(person, manager.lookup(person.getId()).orElse(null));
 
-        verify(broker, times(1)).persist(eq(person));
-        verifyNoMoreInteractions(broker);
+        verify(personBroker, times(1)).persist(eq(person));
+        verifyNoMoreInteractions(personBroker);
     }
 
     @Test
@@ -92,15 +94,15 @@ public class PersistedPersonManagerTest {
 
         manager.sync(person);
 
-        verify(broker, times(1)).persist(eq(person));
-        verifyNoMoreInteractions(broker);
+        verify(personBroker, times(1)).persist(eq(person));
+        verifyNoMoreInteractions(personBroker);
     }
 
     private PersonAdapter setupCachedPerson() {
         PersonAdapter person = new PersonAdapter(ANY_ID);
-        when(broker.find(eq(ANY_ID))).thenReturn(Optional.of(person));
+        when(personBroker.find(eq(ANY_ID))).thenReturn(Optional.of(person));
         assertEquals(person, manager.lookup(person.getId()).orElse(null));
-        verify(broker, times(1)).find(eq(ANY_ID));
+        verify(personBroker, times(1)).find(eq(ANY_ID));
         return person;
     }
 }

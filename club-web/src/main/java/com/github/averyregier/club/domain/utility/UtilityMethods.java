@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by avery on 10/9/14.
@@ -219,5 +220,9 @@ public class UtilityMethods {
             result.ifPresent(setter);
             return result;
         });
+    }
+
+    public static <T> Stream<T> stream(Optional<T> opt) {
+        return opt.map(Stream::of).orElseGet(Stream::empty);
     }
 }

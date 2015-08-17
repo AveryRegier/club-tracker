@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.club;
 
+import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.program.AgeGroup;
 
 import java.util.Optional;
@@ -27,4 +28,10 @@ public interface PersonUpdater {
     void setGender(Person.Gender gender);
 
     Optional<Clubber> asClubberNow();
+
+    Person asPerson();
+
+    boolean knowsFamily();
+
+    void setLogin(User user);
 }

@@ -4,11 +4,10 @@ import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.db.tables.records.ClubberRecord;
 import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.club.Clubber;
-import com.github.averyregier.club.domain.club.Family;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
-import com.github.averyregier.club.domain.club.adapter.FamilyAdapter;
 import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.repository.FamilyLater;
 import com.github.averyregier.club.repository.PersistedClubber;
 import org.jooq.DSLContext;
 import org.jooq.TableField;
@@ -98,8 +97,7 @@ public class ClubberBroker extends Broker<Clubber> {
 
             byte[] familyId = record.getFamilyId();
             if (familyId != null) {
-                Family family = new FamilyAdapter(convert(familyId), clubber);
-                clubber.getUpdater().setFamily(family);
+                clubber.getUpdater().setFamily(new FamilyLater(factory, convert(familyId)));
             }
             return clubber;
         });

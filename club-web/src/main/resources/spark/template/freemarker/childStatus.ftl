@@ -14,11 +14,7 @@
                 <#else>
                     <td></td>
                 </#if>
-                <#if clubber.family.isPresent()>
-                    <td><a href="/protected/${clubber.club.get().program.id}/family/${clubber.family.get().id}">Registration</a></td>
-                <#else>
-                    <td></td>
-                </#if>
+
             </tr>
         </#list>
         </tbody>

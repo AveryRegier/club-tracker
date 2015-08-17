@@ -48,7 +48,7 @@ public class ClubApplication implements SparkApplication, ServletContextListener
     private final ClubManager clubManager = new PersistedClubManager(this);
 
     private PersistedUserManager createUserManager() {
-        PersonManager personManager = new PersistedPersonManager(() -> new PersonBroker(this));
+        PersonManager personManager = new PersistedPersonManager(() -> new PersonBroker(this), ()->new FamilyBroker(getConnector()));
         return new PersistedUserManager(personManager, ()->new LoginBroker(connector));
     }
 

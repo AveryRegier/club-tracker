@@ -12,11 +12,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by avery on 10/15/14.
@@ -343,4 +343,36 @@ public class RegistrationFormTest {
         assertEquals(2, family.getClubbers().size());
         assertEquals(2, family.getParents().size());
     }
+
+    @Test
+    public void visitorRegistration() {
+        RegistrationInformation registrationForm = program.createRegistrationForm();
+
+        assertVisitorRegistration(registrationForm);
+
+        Map<String, String> fields = new LinkedHashMap<>(registrationForm.getFields());
+        fields.put("parent.name.given", "Joe");
+        fields.put("parent.name.surname", "Smith");
+        fields.put("child1.childName.surname", "Smith");
+        fields.put("child1.childName.given", "John");
+
+        RegistrationInformation updated = program.updateRegistrationForm(fields);
+        assertVisitorRegistration(updated);
+
+        Family family = updated.register();
+        assertEquals(1, family.getParents().size());
+        assertEquals(1, family.getClubbers().size());
+
+        assertEquals("Joe", family.getParents().stream().findFirst().get().getName().getGivenName());
+        assertEquals("John", family.getClubbers().stream().findFirst().get().getName().getGivenName());
+    }
+
+    private void assertVisitorRegistration(RegistrationInformation registrationForm) {
+        InputFieldGroup parentFields = assertGroup("parent", registrationForm.getForm(), 0);
+        InputFieldGroup nameFields = assertGroup("name", parentFields);
+
+        assertChildFieldsPresent(registrationForm, "child1", 1);
+        assertAllActions(registrationForm.getForm());
+    }
+
 }

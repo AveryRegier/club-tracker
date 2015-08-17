@@ -33,13 +33,17 @@ public class User extends PersonWrapper implements Person {
         this(new PersonAdapter());
     }
 
-    public User(Person personAdapter) {
-        this.person = personAdapter;
+    public User(Person person) {
+        if(person != null) {
+            this.person = person.getUpdater().asPerson();
+            this.person.getUpdater().setLogin(this);
+        }
     }
 
     public User(Person personAdapter, Integer initialAuth) {
         this.person = personAdapter;
         this.auth = initialAuth;
+        this.person.getUpdater().setLogin(this);
     }
 
     public Login getLoginInformation() {

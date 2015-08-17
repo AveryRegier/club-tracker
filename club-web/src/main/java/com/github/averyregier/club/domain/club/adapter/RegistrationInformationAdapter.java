@@ -1,6 +1,5 @@
 package com.github.averyregier.club.domain.club.adapter;
 
-import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.Clubber;
 import com.github.averyregier.club.domain.club.Family;
 import com.github.averyregier.club.domain.club.Person;
@@ -19,15 +18,23 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.getOther
  */
 public abstract class RegistrationInformationAdapter implements RegistrationInformation {
     @Override
-    public Family register(User user) {
-        ParentAdapter thisParent = (ParentAdapter)user.asParent().orElse(new ParentAdapter(user));
+    public Family register(Person person) {
+        ParentAdapter thisParent = (ParentAdapter) person.asParent().orElseGet(() -> new ParentAdapter(person));
+        FamilyAdapter family = (FamilyAdapter) person.getFamily().orElseGet(() -> new FamilyAdapter(thisParent));
 
-        Pattern pattern = Pattern.compile("([a-z]*)(\\d?)");
+        update(thisParent, family);
 
+        return family;
+    }
+
+    @Override
+    public Family register() {
+        return register(createPerson());
+    }
+
+    private void update(ParentAdapter thisParent, FamilyAdapter family) {
         Map<InputFieldDesignator, Object> results = validate();
-
-        FamilyAdapter family = (FamilyAdapter) user.getFamily().orElseGet(() -> new FamilyAdapter(thisParent));
-
+        Pattern pattern = Pattern.compile("([a-z]*)(\\d?)");
         for(InputFieldDesignator section: getForm()) {
             Map<String, Object> theResults = (Map<String, Object>) results.get(section);
             if(theResults != null) {
@@ -35,13 +42,14 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
                 if(matcher.find()) {
                     switch (matcher.group(1)) {
                         case "me":
+                        case "parent":
                             section.update(thisParent, theResults);
                             thisParent.getUpdater().setFamily(family);
                             break;
                         case "spouse":
                             ParentAdapter spouse = (ParentAdapter)getOther(family.getParents(), thisParent)
                                     .orElseGet(() -> new ParentAdapter(createPerson()));
-                            family.addParent(spouse);
+                            family.addPerson(spouse);
                             section.update(spouse, theResults);
                             spouse.getUpdater().setFamily(family);
                             break;
@@ -57,8 +65,6 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
         }
 
         syncFamily(family);
-
-        return family;
     }
 
     protected void syncFamily(Family family) {}
@@ -74,7 +80,7 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
             child = clubber.get();
         } else {
             child = createClubber();
-            family.addClubber(child);
+            family.addPerson(child);
             child.getUpdater().setFamily(family);
         }
         return child;
