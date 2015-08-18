@@ -40,6 +40,7 @@ public class AddressBroker extends Broker<Address> {
                 .set(ADDRESS.LINE2, address.getLine2())
                 .set(ADDRESS.CITY, address.getCity())
                 .set(ADDRESS.POSTAL_CODE, address.getPostalCode())
+                .set(ADDRESS.TERRITORY, address.getTerritory())
                 .set(ADDRESS.COUNTRY, address.getCountry().getValue())
                 .build();
     }

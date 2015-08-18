@@ -55,6 +55,7 @@ public class AddressBrokerTest {
             s.assertFieldEquals(address.getLine2(), ADDRESS.LINE2);
             s.assertFieldEquals(address.getCity(), ADDRESS.CITY);
             s.assertFieldEquals(address.getPostalCode(), ADDRESS.POSTAL_CODE);
+            s.assertFieldEquals(address.getTerritory(), ADDRESS.TERRITORY);
             s.assertFieldEquals(address.getCountry().getValue(), ADDRESS.COUNTRY);
         };
     }
