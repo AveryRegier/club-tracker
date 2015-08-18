@@ -10,7 +10,10 @@ import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import com.github.averyregier.club.domain.utility.builder.ChildBuilder;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static com.github.averyregier.club.domain.utility.InputField.Type.integer;
@@ -65,7 +68,7 @@ public enum StandardInputFields {
                     .field(f->f.name("Postal Code").id("postal-code").type(text))
                     .field(f->{
                         f.name("Country").id("country").type(text);
-                        CountryValue.getAllCountryDropDowns(locale).forEach(v->f.value(v));
+                        CountryValue.getAllCountryDropDowns(locale).forEach(f::value);
                         return f;
                     });
         }

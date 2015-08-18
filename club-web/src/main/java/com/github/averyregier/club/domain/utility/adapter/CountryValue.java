@@ -33,10 +33,6 @@ public class CountryValue implements InputField.Value, Comparable<CountryValue>{
         return aDefault.getCountry().equals(l.getCountry());
     }
 
-    String getLanguage() {
-        return l.getLanguage();
-    }
-
     @Override
     public int compareTo(CountryValue o) {
         return getDisplayName().compareTo(o.getDisplayName());
@@ -49,6 +45,13 @@ public class CountryValue implements InputField.Value, Comparable<CountryValue>{
                 .map(l -> new CountryValue(l, aDefault))
                 .collect(Collectors.toCollection(TreeSet::new))
                 .stream();
+    }
+
+    public static CountryValue findCountry(String country) {
+        return getAllCountryDropDowns(Locale.getDefault())
+                .filter(c -> c.getValue().equals(country))
+                .findFirst()
+                .orElse(null);
     }
 
     private static Stream<Locale> getCountryLocales(String lang) {
