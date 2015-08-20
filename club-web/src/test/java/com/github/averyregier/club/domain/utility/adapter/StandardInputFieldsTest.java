@@ -2,9 +2,12 @@ package com.github.averyregier.club.domain.utility.adapter;
 
 import com.github.averyregier.club.LocaleTinkerer;
 import com.github.averyregier.club.domain.User;
+import com.github.averyregier.club.domain.club.Address;
+import com.github.averyregier.club.domain.club.Family;
 import com.github.averyregier.club.domain.club.Name;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
+import com.github.averyregier.club.domain.club.adapter.NameBuilder;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.utility.Action;
 import com.github.averyregier.club.domain.utility.InputField;
@@ -15,9 +18,11 @@ import org.junit.Test;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.github.averyregier.club.TestUtility.assertEmpty;
 import static com.github.averyregier.club.TestUtility.getUser;
 import static com.github.averyregier.club.domain.utility.InputField.Type.integer;
 import static com.github.averyregier.club.domain.utility.InputField.Type.text;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.optMap;
 import static org.junit.Assert.*;
 
 public class StandardInputFieldsTest {
@@ -62,10 +67,21 @@ public class StandardInputFieldsTest {
         assertEquals("Spacey", name.getFriendlyName());
 
         User person = new User();
-        person.setName("Space", "Alien");
+        person.getUpdater().setName(new NameBuilder()
+                .given("Space")
+                .surname("Alien")
+                .middle("J")
+                .friendly("Spacey")
+                .title("Dr")
+                .honorific("III")
+                .build());
         Map<String, String> model = group.map(person);
         assertEquals("Space", model.get("given"));
         assertEquals("Alien", model.get("surname"));
+        assertEquals("J", model.get("middle"));
+        assertEquals("III", model.get("honorific"));
+        assertEquals("Dr", model.get("title"));
+        assertEquals("Spacey", model.get("friendly"));
 
         User user = new User();
         group.update(user, o);
@@ -106,10 +122,19 @@ public class StandardInputFieldsTest {
         assertEquals("Spacey", name.getFriendlyName());
 
         User person = new User();
-        person.setName("Space", "Alien");
+        person.getUpdater().setName(new NameBuilder()
+                .given("Space")
+                .surname("Alien")
+                .middle("J")
+                .friendly("Spacey")
+                .honorific("III")
+                .build());
         Map<String, String> model = group.map(person);
         assertEquals("Space", model.get("given"));
         assertEquals("Alien", model.get("surname"));
+        assertEquals("J", model.get("middle"));
+        assertEquals("III", model.get("honorific"));
+        assertEquals("Spacey", model.get("friendly"));
 
         User user = new User();
         group.update(user, o);
@@ -169,6 +194,40 @@ public class StandardInputFieldsTest {
                 designations.get(5).asField().get().getValues().get().stream()
                         .map(InputField.Value::getValue)
                         .collect(Collectors.toList()));
+
+        assertEmpty(group.map(new User()));
+
+        HashMap<String, String> input = new HashMap<>();
+        input.put("line1", "123 A St.");
+        input.put("line2", "Apt 4");
+        input.put("city", "Clubville");
+        input.put("territory", "AS");
+        input.put("postal-code", "12345");
+        input.put("country", "US");
+
+        Object o = group.validate(input).get();
+        assertTrue(o instanceof Address);
+        Address address = (Address)o;
+        assertEquals("123 A St.", address.getLine1());
+        assertEquals("Apt 4", address.getLine2());
+        assertEquals("Clubville", address.getCity());
+        assertEquals("AS", address.getTerritory());
+        assertEquals("12345", address.getPostalCode());
+        assertEquals("US", address.getCountry().getValue());
+
+        User user = new User();
+        group.update(user, o);
+        assertEquals(o, optMap(user.getFamily(), Family::getAddress).orElse(null));
+
+        User person = new User();
+        person.getUpdater().setAddress(address);
+        Map<String, String> model = group.map(person);
+        assertEquals("123 A St.", model.get("line1"));
+        assertEquals("Apt 4", model.get("line2"));
+        assertEquals("Clubville", model.get("city"));
+        assertEquals("AS", model.get("territory"));
+        assertEquals("12345", model.get("postal-code"));
+        assertEquals("US", model.get("country"));
     }
 
     @Test

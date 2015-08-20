@@ -2,6 +2,7 @@ package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.utility.HasId;
 
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -20,4 +21,7 @@ public interface Family extends Group, HasId {
 
     void addPerson(Person person);
 
+    Optional<Address> getAddress();
+
+    void setAddress(Address address);
 }

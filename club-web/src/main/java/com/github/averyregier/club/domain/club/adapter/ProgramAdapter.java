@@ -73,8 +73,9 @@ public class ProgramAdapter extends ClubAdapter implements Program {
             return createRegistrationForm(user.getFamily().get(), user);
         }
         InputFieldGroup me = buildMeFields();
+        InputFieldGroup household = buildHouseholdFields();
         InputField action = StandardInputFields.action.createField(getLocale()).build();
-        List<InputFieldDesignator> list = Arrays.asList(me, action);
+        List<InputFieldDesignator> list = Arrays.asList(me, household, action);
 
         Map<String, String> map = prefix(me.getShortCode(), me.map(user));
 
@@ -84,10 +85,11 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     @Override
     public RegistrationInformation createRegistrationForm() {
         InputFieldGroup parent = buildParentFields();
+        InputFieldGroup household = buildHouseholdFields();
         InputFieldGroup child1 = buildChildFields(new InputFieldGroupBuilder().id("child1").name("About Child"));
 
         InputField action = StandardInputFields.action.createField(getLocale()).build();
-        List<InputFieldDesignator> list = Arrays.asList(parent, child1, action);
+        List<InputFieldDesignator> list = Arrays.asList(parent, household, child1, action);
 
         return new ProgramRegistrationInformation(list, Collections.emptyMap());
     }
@@ -97,6 +99,9 @@ public class ProgramAdapter extends ClubAdapter implements Program {
         InputFieldGroup me = buildMeFields();
         list.add(me);
         Map<String, String> map = prefix(me.getShortCode(), me.map(user));
+        InputFieldGroup household = buildHouseholdFields();
+//        household.map(user);
+        list.add(household);
 
         Parent spouse = getOther(family.getParents(), user.asParent().get()).orElse(null);
         boolean hasSpouse = false;
@@ -136,12 +141,19 @@ public class ProgramAdapter extends ClubAdapter implements Program {
                 .field(StandardInputFields.email.createField(getLocale()))
                 .build();
     }
+
     private InputFieldGroup buildChildFields(InputFieldGroupBuilder builder) {
         return builder
                 .group(StandardInputFields.childName.createGroup(getLocale()))
                 .field(StandardInputFields.gender.createField(getLocale()))
                 .field(StandardInputFields.email.createField(getLocale()))
                 .field(StandardInputFields.ageGroup.createField(getLocale()))
+                .build();
+    }
+
+    private InputFieldGroup buildHouseholdFields() {
+        return new InputFieldGroupBuilder().id("household").name("About Your Household")
+                .group(StandardInputFields.address.createGroup(getLocale()))
                 .build();
     }
 
@@ -161,6 +173,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
         Action action = actionName != null ? Action.valueOf(actionName) : null;
         List<InputFieldDesignator> list = new ArrayList<>();
         list.add(me);
+        list.add(buildHouseholdFields());
 
         boolean hasSpouse = hasSpouse(values);
         if(hasSpouse) {

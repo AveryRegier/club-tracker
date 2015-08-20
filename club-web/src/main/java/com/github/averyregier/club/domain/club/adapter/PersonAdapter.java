@@ -160,4 +160,24 @@ public class PersonAdapter implements Person, PersonUpdater {
     public void setLogin(User login) {
         this.login = login;
     }
+
+    @Override
+    public void setAddress(Address address) {
+        Family theFamily = getFamily().orElseGet(() -> {
+            FamilyAdapter family = new FamilyAdapter(PersonAdapter.this);
+            setFamily(family);
+            return family;
+        });
+        if(!theFamily.getAddress().isPresent()) {
+            theFamily.setAddress(address);
+        } else {
+            theFamily.setAddress(new AddressAdapter(theFamily.getAddress().get().getId(),
+                    address.getLine1(),
+                    address.getLine2(),
+                    address.getCity(),
+                    address.getPostalCode(),
+                    address.getTerritory(),
+                    address.getCountry()));
+        }
+    }
 }

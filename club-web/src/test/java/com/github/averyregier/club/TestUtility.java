@@ -4,6 +4,7 @@ import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.view.UserBean;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -24,6 +25,11 @@ public class TestUtility {
     public static void assertEmpty(Collection<?> set) {
         assertNotNull(set);
         assertTrue(set.isEmpty());
+    }
+
+    public static void assertEmpty(Map<?,?> map) {
+        assertNotNull(map);
+        assertTrue(map.isEmpty());
     }
 
     public static void assertEmpty(String value) {

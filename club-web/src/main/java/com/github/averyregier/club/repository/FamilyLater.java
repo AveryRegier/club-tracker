@@ -2,14 +2,13 @@ package com.github.averyregier.club.repository;
 
 import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.broker.FamilyBroker;
-import com.github.averyregier.club.domain.club.Clubber;
-import com.github.averyregier.club.domain.club.Family;
-import com.github.averyregier.club.domain.club.Parent;
-import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.club.*;
 
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+
+import static com.github.averyregier.club.domain.utility.UtilityMethods.optMap;
 
 /**
  * Created by avery on 8/13/15.
@@ -32,6 +31,16 @@ public class FamilyLater implements Family {
     @Override
     public void addPerson(Person person) {
         getFamily().ifPresent(f -> f.addPerson(person));
+    }
+
+    @Override
+    public Optional<Address> getAddress() {
+        return optMap(getFamily(), Family::getAddress);
+    }
+
+    @Override
+    public void setAddress(Address address) {
+        getFamily().ifPresent(f->f.setAddress(address));
     }
 
     @Override

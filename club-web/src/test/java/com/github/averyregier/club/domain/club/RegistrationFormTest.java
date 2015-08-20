@@ -91,6 +91,14 @@ public class RegistrationFormTest {
         assertActionField(form, Action.values().length);
     }
 
+    @Test
+    public void household() {
+        User me = new User();
+        Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
+        RegistrationInformation registrationForm = program.createRegistrationForm(me);
+        assertHouseholdFieldsPresent(registrationForm, 1);
+    }
+
     private InputFieldGroup assertGroup(String shortCode, List<InputFieldDesignator> form, int index) {
         assertTrue(!form.isEmpty());
         InputFieldDesignator meFields = form.get(index);
@@ -140,6 +148,7 @@ public class RegistrationFormTest {
         values.put("action", Action.spouse.name());
         values.put("me.gender", meGender.name());
         values.put("me.name.surname", "Smith");
+        values.put("household.address.city", "Clubville");
         RegistrationInformation registrationForm = program.updateRegistrationForm(values);
         List<InputFieldDesignator> form = registrationForm.getForm();
 
@@ -152,8 +161,10 @@ public class RegistrationFormTest {
 
         assertNotEquals(values, registrationForm.getFields());
         assertNull(registrationForm.getFields().get("action"));
+        assertHouseholdFieldsPresent(registrationForm, 1);
+        assertEquals("Clubville", registrationForm.getFields().get("household.address.city"));
 
-        assertPersonFieldsPresent(registrationForm, "spouse", 1);
+        assertPersonFieldsPresent(registrationForm, "spouse", 2);
         assertEquals(meGender.opposite().name(), registrationForm.getFields().get("spouse.gender"));
         assertEquals("Smith", registrationForm.getFields().get("spouse.name.surname"));
     }
@@ -206,9 +217,10 @@ public class RegistrationFormTest {
         assertPersonFieldsPresent(registrationForm, "me", 0);
         assertEquals("Smith", registrationForm.getFields().get("me.name.surname"));
 
+        assertHouseholdFieldsPresent(registrationForm, 1);
         assertAllActions(form);
 
-        assertChildFieldsPresent(registrationForm, "child1", 1);
+        assertChildFieldsPresent(registrationForm, "child1", 2);
         assertEquals("Smith", registrationForm.getFields().get("child1.childName.surname"));
         assertFalse(registrationForm.getFields().containsKey("child1.childName.title"));
     }
@@ -227,14 +239,22 @@ public class RegistrationFormTest {
         assertPersonFieldsPresent(registrationForm, "me", 0);
         assertEquals("Smith", registrationForm.getFields().get("me.name.surname"));
 
+        // verify the household fields didn't disappear
+        assertHouseholdFieldsPresent(registrationForm, 1);
+
         // verify the spouse fields didn't disappear
-        assertPersonFieldsPresent(registrationForm, "spouse", 1);
+        assertPersonFieldsPresent(registrationForm, "spouse", 2);
         assertEquals("Another", registrationForm.getFields().get("spouse.name.surname"));
 
-        assertChildFieldsPresent(registrationForm, "child1", 2);
+        assertChildFieldsPresent(registrationForm, "child1", 3);
         assertEquals("Smith", registrationForm.getFields().get("child1.childName.surname"));
 
         assertAllButSpouseAction(form);
+    }
+
+    private void assertHouseholdFieldsPresent(RegistrationInformation registrationForm, int index) {
+        InputFieldGroup household = assertGroup("household", registrationForm.getForm(), index);
+        assertGroup("address", household);
     }
 
     @Test
@@ -251,12 +271,15 @@ public class RegistrationFormTest {
         assertPersonFieldsPresent(registrationForm, "me", 0);
         assertEquals("Smith", registrationForm.getFields().get("me.name.surname"));
 
+        // verify the household fields didn't disappear
+        assertHouseholdFieldsPresent(registrationForm, 1);
+
         // verify the spouse fields didn't appear where they are supposed to
-        assertPersonFieldsPresent(registrationForm, "spouse", 1);
+        assertPersonFieldsPresent(registrationForm, "spouse", 2);
         assertEquals("Smith", registrationForm.getFields().get("spouse.name.surname"));
 
         // verify the child fields didn't disappear
-        assertChildFieldsPresent(registrationForm, "child1", 2);
+        assertChildFieldsPresent(registrationForm, "child1", 3);
         assertEquals("Another", registrationForm.getFields().get("child1.childName.surname"));
 
         assertAllButSpouseAction(form);
@@ -276,11 +299,12 @@ public class RegistrationFormTest {
         assertEquals("Smith", registrationForm.getFields().get("me.name.surname"));
 
         assertAllActions(form);
+        assertHouseholdFieldsPresent(registrationForm, 1);
 
-        assertChildFieldsPresent(registrationForm, "child1", 1);
+        assertChildFieldsPresent(registrationForm, "child1", 2);
         assertEquals("Another", registrationForm.getFields().get("child1.childName.surname"));
 
-        assertChildFieldsPresent(registrationForm, "child2", 2);
+        assertChildFieldsPresent(registrationForm, "child2", 3);
         assertEquals("Smith", registrationForm.getFields().get("child2.childName.surname"));
     }
 
@@ -370,9 +394,9 @@ public class RegistrationFormTest {
     private void assertVisitorRegistration(RegistrationInformation registrationForm) {
         InputFieldGroup parentFields = assertGroup("parent", registrationForm.getForm(), 0);
         InputFieldGroup nameFields = assertGroup("name", parentFields);
+        assertHouseholdFieldsPresent(registrationForm, 1);
 
-        assertChildFieldsPresent(registrationForm, "child1", 1);
+        assertChildFieldsPresent(registrationForm, "child1", 2);
         assertAllActions(registrationForm.getForm());
     }
-
 }

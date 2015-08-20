@@ -203,6 +203,10 @@ public class UtilityMethods {
         return surname != null ? surname : "";
     }
 
+    public static <T> String orEmpty(T object, Function<T,String> fn) {
+        return object != null ? fn.apply(object) : "";
+    }
+
     public static <T> Optional<T> orElseMaybe(Optional<T> opt, Supplier<Optional<T>> supplier) {
         if(!opt.isPresent()) {
             return supplier.get();
@@ -224,5 +228,16 @@ public class UtilityMethods {
 
     public static <T> Stream<T> stream(Optional<T> opt) {
         return opt.map(Stream::of).orElseGet(Stream::empty);
+    }
+
+    public static <A,B> Optional<B> chain(Optional<A> start, Function<A,Optional<B>> fn) {
+        if(start.isPresent()){
+            return fn.apply(start.get());
+        }
+        return Optional.empty();
+    }
+
+    public static <A,B> void ifPresent(Optional<A> start, Function<A,Optional<B>> fn, Consumer<B> cn) {
+        chain(start, fn).ifPresent(cn);
     }
 }

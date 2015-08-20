@@ -34,4 +34,6 @@ public interface PersonUpdater {
     boolean knowsFamily();
 
     void setLogin(User user);
+
+    void setAddress(Address address);
 }

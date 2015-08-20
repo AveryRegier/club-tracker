@@ -1,9 +1,6 @@
 package com.github.averyregier.club.domain.club.adapter;
 
-import com.github.averyregier.club.domain.club.Clubber;
-import com.github.averyregier.club.domain.club.Family;
-import com.github.averyregier.club.domain.club.Parent;
-import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.club.*;
 
 import java.util.LinkedHashSet;
 import java.util.Optional;
@@ -17,6 +14,7 @@ import java.util.stream.Collectors;
 public class FamilyAdapter implements Family {
     private String id;
     private final LinkedHashSet<Person> members = new LinkedHashSet<>();
+    private Address address;
 
     public FamilyAdapter(Person firstPerson) {
         id = UUID.randomUUID().toString();
@@ -57,5 +55,15 @@ public class FamilyAdapter implements Family {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public Optional<Address> getAddress() {
+        return Optional.ofNullable(address);
+    }
+
+    @Override
+    public void setAddress(Address address) {
+        this.address = address;
     }
 }

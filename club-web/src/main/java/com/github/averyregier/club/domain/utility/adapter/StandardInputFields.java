@@ -1,7 +1,10 @@
 package com.github.averyregier.club.domain.utility.adapter;
 
+import com.github.averyregier.club.domain.club.Address;
+import com.github.averyregier.club.domain.club.Family;
 import com.github.averyregier.club.domain.club.Name;
 import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.club.adapter.AddressAdapter;
 import com.github.averyregier.club.domain.club.adapter.NameBuilder;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.utility.Action;
@@ -14,11 +17,11 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.domain.utility.InputField.Type.integer;
 import static com.github.averyregier.club.domain.utility.InputField.Type.text;
-import static com.github.averyregier.club.domain.utility.UtilityMethods.killWhitespace;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
 
 /**
  * Created by avery on 10/3/2014.
@@ -44,13 +47,17 @@ public enum StandardInputFields {
                             .value("II")
                             .value("III")
                             .value("IV"))
-                    .validate(getNameFn())
+                    .validate(StandardInputFields::mapName)
                     .map(p -> {
                         HashMap<String, String> model = new HashMap<>();
                         Name name1 = p.getName();
                         if (name1 != null) {
                             model.put("given", killWhitespace(name1.getGivenName()));
                             model.put("surname", killWhitespace(name1.getSurname()));
+                            model.put("middle", p.getName().getMiddleNames().stream().collect(Collectors.joining(" ")));
+                            model.put("friendly", p.getName().getFriendlyName());
+                            model.put("honorific", p.getName().getHonorificName());
+                            model.put("title", p.getName().getTitle().orElse(""));
                         }
                         return model;
                     })
@@ -70,7 +77,21 @@ public enum StandardInputFields {
                         f.name("Country").id("country").type(text);
                         CountryValue.getAllCountryDropDowns(locale).forEach(f::value);
                         return f;
-                    });
+                    })
+                    .validate(StandardInputFields::mapAddress)
+                    .map(p -> {
+                        HashMap<String, String> model = new HashMap<>();
+                        ifPresent(p.getFamily(), Family::getAddress, a -> {
+                            model.put("line1", a.getLine1());
+                            model.put("line2", a.getLine2());
+                            model.put("city", a.getCity());
+                            model.put("territory", a.getTerritory());
+                            model.put("postal-code", a.getPostalCode());
+                            model.put("country", orEmpty(a.getCountry(), CountryValue::getValue));
+                        });
+                        return model;
+                    })
+                    .update((p,o) -> p.getUpdater().setAddress((Address)o));
         }
     },
     gender {
@@ -81,8 +102,8 @@ public enum StandardInputFields {
                     .type(InputField.Type.gender)
                     .value(Person.Gender.MALE.name())
                     .value(Person.Gender.FEMALE.name())
-                    .map(p->p.getGender().map(g->g.name()).orElse(null))
-                    .update((p,o)->p.getUpdater().setGender((Person.Gender)o));
+                    .map(p -> p.getGender().map(Person.Gender::name).orElse(null))
+                    .update((p, o) -> p.getUpdater().setGender((Person.Gender) o));
         }
     },
     age {
@@ -145,11 +166,14 @@ public enum StandardInputFields {
                         .value("II")
                         .value("III")
                         .value("IV"))
-                .validate(getNameFn())
+                .validate(StandardInputFields::mapName)
                 .map(p->{
                     HashMap<String, String> model = new HashMap<>();
                     model.put("given", p.getName().getGivenName());
                     model.put("surname", p.getName().getSurname());
+                    model.put("middle", p.getName().getMiddleNames().stream().collect(Collectors.joining(" ")));
+                    model.put("friendly", p.getName().getFriendlyName());
+                    model.put("honorific", p.getName().getHonorificName());
                     return model;
                 })
                 .update((p,o)->p.getUpdater().setName((Name)o));
@@ -175,14 +199,25 @@ public enum StandardInputFields {
         return new InputFieldGroupBuilder().id(field.name());
     }
 
-    private static Function<Map<String, Object>, Optional<Object>> getNameFn() {
-        return m-> Optional.of(new NameBuilder().given((String) m.get("given"))
+    private static Optional<Object> mapName(Map<String, Object> m) {
+        return Optional.of(new NameBuilder().given((String) m.get("given"))
                 .surname((String) m.get("surname"))
                 .middle((String) m.get("middle"))
                 .title((String) m.get("title"))
                 .friendly((String) m.get("friendly"))
                 .honorific((String) m.get("honorific"))
                 .build());
+    }
+
+    private static Optional<Object> mapAddress(Map<String, Object> m) {
+        return Optional.of(new AddressAdapter(
+                (String) m.get("line1"),
+                (String) m.get("line2"),
+                (String) m.get("city"),
+                (String) m.get("postal-code"),
+                (String) m.get("territory"),
+                CountryValue.findCountry((String) m.get("country"))
+        ));
     }
 }
 
