@@ -8,7 +8,7 @@ import java.util.Collection;
 /**
  * Created by avery on 7/11/15.
  */
-class PersistedFamily extends FamilyAdapter {
+public class PersistedFamily extends FamilyAdapter {
     private String id;
 
     public PersistedFamily(String id, Collection<Person> members) {

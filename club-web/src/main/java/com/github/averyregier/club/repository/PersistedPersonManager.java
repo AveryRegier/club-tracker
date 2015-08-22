@@ -65,12 +65,7 @@ public class PersistedPersonManager extends PersonManager {
                 .collect(Collectors.toList());
         return members.isEmpty() ?
                 Optional.empty() :
-                Optional.of(buildFamily(familyId, members));
+                Optional.of(familyBroker.getPersistedFamily(familyId, members));
     }
 
-    private static PersistedFamily buildFamily(String familyId, List<Person> members) {
-        PersistedFamily family = new PersistedFamily(familyId, members);
-        members.forEach(m->m.getUpdater().setFamily(family));
-        return family;
-    }
 }

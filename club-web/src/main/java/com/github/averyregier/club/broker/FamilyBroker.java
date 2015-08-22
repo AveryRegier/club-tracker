@@ -3,11 +3,16 @@ package com.github.averyregier.club.broker;
 import com.github.averyregier.club.db.tables.Clubber;
 import com.github.averyregier.club.db.tables.Parent;
 import com.github.averyregier.club.db.tables.records.FamilyRecord;
+import com.github.averyregier.club.domain.club.Address;
 import com.github.averyregier.club.domain.club.Family;
+import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.repository.PersistedFamily;
 import org.jooq.DSLContext;
 import org.jooq.TableField;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.github.averyregier.club.db.tables.Family.FAMILY;
@@ -20,6 +25,7 @@ public class FamilyBroker extends Broker<Family> {
     public FamilyBroker(Connector connector) {
         super(connector);
     }
+
 
     @Override
     protected void persist(Family family, DSLContext create) {
@@ -48,5 +54,23 @@ public class FamilyBroker extends Broker<Family> {
                         .from(Clubber.CLUBBER)
                         .where(Clubber.CLUBBER.FAMILY_ID.eq(familyId.getBytes()))).fetch()
                 .stream().map(r -> convert(r.value1())));
+    }
+
+    public PersistedFamily getPersistedFamily(String familyId, List<Person> members) {
+        PersistedFamily family = new PersistedFamily(familyId, members);
+        members.forEach(m -> m.getUpdater().setFamily(family));
+        getAddress(familyId).ifPresent(family::setAddress);
+        return family;
+    }
+
+    private Optional<Address> getAddress(String familyId) {
+        return new AddressBroker(connector).find(getAddressId(familyId));
+    }
+
+    protected String getAddressId(String familyId) {
+        return query(create -> convert(create
+                .selectFrom(FAMILY)
+                .where(FAMILY.ID.eq(familyId.getBytes()))
+                .fetchOne().getAddressId()));
     }
 }

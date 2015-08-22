@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.broker.BrokerTestUtil.*;
 import static com.github.averyregier.club.db.tables.Family.FAMILY;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -94,5 +95,17 @@ public class FamilyBrokerTest {
         Record1<byte[]> record = create.newRecord(Parent.PARENT.ID);
         result.add(record);
         return record.value1(parent1Id.getBytes());
+    }
+
+    @Test
+    public void findAddress() {
+        String familyId = UUID.randomUUID().toString();
+        String addressId = UUID.randomUUID().toString();
+
+        assertEquals(addressId, setup(selectOne(
+                (s) -> s.assertUUID(familyId, FAMILY.ID),
+                FAMILY,
+                (record) -> record.setValue(FAMILY.ADDRESS_ID, addressId.getBytes())))
+                .getAddressId(familyId));
     }
 }
