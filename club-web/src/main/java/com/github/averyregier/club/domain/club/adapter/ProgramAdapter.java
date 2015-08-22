@@ -117,13 +117,17 @@ public class ProgramAdapter extends ClubAdapter implements Program {
             putAll(map, childFields.getShortCode(), childFields.map(clubber));
         }
 
+        addActionFields(list, hasSpouse);
+
+        return new ProgramRegistrationInformation(list, map);
+    }
+
+    private void addActionFields(List<InputFieldDesignator> list, boolean hasSpouse) {
         if(hasSpouse) {
             list.add(StandardInputFields.action.createField(getLocale()).exclude(Action.spouse.name()).build());
         } else {
             list.add(StandardInputFields.action.createField(getLocale()).build());
         }
-
-        return new ProgramRegistrationInformation(list, map);
     }
 
     private InputFieldGroup buildMeFields() {
@@ -194,11 +198,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
             fields.put("child" + num + ".childName.surname", values.get(parentGroupKey+".name.surname"));
         }
 
-        if(hasSpouse) {
-            list.add(StandardInputFields.action.createField(getLocale()).exclude(Action.spouse.name()).build());
-        } else {
-            list.add(StandardInputFields.action.createField(getLocale()).build());
-        }
+        addActionFields(list, hasSpouse);
 
         return new ProgramRegistrationInformation(list, fields);
     }
