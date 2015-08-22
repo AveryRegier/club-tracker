@@ -6,6 +6,7 @@ import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
 import com.github.averyregier.club.domain.utility.*;
+import com.github.averyregier.club.domain.utility.adapter.InputFieldBuilder;
 import com.github.averyregier.club.domain.utility.adapter.InputFieldGroupBuilder;
 import com.github.averyregier.club.domain.utility.adapter.StandardInputFields;
 
@@ -22,6 +23,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     private String organizationName;
     private SortedSet<ClubAdapter> clubs;
     private PersonManager personManager;
+    private Map<RegistrationSection, List<InputFieldDesignator>> extraFields = new HashMap<>();
 
     public ProgramAdapter() {
         this(null,null,(String)null);
@@ -139,26 +141,37 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     }
 
     private InputFieldGroup buildPersonFields(InputFieldGroupBuilder builder) {
-        return builder
+        return completeBuild(builder
                 .group(StandardInputFields.name.createGroup(getLocale()))
                 .field(StandardInputFields.gender.createField(getLocale()))
-                .field(StandardInputFields.email.createField(getLocale()))
-                .build();
+                .field(StandardInputFields.email.createField(getLocale())), RegistrationSection.parent);
     }
 
     private InputFieldGroup buildChildFields(InputFieldGroupBuilder builder) {
-        return builder
+        return completeBuild(builder
                 .group(StandardInputFields.childName.createGroup(getLocale()))
                 .field(StandardInputFields.gender.createField(getLocale()))
                 .field(StandardInputFields.email.createField(getLocale()))
-                .field(StandardInputFields.ageGroup.createField(getLocale()))
-                .build();
+                .field(StandardInputFields.ageGroup.createField(getLocale())), RegistrationSection.child);
     }
 
     private InputFieldGroup buildHouseholdFields() {
-        return new InputFieldGroupBuilder().id("household").name("About Your Household")
-                .group(StandardInputFields.address.createGroup(getLocale()))
-                .build();
+        return completeBuild(new InputFieldGroupBuilder()
+                .id("household")
+                .name("About Your Household")
+                .group(StandardInputFields.address.createGroup(getLocale())), RegistrationSection.household);
+    }
+
+    private InputFieldGroup completeBuild(InputFieldGroupBuilder builder, RegistrationSection section) {
+        addExtraFields(builder, section);
+        return builder.build();
+    }
+
+    private void addExtraFields(InputFieldGroupBuilder builder, RegistrationSection section) {
+        extraFields.getOrDefault(section, Collections.emptyList()).forEach(designator->{
+            designator.asField().ifPresent(field-> builder.field(new InputFieldBuilder().copy(field)));
+            designator.asGroup().ifPresent(group -> builder.group(new InputFieldGroupBuilder().copy(group)));
+        });
     }
 
     @Override
@@ -271,6 +284,12 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     @Override
     public PersonManager getPersonManager() {
         return personManager;
+    }
+
+    @Override
+    public Program addField(RegistrationSection section, InputFieldDesignator field) {
+        extraFields.computeIfAbsent(section, (s)->new ArrayList<>()).add(field);
+        return this;
     }
 
     @Override

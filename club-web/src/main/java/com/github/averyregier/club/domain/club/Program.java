@@ -2,6 +2,7 @@ package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.program.Curriculum;
+import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 
 import java.util.Locale;
 import java.util.Map;
@@ -17,15 +18,14 @@ public interface Program extends Club {
     RegistrationInformation createRegistrationForm();
     RegistrationInformation updateRegistrationForm(Map<String, String> values);
 
+    void setName(String organizationName);
     Locale getLocale();
 
     Club addClub(Curriculum series);
-
-
-    void setName(String organizationName);
-
     Optional<Club> lookupClub(String shortCode);
-    void setPersonManager(PersonManager personManager);
 
+    void setPersonManager(PersonManager personManager);
     PersonManager getPersonManager();
+
+    Program addField(RegistrationSection section, InputFieldDesignator field);
 }

@@ -1,6 +1,7 @@
 package com.github.averyregier.club.domain.utility.adapter;
 
 import com.github.averyregier.club.domain.User;
+import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.utility.InputField;
 import org.junit.Test;
@@ -150,4 +151,33 @@ public class InputFieldAdapterTest {
         classUnderTest.update(user, AgeGroup.DefaultAgeGroup.ELEVENTH_GRADE);
         assertEquals(AgeGroup.DefaultAgeGroup.ELEVENTH_GRADE, user.getCurrentAgeGroup());
     }
+
+    @Test
+    public void copy() {
+        InputField field = new InputFieldBuilder()
+                .type(InputFieldAdapter.Type.text)
+                .name("a name")
+                .map((p)->"Some Value")
+                .update((p, o) -> p.getUpdater().setEmail("Updated"))
+                .id("An ID")
+                .required()
+                .value("a default")
+                .build();
+
+        InputField copy = new InputFieldBuilder().copy(field).build();
+
+        assertEquals(field.getType(), copy.getType());
+        assertEquals(field.getName(), copy.getName());
+        assertEquals(field.getId(), copy.getId());
+        assertEquals(field.getShortCode(), copy.getShortCode());
+        assertEquals(field.getContainer(), copy.getContainer());
+        assertEquals(field.getValues(), copy.getValues());
+
+        PersonAdapter person = new PersonAdapter(null);
+        copy.update(person, new HashMap<>());
+        assertEquals("Updated", person.getEmail().get());
+
+        assertEquals("Some Value", copy.map(person));
+    }
+
 }

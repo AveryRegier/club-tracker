@@ -3,7 +3,6 @@ package com.github.averyregier.club.domain.utility.adapter;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
-import com.github.averyregier.club.domain.utility.builder.Builder;
 import com.github.averyregier.club.domain.utility.builder.ChildBuilder;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
@@ -20,8 +19,7 @@ import java.util.stream.Collectors;
  * Created by avery on 10/2/2014.
  */
 public class InputFieldGroupBuilder
-  implements Builder<InputFieldGroup>,
-             ChildBuilder<InputFieldGroup, InputFieldDesignator>
+  implements InputFieldDesignatorBuilder<InputFieldGroup>
 {
     private String id;
     private String name;
@@ -93,4 +91,18 @@ public class InputFieldGroupBuilder
         this.updateFn = updateFn;
         return this;
     }
+
+    @Override
+    public InputFieldGroupBuilder copy(InputFieldGroup toCopy) {
+        id(toCopy.getId());
+        name(toCopy.getName());
+        this.updateFn = ((InputFieldGroupAdapter)toCopy).updateFn;
+        this.mapFn = ((InputFieldGroupAdapter)toCopy).mapFn;
+        this.validationFn = ((InputFieldGroupAdapter)toCopy).validationFn;
+        this.children = toCopy.getFieldDesignations().stream()
+                .map(InputFieldDesignator::copy)
+                .collect(Collectors.toList());
+        return this;
+    }
+
 }

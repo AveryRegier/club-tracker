@@ -197,7 +197,7 @@ public class InputFieldGroupAdapterTest {
         assertTrue(result.isPresent());
         assertTrue(result.get() instanceof Map);
         assertEquals("First", ((Map) result.get()).get("first"));
-        assertEquals(13, ((Map)result.get()).get("age"));
+        assertEquals(13, ((Map) result.get()).get("age"));
     }
 
 
@@ -205,10 +205,10 @@ public class InputFieldGroupAdapterTest {
     public void validationMultiLevelFailure() {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
                 .id("upper")
-                .group(g->g.id("name")
-                    .field(f -> f.id("first").type(InputField.Type.text).required())
-                    .field(f -> f.id("last").type(InputField.Type.integer).required())
-                    .validate(m -> Optional.of(m.get("first").toString() + m.get("last").toString())))
+                .group(g -> g.id("name")
+                        .field(f -> f.id("first").type(InputField.Type.text).required())
+                        .field(f -> f.id("last").type(InputField.Type.integer).required())
+                        .validate(m -> Optional.of(m.get("first").toString() + m.get("last").toString())))
                 .validate(m -> Optional.of(m.get("name")))
                 .build();
         HashMap<String, String> map = new HashMap<>();
@@ -266,10 +266,10 @@ public class InputFieldGroupAdapterTest {
                 .id("name")
                 .field(f -> f.id("first")
                         .type(InputField.Type.text)
-                        .map(p->p.getName().getGivenName()))
+                        .map(p -> p.getName().getGivenName()))
                 .field(f -> f.id("last")
                         .type(InputField.Type.text)
-                        .map(p->p.getName().getSurname()))
+                        .map(p -> p.getName().getSurname()))
                 .build();
 
         HashMap<String, String> expected = new HashMap<>();
@@ -285,14 +285,14 @@ public class InputFieldGroupAdapterTest {
     @Test
     public void defaultMultiLevelGroupMap() {
         InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
-                .group(g->g
-                    .id("name")
-                    .field(f -> f.id("first")
-                            .type(InputField.Type.text)
-                            .map(p->p.getName().getGivenName()))
-                    .field(f -> f.id("last")
-                            .type(InputField.Type.text)
-                            .map(p->p.getName().getSurname())))
+                .group(g -> g
+                        .id("name")
+                        .field(f -> f.id("first")
+                                .type(InputField.Type.text)
+                                .map(p -> p.getName().getGivenName()))
+                        .field(f -> f.id("last")
+                                .type(InputField.Type.text)
+                                .map(p -> p.getName().getSurname())))
                 .build();
 
         HashMap<String, String> expected = new HashMap<>();
@@ -353,12 +353,12 @@ public class InputFieldGroupAdapterTest {
                     p.getUpdater().setName(new Name() {
                         @Override
                         public String getGivenName() {
-                            return (String)((Map)r).get("first");
+                            return (String) ((Map) r).get("first");
                         }
 
                         @Override
                         public String getSurname() {
-                            return (String)((Map)r).get("last");
+                            return (String) ((Map) r).get("last");
                         }
                     });
                 })
@@ -457,5 +457,35 @@ public class InputFieldGroupAdapterTest {
 
         classUnderTest.update(user, classUnderTest.validate(input).get());
         assertEquals(mock, user.getName());
+    }
+
+    @Test
+    public void copy() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder().copy(new InputFieldGroupBuilder()
+                .group(g -> g
+                        .id("person")
+                        .field(f -> f.id("name")
+                                .type(InputField.Type.text)
+                                .update((p, o) -> p.getUpdater().setName(new Name() {
+                                    @Override
+                                    public String getFullName() {
+                                        return (String) o;
+                                    }
+                                })))
+                        .field(f -> f.id("ageGroup")
+                                .type(InputField.Type.ageGroup)
+                                .update((p, o) -> p.getUpdater().setAgeGroup((AgeGroup) o))))
+                .build()).build();
+
+        HashMap<String, Object> validatedInput = new HashMap<>();
+        validatedInput.put("person.name", "Full Name");
+        validatedInput.put("person.ageGroup", AgeGroup.DefaultAgeGroup.COLLEGE);
+
+        User user = new User();
+
+        classUnderTest.update(user, validatedInput);
+        assertEquals("Full Name", user.getName().getFullName());
+        assertEquals(AgeGroup.DefaultAgeGroup.COLLEGE, user.getCurrentAgeGroup());
+
     }
 }

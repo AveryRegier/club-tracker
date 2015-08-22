@@ -20,9 +20,9 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
     private final String name;
     private Later<InputFieldGroup> parent;
     private final List<InputFieldDesignator> children;
-    private final Function<Map<String, Object>, Optional<Object>> validationFn;
-    private final Function<Person, Map<String, String>> mapFn;
-    private final BiConsumer<Person, Object> updateFn;
+    protected final Function<Map<String, Object>, Optional<Object>> validationFn;
+    protected final Function<Person, Map<String, String>> mapFn;
+    protected final BiConsumer<Person, Object> updateFn;
 
     InputFieldGroupAdapter(String id, String name,
                            Later<InputFieldGroup> parent,
@@ -155,5 +155,10 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
     @Override
     public void update(Person person, Object results) {
         updateFn.accept(person, results);
+    }
+
+    @Override
+    public InputFieldGroupBuilder copy() {
+        return new InputFieldGroupBuilder().copy(this);
     }
 }

@@ -6,6 +6,8 @@ import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.program.Programs;
 import com.github.averyregier.club.domain.program.adapter.MasterCurriculum;
 import com.github.averyregier.club.domain.program.awana.TnTCurriculum;
+import com.github.averyregier.club.domain.utility.InputField;
+import com.github.averyregier.club.domain.utility.adapter.InputFieldBuilder;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -194,5 +196,54 @@ public class ProgramAdapterTest {
         assertEquals(club, leader.getClub().get());
 
         assertEquals(leadershipRole, leader.getLeadershipRole());
+    }
+
+    @Test
+    public void addRegistrationFieldsToProgram() {
+        Program program = new ProgramAdapter("en_US", null, "AWANA");
+
+        InputField parentField = new InputFieldBuilder()
+                .name("pField")
+                .id("a")
+                .required()
+                .type(InputField.Type.text)
+                .build();
+
+        assertEquals(program, program.addField(RegistrationSection.parent, parentField));
+
+        InputField householdField = new InputFieldBuilder()
+                .name("hField")
+                .id("b")
+                .type(InputField.Type.text)
+                .build();
+
+        assertEquals(program, program.addField(RegistrationSection.household, householdField));
+
+        InputField childField = new InputFieldBuilder()
+                .name("cField")
+                .id("c")
+                .required()
+                .value("N/A")
+                .type(InputField.Type.text)
+                .build();
+
+        assertEquals(program, program.addField(RegistrationSection.child, childField));
+
+        RegistrationInformation form = program.createRegistrationForm();
+
+        assertFieldInGroup(form, 0, parentField);
+        assertFieldInGroup(form, 1, householdField);
+        assertFieldInGroup(form, 2, childField);
+    }
+
+    private void assertFieldInGroup(RegistrationInformation form, int index, InputField field) {
+        assertTrue(form.getForm()
+                .get(index).asGroup().get()
+                .getFields().stream()
+                .anyMatch(f -> compare(field, f)));
+    }
+
+    private boolean compare(InputField a, InputField b) {
+        return a.getName().equals(b.getName());
     }
 }

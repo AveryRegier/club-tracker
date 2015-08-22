@@ -2,10 +2,7 @@ package com.github.averyregier.club.domain.utility.adapter;
 
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.utility.InputField;
-import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
-import com.github.averyregier.club.domain.utility.builder.Builder;
-import com.github.averyregier.club.domain.utility.builder.ChildBuilder;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.ArrayList;
@@ -17,7 +14,7 @@ import java.util.function.Function;
 /**
  * Created by avery on 10/2/2014.
  */
-public class InputFieldBuilder implements Builder<InputField>, ChildBuilder<InputFieldGroup, InputFieldDesignator> {
+public class InputFieldBuilder implements InputFieldDesignatorBuilder<InputField> {
     private InputField.Type type;
     private String name;
     private String id;
@@ -116,6 +113,17 @@ public class InputFieldBuilder implements Builder<InputField>, ChildBuilder<Inpu
 
     public InputFieldBuilder update(BiConsumer<Person, Object> updateFn) {
         this.updateFn = updateFn;
+        return this;
+    }
+
+    @Override
+    public InputFieldBuilder copy(InputField toCopy) {
+        type(toCopy.getType());
+        name(toCopy.getName());
+        id(toCopy.getId());
+        toCopy.getValues().map(values::addAll);
+        map(toCopy::map);
+        update(toCopy::update);
         return this;
     }
 }

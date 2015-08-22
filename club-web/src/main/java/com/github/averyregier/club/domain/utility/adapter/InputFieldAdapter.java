@@ -86,8 +86,6 @@ public class InputFieldAdapter implements InputField {
         return id;
     }
 
-
-
     @Override
     public Optional<List<Value>> getValues() {
         return values;
@@ -116,5 +114,10 @@ public class InputFieldAdapter implements InputField {
     @Override
     public void update(Person person, Object results) {
         if(updateFn != null) updateFn.accept(person, results);
+    }
+
+    @Override
+    public InputFieldBuilder copy() {
+        return new InputFieldBuilder().copy(this);
     }
 }
