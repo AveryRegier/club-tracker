@@ -100,7 +100,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
         list.add(me);
         Map<String, String> map = prefix(me.getShortCode(), me.map(user));
         InputFieldGroup household = buildHouseholdFields();
-//        household.map(user);
+        putAll(map, household.getShortCode(), household.map(user));
         list.add(household);
 
         Parent spouse = getOther(family.getParents(), user.asParent().get()).orElse(null);

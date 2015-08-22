@@ -59,6 +59,9 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
                             section.update(child, theResults);
                             getProgram().register((ClubberAdapter) child);
                             break;
+                        case "household":
+                            section.update(thisParent, theResults);
+                            break;
                     }
                 }
             }

@@ -240,4 +240,12 @@ public class UtilityMethods {
     public static <A,B> void ifPresent(Optional<A> start, Function<A,Optional<B>> fn, Consumer<B> cn) {
         chain(start, fn).ifPresent(cn);
     }
+
+    public static <A,B> B applyOrNull(A start, Function<A,B> fn) {
+        if(start != null && fn != null) {
+            return fn.apply(start);
+        }
+        return null;
+    }
+
 }

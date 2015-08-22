@@ -2,9 +2,12 @@ package com.github.averyregier.club.broker;
 
 import com.github.averyregier.club.db.tables.Clubber;
 import com.github.averyregier.club.db.tables.Parent;
+import com.github.averyregier.club.db.tables.records.FamilyRecord;
 import com.github.averyregier.club.domain.club.Family;
 import org.jooq.DSLContext;
+import org.jooq.TableField;
 
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.github.averyregier.club.db.tables.Family.FAMILY;
@@ -20,10 +23,20 @@ public class FamilyBroker extends Broker<Family> {
 
     @Override
     protected void persist(Family family, DSLContext create) {
-        create.insertInto(FAMILY)
+        if(create.insertInto(FAMILY)
                 .set(FAMILY.ID, family.getId().getBytes())
-                .onDuplicateKeyIgnore()
-                .execute();
+                .set(mapFields(family))
+                .onDuplicateKeyUpdate()
+                .set(mapFields(family))
+                .execute() != 1) {
+            fail("Family persistence failed: " + family.getId());
+        }
+    }
+
+    private Map<TableField<FamilyRecord, ?>, Object> mapFields(Family family) {
+        return JooqUtil.<FamilyRecord>map()
+                .set(FAMILY.ADDRESS_ID, family.getAddress().map(a->a.getId().getBytes()).orElse(null))
+                .build();
     }
 
     public Stream<String> getAllFamilyMembers(String familyId) {

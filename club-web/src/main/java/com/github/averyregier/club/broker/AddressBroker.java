@@ -12,13 +12,14 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static com.github.averyregier.club.db.tables.Address.ADDRESS;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.applyOrNull;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 
 /**
  * Created by avery on 8/17/15.
  */
 public class AddressBroker extends Broker<Address> {
-    protected AddressBroker(Connector connector) {
+    public AddressBroker(Connector connector) {
         super(connector);
     }
 
@@ -30,7 +31,7 @@ public class AddressBroker extends Broker<Address> {
                 .onDuplicateKeyUpdate()
                 .set(mapFields(address))
                 .execute() != 1) {
-            fail("Award persistence failed: " + address.getId());
+            fail("Address persistence failed: " + address.getId());
         }
     }
 
@@ -41,7 +42,7 @@ public class AddressBroker extends Broker<Address> {
                 .set(ADDRESS.CITY, address.getCity())
                 .set(ADDRESS.POSTAL_CODE, address.getPostalCode())
                 .set(ADDRESS.TERRITORY, address.getTerritory())
-                .set(ADDRESS.COUNTRY, address.getCountry().getValue())
+                .set(ADDRESS.COUNTRY, applyOrNull(address.getCountry(), CountryValue::getValue))
                 .build();
     }
 

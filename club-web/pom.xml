@@ -21,7 +21,7 @@
         <schema>club</schema>
         <db.groupId>org.hsqldb</db.groupId>
         <db.artifactId>hsqldb</db.artifactId>
-        <db.version>2.3.2</db.version>
+        <db.version>2.3.3</db.version>
         <flyway.url>jdbc:hsqldb:file:clubDB/db</flyway.url>
         <flyway.driver>org.hsqldb.jdbcDriver</flyway.driver>
         <jooq.generator.database.name>org.jooq.util.hsqldb.HSQLDBDatabase</jooq.generator.database.name>

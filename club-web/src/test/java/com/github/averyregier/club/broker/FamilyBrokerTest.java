@@ -2,12 +2,14 @@ package com.github.averyregier.club.broker;
 
 import com.github.averyregier.club.db.tables.Parent;
 import com.github.averyregier.club.domain.club.Family;
+import com.github.averyregier.club.domain.club.adapter.AddressAdapter;
 import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
 import com.github.averyregier.club.domain.club.adapter.FamilyAdapter;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.Result;
+import org.jooq.exception.DataAccessException;
 import org.jooq.tools.jdbc.MockDataProvider;
 import org.junit.Test;
 
@@ -28,9 +30,21 @@ public class FamilyBrokerTest {
     public void testPersist() {
         final Family family = newFamily();
 
-        setup(mergeProvider((s) -> s.assertUUID(family, FAMILY.ID))).persist(family);
+        setup(mergeProvider((s) -> s.assertUUID(family, FAMILY.ID),
+                (s)->s.assertUUID(family.getAddress(), FAMILY.ADDRESS_ID))).persist(family);
     }
 
+    @Test
+    public void testPersistAddress() {
+        final Family family = newFamily();
+        family.setAddress(new AddressAdapter(null, null, null, null, null, null));
+
+        setup(mergeProvider((s) -> s.assertUUID(family, FAMILY.ID),
+                (s) -> s.assertUUID(family.getAddress(), FAMILY.ADDRESS_ID))).persist(family);
+    }
+
+
+    @Test(expected = DataAccessException.class)
     public void testUpdatesNothing() throws Exception {
         final Family family = newFamily();
 

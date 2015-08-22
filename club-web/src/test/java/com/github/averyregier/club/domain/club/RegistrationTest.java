@@ -9,7 +9,10 @@ import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import static com.github.averyregier.club.domain.utility.UtilityMethods.asLinkedSet;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.map;
@@ -34,6 +37,8 @@ public class RegistrationTest {
         Map<String, String> formValues =
                  map("me.name.given", "Green")
                 .put("me.name.surname", "Flubber")
+                .put("household.address.line1", "123 Flubber Place")
+                .put("household.address.country", "US")
                 .build();
         RegistrationInformation form = program.updateRegistrationForm(formValues);
         Family family = form.register(me);
@@ -42,6 +47,9 @@ public class RegistrationTest {
         assertEquals("Green", me.getName().getGivenName());
         assertEquals("Flubber", me.getName().getSurname());
         assertSame(family, me.getFamily().get());
+
+        assertEquals("123 Flubber Place", me.getFamily().get().getAddress().get().getLine1());
+        assertEquals("US", me.getFamily().get().getAddress().get().getCountry().getValue());
     }
 
     @Test

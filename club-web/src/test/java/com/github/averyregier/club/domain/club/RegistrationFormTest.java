@@ -323,6 +323,7 @@ public class RegistrationFormTest {
         values.put("spouse.name.surname", "Smith");
         values.put("child1.childName.surname", "Another");
         values.put("child2.childName.surname", "Smith");
+        values.put("household.address.city", "Clubville");
 
         RegistrationInformation firstForm = program.updateRegistrationForm(values);
         User user = new User();
@@ -334,6 +335,7 @@ public class RegistrationFormTest {
         assertEquals("Smith", fields.get("spouse.name.surname"));
         assertEquals("Another", fields.get("child1.childName.surname"));
         assertEquals("Smith", fields.get("child2.childName.surname"));
+        assertEquals("Clubville", fields.get("household.address.city"));
 
         assertAllButSpouseAction(newForm.getForm());
         Family updatedFamily = newForm.register(user);

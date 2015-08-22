@@ -35,6 +35,9 @@ public class PersistedProgram extends ProgramAdapter {
     @Override
     protected void syncFamily(Family family) {
         Connector connector = factory.getConnector();
+        family.getAddress().ifPresent(a->
+            new AddressBroker(factory.getConnector()).persist(a)
+        );
         new FamilyBroker(connector).persist(family);
         family.getParents().forEach(p -> {
             new PersonBroker(factory).persist(p);
