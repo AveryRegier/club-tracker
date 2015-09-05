@@ -15,4 +15,6 @@ public class PersistedFamily extends FamilyAdapter {
         super(id);
         members.stream().forEach(this::addPerson);
     }
+
+
 }

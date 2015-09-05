@@ -3,7 +3,11 @@ package com.github.averyregier.club.domain.club.adapter;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.domain.utility.InputField;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -21,6 +25,7 @@ public class PersonAdapter implements Person, PersonUpdater {
     private Family family;
     private AgeGroup currentAgeGroup;
     private User login;
+    private LinkedHashMap<InputField, String> registration = new LinkedHashMap<>();
 
     public PersonAdapter() {
         this.uuid = null;
@@ -179,5 +184,24 @@ public class PersonAdapter implements Person, PersonUpdater {
                     address.getTerritory(),
                     address.getCountry()));
         }
+    }
+
+    @Override
+    public void setValue(InputField field, String value) {
+        registration.put(field, value);
+    }
+
+    @Override
+    public String getValue(InputField field) {
+        return registration.get(field);
+    }
+
+    @Override
+    public Map<InputField, String> getValues() {
+        return Collections.unmodifiableMap(registration);
+    }
+
+    public void setValues(Map<InputField, String> values) {
+        this.registration = new LinkedHashMap<>(values);
     }
 }

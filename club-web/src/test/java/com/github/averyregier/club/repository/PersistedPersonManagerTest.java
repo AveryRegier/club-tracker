@@ -2,6 +2,7 @@ package com.github.averyregier.club.repository;
 
 import com.github.averyregier.club.broker.FamilyBroker;
 import com.github.averyregier.club.broker.PersonBroker;
+import com.github.averyregier.club.broker.PersonRegistrationBroker;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import org.jooq.exception.DataAccessException;
@@ -24,13 +25,17 @@ public class PersistedPersonManagerTest {
 
     private PersonBroker personBroker;
     private FamilyBroker familyBroker;
+    private PersonRegistrationBroker registrationBroker;
     private PersistedPersonManager manager;
 
     @Before
     public void setup() {
-
         personBroker = mock(PersonBroker.class);
-        manager = new PersistedPersonManager(() -> personBroker, () -> familyBroker);
+        registrationBroker = mock(PersonRegistrationBroker.class);
+        manager = new PersistedPersonManager(
+                () -> personBroker,
+                () -> familyBroker,
+                () -> registrationBroker);
     }
 
     @Test

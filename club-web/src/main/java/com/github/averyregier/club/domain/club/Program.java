@@ -2,6 +2,7 @@ package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.program.Curriculum;
+import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 
 import java.util.Locale;
@@ -28,4 +29,5 @@ public interface Program extends Club {
     PersonManager getPersonManager();
 
     Program addField(RegistrationSection section, InputFieldDesignator field);
+    Optional<InputField> findField(String fieldId);
 }

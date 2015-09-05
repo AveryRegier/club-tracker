@@ -1,5 +1,6 @@
 package com.github.averyregier.club.broker;
 
+import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.db.tables.Clubber;
 import com.github.averyregier.club.db.tables.Parent;
 import com.github.averyregier.club.db.tables.records.FamilyRecord;
@@ -21,9 +22,12 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 /**
  * Created by avery on 2/28/15.
  */
-public class FamilyBroker extends Broker<Family> {
-    public FamilyBroker(Connector connector) {
-        super(connector);
+public class FamilyBroker extends PersistenceBroker<Family> {
+    private ClubFactory factory;
+
+    public FamilyBroker(ClubFactory factory) {
+        super(factory.getConnector());
+        this.factory = factory;
     }
 
 
@@ -60,6 +64,7 @@ public class FamilyBroker extends Broker<Family> {
         PersistedFamily family = new PersistedFamily(familyId, members);
         members.forEach(m -> m.getUpdater().setFamily(family));
         getAddress(familyId).ifPresent(family::setAddress);
+        family.setValues(new FamilyRegistrationBroker(factory).getRegistration(familyId));
         return family;
     }
 

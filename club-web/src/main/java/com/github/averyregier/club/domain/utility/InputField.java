@@ -2,18 +2,18 @@ package com.github.averyregier.club.domain.utility;
 
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.domain.utility.adapter.UpdateFunction;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Created by avery on 10/2/2014.
  */
 public interface InputField extends InputFieldDesignator {
 
-
-
-    public enum Type {
+    enum Type {
         integer {
             @Override
             Object validate(String input) {
@@ -71,17 +71,19 @@ public interface InputField extends InputFieldDesignator {
 
     Optional<List<Value>> getValues();
 
-    public default Optional<Object> validate(String input) {
+    default Optional<Object> validate(String input) {
         return Optional.ofNullable(getType().validate(input));
     }
 
-    public boolean isRequired();
+    boolean isRequired();
 
-    public String map(Person person);
+    String map(Person person);
+    UpdateFunction getUpdateFn();
+    Function<Person, String> getMapFn();
 
-    public interface Value {
-        public String getDisplayName();
-        public String getValue();
-        public boolean isDefault();
+    interface Value {
+        String getDisplayName();
+        String getValue();
+        boolean isDefault();
     }
 }

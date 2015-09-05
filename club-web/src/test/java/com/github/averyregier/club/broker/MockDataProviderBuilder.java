@@ -32,7 +32,7 @@ public class MockDataProviderBuilder {
 
     public MockDataProviderBuilder reply(Function<DSLContext, Result<?>> fn) {
 
-        new Broker<Void>(mockConnector(ctx->null)){
+        new PersistenceBroker<Void>(mockConnector(ctx->null)){
             @Override
             protected void persist(Void thing, DSLContext create) {
 

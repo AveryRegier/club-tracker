@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * Created by avery on 9/5/2014.
  */
-public interface Person {
+public interface Person extends Registered {
 
 
     public enum Gender {

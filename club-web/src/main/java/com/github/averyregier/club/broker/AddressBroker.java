@@ -18,7 +18,7 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 /**
  * Created by avery on 8/17/15.
  */
-public class AddressBroker extends Broker<Address> {
+public class AddressBroker extends PersistenceBroker<Address> {
     public AddressBroker(Connector connector) {
         super(connector);
     }

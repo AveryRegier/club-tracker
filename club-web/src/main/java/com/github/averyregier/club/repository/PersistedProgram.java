@@ -3,17 +3,17 @@ package com.github.averyregier.club.repository;
 import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.broker.*;
 import com.github.averyregier.club.domain.ClubManager;
-import com.github.averyregier.club.domain.club.ClubLeader;
-import com.github.averyregier.club.domain.club.Family;
-import com.github.averyregier.club.domain.club.Listener;
-import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
 import com.github.averyregier.club.domain.club.adapter.ClubberAdapter;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import com.github.averyregier.club.domain.program.Curriculum;
+import com.github.averyregier.club.domain.utility.InputFieldGroup;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -24,8 +24,9 @@ public class PersistedProgram extends ProgramAdapter {
     private final String id;
     private final ClubManager manager;
 
-    public PersistedProgram(ClubFactory factory, String locale, String orgName, Curriculum curriculum, String id, ClubManager manager) {
-        super(locale, orgName, curriculum);
+    public PersistedProgram(ClubFactory factory, String locale, String orgName, Curriculum curriculum, String id, ClubManager manager,
+                            Supplier<Map<RegistrationSection, InputFieldGroup>> registrationForm) {
+        super(locale, orgName, curriculum, registrationForm);
         this.factory = factory;
         this.id = id;
         this.manager = manager;
@@ -38,14 +39,17 @@ public class PersistedProgram extends ProgramAdapter {
         family.getAddress().ifPresent(a->
             new AddressBroker(factory.getConnector()).persist(a)
         );
-        new FamilyBroker(connector).persist(family);
+        new FamilyBroker(factory).persist(family);
+        new FamilyRegistrationBroker(factory).persist(family);
         family.getParents().forEach(p -> {
             new PersonBroker(factory).persist(p);
             new ParentBroker(connector).persist(p);
+            new PersonRegistrationBroker(factory).persist(p);
         });
         family.getClubbers().forEach(c -> {
             new PersonBroker(factory).persist(c);
             new ClubberBroker(factory).persist(c);
+            new PersonRegistrationBroker(factory).persist(c);
         });
     }
 
@@ -90,5 +94,12 @@ public class PersistedProgram extends ProgramAdapter {
         super.getListeners().addAll(new ListenerBroker(factory.getConnector())
                 .find(this, factory.getPersonManager()));
         return super.getListeners();
+    }
+
+    @Override
+    protected InputFieldGroup persist(InputFieldGroup group) {
+        new InputFieldGroupBroker(factory.getConnector()).persist(group);
+        new RegistrationFormBroker(factory.getConnector()).persist(this, group);
+        return group;
     }
 }

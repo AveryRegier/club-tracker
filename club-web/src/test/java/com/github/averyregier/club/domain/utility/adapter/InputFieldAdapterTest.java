@@ -145,7 +145,7 @@ public class InputFieldAdapterTest {
     @Test
     public void updateFunction() {
         InputField classUnderTest = new InputFieldBuilder()
-                .update((p,o) -> p.getUpdater().setAgeGroup((AgeGroup)o))
+                .update((d,p, o) -> p.getUpdater().setAgeGroup((AgeGroup) o))
                 .build();
         User user = new User();
         classUnderTest.update(user, AgeGroup.DefaultAgeGroup.ELEVENTH_GRADE);
@@ -158,7 +158,7 @@ public class InputFieldAdapterTest {
                 .type(InputFieldAdapter.Type.text)
                 .name("a name")
                 .map((p)->"Some Value")
-                .update((p, o) -> p.getUpdater().setEmail("Updated"))
+                .update((d,p, o) -> p.getUpdater().setEmail("Updated"))
                 .id("An ID")
                 .required()
                 .value("a default")
@@ -179,5 +179,4 @@ public class InputFieldAdapterTest {
 
         assertEquals("Some Value", copy.map(person));
     }
-
 }

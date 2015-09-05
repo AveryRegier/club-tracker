@@ -8,9 +8,11 @@ import com.github.averyregier.club.domain.utility.UtilityMethods;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.github.averyregier.club.domain.utility.UtilityMethods.applyOrDefault;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.subMap;
 
 /**
  * Created by avery on 10/1/2014.
@@ -22,20 +24,20 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
     private final List<InputFieldDesignator> children;
     protected final Function<Map<String, Object>, Optional<Object>> validationFn;
     protected final Function<Person, Map<String, String>> mapFn;
-    protected final BiConsumer<Person, Object> updateFn;
+    protected final UpdateFunction updateFn;
 
     InputFieldGroupAdapter(String id, String name,
                            Later<InputFieldGroup> parent,
                            List<InputFieldDesignator> children,
                            Function<Map<String, Object>, Optional<Object>> validationFn,
                            Function<Person, Map<String, String>> mapFn,
-                           BiConsumer<Person, Object> updateFn)
+                           UpdateFunction updateFn)
     {
         this.id = id;
         this.name = name;
         this.parent = parent;
         this.validationFn = validationFn;
-        this.mapFn = mapFn != null ? mapFn : defaultMapper();
+        this.mapFn = mapFn;
         this.children = new ArrayList<>(children);
         this.updateFn = updateFn != null ? updateFn : defaultUpdater();
     }
@@ -57,16 +59,16 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
         };
     }
 
-    private BiConsumer<Person, Object> defaultUpdater() {
-        return (p,m)->{
+    private static UpdateFunction defaultUpdater() {
+        return (g,p,m)->{
             assert(m instanceof Map);
             Map map = (Map)m;
-            for(InputFieldDesignator d: getFieldDesignations()) {
+            for(InputFieldDesignator d: g.asGroup().get().getFieldDesignations()) {
                 Object results = map.get(d.getShortCode());
                 if(results != null) {
                     d.update(p, results);
                 } else if(d.asGroup().isPresent()) {
-                    d.update(p, UtilityMethods.subMap(d.getShortCode(), map));
+                    d.update(p, subMap(d.getShortCode(), map));
                 }
             }
         };
@@ -118,7 +120,7 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
 
     @Override
     public Map<String, String> map(Person person) {
-        return mapFn.apply(person);
+        return applyOrDefault(person, mapFn, p->defaultMapper().apply(p));
     }
 
     @Override
@@ -149,16 +151,33 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
 
     @Override
     public Optional<Object> validateFromParentMap(Map<String, String> map) {
-        return validate(UtilityMethods.subMap(getShortCode(), map));
+        return validate(subMap(getShortCode(), map));
     }
 
     @Override
     public void update(Person person, Object results) {
-        updateFn.accept(person, results);
+        updateFn.update(this, person, results);
     }
 
     @Override
     public InputFieldGroupBuilder copy() {
         return new InputFieldGroupBuilder().copy(this);
+    }
+
+    @Override
+    public Optional<InputField> findField(String descendant) {
+        for(InputFieldDesignator d: children) {
+            if(d.isGroup()) {
+                Optional<InputField> field = d.asGroup().get().findField(descendant);
+                if(field.isPresent()) {
+                    return field;
+                }
+            } else {
+                if(d.getShortCode().equals(descendant)) {
+                    return d.asField();
+                }
+            }
+        }
+        return Optional.empty();
     }
 }

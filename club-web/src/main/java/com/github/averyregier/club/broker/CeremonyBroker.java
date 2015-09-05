@@ -15,7 +15,7 @@ import static com.github.averyregier.club.db.tables.Ceremony.CEREMONY;
 /**
  * Created by avery on 3/2/15.
  */
-public class CeremonyBroker extends Broker<Ceremony> {
+public class CeremonyBroker extends PersistenceBroker<Ceremony> {
     public CeremonyBroker(Connector connector) {
         super(connector);
     }

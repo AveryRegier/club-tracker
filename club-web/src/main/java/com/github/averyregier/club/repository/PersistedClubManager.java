@@ -54,4 +54,9 @@ public class PersistedClubManager extends ClubManager {
     protected void persist(ClubLeader leader) {
         new LeaderBroker(factory.getConnector()).persist(leader);
     }
+
+    @Override
+    protected void loadClubs() {
+        new OrganizationBroker(factory.getConnector()).load(this);
+    }
 }

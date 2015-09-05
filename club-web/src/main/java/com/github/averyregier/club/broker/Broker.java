@@ -10,12 +10,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Created by avery on 2/20/15.
+ * Created by avery on 8/23/15.
  */
-public abstract class Broker<T> {
+public class Broker {
     protected final Connector connector;
 
-    protected Broker(Connector connector) {
+    public Broker(Connector connector) {
         this.connector = connector;
     }
 
@@ -43,14 +43,7 @@ public abstract class Broker<T> {
         }
     }
 
-    public void persist(T thing) {
-        execute((create)->persist(thing, create));
-    }
-
-    protected abstract void persist(T thing, DSLContext create);
-
     protected void fail(String reason) {
         throw new DataAccessException(reason);
     }
-
 }

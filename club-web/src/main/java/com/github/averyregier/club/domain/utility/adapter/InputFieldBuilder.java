@@ -8,7 +8,7 @@ import com.github.averyregier.club.domain.utility.builder.Later;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.UUID;
 import java.util.function.Function;
 
 /**
@@ -21,7 +21,7 @@ public class InputFieldBuilder implements InputFieldDesignatorBuilder<InputField
     private List<InputField.Value> values = new ArrayList<InputField.Value>();
     private Function<Person, String> mapFn;
     private boolean required;
-    private BiConsumer<Person, Object> updateFn;
+    private UpdateFunction updateFn;
 
     @Override
     public InputField build() {
@@ -63,7 +63,10 @@ public class InputFieldBuilder implements InputFieldDesignatorBuilder<InputField
     }
 
     public InputField build(Later<InputFieldGroup> group) {
-        return new InputFieldAdapter(id, type, name, group, required, mapFn, updateFn, values.toArray(new InputField.Value[0]));
+        return new InputFieldAdapter(
+                id != null ? id : UUID.randomUUID().toString(),
+                type, name, group, required, mapFn, updateFn,
+                values.toArray(new InputField.Value[0]));
     }
 
     public InputFieldBuilder value(String value, String displayName, boolean isDefault) {
@@ -111,7 +114,7 @@ public class InputFieldBuilder implements InputFieldDesignatorBuilder<InputField
         return this;
     }
 
-    public InputFieldBuilder update(BiConsumer<Person, Object> updateFn) {
+    public InputFieldBuilder update(UpdateFunction updateFn) {
         this.updateFn = updateFn;
         return this;
     }
@@ -120,10 +123,10 @@ public class InputFieldBuilder implements InputFieldDesignatorBuilder<InputField
     public InputFieldBuilder copy(InputField toCopy) {
         type(toCopy.getType());
         name(toCopy.getName());
-        id(toCopy.getId());
+        id(toCopy.getShortCode());
         toCopy.getValues().map(values::addAll);
-        map(toCopy::map);
-        update(toCopy::update);
+        map(toCopy.getMapFn());
+        update(toCopy.getUpdateFn());
         return this;
     }
 }

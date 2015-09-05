@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 
 /**
@@ -22,7 +23,7 @@ import static org.junit.Assert.*;
 public class ClubberRecordTest {
 
     private Clubber clubber = new ClubberAdapter();
-    private Listener me = new MockListener();
+    private Listener me = mock(Listener.class);
     private AwardBuilder extraCreditAwardBuilder = new AwardBuilder();
     Book book = new BookBuilder(1)
             .award()

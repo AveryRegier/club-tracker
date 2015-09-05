@@ -61,7 +61,7 @@ public enum StandardInputFields {
                         }
                         return model;
                     })
-                    .update((p, o) -> p.getUpdater().setName((Name) o));
+                    .update((d,p, o) -> p.getUpdater().setName((Name) o));
         }
     },
     address {
@@ -91,7 +91,7 @@ public enum StandardInputFields {
                         });
                         return model;
                     })
-                    .update((p,o) -> p.getUpdater().setAddress((Address)o));
+                    .update((d,p,o) -> p.getUpdater().setAddress((Address)o));
         }
     },
     gender {
@@ -103,7 +103,7 @@ public enum StandardInputFields {
                     .value(Person.Gender.MALE.name())
                     .value(Person.Gender.FEMALE.name())
                     .map(p -> p.getGender().map(Person.Gender::name).orElse(null))
-                    .update((p, o) -> p.getUpdater().setGender((Person.Gender) o));
+                    .update((d,p, o) -> p.getUpdater().setGender((Person.Gender) o));
         }
     },
     age {
@@ -119,7 +119,7 @@ public enum StandardInputFields {
                     .name("Email Address")
                     .type(InputField.Type.email)
                     .map(p->p.getEmail().orElse(null))
-                    .update((p,o)->p.getUpdater().setEmail((String)o));
+                    .update((d,p,o)->p.getUpdater().setEmail((String)o));
         }
     },
     ageGroup {
@@ -131,7 +131,7 @@ public enum StandardInputFields {
                     .map(p->p.asClubber()
                             .map(c->c.getCurrentAgeGroup() != null ? c.getCurrentAgeGroup().name() : null)
                             .orElse(null))
-                    .update((p,o)->p.getUpdater().setAgeGroup((AgeGroup)o));
+                    .update((d,p,o)->p.getUpdater().setAgeGroup((AgeGroup)o));
             for(AgeGroup.DefaultAgeGroup group: AgeGroup.DefaultAgeGroup.values()) {
                 builder.value(group.name(), group.getDisplayName(), false);
             }
@@ -176,7 +176,7 @@ public enum StandardInputFields {
                     model.put("honorific", p.getName().getHonorificName());
                     return model;
                 })
-                .update((p,o)->p.getUpdater().setName((Name)o));
+                .update((d,p,o)->p.getUpdater().setName((Name)o));
         }
 
     };
@@ -218,6 +218,14 @@ public enum StandardInputFields {
                 (String) m.get("territory"),
                 CountryValue.findCountry((String) m.get("country"))
         ));
+    }
+
+    public static Optional<StandardInputFields> find(String id) {
+        try {
+            return Optional.ofNullable(valueOf(id));
+        } catch(IllegalArgumentException e) {
+            return Optional.empty();
+        }
     }
 }
 

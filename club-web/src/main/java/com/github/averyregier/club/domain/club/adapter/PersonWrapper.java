@@ -3,7 +3,9 @@ package com.github.averyregier.club.domain.club.adapter;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.domain.utility.InputField;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -69,5 +71,20 @@ public abstract class PersonWrapper implements Person {
 
     public AgeGroup getCurrentAgeGroup() {
         return ((PersonAdapter)getPerson()).getCurrentAgeGroup();
+    }
+
+    @Override
+    public void setValue(InputField field, String value) {
+        getPerson().setValue(field, value);
+    }
+
+    @Override
+    public String getValue(InputField field) {
+        return getPerson().getValue(field);
+    }
+
+    @Override
+    public Map<InputField, String> getValues() {
+        return getPerson().getValues();
     }
 }

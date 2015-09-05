@@ -1,5 +1,6 @@
 package com.github.averyregier.club.broker;
 
+import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.db.tables.Parent;
 import com.github.averyregier.club.domain.club.Family;
 import com.github.averyregier.club.domain.club.adapter.AddressAdapter;
@@ -22,6 +23,8 @@ import static com.github.averyregier.club.broker.BrokerTestUtil.*;
 import static com.github.averyregier.club.db.tables.Family.FAMILY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by avery on 2/25/15.
@@ -61,7 +64,9 @@ public class FamilyBrokerTest {
     }
 
     private FamilyBroker setup(MockDataProvider provider) {
-        return new FamilyBroker(mockConnector(provider));
+        ClubFactory factory = mock(ClubFactory.class);
+        when(factory.getConnector()).thenReturn(mockConnector(provider));
+        return new FamilyBroker(factory);
     }
 
     @Test

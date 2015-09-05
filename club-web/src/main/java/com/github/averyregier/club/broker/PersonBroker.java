@@ -8,7 +8,6 @@ import com.github.averyregier.club.domain.club.adapter.NameBuilder;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 import com.github.averyregier.club.repository.PersistedPerson;
 import org.jooq.DSLContext;
-import org.jooq.Result;
 import org.jooq.TableField;
 
 import java.util.Collection;
@@ -23,7 +22,7 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 /**
 * Created by avery on 2/14/15.
 */
-public class PersonBroker extends Broker<Person> {
+public class PersonBroker extends PersistenceBroker<Person> {
 
     private ClubFactory factory;
 
@@ -50,7 +49,7 @@ public class PersonBroker extends Broker<Person> {
                 .set(PERSON.GIVEN, nameField(person, Name::getGivenName))
                 .set(PERSON.SURNAME, nameField(person, Name::getSurname))
                 .set(PERSON.HONORIFIC, nameField(person, Name::getHonorificName))
-                .set(PERSON.TITLE, nameField(person, n -> n.getTitle().orElse(null)))
+                .set(PERSON.TITLE, nameField2(person, Name::getTitle))
                 .set(PERSON.EMAIL, person.getEmail())
                 .build();
     }
@@ -58,43 +57,38 @@ public class PersonBroker extends Broker<Person> {
     private Optional<String> nameField(Person person, Function<Name, String> fn) {
         return Optional.ofNullable(person.getName()).map(fn);
     }
+    private Optional<String> nameField2(Person person, Function<Name, Optional<String>> fn) {
+        return Optional.ofNullable(person.getName()).map(fn).orElse(Optional.empty());
+    }
 
     public Optional<Person> find(String id) {
-        return query((create) -> {
-
-            Result<PersonRecord> result = create.selectFrom(PERSON).where(PERSON.ID.eq(id.getBytes())).fetch();
-            return result.stream().findFirst().map(r -> {
-                PersonAdapter person = new PersistedPerson(factory, id);
-                Person.Gender.lookup(r.getGender()).ifPresent(person::setGender);
-                person.setEmail(r.getEmail());
-                person.setName(new NameBuilder()
-                        .given(r.getGiven())
-                        .surname(r.getSurname())
-                        .title(r.getTitle())
-                        .friendly(r.getFriendly())
-                        .honorific(r.getHonorific())
-                        .build());
-                return person;
-            });
-        });
+        return query(create -> create
+                .selectFrom(PERSON)
+                .where(PERSON.ID.eq(id.getBytes()))
+                .fetch().stream()
+                .findFirst()
+                .map(r -> map(r, id)));
     }
 
     public Collection<Person> findAll() {
-        return query((create) -> {
-            Result<PersonRecord> result = create.selectFrom(PERSON).fetch();
-            return result.stream().map(r -> {
-                PersonAdapter person = new PersistedPerson(factory, convert(r.getId()));
-                Person.Gender.lookup(r.getGender()).ifPresent(person::setGender);
-                person.setEmail(r.getEmail());
-                person.setName(new NameBuilder()
-                        .given(r.getGiven())
-                        .surname(r.getSurname())
-                        .title(r.getTitle())
-                        .friendly(r.getFriendly())
-                        .honorific(r.getHonorific())
-                        .build());
-                return person;
-            }).collect(Collectors.toList());
-        });
+        return query(create -> create
+                .selectFrom(PERSON)
+                .fetch().stream()
+                .map((r) -> map(r, convert(r.getId())))
+                .collect(Collectors.toList()));
+    }
+
+    private Person map(PersonRecord r, String id) {
+        PersonAdapter person = new PersistedPerson(factory, id);
+        Person.Gender.lookup(r.getGender()).ifPresent(person::setGender);
+        person.setEmail(r.getEmail());
+        person.setName(new NameBuilder()
+                .given(r.getGiven())
+                .surname(r.getSurname())
+                .title(r.getTitle())
+                .friendly(r.getFriendly())
+                .honorific(r.getHonorific())
+                .build());
+        return person;
     }
 }

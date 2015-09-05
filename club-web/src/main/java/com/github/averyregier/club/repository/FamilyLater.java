@@ -3,12 +3,15 @@ package com.github.averyregier.club.repository;
 import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.broker.FamilyBroker;
 import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.utility.InputField;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import static com.github.averyregier.club.domain.utility.UtilityMethods.optMap;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.orNull;
 
 /**
  * Created by avery on 8/13/15.
@@ -44,6 +47,11 @@ public class FamilyLater implements Family {
     }
 
     @Override
+    public Optional<Clubber> findNthChild(int childNumber) {
+        return optMap(getFamily(), (f)->f.findNthChild(childNumber));
+    }
+
+    @Override
     public Set<Clubber> getClubbers() {
         return getFamily().map(Family::getClubbers).orElse(Collections.emptySet());
     }
@@ -63,7 +71,22 @@ public class FamilyLater implements Family {
     private Optional<Family> loadFamily() {
         return PersistedPersonManager.loadFamily(
                 familyId,
-                new FamilyBroker(factory.getConnector()),
+                new FamilyBroker(factory),
                 factory.getPersonManager());
+    }
+
+    @Override
+    public void setValue(InputField field, String value) {
+        getFamily().ifPresent(f->f.setValue(field, value));
+    }
+
+    @Override
+    public String getValue(InputField field) {
+        return orNull(getFamily().orElse(null), (f)->f.getValue(field));
+    }
+
+    @Override
+    public Map<InputField, String> getValues() {
+        return getFamily().map(Registered::getValues).orElse(Collections.emptyMap());
     }
 }

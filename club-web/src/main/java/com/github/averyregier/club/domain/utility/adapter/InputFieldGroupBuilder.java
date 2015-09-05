@@ -6,11 +6,7 @@ import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import com.github.averyregier.club.domain.utility.builder.ChildBuilder;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.BiConsumer;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -26,7 +22,7 @@ public class InputFieldGroupBuilder
     private List<ChildBuilder<InputFieldGroup, InputFieldDesignator>> children = new ArrayList<>();
     private Function<Map<String, Object>, Optional<Object>> validationFn;
     private Function<Person, Map<String, String>> mapFn;
-    private BiConsumer<Person, Object> updateFn;
+    private UpdateFunction updateFn;
 
     public InputFieldGroupBuilder id(String id) {
         this.id = id;
@@ -46,7 +42,7 @@ public class InputFieldGroupBuilder
     public InputFieldGroup build(Later<InputFieldGroup> parent) {
         Later<InputFieldGroup> later = new Later<>();
         InputFieldGroupAdapter group = new InputFieldGroupAdapter(
-                id,
+                id != null ? id : UUID.randomUUID().toString(),
                 name,
                 parent,
                 children.stream().map(g -> g.build(later)).collect(Collectors.toList()),
@@ -87,14 +83,14 @@ public class InputFieldGroupBuilder
         return this;
     }
 
-    public InputFieldGroupBuilder update(BiConsumer<Person, Object> updateFn) {
+    public InputFieldGroupBuilder update(UpdateFunction updateFn) {
         this.updateFn = updateFn;
         return this;
     }
 
     @Override
     public InputFieldGroupBuilder copy(InputFieldGroup toCopy) {
-        id(toCopy.getId());
+        id(toCopy.getShortCode());
         name(toCopy.getName());
         this.updateFn = ((InputFieldGroupAdapter)toCopy).updateFn;
         this.mapFn = ((InputFieldGroupAdapter)toCopy).mapFn;
@@ -105,4 +101,8 @@ public class InputFieldGroupBuilder
         return this;
     }
 
+    public InputFieldGroupBuilder add(ChildBuilder<InputFieldGroup, InputFieldDesignator> copy) {
+        this.children.add(copy);
+        return this;
+    }
 }

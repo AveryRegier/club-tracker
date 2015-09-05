@@ -9,10 +9,7 @@ import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -150,6 +147,8 @@ public class InputFieldGroupAdapterTest {
         assertEquals("leaf", classUnderTest.find("hierarchy", "hierarchy2", "leaf").get().getShortCode());
         assertFalse(classUnderTest.find("hierarchy", "don't exist").isPresent());
         assertFalse(classUnderTest.find("hierarchy", "hierarchy2", "leaf", "too", "many").isPresent());
+        assertEquals("leaf", classUnderTest.findField("leaf").get().getShortCode());
+        assertFalse(classUnderTest.findField("don't exist").isPresent());
     }
 
     @Test
@@ -349,7 +348,7 @@ public class InputFieldGroupAdapterTest {
                 .id("name")
                 .field(f -> f.id("first").type(InputField.Type.text))
                 .field(f -> f.id("last").type(InputField.Type.text))
-                .update((p, r) -> {
+                .update((d,p, r) -> {
                     p.getUpdater().setName(new Name() {
                         @Override
                         public String getGivenName() {
@@ -381,7 +380,7 @@ public class InputFieldGroupAdapterTest {
                 .id("person")
                 .field(f -> f.id("name")
                         .type(InputField.Type.text)
-                        .update((p, o) -> p.getUpdater().setName(new Name() {
+                        .update((d, p, o) -> p.getUpdater().setName(new Name() {
                             @Override
                             public String getFullName() {
                                 return (String) o;
@@ -389,7 +388,7 @@ public class InputFieldGroupAdapterTest {
                         })))
                 .field(f -> f.id("ageGroup")
                         .type(InputField.Type.ageGroup)
-                        .update((p, o) -> p.getUpdater().setAgeGroup((AgeGroup) o)))
+                        .update((d, p, o) -> p.getUpdater().setAgeGroup((AgeGroup) o)))
                 .build();
 
         HashMap<String, Object> validatedInput = new HashMap<>();
@@ -410,7 +409,7 @@ public class InputFieldGroupAdapterTest {
                         .id("person")
                         .field(f -> f.id("name")
                                 .type(InputField.Type.text)
-                                .update((p, o) -> p.getUpdater().setName(new Name() {
+                                .update((d, p, o) -> p.getUpdater().setName(new Name() {
                                     @Override
                                     public String getFullName() {
                                         return (String) o;
@@ -418,7 +417,7 @@ public class InputFieldGroupAdapterTest {
                                 })))
                         .field(f -> f.id("ageGroup")
                                 .type(InputField.Type.ageGroup)
-                                .update((p, o) -> p.getUpdater().setAgeGroup((AgeGroup) o))))
+                                .update((d, p, o) -> p.getUpdater().setAgeGroup((AgeGroup) o))))
                 .build();
 
         HashMap<String, Object> validatedInput = new HashMap<>();
@@ -440,12 +439,12 @@ public class InputFieldGroupAdapterTest {
                         .id("name")
                         .field(f -> f.id("first")
                                 .type(InputField.Type.text)
-                                .update((p, o) -> fail()))
+                                .update((d, p, o) -> fail()))
                         .field(f -> f.id("last")
                                 .type(InputField.Type.text)
-                                .update((p, o) -> fail()))
+                                .update((d, p, o) -> fail()))
                         .validate(r->Optional.of(mock))
-                        .update((p,r)-> p.getUpdater().setName((Name)r))
+                        .update((d,p,r)-> p.getUpdater().setName((Name)r))
                 )
                 .build();
 
@@ -466,7 +465,7 @@ public class InputFieldGroupAdapterTest {
                         .id("person")
                         .field(f -> f.id("name")
                                 .type(InputField.Type.text)
-                                .update((p, o) -> p.getUpdater().setName(new Name() {
+                                .update((d, p, o) -> p.getUpdater().setName(new Name() {
                                     @Override
                                     public String getFullName() {
                                         return (String) o;
@@ -474,7 +473,7 @@ public class InputFieldGroupAdapterTest {
                                 })))
                         .field(f -> f.id("ageGroup")
                                 .type(InputField.Type.ageGroup)
-                                .update((p, o) -> p.getUpdater().setAgeGroup((AgeGroup) o))))
+                                .update((d, p, o) -> p.getUpdater().setAgeGroup((AgeGroup) o))))
                 .build()).build();
 
         HashMap<String, Object> validatedInput = new HashMap<>();
@@ -487,5 +486,32 @@ public class InputFieldGroupAdapterTest {
         assertEquals("Full Name", user.getName().getFullName());
         assertEquals(AgeGroup.DefaultAgeGroup.COLLEGE, user.getCurrentAgeGroup());
 
+    }
+
+    @Test
+    public void copyNameShouldStillWork() {
+        InputFieldGroup classUnderTest = new InputFieldGroupBuilder()
+                .copy(new InputFieldGroupBuilder()
+                    .group(g -> g
+                            .id("person")
+                            .group(n -> StandardInputFields.name.createGroup(Locale.getDefault())))
+                        .build())
+                .id("family")
+                .build();
+
+        HashMap<String, String> input = new HashMap<>();
+        input.put("person.name.given", "Full");
+        input.put("person.name.surname", "Name");
+
+        Optional<Object> validatedInput = classUnderTest.validate(input);
+        Map personHash = (Map)((Map) validatedInput.get()).get("person");
+        Name name = (Name) personHash.get("name");
+        assertNotNull("validate didn't create a Name", name);
+        assertEquals("Full Name", name.getFullName());
+
+        User user = new User();
+
+        classUnderTest.update(user, validatedInput.get());
+        assertEquals("Full Name", user.getName().getFullName());
     }
 }

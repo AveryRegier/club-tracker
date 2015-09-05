@@ -20,7 +20,7 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 /**
  * Created by avery on 3/2/15.
  */
-public class AwardBroker extends Broker<AwardPresentation> {
+public class AwardBroker extends PersistenceBroker<AwardPresentation> {
     public AwardBroker(Connector connector) {
         super(connector);
     }

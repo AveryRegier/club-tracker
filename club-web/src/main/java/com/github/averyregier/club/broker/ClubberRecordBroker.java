@@ -20,7 +20,7 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 /**
  * Created by avery on 3/1/15.
  */
-public class ClubberRecordBroker extends Broker<ClubberRecord> {
+public class ClubberRecordBroker extends PersistenceBroker<ClubberRecord> {
     public ClubberRecordBroker(Connector connector) {
         super(connector);
     }

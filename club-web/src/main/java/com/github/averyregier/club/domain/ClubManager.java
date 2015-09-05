@@ -6,6 +6,9 @@ import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
+import com.github.averyregier.club.domain.utility.InputField;
+import com.github.averyregier.club.domain.utility.InputFieldGroup;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 import com.github.averyregier.club.repository.PersistedProgram;
 
 import java.util.*;
@@ -27,6 +30,7 @@ public class ClubManager {
     }
 
     public Optional<Club> lookup(String id) {
+        doLoad();
         return Optional.ofNullable(clubs.computeIfAbsent(id, this::find));
     }
 
@@ -64,20 +68,41 @@ public class ClubManager {
     }
 
     public Program createProgram(String acceptLanguage, String organizationName, Curriculum curriculum, String id) {
-        PersistedProgram program = new PersistedProgram(factory, acceptLanguage, organizationName, curriculum, id, this);
+        PersistedProgram program = new PersistedProgram(factory, acceptLanguage, organizationName, curriculum, id, this, HashMap::new);
         persist(program);
         clubs.put(program.getId(), program);
         return program;
     }
-    public Program loadProgram(String acceptLanguage, String organizationName, Curriculum curriculum, String id) {
-        PersistedProgram program = new PersistedProgram(factory, acceptLanguage, organizationName, curriculum, id, this);
+    public Program loadProgram(String acceptLanguage, String organizationName, Curriculum curriculum, String id,
+                               Supplier<Map<RegistrationSection, InputFieldGroup>> registrationForm)
+    {
+        PersistedProgram program = new PersistedProgram(factory, acceptLanguage, organizationName, curriculum, id, this, registrationForm);
         clubs.put(program.getId(), program);
         return program;
     }
 
     public boolean hasPrograms() {
-        // should find this from the database
+        doLoad();
         return clubs.values().stream().anyMatch(c -> c.asProgram().isPresent());
+    }
+
+    public Optional<InputField> getRegistrationField(String inputFieldId) {
+        doLoad();
+        return clubs.values().stream()
+                .filter(c->c instanceof Program)
+                .map(c -> (Program) c)
+                .flatMap(p -> UtilityMethods.stream(p.findField(inputFieldId)))
+                .findFirst();
+    }
+
+    private synchronized void doLoad() {
+        if(clubs.isEmpty()) {
+            loadClubs();
+        }
+    }
+
+    protected void loadClubs() {
+
     }
 
     private class PersistedClub extends ClubAdapter {

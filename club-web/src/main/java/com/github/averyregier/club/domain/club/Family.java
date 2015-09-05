@@ -8,7 +8,7 @@ import java.util.Set;
 /**
  * Created by avery on 9/5/2014.
  */
-public interface Family extends Group, HasId {
+public interface Family extends Group, HasId, Registered {
     Set<Parent> getParents();
 
     @Override
@@ -24,4 +24,6 @@ public interface Family extends Group, HasId {
     Optional<Address> getAddress();
 
     void setAddress(Address address);
+
+    Optional<Clubber> findNthChild(int childNumber);
 }

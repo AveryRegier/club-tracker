@@ -46,7 +46,7 @@ label {
 input, select, button, .staticField {
     font-family: 'Open Sans', Arial, Helvetica, sans-serif;
     display: inline-block;
-    float: initial;
+    float: left;
 }
 .actions {
     display: inline-block;

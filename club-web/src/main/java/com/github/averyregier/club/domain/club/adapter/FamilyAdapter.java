@@ -1,11 +1,9 @@
 package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.utility.InputField;
 
-import java.util.LinkedHashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -15,6 +13,7 @@ public class FamilyAdapter implements Family {
     private String id;
     private final LinkedHashSet<Person> members = new LinkedHashSet<>();
     private Address address;
+    private LinkedHashMap<InputField, String> registration = new LinkedHashMap<>();
 
     public FamilyAdapter(Person firstPerson) {
         id = UUID.randomUUID().toString();
@@ -29,9 +28,9 @@ public class FamilyAdapter implements Family {
         members.add(person.getUpdater().asPerson());
     }
 
-    public FamilyAdapter(String uuid, Person firsPerson) {
+    public FamilyAdapter(String uuid, Person firstPerson) {
         this.id = uuid;
-        addPerson(firsPerson);
+        addPerson(firstPerson);
     }
 
     @Override
@@ -65,5 +64,29 @@ public class FamilyAdapter implements Family {
     @Override
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    @Override
+    public Optional<Clubber> findNthChild(int childNumber) {
+        return getClubbers().stream().skip(childNumber - 1).findFirst();
+    }
+
+    @Override
+    public void setValue(InputField field, String value) {
+        registration.put(field, value);
+    }
+
+    @Override
+    public String getValue(InputField field) {
+        return registration.get(field);
+    }
+
+    @Override
+    public Map<InputField, String> getValues() {
+        return Collections.unmodifiableMap(registration);
+    }
+
+    public void setValues(Map<InputField,String> values) {
+        this.registration = new LinkedHashMap<>(values);
     }
 }

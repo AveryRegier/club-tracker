@@ -77,7 +77,7 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
     }
 
     private Clubber findClubber(FamilyAdapter family, int childNumber) {
-        Optional<Clubber> clubber = family.getClubbers().stream().skip(childNumber - 1).findFirst();
+        Optional<Clubber> clubber = family.findNthChild(childNumber);
         Clubber child;
         if(clubber.isPresent()) {
             child = clubber.get();

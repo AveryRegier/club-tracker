@@ -6,7 +6,10 @@ import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.UserManager;
 import com.github.averyregier.club.domain.club.Program;
+import com.github.averyregier.club.domain.club.RegistrationSection;
 import com.github.averyregier.club.domain.program.Programs;
+import com.github.averyregier.club.domain.utility.adapter.InputFieldBuilder;
+import com.github.averyregier.club.domain.utility.adapter.InputFieldGroupBuilder;
 import com.github.averyregier.club.repository.PersistedClubManager;
 import com.github.averyregier.club.repository.PersistedPersonManager;
 import com.github.averyregier.club.repository.PersistedUserManager;
@@ -26,6 +29,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.github.averyregier.club.domain.utility.InputField.Type.text;
 import static spark.Spark.exception;
 import static spark.SparkBase.port;
 
@@ -48,7 +52,10 @@ public class ClubApplication implements SparkApplication, ServletContextListener
     private final ClubManager clubManager = new PersistedClubManager(this);
 
     private PersistedUserManager createUserManager() {
-        PersonManager personManager = new PersistedPersonManager(() -> new PersonBroker(this), ()->new FamilyBroker(getConnector()));
+        PersonManager personManager = new PersistedPersonManager(
+                () -> new PersonBroker(this),
+                () -> new FamilyBroker(this),
+                () -> new PersonRegistrationBroker(this));
         return new PersistedUserManager(personManager, ()->new LoginBroker(connector));
     }
 
@@ -105,7 +112,61 @@ public class ClubApplication implements SparkApplication, ServletContextListener
                 Programs.find(curriculum).orElseThrow(IllegalArgumentException::new), id);
         program.setPersonManager(userManager.getPersonManager());
         new OrganizationBroker(getConnector()).persist(program);
+        addExtraFields(program);
+
         return program;
+    }
+
+    private void addExtraFields(Program program) {
+        program.addField(RegistrationSection.parent, new InputFieldBuilder()
+                .name("Phone")
+//                .id("phone")
+                .type(text)
+                .build());
+        program.addField(RegistrationSection.child, new InputFieldBuilder()
+                .name("Known Allergies/Medical Conditions")
+//                .id("medical")
+                .type(text)
+                .build());
+        program.addField(RegistrationSection.household, new InputFieldGroupBuilder()
+                .name("Emergency Contact")
+                .group(n -> extraNameFields(n))
+                .field((f) -> f.name("Phone Number")
+//                      .id("phone")
+                        .required().type(text))
+                .field((f) -> f.name("Relationship to Children")
+//                      .id("relationship")
+                        .required().type(text))
+                .build());
+        program.addField(RegistrationSection.household, new InputFieldGroupBuilder()
+                .name("Preferred Doctor")
+                .group(n -> extraNameFields(n))
+                .field(f -> f.name("Phone Number")
+//                      .id("phone")
+                        .required().type(text))
+                .build());
+        program.addField(RegistrationSection.household, new InputFieldBuilder()
+//                .id("media")
+                .name("Media Disclosure").type(text).required()
+                .value("Granted", "Permission Granted", false)
+                .value("Denied", "Permission Denied", false)
+                .build());
+        program.addField(RegistrationSection.household, new InputFieldBuilder()
+                .name("Phone Number for Cancellations & Other " + program.getCurriculum().getShortCode() + " Related News")
+//                .id("phone")
+                .type(text)
+                .build());
+    }
+
+    private InputFieldGroupBuilder extraNameFields(InputFieldGroupBuilder n) {
+        return n.name("Name")
+//                                .id("name")
+                .field(f -> f
+//                                        .id("given")
+                        .name("Given").type(text))
+                .field(f -> f
+//                                        .id("surname")
+                        .name("Surname").type(text));
     }
 
     @Override

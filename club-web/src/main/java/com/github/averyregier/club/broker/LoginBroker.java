@@ -17,7 +17,7 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 /**
  * Created by avery on 4/23/15.
  */
-public class LoginBroker extends Broker<User.Login> {
+public class LoginBroker extends PersistenceBroker<User.Login> {
     public LoginBroker(Connector connector) {
         super(connector);
     }

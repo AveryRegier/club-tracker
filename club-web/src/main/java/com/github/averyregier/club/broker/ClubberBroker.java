@@ -25,7 +25,7 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 /**
  * Created by avery on 2/28/15.
  */
-public class ClubberBroker extends Broker<Clubber> {
+public class ClubberBroker extends PersistenceBroker<Clubber> {
     private ClubFactory factory;
 
     public ClubberBroker(ClubFactory factory) {

@@ -3,10 +3,11 @@ package com.github.averyregier.club.broker;
 import com.github.averyregier.club.db.tables.records.OrganizationRecord;
 import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.club.Program;
+import com.github.averyregier.club.domain.club.RegistrationSection;
 import com.github.averyregier.club.domain.program.Programs;
+import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.jooq.Result;
 import org.jooq.TableField;
 
 import java.util.Map;
@@ -14,11 +15,13 @@ import java.util.Optional;
 
 import static com.github.averyregier.club.db.tables.Club.CLUB;
 import static com.github.averyregier.club.db.tables.Organization.ORGANIZATION;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.parseLocale;
 
 /**
  * Created by avery on 2/27/15.
  */
-public class OrganizationBroker extends Broker<Program> {
+public class OrganizationBroker extends PersistenceBroker<Program> {
     public OrganizationBroker(Connector connector) {
         super(connector);
     }
@@ -44,18 +47,34 @@ public class OrganizationBroker extends Broker<Program> {
     }
 
     public Optional<Program> find(String id, ClubManager clubManager) {
-        return query(create-> {
-            Result<Record> records = create.selectFrom(ORGANIZATION.join(CLUB)
-                                .on(ORGANIZATION.CLUB_ID.eq(CLUB.ID)))
-                    .where(ORGANIZATION.ID.eq(id.getBytes()))
-                    .fetch();
-            return records.stream().findFirst().map(
-                    r -> clubManager.loadProgram(
-                            r.getValue(ORGANIZATION.LOCALE),
-                            r.getValue(ORGANIZATION.ORGANIZATIONNAME),
-                            Programs.find(r.getValue(CLUB.CURRICULUM)).orElseThrow(IllegalArgumentException::new),
-                            id));
-        });
+        return query(create -> create
+                .selectFrom(ORGANIZATION.join(CLUB)
+                        .on(ORGANIZATION.CLUB_ID.eq(CLUB.ID)))
+                .where(ORGANIZATION.ID.eq(id.getBytes()))
+                .fetch().stream().findFirst()
+                .map(r -> mapProgram(id, clubManager, r)));
     }
 
+    private Program mapProgram(String id, ClubManager clubManager, Record r) {
+        String locale = r.getValue(ORGANIZATION.LOCALE);
+        return clubManager.loadProgram(
+                locale,
+                r.getValue(ORGANIZATION.ORGANIZATIONNAME),
+                Programs.find(r.getValue(CLUB.CURRICULUM)).orElseThrow(IllegalArgumentException::new),
+                id,
+                () -> getRegistrationMap(id, locale));
+    }
+
+    private Map<RegistrationSection, InputFieldGroup> getRegistrationMap(String id, String locale) {
+        Map<RegistrationSection, InputFieldGroup> map = new RegistrationFormBroker(connector).find(id, parseLocale(locale));
+        return map;
+    }
+
+    public void load(ClubManager clubManager) {
+        query(create -> create
+                .selectFrom(ORGANIZATION.join(CLUB)
+                        .on(ORGANIZATION.CLUB_ID.eq(CLUB.ID)))
+                .fetch().stream().findFirst()
+                .map(r -> mapProgram(convert(r.getValue(ORGANIZATION.ID)), clubManager, r)));
+    }
 }

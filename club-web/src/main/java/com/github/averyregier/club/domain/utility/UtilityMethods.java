@@ -207,6 +207,10 @@ public class UtilityMethods {
         return object != null ? fn.apply(object) : "";
     }
 
+    public static <T,R> R orNull(T object, Function<T,R> fn) {
+        return object != null ? fn.apply(object) : null;
+    }
+
     public static <T> Optional<T> orElseMaybe(Optional<T> opt, Supplier<Optional<T>> supplier) {
         if(!opt.isPresent()) {
             return supplier.get();
@@ -248,4 +252,15 @@ public class UtilityMethods {
         return null;
     }
 
+    public static <A,B> B applyOrDefault(A start, Function<A,B> fn, Function<A,B> defaultFn) {
+        if (start != null) {
+            if (fn != null) {
+                return fn.apply(start);
+            }
+            if (defaultFn != null) {
+                return defaultFn.apply(start);
+            }
+        }
+        return null;
+    }
 }

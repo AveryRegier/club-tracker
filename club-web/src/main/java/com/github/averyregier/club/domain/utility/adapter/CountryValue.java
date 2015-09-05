@@ -41,6 +41,7 @@ public class CountryValue implements InputField.Value, Comparable<CountryValue>{
     public static Stream<CountryValue> getAllCountryDropDowns(final Locale aDefault) {
         return getCountryLocales(aDefault.getLanguage())
                 .filter(l -> !"".equals(l.getCountry()))
+//                .filter(l -> l.getISO3Language().equals(Locale.ENGLISH.getISO3Language()))
                 .distinct()
                 .map(l -> new CountryValue(l, aDefault))
                 .collect(Collectors.toCollection(TreeSet::new))

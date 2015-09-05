@@ -6,11 +6,11 @@ import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
 import com.github.averyregier.club.domain.utility.*;
-import com.github.averyregier.club.domain.utility.adapter.InputFieldBuilder;
 import com.github.averyregier.club.domain.utility.adapter.InputFieldGroupBuilder;
 import com.github.averyregier.club.domain.utility.adapter.StandardInputFields;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
@@ -23,7 +23,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     private String organizationName;
     private SortedSet<ClubAdapter> clubs;
     private PersonManager personManager;
-    private Map<RegistrationSection, List<InputFieldDesignator>> extraFields = new HashMap<>();
+    private Supplier<Map<RegistrationSection, InputFieldGroup>> extraFields;
 
     public ProgramAdapter() {
         this(null,null,(String)null);
@@ -32,20 +32,23 @@ public class ProgramAdapter extends ClubAdapter implements Program {
         super(curriculum != null ? Programs.valueOf(curriculum).get() : null);
         this.acceptLanguage = acceptLanguage;
         this.organizationName = organizationName;
+        this.extraFields = once(HashMap::new);
     }
 
     public ProgramAdapter(String acceptLanguage, String organizationname, Optional<Club> club) {
         super(club.map(Club::getCurriculum).orElse(null));
         this.acceptLanguage = acceptLanguage;
         this.organizationName = organizationname;
-
+        this.extraFields = once(HashMap::new);
     }
 
-    public ProgramAdapter(String acceptLanguage, String organizationname, Curriculum curriculum) {
+    public ProgramAdapter(String acceptLanguage, String organizationname, Curriculum curriculum,
+                          Supplier<Map<RegistrationSection, InputFieldGroup>> registrationForm)
+    {
         super(curriculum);
         this.acceptLanguage = acceptLanguage;
         this.organizationName = organizationname;
-
+        this.extraFields = once(registrationForm);
     }
 
     @Override
@@ -168,10 +171,12 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     }
 
     private void addExtraFields(InputFieldGroupBuilder builder, RegistrationSection section) {
-        extraFields.getOrDefault(section, Collections.emptyList()).forEach(designator->{
-            designator.asField().ifPresent(field-> builder.field(new InputFieldBuilder().copy(field)));
-            designator.asGroup().ifPresent(group -> builder.group(new InputFieldGroupBuilder().copy(group)));
-        });
+        Map<RegistrationSection, InputFieldGroup> fields = extraFields.get();
+        if(fields.containsKey(section)) {
+            fields.get(section).getFieldDesignations().forEach(designator -> {
+                builder.add(designator.copy());
+            });
+        }
     }
 
     @Override
@@ -287,9 +292,43 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     }
 
     @Override
-    public Program addField(RegistrationSection section, InputFieldDesignator field) {
-        extraFields.computeIfAbsent(section, (s)->new ArrayList<>()).add(field);
+    public Program addField(RegistrationSection section, InputFieldDesignator designator) {
+        extraFields.get().compute(section, (k, old) -> {
+            if(!alreadyPresent(designator, old)) {
+                InputFieldGroupBuilder builder = new InputFieldGroupBuilder();
+                if (old != null) {
+                    builder.copy(old);
+                } else {
+                    builder
+                            .name(section.name())
+                            .id(UUID.randomUUID().toString());
+                }
+                return persist(builder.add(designator.copy()).build());
+            } else {
+                return old;
+            }
+        });
         return this;
+    }
+
+    private boolean alreadyPresent(InputFieldDesignator designator, InputFieldGroup old) {
+        return old != null &&
+               old.getFieldDesignations().stream()
+                .filter(d->d.getName().equals(designator.getName()))
+                .findFirst()
+                .isPresent();
+    }
+
+    public Optional<InputField> findField(String fieldId) {
+        return extraFields.get().values().stream()
+                .map(v->v.findField(fieldId))
+                .filter(Optional::isPresent)
+                .findFirst()
+                .orElse(Optional.empty());
+    }
+
+    protected InputFieldGroup persist(InputFieldGroup group) {
+        return group;
     }
 
     @Override

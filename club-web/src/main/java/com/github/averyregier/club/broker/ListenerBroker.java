@@ -22,7 +22,7 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 /**
  * Created by avery on 2/28/15.
  */
-public class ListenerBroker extends Broker<Listener> {
+public class ListenerBroker extends PersistenceBroker<Listener> {
     public ListenerBroker(Connector connector) {
         super(connector);
     }

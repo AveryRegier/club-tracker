@@ -19,7 +19,7 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 /**
  * Created by avery on 2/28/15.
  */
-public class LeaderBroker extends Broker<ClubLeader> {
+public class LeaderBroker extends PersistenceBroker<ClubLeader> {
     public LeaderBroker(Connector connector) {
         super(connector);
     }

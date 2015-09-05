@@ -2,9 +2,11 @@ package com.github.averyregier.club.repository;
 
 import com.github.averyregier.club.broker.FamilyBroker;
 import com.github.averyregier.club.broker.PersonBroker;
+import com.github.averyregier.club.broker.PersonRegistrationBroker;
 import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.club.Family;
 import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 
 import java.util.Collection;
 import java.util.List;
@@ -20,23 +22,39 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.orElseMa
 public class PersistedPersonManager extends PersonManager {
     private Supplier<PersonBroker> personBrokerSupplier;
     private Supplier<FamilyBroker> familyBrokerSupplier;
+    private Supplier<PersonRegistrationBroker> registrationBrokerSupplier;
 
     public PersistedPersonManager(Supplier<PersonBroker> personBrokerSupplier,
-                                  Supplier<FamilyBroker> familyBrokerSupplier) {
+                                  Supplier<FamilyBroker> familyBrokerSupplier,
+                                  Supplier<PersonRegistrationBroker> registrationBrokerSupplier) {
         this.personBrokerSupplier = personBrokerSupplier;
         this.familyBrokerSupplier = familyBrokerSupplier;
+        this.registrationBrokerSupplier = registrationBrokerSupplier;
     }
 
     @Override
     public Optional<Person> lookup(String id) {
         return Optional.ofNullable(
                 people.computeIfAbsent(id,
-                        key -> getPersonBroker().find(id).orElse(null)));
+                        key -> getPersonBroker()
+                                .find(id)
+                                .map(this::addRegistrationFields)
+                                .orElse(null)));
     }
 
     @Override
     public Collection<Person> getPeople() {
-        return getPersonBroker().findAll();
+        return getPersonBroker()
+                .findAll()
+                .stream()
+                .peek(this::addRegistrationFields)
+                .collect(Collectors.toList());
+    }
+
+    private Person addRegistrationFields(Person p) {
+        ((PersonAdapter) p).setValues(
+                registrationBrokerSupplier.get().getRegistration(p.getId()));
+        return p;
     }
 
     private PersonBroker getPersonBroker() {
