@@ -41,7 +41,6 @@ public class ClubApplication implements SparkApplication, ServletContextListener
         if(args.length > 0) {
             port(Integer.parseInt(args[0]));
         }
-        spark.Spark.staticFileLocation("/public");
 
         new ClubApplication().init();
     //    connect();
@@ -63,6 +62,7 @@ public class ClubApplication implements SparkApplication, ServletContextListener
 
     @Override
     public void init() {
+        spark.Spark.staticFileLocation("/public");
 
         loadConfig();
 
