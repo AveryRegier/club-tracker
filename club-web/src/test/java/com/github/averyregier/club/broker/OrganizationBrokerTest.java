@@ -80,7 +80,7 @@ public class OrganizationBrokerTest {
     private Consumer<StatementVerifier> assertFields(Program program) {
         return (s) -> {
             s.assertFieldEquals(program.getLocale().toString(), ORGANIZATION.LOCALE);
-            s.assertFieldEquals(program.getShortCode(), ORGANIZATION.ORGANIZATIONNAME);
+            s.assertFieldEquals(program.getShortCode(), ORGANIZATION.ORGANIZATION_NAME);
             s.assertUUID(program, ORGANIZATION.CLUB_ID);
         };
     }
@@ -88,7 +88,7 @@ public class OrganizationBrokerTest {
     private Consumer<StatementVerifier> assertNullFields(Program program) {
         return (s) -> {
             s.assertNullFields(ORGANIZATION.LOCALE);
-            s.assertNullFields(ORGANIZATION.ORGANIZATIONNAME);
+            s.assertNullFields(ORGANIZATION.ORGANIZATION_NAME);
             s.assertUUID(program, ORGANIZATION.CLUB_ID);  // this one shouldn't be null ever
         };
     }
@@ -116,7 +116,7 @@ public class OrganizationBrokerTest {
             Result<Record7<byte[], String, String, byte[], byte[], byte[], String>> result =
                     create.newResult(
                         ORGANIZATION.ID,
-                        ORGANIZATION.ORGANIZATIONNAME,
+                        ORGANIZATION.ORGANIZATION_NAME,
                         ORGANIZATION.LOCALE,
                         ORGANIZATION.CLUB_ID,
                         CLUB.ID,
@@ -126,7 +126,7 @@ public class OrganizationBrokerTest {
             Record7<byte[], String, String, byte[], byte[], byte[], String> record =
                     create.newRecord(
                         ORGANIZATION.ID,
-                        ORGANIZATION.ORGANIZATIONNAME,
+                        ORGANIZATION.ORGANIZATION_NAME,
                         ORGANIZATION.LOCALE,
                         ORGANIZATION.CLUB_ID,
                         CLUB.ID,
@@ -136,7 +136,7 @@ public class OrganizationBrokerTest {
 
             record.setValue(ORGANIZATION.ID, id.getBytes());
             record.setValue(ORGANIZATION.CLUB_ID, id.getBytes());
-            record.setValue(ORGANIZATION.ORGANIZATIONNAME, orgName);
+            record.setValue(ORGANIZATION.ORGANIZATION_NAME, orgName);
             record.setValue(ORGANIZATION.LOCALE, locale);
             record.setValue(CLUB.ID, id.getBytes());
             record.setValue(CLUB.PARENT_CLUB_ID, null);

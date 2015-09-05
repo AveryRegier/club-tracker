@@ -89,6 +89,18 @@ public class ClubApplication implements SparkApplication, ServletContextListener
             InputStream stream = getClass().getResourceAsStream("/config.properties");
             if(stream != null) {
                 config.load(stream);
+
+                System.getProperties().list(System.out);
+
+                if(System.getProperties().containsKey("RDS_HOSTNAME")) {
+                    config.setProperty("jdbc.user", System.getProperty("RDS_USERNAME"));
+                    config.setProperty("jdbc.password", System.getProperty("RDS_PASSWORD"));
+                    config.setProperty("jdbc.url", "jdbc:postgresql://" +
+                            System.getProperty("RDS_HOSTNAME")+":" +
+                            System.getProperty("RDS_PORT")+"/" +
+                            System.getProperty("RDS_DB_NAME"));
+                }
+
                 connector = new ConfiguredConnector(config);
             }
         } catch (IOException|ClassNotFoundException e) {

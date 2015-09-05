@@ -18,7 +18,7 @@
     <name>Club Tracker WEB</name>
 
     <properties>
-        <schema>club</schema>
+        <schema>CLUB</schema>
         <db.groupId>org.hsqldb</db.groupId>
         <db.artifactId>hsqldb</db.artifactId>
         <db.version>2.3.3</db.version>
@@ -59,9 +59,11 @@
                 <flyway.url>jdbc:postgresql:${schema}</flyway.url>
                 <flyway.driver>org.postgresql.Driver</flyway.driver>
                 <jooq.generator.database.name>org.jooq.util.postgres.PostgresDatabase</jooq.generator.database.name>
-                <flyway.user></flyway.user>
-                <flyway.password></flyway.password>
+                <jooq.dialect>POSTGRES</jooq.dialect>
+                <flyway.user>clubdb</flyway.user>
+                <flyway.password>letmein</flyway.password>
                 <flyway.placeholders.setup>CREATE EXTENSION "uuid-ossp";</flyway.placeholders.setup>
+                <flyway.placeholders.create_schema>CREATE SCHEMA ${schema} AUTHORIZATION ${flyway.user};</flyway.placeholders.create_schema>
                 <flyway.placeholders.generate_uuid>DEFAULT uuid_generate_v4()</flyway.placeholders.generate_uuid>
             </properties>
         </profile>

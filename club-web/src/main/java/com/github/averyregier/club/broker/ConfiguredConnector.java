@@ -23,6 +23,7 @@ public class ConfiguredConnector implements Connector {
     public ConfiguredConnector(Properties config) throws ClassNotFoundException {
         password = UtilityMethods.killWhitespace(config.getProperty("jdbc.password"));
         url = config.getProperty("jdbc.url");
+        System.out.println("jdbc.url="+url);
         dialect = SQLDialect.valueOf(config.getProperty("jooq.dialect"));
         user = UtilityMethods.killWhitespace(config.getProperty("jdbc.user"));
         String driver = config.getProperty("jdbc.driver");
