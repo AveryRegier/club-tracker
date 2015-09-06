@@ -1,9 +1,6 @@
 package com.github.averyregier.club.broker;
 
 import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
-import org.jooq.conf.RenderNameStyle;
-import org.jooq.conf.Settings;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
@@ -28,7 +25,7 @@ public class Broker {
 
     protected void execute(Consumer<DSLContext> c) {
         try (Connection connection = connect()) {
-            DSLContext create = DSL.using(connection, connector.getDialect());
+            DSLContext create = create(connection);
 
             c.accept(create);
         } catch (SQLException e) {
@@ -36,19 +33,17 @@ public class Broker {
         }
     }
 
+    private DSLContext create(Connection connection) {
+        return DSL.using(connection, connector.getDialect(), connector.getSettings());
+    }
+
     protected <T> T query(Function<DSLContext, T> c) {
         try (Connection connection = connect()) {
-            DSLContext create = DSL.using(connection, connector.getDialect(), getSettings(connector.getDialect()));
+            DSLContext create = create(connection);
             return c.apply(create);
         } catch (SQLException e) {
             throw new DataAccessException("Connection failure", e);
         }
-    }
-
-    private Settings getSettings(SQLDialect dialect) {
-        if(dialect == SQLDialect.POSTGRES) {
-            return new Settings().withRenderNameStyle(RenderNameStyle.LOWER);
-        } else return null;
     }
 
     protected void fail(String reason) {

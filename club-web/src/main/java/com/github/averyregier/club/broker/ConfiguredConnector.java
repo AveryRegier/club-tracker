@@ -1,13 +1,19 @@
 package com.github.averyregier.club.broker;
 
+import com.github.averyregier.club.db.Club;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.flywaydb.core.Flyway;
 import org.jooq.SQLDialect;
+import org.jooq.conf.MappedSchema;
+import org.jooq.conf.RenderMapping;
+import org.jooq.conf.RenderNameStyle;
+import org.jooq.conf.Settings;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static com.github.averyregier.club.domain.utility.UtilityMethods.subMap;
@@ -28,6 +34,7 @@ public class ConfiguredConnector implements Connector {
         user = UtilityMethods.killWhitespace(config.getProperty("jdbc.user"));
         String driver = config.getProperty("jdbc.driver");
         placeholders = toStrings(subMap("placeholder", config));
+        updateSchema(dialect).ifPresent(s->placeholders.put("schema", s));
         Class.forName(driver);
     }
 
@@ -43,6 +50,28 @@ public class ConfiguredConnector implements Connector {
     @Override
     public SQLDialect getDialect() {
         return dialect;
+    }
+
+    @Override
+    public Settings getSettings() {
+        if(dialect == SQLDialect.POSTGRES) {
+            return new Settings().withRenderNameStyle(RenderNameStyle.LOWER);
+        }
+        return updateSchema(dialect).map(s ->
+                new Settings()
+                        .withRenderNameStyle(RenderNameStyle.LOWER)
+                        .withRenderMapping(new RenderMapping()
+                        .withSchemata(
+                            new MappedSchema().withInput(Club.CLUB.getName())
+                                    .withOutput(s))))
+                    .orElseGet(Settings::new);
+    }
+
+    static Optional<String> updateSchema(SQLDialect dialect) {
+        if(dialect == SQLDialect.MYSQL) {
+            return Optional.ofNullable(System.getProperty("RDS_DB_NAME"));
+        }
+        return Optional.empty();
     }
 
     public void migrate() {

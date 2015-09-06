@@ -1,6 +1,7 @@
 package com.github.averyregier.club.broker;
 
 import org.jooq.SQLDialect;
+import org.jooq.conf.Settings;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,4 +13,6 @@ public interface Connector {
     Connection connect() throws SQLException;
 
     SQLDialect getDialect();
+
+    Settings getSettings();
 }

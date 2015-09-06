@@ -1,6 +1,7 @@
 package com.github.averyregier.club.broker;
 
 import org.jooq.*;
+import org.jooq.conf.Settings;
 import org.jooq.tools.jdbc.MockConnection;
 import org.jooq.tools.jdbc.MockDataProvider;
 
@@ -33,6 +34,11 @@ public class BrokerTestUtil {
             @Override
             public SQLDialect getDialect() {
                 return SQLDialect.HSQLDB;
+            }
+
+            @Override
+            public Settings getSettings() {
+                return new Settings();
             }
         };
     }
