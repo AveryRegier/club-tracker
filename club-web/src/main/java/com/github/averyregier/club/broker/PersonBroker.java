@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.db.tables.Person.PERSON;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.equalsAny;
 
 /**
 * Created by avery on 2/14/15.
@@ -32,12 +33,12 @@ public class PersonBroker extends PersistenceBroker<Person> {
     }
 
     protected void persist(Person person, DSLContext create) {
-        if(create.insertInto(PERSON)
+        if(!equalsAny(create.insertInto(PERSON)
                 .set(PERSON.ID, person.getId().getBytes())
                 .set(mapFields(person))
                 .onDuplicateKeyUpdate()
                 .set(mapFields(person))
-                .execute() != 1) {
+                .execute(), 1, 2)) {
             fail("Person persistence failed: " + person.getId());
         }
     }

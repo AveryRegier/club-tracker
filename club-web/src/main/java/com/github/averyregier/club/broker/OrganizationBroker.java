@@ -41,7 +41,7 @@ public class OrganizationBroker extends PersistenceBroker<Program> {
     private Map<TableField<OrganizationRecord, ?>, Object> mapFields(Program program) {
         return JooqUtil.<OrganizationRecord>map()
                 .set(ORGANIZATION.CLUB_ID, program)
-                .set(ORGANIZATION.ORGANIZATION_NAME, program.getShortCode())
+                .set(ORGANIZATION.ORGANIZATIONNAME, program.getShortCode())
                 .set(ORGANIZATION.LOCALE, Optional.ofNullable(program.getLocale()).map(Object::toString))
                 .build();
     }
@@ -59,7 +59,7 @@ public class OrganizationBroker extends PersistenceBroker<Program> {
         String locale = r.getValue(ORGANIZATION.LOCALE);
         return clubManager.loadProgram(
                 locale,
-                r.getValue(ORGANIZATION.ORGANIZATION_NAME),
+                r.getValue(ORGANIZATION.ORGANIZATIONNAME),
                 Programs.find(r.getValue(CLUB.CURRICULUM)).orElseThrow(IllegalArgumentException::new),
                 id,
                 () -> getRegistrationMap(id, locale));

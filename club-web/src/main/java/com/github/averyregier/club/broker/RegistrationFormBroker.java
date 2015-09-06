@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.db.tables.RegistrationForm.REGISTRATION_FORM;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.equalsAny;
 
 /**
  * Created by avery on 8/23/15.
@@ -24,13 +25,13 @@ public class RegistrationFormBroker extends Broker {
 
     public void persist(Program program, InputFieldGroup group) {
         execute(create -> {
-            if (create.insertInto(REGISTRATION_FORM)
+            if (!equalsAny(create.insertInto(REGISTRATION_FORM)
                     .set(REGISTRATION_FORM.ORGANIZATION_ID, program.getId().getBytes())
                     .set(REGISTRATION_FORM.TYPE, group.getName())
                     .set(REGISTRATION_FORM.INPUT_GROUP_ID, group.getId().getBytes())
                     .onDuplicateKeyUpdate()
                     .set(REGISTRATION_FORM.INPUT_GROUP_ID, group.getId().getBytes())
-                    .execute() != 1) {
+                    .execute(), 1, 2)) {
                 fail("Failed to persist " + group.getShortCode());
             }
         });

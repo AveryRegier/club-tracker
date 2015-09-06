@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.db.tables.Record.RECORD;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.equalsAny;
 
 /**
  * Created by avery on 3/1/15.
@@ -27,13 +28,13 @@ public class ClubberRecordBroker extends PersistenceBroker<ClubberRecord> {
 
     @Override
     protected void persist(ClubberRecord record, DSLContext create) {
-        if(create.insertInto(RECORD)
+        if(!equalsAny(create.insertInto(RECORD)
                 .set(RECORD.CLUBBER_ID, record.getClubber().getId().getBytes())
                 .set(RECORD.SECTION_ID, record.getSection().getId())
                 .set(mapFields(record))
                 .onDuplicateKeyUpdate()
                 .set(mapFields(record))
-                .execute() != 1) {
+                .execute(), 1, 2)) {
             fail("Clubber persistence failed: " + record.getClubber().getId() + " for " + record.getSection().getId());
         }
     }

@@ -13,6 +13,7 @@ import java.util.function.Function;
 
 import static com.github.averyregier.club.db.tables.Club.CLUB;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.equalsAny;
 
 /**
  * Created by avery on 2/25/15.
@@ -24,12 +25,12 @@ public class ClubBroker extends PersistenceBroker<Club> {
 
     @Override
     protected void persist(Club club, DSLContext create) {
-        if(create.insertInto(CLUB)
+        if(!equalsAny(create.insertInto(CLUB)
                 .set(CLUB.ID, club.getId().getBytes())
                 .set(mapFields(club))
                 .onDuplicateKeyUpdate()
                 .set(mapFields(club))
-                .execute() != 1) {
+                .execute(), 1, 2)) {
             fail("Club persistence failed: " + club.getId());
         }
     }

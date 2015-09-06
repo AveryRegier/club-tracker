@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 
 import static com.github.averyregier.club.db.tables.Family.FAMILY;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.equalsAny;
 
 /**
  * Created by avery on 2/28/15.
@@ -33,12 +34,12 @@ public class FamilyBroker extends PersistenceBroker<Family> {
 
     @Override
     protected void persist(Family family, DSLContext create) {
-        if(create.insertInto(FAMILY)
+        if(!equalsAny(create.insertInto(FAMILY)
                 .set(FAMILY.ID, family.getId().getBytes())
                 .set(mapFields(family))
                 .onDuplicateKeyUpdate()
                 .set(mapFields(family))
-                .execute() != 1) {
+                .execute(), 1, 2)) {
             fail("Family persistence failed: " + family.getId());
         }
     }

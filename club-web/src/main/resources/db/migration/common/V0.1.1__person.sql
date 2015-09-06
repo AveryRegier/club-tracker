@@ -1,6 +1,6 @@
 
 CREATE TABLE ${schema}.person (
-    id uuid ${generate_uuid} PRIMARY KEY,
+    id ${uuid} ${generate_uuid} PRIMARY KEY,
     title VARCHAR(10),
     given VARCHAR(25),
     surname VARCHAR(50),

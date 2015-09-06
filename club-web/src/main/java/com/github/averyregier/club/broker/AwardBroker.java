@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.db.tables.Award.AWARD;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.equalsAny;
 
 /**
  * Created by avery on 3/2/15.
@@ -27,12 +28,12 @@ public class AwardBroker extends PersistenceBroker<AwardPresentation> {
 
     @Override
     protected void persist(AwardPresentation award, DSLContext create) {
-        if(create.insertInto(AWARD)
+        if(!equalsAny(create.insertInto(AWARD)
                 .set(AWARD.ID, award.getId().getBytes())
                 .set(mapFields(award))
                 .onDuplicateKeyUpdate()
                 .set(mapFields(award))
-                .execute() != 1) {
+                .execute(), 1, 2)) {
             fail("Award persistence failed: " + award.to().getId() + " for " + award.forAccomplishment().getName());
         }
     }

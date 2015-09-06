@@ -263,4 +263,13 @@ public class UtilityMethods {
         }
         return null;
     }
+
+    public static <T> boolean equalsAny(T value, T... expected) {
+        for(T e: expected) {
+            if(e.equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

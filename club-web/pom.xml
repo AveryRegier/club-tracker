@@ -22,6 +22,7 @@
         <db.groupId>org.hsqldb</db.groupId>
         <db.artifactId>hsqldb</db.artifactId>
         <db.version>2.3.3</db.version>
+        <db.type>common</db.type>
         <flyway.url>jdbc:hsqldb:file:clubDB/db</flyway.url>
         <flyway.driver>org.hsqldb.jdbcDriver</flyway.driver>
         <jooq.generator.database.name>org.jooq.util.hsqldb.HSQLDBDatabase</jooq.generator.database.name>
@@ -33,6 +34,7 @@
         <flyway.placeholders.schema>${schema}</flyway.placeholders.schema>
 
         <flyway.placeholders.generate_uuid></flyway.placeholders.generate_uuid>
+        <flyway.placeholders.uuid>uuid</flyway.placeholders.uuid>
     </properties>
 
     <profiles>
@@ -65,6 +67,34 @@
                 <flyway.placeholders.setup>CREATE EXTENSION "uuid-ossp";</flyway.placeholders.setup>
                 <flyway.placeholders.create_schema>CREATE SCHEMA ${schema} AUTHORIZATION ${flyway.user};</flyway.placeholders.create_schema>
                 <flyway.placeholders.generate_uuid>DEFAULT uuid_generate_v4()</flyway.placeholders.generate_uuid>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>mysql</id>
+            <activation>
+                <property>
+                    <name>environment</name>
+                    <value>mysql</value>
+                </property>
+            </activation>
+
+            <properties>
+                <schema>club</schema>
+                <db.groupId>mysql</db.groupId>
+                <db.artifactId>mysql-connector-java</db.artifactId>
+                <db.version>5.1.36</db.version>
+                <db.type>mysql</db.type>
+                <flyway.url>jdbc:mysql://localhost/${schema}</flyway.url>
+                <flyway.driver>com.mysql.jdbc.Driver</flyway.driver>
+                <jooq.generator.database.name>org.jooq.util.mysql.MySQLDatabase</jooq.generator.database.name>
+                <jooq.dialect>MYSQL</jooq.dialect>
+                <flyway.user>testuser</flyway.user>
+                <flyway.password>testpw</flyway.password>
+                <flyway.placeholders.setup></flyway.placeholders.setup>
+                <flyway.placeholders.create_schema></flyway.placeholders.create_schema>
+                <flyway.placeholders.generate_uuid></flyway.placeholders.generate_uuid>
+                <flyway.placeholders.uuid>CHAR(36) binary</flyway.placeholders.uuid>
             </properties>
         </profile>
 
@@ -221,7 +251,7 @@
 
                 <configuration>
                     <locations>
-                        <location>filesystem:src/main/resources/db/migration</location>
+                        <location>filesystem:src/main/resources/db/migration/${db.type}</location>
                     </locations>
                 </configuration>
             </plugin>
@@ -368,6 +398,10 @@
                         <replacement>
                             <token>replacement-create_schema</token>
                             <value>${flyway.placeholders.create_schema}</value>
+                        </replacement>
+                        <replacement>
+                            <token>replacement-uuid</token>
+                            <value>${flyway.placeholders.uuid}</value>
                         </replacement>
                     </replacements>
                 </configuration>

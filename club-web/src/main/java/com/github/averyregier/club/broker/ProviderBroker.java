@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.db.tables.Provider.PROVIDER;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.equalsAny;
 
 /**
  * Created by avery on 4/11/15.
@@ -22,12 +23,12 @@ public class ProviderBroker extends PersistenceBroker<Provider> {
 
     @Override
     protected void persist(Provider thing, DSLContext create) {
-        if(create.insertInto(PROVIDER)
+        if(!equalsAny(create.insertInto(PROVIDER)
                 .set(PROVIDER.PROVIDER_ID, thing.getId())
                 .set(mapFields(thing))
                 .onDuplicateKeyUpdate()
                 .set(mapFields(thing))
-                .execute() != 1)
+                .execute(), 1, 2))
         {
             fail("Provider persistence failed: "+thing);
         }

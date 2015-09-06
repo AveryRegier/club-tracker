@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import static com.github.averyregier.club.db.tables.Parent.PARENT;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.equalsAny;
 
 /**
  * Created by avery on 2/28/15.
@@ -21,12 +22,12 @@ public class ParentBroker extends PersistenceBroker<Parent> {
 
     @Override
     protected void persist(Parent thing, DSLContext create) {
-        if(create.insertInto(PARENT)
+        if(!equalsAny(create.insertInto(PARENT)
                 .set(PARENT.ID, thing.getId().getBytes())
                 .set(mapFields(thing))
                 .onDuplicateKeyUpdate()
                 .set(mapFields(thing))
-                .execute() != 1) {
+                .execute(), 1, 2)) {
             fail("Clubber persistence failed: " + thing.getId());
         }
     }

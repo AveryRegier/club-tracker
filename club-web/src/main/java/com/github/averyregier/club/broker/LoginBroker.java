@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import static com.github.averyregier.club.db.tables.Login.LOGIN;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.equalsAny;
 
 /**
  * Created by avery on 4/23/15.
@@ -24,14 +25,14 @@ public class LoginBroker extends PersistenceBroker<User.Login> {
 
     @Override
     protected void persist(User.Login login, DSLContext create) {
-        if(create.insertInto(LOGIN)
+        if(!equalsAny(create.insertInto(LOGIN)
                 .set(LOGIN.ID, login.getID().getBytes())
                 .set(LOGIN.PROVIDER_ID, login.getProviderID())
                 .set(LOGIN.UNIQUE_ID, login.getUniqueID())
                 .set(mapFields(login))
                 .onDuplicateKeyUpdate()
                 .set(mapFields(login))
-                .execute() != 1) {
+                .execute(), 1, 2)) {
             fail("Login persistence failed: " + login.getID() + ", "+login.getProviderID() + ", "+login.getUniqueID());
         }
     }

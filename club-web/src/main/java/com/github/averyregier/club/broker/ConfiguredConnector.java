@@ -24,11 +24,15 @@ public class ConfiguredConnector implements Connector {
         password = UtilityMethods.killWhitespace(config.getProperty("jdbc.password"));
         url = config.getProperty("jdbc.url");
         System.out.println("jdbc.url="+url);
-        dialect = SQLDialect.valueOf(config.getProperty("jooq.dialect"));
+        dialect = findSQLDialect(config);
         user = UtilityMethods.killWhitespace(config.getProperty("jdbc.user"));
         String driver = config.getProperty("jdbc.driver");
         placeholders = toStrings(subMap("placeholder", config));
         Class.forName(driver);
+    }
+
+    private static SQLDialect findSQLDialect(Properties config) {
+        return SQLDialect.valueOf(config.getProperty("jooq.dialect"));
     }
 
     @Override
@@ -45,6 +49,18 @@ public class ConfiguredConnector implements Connector {
         Flyway flyway = new Flyway();
         flyway.setDataSource(url, user, password);
         flyway.setPlaceholders(placeholders);
+        String[] locations = flyway.getLocations();
+        for (int i = 0; i < locations.length; i++) {
+            locations[i] = locations[i]+"/"+getFolder(dialect);
+        }
+        flyway.setLocations(locations);
         flyway.migrate();
+    }
+
+    private String getFolder(SQLDialect dialect) {
+        if(dialect == SQLDialect.MYSQL || dialect == SQLDialect.MARIADB) {
+            return "mysql";
+        }
+        return "common";
     }
 }

@@ -15,8 +15,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static com.github.averyregier.club.db.tables.InputGroup.INPUT_GROUP;
-import static com.github.averyregier.club.domain.utility.UtilityMethods.applyOrNull;
-import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
 
 /**
  * Created by avery on 8/17/15.
@@ -29,12 +28,12 @@ public class InputFieldGroupBroker extends PersistenceBroker<InputFieldGroup> {
     @Override
     protected void persist(InputFieldGroup group, DSLContext create) {
         try {
-            if (create.insertInto(INPUT_GROUP)
+            if (!equalsAny(create.insertInto(INPUT_GROUP)
                     .set(INPUT_GROUP.ID, group.getShortCode().getBytes())
                     .set(mapFields(group))
                     .onDuplicateKeyUpdate()
                     .set(mapFields(group))
-                    .execute() != 1) {
+                    .execute(), 1, 2)) {
                 fail("Input Field persistence failed: " + group.getId());
             } else {
                 try {

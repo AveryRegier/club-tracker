@@ -15,6 +15,7 @@ import java.util.function.Function;
 
 import static com.github.averyregier.club.db.tables.Leader.LEADER;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.equalsAny;
 
 /**
  * Created by avery on 2/28/15.
@@ -26,13 +27,13 @@ public class LeaderBroker extends PersistenceBroker<ClubLeader> {
 
     @Override
     protected void persist(ClubLeader leader, DSLContext create) {
-        if(create.insertInto(LEADER)
+        if(!equalsAny(create.insertInto(LEADER)
                 .set(LEADER.ID, leader.getId().getBytes())
                 .set(LEADER.CLUB_ID, leader.getClub().map(c->c.getId().getBytes()).orElse(null))
                 .set(mapFields(leader))
                 .onDuplicateKeyUpdate()
                 .set(mapFields(leader))
-                .execute() != 1) {
+                .execute(), 1, 2)) {
             fail("Leader persistence failed: " + leader.getId());
         }
     }

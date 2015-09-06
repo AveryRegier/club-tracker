@@ -95,7 +95,9 @@ public class ClubApplication implements SparkApplication, ServletContextListener
                 if(System.getProperties().containsKey("RDS_HOSTNAME")) {
                     config.setProperty("jdbc.user", System.getProperty("RDS_USERNAME"));
                     config.setProperty("jdbc.password", System.getProperty("RDS_PASSWORD"));
-                    config.setProperty("jdbc.url", "jdbc:postgresql://" +
+                    config.setProperty("jdbc.url", "jdbc:"
+                            +config.getProperty("jdbc.url").split(":")[1]+
+                            "://" +
                             System.getProperty("RDS_HOSTNAME")+":" +
                             System.getProperty("RDS_PORT")+"/" +
                             System.getProperty("RDS_DB_NAME"));

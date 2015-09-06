@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.github.averyregier.club.db.tables.InputFieldValue.INPUT_FIELD_VALUE;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.equalsAny;
 
 /**
  * Created by avery on 8/17/15.
@@ -20,13 +21,13 @@ public class InputFieldValueBroker extends Broker {
     }
 
     void persistValue(InputField parent, InputField.Value value, DSLContext create) {
-        if(create.insertInto(INPUT_FIELD_VALUE)
+        if(!equalsAny(create.insertInto(INPUT_FIELD_VALUE)
                 .set(INPUT_FIELD_VALUE.PARENT_INPUT_FIELD_ID, parent.getShortCode().getBytes())
                 .set(INPUT_FIELD_VALUE.THE_ORDER, parent.getValues().get().indexOf(value)+1)
                 .set(mapFields(value))
                 .onDuplicateKeyUpdate()
                 .set(mapFields(value))
-                .execute() != 1) {
+                .execute(), 1, 2)) {
             fail("Input Field persistence failed: " + value.getDisplayName());
         }
     }

@@ -17,8 +17,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static com.github.averyregier.club.db.tables.InputField.INPUT_FIELD;
-import static com.github.averyregier.club.domain.utility.UtilityMethods.applyOrNull;
-import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
 
 /**
  * Created by avery on 8/17/15.
@@ -31,12 +30,12 @@ public class InputFieldBroker extends PersistenceBroker<InputField> {
     @Override
     protected void persist(InputField field, DSLContext create) {
         try {
-            if (create.insertInto(INPUT_FIELD)
+            if (!equalsAny(create.insertInto(INPUT_FIELD)
                     .set(INPUT_FIELD.ID, field.getShortCode().getBytes())
                     .set(mapFields(field))
                     .onDuplicateKeyUpdate()
                     .set(mapFields(field))
-                    .execute() != 1) {
+                    .execute(), 1, 2)) {
                 fail("Input Field persistence failed: " + field.getId());
             } else {
                 try {

@@ -12,8 +12,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static com.github.averyregier.club.db.tables.Address.ADDRESS;
-import static com.github.averyregier.club.domain.utility.UtilityMethods.applyOrNull;
-import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
 
 /**
  * Created by avery on 8/17/15.
@@ -25,12 +24,12 @@ public class AddressBroker extends PersistenceBroker<Address> {
 
     @Override
     protected void persist(Address address, DSLContext create) {
-        if(create.insertInto(ADDRESS)
+        if(!equalsAny(create.insertInto(ADDRESS)
                 .set(ADDRESS.ID, address.getId().getBytes())
                 .set(mapFields(address))
                 .onDuplicateKeyUpdate()
                 .set(mapFields(address))
-                .execute() != 1) {
+                .execute(), 1, 2)) {
             fail("Address persistence failed: " + address.getId());
         }
     }

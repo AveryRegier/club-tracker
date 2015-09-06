@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static com.github.averyregier.club.db.tables.Ceremony.CEREMONY;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.equalsAny;
 
 /**
  * Created by avery on 3/2/15.
@@ -22,12 +23,12 @@ public class CeremonyBroker extends PersistenceBroker<Ceremony> {
 
     @Override
     protected void persist(Ceremony ceremony, DSLContext create) {
-        if(create.insertInto(CEREMONY)
+        if(!equalsAny(create.insertInto(CEREMONY)
                 .set(CEREMONY.ID, ceremony.getId().getBytes())
                 .set(mapFields(ceremony))
                 .onDuplicateKeyUpdate()
                 .set(mapFields(ceremony))
-                .execute() != 1) {
+                .execute(), 1, 2)) {
             fail("Ceremony persistence failed: " + ceremony.getId());
         }
 
