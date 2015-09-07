@@ -34,7 +34,7 @@ public class ClubberRecordTest {
                             .section(2, friend)
                             .section(3, regular))
                     .award(extraCreditAwardBuilder
-                            .section(4, extaCredit)))
+                            .section(4, extraCredit)))
             .group(1, g -> g
                     .award(a -> a
                             .section(0, parent)
@@ -42,7 +42,7 @@ public class ClubberRecordTest {
                             .section(2, regular)
                             .section(3, regular))
                     .award(extraCreditAwardBuilder
-                            .section(4, extaCredit)))
+                            .section(4, extraCredit)))
             .build();
 
     private ClubberRecord createClubberRecord(final Section theSection) {

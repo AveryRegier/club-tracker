@@ -20,9 +20,11 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
     private Later<Book> futureBook;
     private TreeSet<Section> allSections = new TreeSet<>();
     private Later<SectionGroup> futureGroup = new Later<>();
+    private String shortCode;
 
     public SectionGroupBuilder(int sequence) {
         this.sequence = sequence;
+        this.shortCode = Integer.toString(sequence);
     }
 
     public SectionGroup build() {
@@ -34,7 +36,7 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
 
         awards.forEach(reward -> allSections.addAll(reward.build(futureGroup, bookReward)));
         final List<Section> sections = buildSections(futureGroup, bookReward);
-        SectionGroupAdapter group = new SectionGroupAdapter(
+        SectionGroupAdapter group = new SectionGroupAdapter(shortCode,
                 futureBook, sequence, name, sections);
         futureGroup.set(group);
         if(!awards.isEmpty() && bookBuilder != null) {
@@ -70,4 +72,8 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
         return award(function.apply(new AwardBuilder()));
     }
 
+    public SectionGroupBuilder shortCode(String shortCode) {
+        this.shortCode = shortCode;
+        return this;
+    }
 }

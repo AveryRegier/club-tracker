@@ -24,24 +24,30 @@ import static spark.Spark.halt;
 public class FastSetup {
     public void init(ClubApplication app) {
         before("/test-setup", (request, response) -> {
-            new ProviderBroker(app.getConnector()).persist(new Provider("example", "Example", "", "", "", ""));
-            User user = setupJohnDoe(app);
-            synchronized (this) {
-                String demoId = new UUID(1, 1).toString();
-                if (app.getProgram(demoId) == null) {
+            User user;
+            if(new ProviderBroker(app.getConnector()).find().isEmpty()) {
+                new ProviderBroker(app.getConnector()).persist(new Provider("example", "Example", "", "", "", ""));
+                user = setupJohnDoe(app);
+                synchronized (this) {
+                    String demoId = new UUID(1, 1).toString();
+                    if (app.getProgram(demoId) == null) {
 
-                    Program program = app.setupProgramWithId("ABC", "AWANA", "en_US", demoId);
-                    program.getCurriculum().getSeries().stream().forEach(program::addClub);
+                        Program program = app.setupProgramWithId("ABC", "AWANA", "en_US", demoId);
+                        program.getCurriculum().getSeries().stream().forEach(program::addClub);
 
-                    program.assign(user, ClubLeader.LeadershipRole.COMMANDER);
-                    program.getClubs().stream().findFirst().ifPresent(c -> c.recruit(user));
+                        program.assign(user, ClubLeader.LeadershipRole.COMMANDER);
+                        program.getClubs().stream().findFirst().ifPresent(c -> c.recruit(user));
 
-                    registerDoeFamily(user, program);
+                        registerDoeFamily(user, program);
 
-                    Family family = registerSmithFamily(app, program);
+                        Family family = registerSmithFamily(app, program);
 
-                    signSomeSections(user, family);
+                        signSomeSections(user, family);
+                    }
                 }
+            } else {
+                user = setupJohnDoe(app);
+
             }
             goToMy(request, response, user);
             halt();
@@ -71,6 +77,10 @@ public class FastSetup {
         fields.put("child1.childName.surname", "Smith");
         fields.put("child1.gender", "MALE");
         fields.put("child1.ageGroup", "THIRD_GRADE");
+        fields.put("child2.childName.given", "Jimmy");
+        fields.put("child2.childName.surname", "Smith");
+        fields.put("child2.gender", "MALE");
+        fields.put("child2.ageGroup", "FIRST_GRADE");
         return program.updateRegistrationForm(fields).register(user);
     }
 

@@ -67,7 +67,7 @@ public class TnTCurriculum {
                              .item(i-> alpha(i))))
              .typeAssigner((g, s) -> {
                  if (s == 0) return parent;
-                 else if (s > 7) return extaCredit;
+                 else if (s > 7) return extraCredit;
                  else if (g == 5 && s == 7) return friend;
                  else return regular;
              });
@@ -88,7 +88,7 @@ public class TnTCurriculum {
                      .item(i-> excellence(i))))
              .typeAssigner((g, s) -> {
                  if (s == 0) return parent;
-                 else if (s > 7) return extaCredit;
+                 else if (s > 7) return extraCredit;
                  else if (g == 6 && s == 5) return friend;
                  else if (g == 4 && s == 3) return group;
                  else return regular;
@@ -133,7 +133,7 @@ public class TnTCurriculum {
                             .item(i-> challenge(i))))
              .typeAssigner((g, s) -> {
                  if (s == 0) return parent;
-                 else if (s > 7) return extaCredit;
+                 else if (s > 7) return extraCredit;
                  else if (g == 1 && s == 7) return friend;
                  else return regular;
              });
@@ -156,7 +156,7 @@ public class TnTCurriculum {
                            .item(i-> timothy(i))))
              .typeAssigner((g, s) -> {
                  if (s == 0) return parent;
-                 else if (s > 7) return extaCredit;
+                 else if (s > 7) return extraCredit;
                  else if (g == 1 && s == 7) return friend;
                  else return regular;
              });

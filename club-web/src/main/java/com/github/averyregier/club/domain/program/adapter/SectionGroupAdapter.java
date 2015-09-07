@@ -11,12 +11,14 @@ import java.util.List;
 * Created by avery on 9/7/2014.
 */
 class SectionGroupAdapter implements SectionGroup {
+    private String shortCode;
     private Later<Book> futureBook;
     private String name;
     private final List<Section> sections;
     private int sequence;
 
-    public SectionGroupAdapter(Later<Book> futureBook, int sequence, String name, List<Section> sections) {
+    public SectionGroupAdapter(String shortCode, Later<Book> futureBook, int sequence, String name, List<Section> sections) {
+        this.shortCode = shortCode;
         this.futureBook = futureBook;
         this.name = name;
         this.sections = sections;
@@ -50,7 +52,7 @@ class SectionGroupAdapter implements SectionGroup {
 
     @Override
     public String getShortCode() {
-        return Integer.toString(sequence());
+        return shortCode;
     }
 
     @Override

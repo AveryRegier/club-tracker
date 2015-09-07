@@ -1,6 +1,7 @@
 package com.github.averyregier.club.domain.program;
 
 import com.github.averyregier.club.domain.program.adapter.CurriculumBuilder;
+import com.github.averyregier.club.domain.program.awana.SparksCurriculum;
 import com.github.averyregier.club.domain.program.awana.TnTCurriculum;
 
 import java.util.Optional;
@@ -12,6 +13,7 @@ public enum Programs {
     AWANA {
         private Curriculum awana = new CurriculumBuilder()
                 .shortCode("AWANA")
+                .curriculum(c -> SparksCurriculum.build(c))
                 .curriculum(c -> TnTCurriculum.build(c))
                 .build();
 

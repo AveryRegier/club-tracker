@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.*;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 public class TnTCurriculumTest {
     Curriculum classUnderTest = TnTCurriculum.get();
@@ -317,7 +316,7 @@ public class TnTCurriculumTest {
 
     private int assertRegularSections(SectionGroup group) {
         List<Section> regular = group.getSections().stream()
-                .filter(s -> s.getSectionType() != extaCredit &&
+                .filter(s -> s.getSectionType() != extraCredit &&
                         s.getSectionType() != parent)
                 .collect(Collectors.toList());
 
@@ -341,7 +340,7 @@ public class TnTCurriculumTest {
 
     private void assertExtraCreditSections(SectionGroup group, int sectionNumber) {
         List<Section> extraCredit = group.getSections().stream()
-                .filter(s -> s.getSectionType() == extaCredit)
+                .filter(s -> s.getSectionType() == TnTSectionTypes.extraCredit)
                 .collect(Collectors.toList());
 
         assertEquals(3, extraCredit.size());

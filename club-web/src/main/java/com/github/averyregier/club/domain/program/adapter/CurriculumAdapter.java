@@ -47,6 +47,8 @@ class CurriculumAdapter implements Curriculum {
                         break;
                     }
                 }
+            } else if(parentCurriculum != null && split.length > 0 && split[0].startsWith(parentCurriculum.get().getId())) {
+                return parentCurriculum.get().lookup(sectionId);
             }
         }
         return Optional.empty();

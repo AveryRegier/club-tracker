@@ -14,7 +14,7 @@
 <form method="post">
     <div class="inputForm">
     <fieldset class="inputGroup">
-        <legend class="inputGroupLabel">Sign Section</legend>
+        <legend class="inputGroupLabel">Sign Section <#include "sectionName.ftl"></legend>
         <div class="inputGroupFields">
             <div class="inputField">
                 <label>Clubber Name:</label>
@@ -22,7 +22,7 @@
             </div>
             <div class="inputField">
                 <label>Section:</label>
-                <div class="staticField"><#include "sectionName.ftl"></div>
+                <div class="staticField">${section.group.name}-${section.shortCode}</div>
             </div>
             <#if record.signing.isPresent()>
                 <#assign signing=record.signing.get()>

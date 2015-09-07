@@ -1,6 +1,7 @@
 package com.github.averyregier.club.domain.program.adapter;
 
 import com.github.averyregier.club.domain.program.AccomplishmentLevel;
+import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
 import com.github.averyregier.club.domain.program.awana.TnTSectionTypes;
@@ -60,11 +61,11 @@ public class SectionGroupAdapterTest{
     public void add2Awards() {
         BookBuilder bookBuilder = new BookBuilder(0);
         SectionGroup group = new SectionGroupBuilder(1)
-                .award(a->a
+                .award(a -> a
                         .section(1, TnTSectionTypes.regular)
                         .section(3, TnTSectionTypes.regular))
                 .award(a -> a
-                        .section(2, TnTSectionTypes.extaCredit))
+                        .section(2, TnTSectionTypes.extraCredit))
                 .build(bookBuilder);
         bookBuilder.build();
 
@@ -79,4 +80,17 @@ public class SectionGroupAdapterTest{
         assertTrue(section2.getAwards(AccomplishmentLevel.group).iterator().next().getSections().contains(section2));
     }
 
+
+    @Test
+    public void testSpecificId() {
+        Curriculum curriculum = new CurriculumBuilder()
+                .shortCode("A")
+                .book(1, b -> b
+                        .shortCode("B")
+                        .publicationYear(1)
+                        .group(2, g -> g
+                                .shortCode("ID"))) // what we're actually testing
+                .build();
+        assertEquals("A:B©1:ID", curriculum.getBooks().get(0).getSectionGroups().get(0).getId());
+    }
 }
