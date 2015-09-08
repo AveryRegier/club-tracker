@@ -373,7 +373,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
 
     void register(ClubberAdapter clubber) {
         clubs().stream()
-                .filter(c -> !c.getCurriculum().recommendedBookList(clubber.getCurrentAgeGroup()).isEmpty())
+                .filter(c -> c.accepts(clubber))
                 .forEach(c -> c.addClubber(clubber));
     }
 

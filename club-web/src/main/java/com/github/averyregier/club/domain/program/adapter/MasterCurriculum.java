@@ -15,7 +15,7 @@ public class MasterCurriculum extends CurriculumAdapter {
     private List<Curriculum> series;
 
     public MasterCurriculum(String shortCode, List<Curriculum> series) {
-        super(shortCode, collectBooks(series), null);
+        super(shortCode, collectBooks(series), null, null);
         this.series = series;
     }
 
@@ -29,8 +29,8 @@ public class MasterCurriculum extends CurriculumAdapter {
             String substring = sectionId.substring(getShortCode().length() + 1);
             return series.stream()
                     .map(s->s.lookup(substring))
-                    .filter(o->o.isPresent())
-                    .findFirst().orElse(Optional.empty());
+                    .filter(Optional::isPresent)
+                    .findFirst().orElseGet(Optional::empty);
         } else return Optional.empty();
     }
 

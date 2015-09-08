@@ -1,9 +1,6 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.Book;
-import com.github.averyregier.club.domain.program.Curriculum;
-import com.github.averyregier.club.domain.program.Section;
-import com.github.averyregier.club.domain.program.SectionGroup;
+import com.github.averyregier.club.domain.program.*;
 import com.github.averyregier.club.domain.program.awana.TnTSectionTypes;
 import org.junit.Test;
 
@@ -100,7 +97,16 @@ public class CurriculumAdapterTest {
         assertEquals(1, curriculum.getSeries().size());
         assertEquals(curriculum.getSeries().get(0).getBooks(), curriculum.getBooks());
         assertEquals(curriculum.getSeries().get(0), curriculum.getSeries("A:C").orElse(null));
+    }
 
+    @Test
+    public void accepts() {
+        Curriculum curriculum = new CurriculumBuilder()
+                .accepts(AgeGroup.DefaultAgeGroup.COLLEGE, AgeGroup.DefaultAgeGroup.TWENTIES)
+                .build();
 
+        assertFalse(curriculum.accepts(AgeGroup.DefaultAgeGroup.SECOND_GRADE));
+        assertTrue(curriculum.accepts(AgeGroup.DefaultAgeGroup.COLLEGE));
+        assertTrue(curriculum.accepts(AgeGroup.DefaultAgeGroup.TWENTIES));
     }
 }

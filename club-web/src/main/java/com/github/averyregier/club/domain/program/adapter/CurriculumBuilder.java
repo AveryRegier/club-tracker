@@ -1,12 +1,15 @@
 package com.github.averyregier.club.domain.program.adapter;
 
+import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.utility.builder.Builder;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
@@ -18,6 +21,7 @@ public class CurriculumBuilder implements Builder<Curriculum> {
     private List<BookBuilder> books = new ArrayList<>();
     private List<CurriculumBuilder> series = new ArrayList<>();
     private Later<Curriculum> parentCurriculum;
+    private Function<AgeGroup, Boolean> acceptsFn;
 
     public Curriculum build() {
         Later<Curriculum> curriculumLater = new Later<>();
@@ -29,7 +33,7 @@ public class CurriculumBuilder implements Builder<Curriculum> {
             curriculum = new MasterCurriculum(shortCode, series);
         } else {
             List<Book> bookList = buildBooks(curriculumLater);
-            curriculum = new CurriculumAdapter(shortCode, bookList, parentCurriculum);
+            curriculum = new CurriculumAdapter(shortCode, bookList, parentCurriculum, acceptsFn);
         }
         curriculumLater.set(curriculum);
         return curriculum;
@@ -57,6 +61,12 @@ public class CurriculumBuilder implements Builder<Curriculum> {
 
     public CurriculumBuilder curriculum(UnaryOperator<CurriculumBuilder> f) {
         series.add(f.apply(new CurriculumBuilder()));
+        return this;
+    }
+
+    public CurriculumBuilder accepts(AgeGroup... ageGroups) {
+        List<AgeGroup> ageGroupList = Arrays.asList(ageGroups);
+        this.acceptsFn = ageGroupList::contains;
         return this;
     }
 }

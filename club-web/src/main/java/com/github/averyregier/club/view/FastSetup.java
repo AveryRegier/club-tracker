@@ -36,7 +36,7 @@ public class FastSetup {
                         program.getCurriculum().getSeries().stream().forEach(program::addClub);
 
                         program.assign(user, ClubLeader.LeadershipRole.COMMANDER);
-                        program.getClubs().stream().findFirst().ifPresent(c -> c.recruit(user));
+                        program.getClubs().stream().skip(3).findFirst().ifPresent(c -> c.recruit(user));
 
                         registerDoeFamily(user, program);
 

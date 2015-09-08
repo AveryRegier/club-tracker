@@ -6,6 +6,7 @@ import com.github.averyregier.club.domain.utility.builder.Later;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -15,11 +16,13 @@ class CurriculumAdapter implements Curriculum {
     private final List<Book> bookList;
     private String shortCode;
     private Later<Curriculum> parentCurriculum;
+    private Function<AgeGroup, Boolean> acceptsFn;
 
-    public CurriculumAdapter(String shortCode, List<Book> bookList, Later<Curriculum> parentCurriculum) {
+    public CurriculumAdapter(String shortCode, List<Book> bookList, Later<Curriculum> parentCurriculum, Function<AgeGroup, Boolean> acceptsFn) {
         this.bookList = bookList;
         this.shortCode = shortCode;
         this.parentCurriculum = parentCurriculum;
+        this.acceptsFn = acceptsFn;
     }
 
     @Override
@@ -89,5 +92,14 @@ class CurriculumAdapter implements Curriculum {
     @Override
     public Curriculum getContainer() {
         return parentCurriculum != null ? parentCurriculum.get() : null;
+    }
+
+    @Override
+    public boolean accepts(AgeGroup ageGroup) {
+        return (acceptsFn != null ? acceptsFn : defaultAcceptsFn()).apply(ageGroup);
+    }
+
+    private Function<AgeGroup, Boolean> defaultAcceptsFn() {
+        return ageGroup -> !recommendedBookList(ageGroup).isEmpty();
     }
 }

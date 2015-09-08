@@ -8,7 +8,10 @@ import java.util.Arrays;
 public interface AgeGroup {
     public enum DefaultAgeGroup implements AgeGroup {
         NURSERY,
-        PRESCHOOL,
+        TWO,
+        THREE,
+        FOUR,
+        FIVE,
         KINDERGARTEN,
         FIRST_GRADE,
         SECOND_GRADE,

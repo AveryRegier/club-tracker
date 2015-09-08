@@ -91,4 +91,9 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
                 .filter(AwardPresentation::notPresented)
                 .collect(Collectors.toList());
     }
+
+    boolean accepts(ClubberAdapter clubber) {
+        return getCurriculum().accepts(clubber.getCurrentAgeGroup());
+    }
+
 }

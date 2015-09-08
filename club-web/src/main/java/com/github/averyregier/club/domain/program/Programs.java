@@ -6,6 +6,8 @@ import com.github.averyregier.club.domain.program.awana.TnTCurriculum;
 
 import java.util.Optional;
 
+import static com.github.averyregier.club.domain.program.AgeGroup.DefaultAgeGroup.*;
+
 /**
  * Created by avery on 9/22/14.
  */
@@ -13,8 +15,10 @@ public enum Programs {
     AWANA {
         private Curriculum awana = new CurriculumBuilder()
                 .shortCode("AWANA")
-                .curriculum(c -> SparksCurriculum.build(c))
-                .curriculum(c -> TnTCurriculum.build(c))
+                .curriculum(c -> c.shortCode("Puggles").accepts(TWO, THREE))
+                .curriculum(c -> c.shortCode("Cubbies").accepts(FOUR, FIVE))
+                .curriculum(SparksCurriculum::build)
+                .curriculum(TnTCurriculum::build)
                 .build();
 
         @Override
