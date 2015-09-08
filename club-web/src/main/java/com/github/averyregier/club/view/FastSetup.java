@@ -47,7 +47,6 @@ public class FastSetup {
                 }
             } else {
                 user = setupJohnDoe(app);
-
             }
             goToMy(request, response, user);
             halt();
