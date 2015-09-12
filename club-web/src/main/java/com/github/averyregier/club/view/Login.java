@@ -4,10 +4,7 @@ import com.github.averyregier.club.application.ClubApplication;
 import com.github.averyregier.club.broker.ProviderBroker;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.login.Provider;
-import org.brickred.socialauth.AuthProvider;
-import org.brickred.socialauth.Profile;
-import org.brickred.socialauth.SocialAuthConfig;
-import org.brickred.socialauth.SocialAuthManager;
+import org.brickred.socialauth.*;
 import org.brickred.socialauth.util.BirthDate;
 import spark.Request;
 import spark.Response;
@@ -202,6 +199,7 @@ public class Login extends ModelMaker {
                 conf.setApplicationProperties(properties);
                 manager = new SocialAuthManager();
                 manager.setSocialAuthConfig(conf);
+                manager.setPermission("facebook", Permission.AUTHENTICATE_ONLY);
                 session.attribute("socialAuthManager", manager);
             } catch (Exception e) {
                 throw new RuntimeException(e);
