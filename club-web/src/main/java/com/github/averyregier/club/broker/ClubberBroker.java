@@ -78,6 +78,7 @@ public class ClubberBroker extends PersistenceBroker<Clubber> {
 
             return Optional.of(mapClubber(clubberId, record, ()->{
                 byte[] clubId = record.getClubId();
+                if(clubId == null) return null;
                 return factory.getClubManager().lookup(convert(clubId)).orElse(null);
             }));
         };
