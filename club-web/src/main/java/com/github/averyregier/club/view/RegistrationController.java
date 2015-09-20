@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.ModelAndView;
 import spark.Request;
+import spark.Response;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import java.util.Map;
@@ -52,7 +53,7 @@ public class RegistrationController extends ModelMaker {
                 logger.info("Submitting family registration");
                 RegistrationInformation form = updateForm(app, request);
                 Family family = form.register(getUser(request));
-                response.redirect("/protected/my");
+                postRegistrationRedirect(response, family);
                 halt();
             }
         });
@@ -110,13 +111,13 @@ public class RegistrationController extends ModelMaker {
         before("/protected/:id/newClubber", (request, response) -> {
             User user = getUser(request);
             String programId = request.params(":id");
-            if(!leadsProgram(user, programId)) {
+            if (!leadsProgram(user, programId)) {
                 response.redirect("/protected/my");
                 halt();
             } else if ("submit".equals(request.queryParams("submit"))) {
                 logger.info("Submitting family registration");
                 Family family = updateForm(app, request).register();
-                response.redirect("/protected/my");
+                postRegistrationRedirect(response, family);
                 halt();
             }
         });
@@ -124,6 +125,22 @@ public class RegistrationController extends ModelMaker {
         post("/protected/:id/newClubber", (request, response) -> {
             return updateRegistrationForm(app, request);
         }, new FreeMarkerEngine());
+    }
+
+    private void postRegistrationRedirect(Response response, Family family) {
+        if (shouldInvite(family)) {
+            response.redirect("/protected/family/" + family.getId() + "/invite");
+        } else {
+            response.redirect("/protected/my");
+        }
+    }
+
+    private boolean shouldInvite(Family family) {
+        return family.getParents().stream() // for now, parents only, until we get clubber features
+                .filter(p -> p.getEmail().isPresent())
+                .filter(p -> !p.getLogin().isPresent())
+                .findAny()
+                .isPresent();
     }
 
     private RegistrationInformation updateForm(ClubApplication app, Request request) {

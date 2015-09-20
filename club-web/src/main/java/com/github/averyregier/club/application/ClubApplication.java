@@ -3,8 +3,8 @@ package com.github.averyregier.club.application;
 import com.github.averyregier.club.broker.*;
 import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.PersonManager;
-import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.UserManager;
+import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.club.RegistrationSection;
 import com.github.averyregier.club.domain.program.Programs;
@@ -80,6 +80,7 @@ public class ClubApplication implements SparkApplication, ServletContextListener
         new ProviderSetup().init(this);
         new SetupController().init(this);
         new RegistrationController().init(this);
+        new InviteController().init(this);
         new RestAPI().init(this);
         new ClubController().init(this);
     }
@@ -224,8 +225,8 @@ public class ClubApplication implements SparkApplication, ServletContextListener
     }
 
     @Override
-    public Collection<Program> getPrograms(User user) {
-        return user.getClubs().stream()
+    public Collection<Program> getPrograms(Person person) {
+        return person.getClubs().stream()
                 .flatMap(c -> Optional.ofNullable(c.getProgram())
                     .map(Stream::of).orElse(Stream.empty()))
                 .distinct()

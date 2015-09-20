@@ -68,7 +68,7 @@ public class FastSetup {
         profile.setEmail("mary.smith@example.com");
         profile.setValidatedId("Example-ID-For-Mary-Smith");
         profile.setProviderId("example");
-        User user = Login.setupUser(app, profile);
+        User user = Login.setupUser(app, profile, null);
 
         RegistrationInformation form = program.createRegistrationForm(user);
         Map<String, String> fields = form.getFields();
@@ -109,6 +109,6 @@ public class FastSetup {
         profile.setEmail("john.doe@example.com");
         profile.setValidatedId("Example-ID-For-John-Doe");
         profile.setProviderId("example");
-        return Login.setupUser(app, profile);
+        return Login.setupUser(app, profile, null);
     }
 }

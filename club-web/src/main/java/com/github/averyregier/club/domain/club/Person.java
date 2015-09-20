@@ -2,6 +2,7 @@ package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.User;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -9,6 +10,8 @@ import java.util.Optional;
  */
 public interface Person extends Registered {
 
+
+    Collection<Club> getClubs();
 
     public enum Gender {
         MALE {

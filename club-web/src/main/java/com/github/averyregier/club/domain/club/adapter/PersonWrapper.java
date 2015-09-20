@@ -5,6 +5,7 @@ import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.utility.InputField;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -86,5 +87,10 @@ public abstract class PersonWrapper implements Person {
     @Override
     public Map<InputField, String> getValues() {
         return getPerson().getValues();
+    }
+
+    @Override
+    public Collection<Club> getClubs() {
+        return getPerson().getClubs();
     }
 }

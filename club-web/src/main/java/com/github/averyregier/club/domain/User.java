@@ -1,7 +1,5 @@
 package com.github.averyregier.club.domain;
 
-import com.github.averyregier.club.domain.club.Club;
-import com.github.averyregier.club.domain.club.ClubMember;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.NameBuilder;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
@@ -12,13 +10,11 @@ import com.github.averyregier.club.view.UserBean;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Random;
-import java.util.function.Consumer;
 
-import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.change;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.safeEquals;
 
 /**
  * Created by avery on 9/2/14.
@@ -56,30 +52,6 @@ public class User extends PersonWrapper implements Person {
             return true;
         }
         return false;
-    }
-
-    public Collection<Club> getClubs() {
-        HashSet<Club> clubs = new HashSet<>();
-        addPersonalClubs(this, clubs);
-        asParent().ifPresent(
-                parent->parent.getFamily().ifPresent(
-                        f -> {
-                            f.getClubbers().stream()
-                                    .forEach(addClub(clubs));
-                            getOther(f.getParents(), parent).ifPresent(
-                                    spouse -> addPersonalClubs(spouse, clubs));
-                        }));
-        return clubs;
-    }
-
-    private static void addPersonalClubs(Person person, HashSet<Club> clubs) {
-        person.asClubber().ifPresent(addClub(clubs));
-        person.asClubLeader().ifPresent(addClub(clubs));
-        person.asListener().ifPresent(addClub(clubs));
-    }
-
-    private static Consumer<ClubMember> addClub(HashSet<Club> clubs) {
-        return member->member.getClub().ifPresent(clubs::add);
     }
 
     public class Login {

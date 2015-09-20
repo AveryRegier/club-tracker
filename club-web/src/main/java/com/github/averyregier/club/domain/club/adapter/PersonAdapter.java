@@ -5,10 +5,10 @@ import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.utility.InputField;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Consumer;
+
+import static com.github.averyregier.club.domain.utility.UtilityMethods.getOther;
 
 /**
 * Created by avery on 12/28/14.
@@ -203,5 +203,30 @@ public class PersonAdapter implements Person, PersonUpdater {
 
     public void setValues(Map<InputField, String> values) {
         this.registration = new LinkedHashMap<>(values);
+    }
+
+    @Override
+    public Collection<Club> getClubs() {
+        HashSet<Club> clubs = new HashSet<>();
+        addPersonalClubs(this, clubs);
+        asParent().ifPresent(
+                parent->parent.getFamily().ifPresent(
+                        f -> {
+                            f.getClubbers().stream()
+                                    .forEach(addClub(clubs));
+                            getOther(f.getParents(), parent).ifPresent(
+                                    spouse -> addPersonalClubs(spouse, clubs));
+                        }));
+        return clubs;
+    }
+
+    private static void addPersonalClubs(Person person, HashSet<Club> clubs) {
+        person.asClubber().ifPresent(addClub(clubs));
+        person.asClubLeader().ifPresent(addClub(clubs));
+        person.asListener().ifPresent(addClub(clubs));
+    }
+
+    private static Consumer<ClubMember> addClub(HashSet<Club> clubs) {
+        return member->member.getClub().ifPresent(clubs::add);
     }
 }

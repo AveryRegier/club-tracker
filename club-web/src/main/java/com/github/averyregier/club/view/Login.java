@@ -1,8 +1,11 @@
 package com.github.averyregier.club.view;
 
 import com.github.averyregier.club.application.ClubApplication;
+import com.github.averyregier.club.broker.InviteBroker;
 import com.github.averyregier.club.broker.ProviderBroker;
 import com.github.averyregier.club.domain.User;
+import com.github.averyregier.club.domain.club.Invitation;
+import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.login.Provider;
 import org.brickred.socialauth.*;
 import org.brickred.socialauth.util.BirthDate;
@@ -15,6 +18,7 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 import static spark.Spark.*;
@@ -37,13 +41,28 @@ public class Login extends ModelMaker {
     }
 
     public void init(final ClubApplication app) {
+        before("/invite/:code", (request, response) -> {
+            String code = request.params(":code");
+            Invitation invitation = findOpenInvite(app, code);
+
+            request.session().attribute("invite", invitation);
+            Optional<Program> program = app.getPrograms(invitation.getPerson()).stream().findFirst();
+            if (program.isPresent()) {
+                String programId = program.get().getId();
+                response.redirect("/protected/" + programId + "/family");
+            } else {
+                response.redirect("/protected/my");
+            }
+            halt();
+        });
+
         before("/protected/*", (request, response) -> {
             // ... check if authenticated
             String auth = request.cookie("auth");
-            if(auth != null) {
+            if (auth != null) {
                 Optional<User> user = app.getUserManager().getUser(
                         request.cookie("provider"), request.cookie("userID"));
-                if(user.isPresent() && user.get().authenticate(auth)) {
+                if (user.isPresent() && user.get().authenticate(auth)) {
                     request.attribute("user", user);
                     return;
                 }
@@ -83,10 +102,10 @@ public class Login extends ModelMaker {
             try {
                 manager.connect(getRequestParams(request));
                 AuthProvider provider = manager.getCurrentAuthProvider();
-                if(provider == null) {
+                if (provider == null) {
                     response.redirect("/login");
                 } else {
-                    User auser = setupUser(app, provider.getUserProfile());
+                    User auser = setupUser(app, provider.getUserProfile(), request.session().attribute("invite"));
                     resetCookies(request, response, auser);
                 }
             } catch (Exception e) {
@@ -97,12 +116,31 @@ public class Login extends ModelMaker {
         });
     }
 
+    private Invitation findOpenInvite(ClubApplication app, String code) {
+        List<Invitation> invitations = new InviteBroker(app).find(code)
+                .stream()
+                .filter(i -> !i.getCompleted().isPresent())
+                .collect(Collectors.toList());
+        if (invitations.size() != 1) {
+            throw new IllegalArgumentException("Invalid invitation code");
+        }
+
+        return invitations.get(0);
+    }
+
     private List<Provider> getProviders(ClubApplication app) {
         return new ProviderBroker(app.getConnector()).find();
     }
 
-    public static User setupUser(ClubApplication app, Profile userProfile) {
-        return app.getUserManager().syncUser(mapUser(userProfile));
+    public static User setupUser(ClubApplication app, Profile userProfile, Invitation invite) {
+        UserBean bean = mapUser(userProfile);
+        if(invite != null) {
+            User user = app.getUserManager().acceptInvite(bean, invite.getPerson());
+            new InviteBroker(app).persist(invite.complete());
+            return user;
+        } else {
+            return app.getUserManager().syncUser(bean);
+        }
     }
 
     private static UserBean mapUser(Profile profile) {

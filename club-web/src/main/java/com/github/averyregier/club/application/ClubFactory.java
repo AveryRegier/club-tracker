@@ -3,8 +3,8 @@ package com.github.averyregier.club.application;
 import com.github.averyregier.club.broker.Connector;
 import com.github.averyregier.club.domain.ClubManager;
 import com.github.averyregier.club.domain.PersonManager;
-import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.UserManager;
+import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.Program;
 
 import java.util.Collection;
@@ -27,5 +27,5 @@ public interface ClubFactory {
 
     ClubManager getClubManager();
 
-    Collection<Program> getPrograms(User user);
+    Collection<Program> getPrograms(Person person);
 }
