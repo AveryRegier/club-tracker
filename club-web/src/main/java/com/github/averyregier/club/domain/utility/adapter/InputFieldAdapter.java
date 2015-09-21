@@ -8,10 +8,7 @@ import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
@@ -142,7 +139,15 @@ public class InputFieldAdapter implements InputField {
     }
 
     private static UpdateFunction extraRegFieldsUpdater() {
-        return (d, p, m) -> findRegistered(d, p).ifPresent(a -> a.setValue(d.asField().get(), orNull(m, Object::toString)));
+        return (d, p, m) -> findRegistered(d, p)
+                .ifPresent(a -> a.setValue(d.asField().get(), orNull(m, InputFieldAdapter::asString)));
+    }
+
+    private static String asString(Object o) {
+        if(o instanceof Date) {
+            return Type.dateFormat.get().format((Date)o);
+        }
+        return o.toString();
     }
 
     private static Optional<Registered> findRegistered(InputFieldDesignator d, Person p) {

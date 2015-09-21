@@ -4,6 +4,9 @@ import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.utility.adapter.UpdateFunction;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -60,11 +63,30 @@ public interface InputField extends InputFieldDesignator {
                     return null;
                 }
             }
+        },
+        date {
+            @Override
+            Object validate(String input) {
+                if(input == null) return null;
+                try {
+                    return dateFormat.get().parse(input.trim());
+                } catch (ParseException e) {
+                    return null;
+                }
+            }
         };
 
         Object validate(String input) {
             return input;
         }
+
+        public static ThreadLocal<DateFormat> dateFormat = new ThreadLocal<DateFormat>() {
+            @Override
+            protected DateFormat initialValue() {
+                return new SimpleDateFormat("yyyy-mm-dd");
+            }
+        };
+
     }
 
     Type getType();

@@ -15,7 +15,9 @@
             <option value="${value.value}"<#if value.value = fieldValue || value.default> selected</#if>>${value.displayName}</option>
         </#list>
         </select>
-        <#else>
+    <#elseif descriptor.type.name() == "date">
+        <input type="date" name="${descriptor.id}" id="${descriptor.id}" value="${fieldValue}" onfocus="this.select()">
+    <#else>
         <input type="text" name="${descriptor.id}" id="${descriptor.id}" value="${fieldValue}" onfocus="this.select()">
     </#if>
     </div>

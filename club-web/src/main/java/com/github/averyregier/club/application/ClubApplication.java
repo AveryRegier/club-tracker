@@ -29,6 +29,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.github.averyregier.club.domain.utility.InputField.Type.date;
 import static com.github.averyregier.club.domain.utility.InputField.Type.text;
 import static spark.Spark.exception;
 import static spark.SparkBase.port;
@@ -143,6 +144,11 @@ public class ClubApplication implements SparkApplication, ServletContextListener
                 .name("Known Allergies/Medical Conditions")
 //                .id("medical")
                 .type(text)
+                .build());
+        program.addField(RegistrationSection.child, new InputFieldBuilder()
+                .name("Birth Date")
+//                .id("birthdate")
+                .type(date)
                 .build());
         program.addField(RegistrationSection.household, new InputFieldGroupBuilder()
                 .name("Emergency Contact")
