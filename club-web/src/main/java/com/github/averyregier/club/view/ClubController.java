@@ -43,7 +43,19 @@ public class ClubController extends ModelMaker {
                 model.put("club", club.get());
                 return new ModelAndView(model, "viewClub.ftl");
             } else {
-                response.redirect("/protected/program");
+                response.redirect("/protected/my");
+                return null;
+            }
+        }, new FreeMarkerEngine());
+
+        get("/protected/club/:club/listeners", (request, response) -> {
+            Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
+            if(club.isPresent()) {
+                HashMap<Object, Object> model = new HashMap<>();
+                model.put("club", club.get());
+                return new ModelAndView(model, "addListeners.ftl");
+            } else {
+                response.redirect("/protected/my");
                 return null;
             }
         }, new FreeMarkerEngine());
@@ -98,7 +110,7 @@ public class ClubController extends ModelMaker {
             User user = getUser(request);
             Map<String, Object> model = toMap("me", user);
             model.put("programs", app.getPrograms(user));
-            user.asClubLeader().ifPresent(l->l.getClub().ifPresent(c->model.put("mygroup", c)));
+            user.asClubLeader().ifPresent(l -> l.getClub().ifPresent(c -> model.put("mygroup", c)));
             return new ModelAndView(model, "my.ftl");
         }, new FreeMarkerEngine());
 

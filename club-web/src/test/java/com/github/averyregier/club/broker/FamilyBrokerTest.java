@@ -111,6 +111,6 @@ public class FamilyBrokerTest {
                 (s) -> s.assertUUID(familyId, FAMILY.ID),
                 FAMILY,
                 (record) -> record.setValue(FAMILY.ADDRESS_ID, addressId.getBytes())))
-                .getAddressId(familyId));
+                .getAddressId(familyId).get());
     }
 }

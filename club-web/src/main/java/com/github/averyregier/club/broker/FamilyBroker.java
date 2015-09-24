@@ -7,6 +7,7 @@ import com.github.averyregier.club.db.tables.records.FamilyRecord;
 import com.github.averyregier.club.domain.club.Address;
 import com.github.averyregier.club.domain.club.Family;
 import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 import com.github.averyregier.club.repository.PersistedFamily;
 import org.jooq.DSLContext;
 import org.jooq.TableField;
@@ -70,13 +71,14 @@ public class FamilyBroker extends PersistenceBroker<Family> {
     }
 
     private Optional<Address> getAddress(String familyId) {
-        return new AddressBroker(connector).find(getAddressId(familyId));
+        return UtilityMethods.optMap(getAddressId(familyId),
+                id -> new AddressBroker(connector).find(id));
     }
 
-    protected String getAddressId(String familyId) {
-        return query(create -> convert(create
+    protected Optional<String> getAddressId(String familyId) {
+        return query(create -> create
                 .selectFrom(FAMILY)
                 .where(FAMILY.ID.eq(familyId.getBytes()))
-                .fetchOne().getAddressId()));
+                .fetch().stream().findFirst().map(r -> convert(r.getAddressId())));
     }
 }
