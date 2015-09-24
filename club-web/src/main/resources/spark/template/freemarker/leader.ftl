@@ -1,7 +1,12 @@
-<div class="menu"><a href="/protected/setup">Club Setup</a></div>
-<#assign group=me.asClubLeader().get().club.get()>
-<div class="menu"><a href="/protected/club/${group.id}">Recruit Listeners</a></div>
-<div class="menu"><a href="/protected/club/${group.id}/awards">Awards</a></div>
-<div class="menu"><a href="/protected/${group.id}/newClubber">Register New Clubber</a></div>
+<div class="menu"><a href="/protected/club/${mygroup.id}/awards">Awards</a></div>
+
+<#if mygroup.asProgram().isPresent()>
+    <#assign program=mygroup.asProgram().get()>
+    <div class="menu"><a href="/protected/program/${program.id}">Club Setup</a></div>
+    <div class="menu"><a href="/protected/${program.id}/newClubber">Register New Clubber</a></div>
+<#else>
+    <#assign program=mygroup.program>
+</#if>
+<#include "clubMenu.ftl">
 
 <#include "clubberStatus.ftl">

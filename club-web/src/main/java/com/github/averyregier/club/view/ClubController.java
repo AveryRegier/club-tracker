@@ -98,6 +98,7 @@ public class ClubController extends ModelMaker {
             User user = getUser(request);
             Map<String, Object> model = toMap("me", user);
             model.put("programs", app.getPrograms(user));
+            user.asClubLeader().ifPresent(l->l.getClub().ifPresent(c->model.put("mygroup", c)));
             return new ModelAndView(model, "my.ftl");
         }, new FreeMarkerEngine());
 
