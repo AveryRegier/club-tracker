@@ -12,10 +12,10 @@ import java.util.Optional;
  */
 public interface RegistrationInformation {
 
-    public List<InputFieldDesignator> getForm();
-    public Map<String, String> getFields();
+    List<InputFieldDesignator> getForm();
+    Map<String, String> getFields();
 
-    public default Map<InputFieldDesignator, Object> validate() {
+    default Map<InputFieldDesignator, Object> validate() {
         Map<InputFieldDesignator, Object> results = new LinkedHashMap<>();
 
         Map<String, String> fields = getFields();
