@@ -91,10 +91,9 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     public RegistrationInformation createRegistrationForm() {
         InputFieldGroup parent = buildParentFields();
         InputFieldGroup household = buildHouseholdFields();
-        InputFieldGroup child1 = buildChildFields(new InputFieldGroupBuilder().id("child1").name("About Child"));
 
         InputField action = StandardInputFields.action.createField(getLocale()).build();
-        List<InputFieldDesignator> list = Arrays.asList(parent, household, child1, action);
+        List<InputFieldDesignator> list = Arrays.asList(parent, household, action);
 
         return new ProgramRegistrationInformation(list, Collections.emptyMap());
     }

@@ -4,6 +4,7 @@
     <#assign program=mygroup.asProgram().get()>
     <div class="menu"><a href="/protected/program/${program.id}">Club Setup</a></div>
     <div class="menu"><a href="/protected/${program.id}/newClubber">Register New Clubber</a></div>
+    <div class="menu"><a href="/protected/${program.id}/newWorker">Register New Worker</a></div>
 <#else>
     <#assign program=mygroup.program>
 </#if>

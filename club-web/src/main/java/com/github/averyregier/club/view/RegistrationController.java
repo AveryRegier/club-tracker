@@ -4,6 +4,7 @@ import com.github.averyregier.club.application.ClubApplication;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.Family;
 import com.github.averyregier.club.domain.club.Parent;
+import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.club.RegistrationInformation;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.slf4j.Logger;
@@ -99,6 +100,21 @@ public class RegistrationController extends ModelMaker {
             User user = getUser(request);
             String programId = request.params(":id");
             if (leadsProgram(user, programId)) {
+                Program program = app.getProgram(programId);
+                RegistrationInformation form = program.updateRegistrationForm(UtilityMethods.map("action", "child").build());
+                return new spark.ModelAndView(
+                        toMap("regInfo", form),
+                        "family.ftl");
+            }
+            response.redirect("/protected/my");
+            halt();
+            return null;
+        }, new FreeMarkerEngine());
+
+        get("/protected/:id/newWorker", (request, response) -> {
+            User user = getUser(request);
+            String programId = request.params(":id");
+            if (leadsProgram(user, programId)) {
                 return new spark.ModelAndView(
                         toMap("regInfo", app.getProgram(programId).createRegistrationForm()),
                         "family.ftl");
@@ -109,22 +125,34 @@ public class RegistrationController extends ModelMaker {
         }, new FreeMarkerEngine());
 
         before("/protected/:id/newClubber", (request, response) -> {
-            User user = getUser(request);
-            String programId = request.params(":id");
-            if (!leadsProgram(user, programId)) {
-                response.redirect("/protected/my");
-                halt();
-            } else if ("submit".equals(request.queryParams("submit"))) {
-                logger.info("Submitting family registration");
-                Family family = updateForm(app, request).register();
-                postRegistrationRedirect(response, family);
-                halt();
-            }
+            validateMayCreateNewPeople(app, request, response);
         });
 
         post("/protected/:id/newClubber", (request, response) -> {
             return updateRegistrationForm(app, request);
         }, new FreeMarkerEngine());
+
+        before("/protected/:id/newWorker", (request, response) -> {
+            validateMayCreateNewPeople(app, request, response);
+        });
+
+        post("/protected/:id/newWorker", (request, response) -> {
+            return updateRegistrationForm(app, request);
+        }, new FreeMarkerEngine());
+    }
+
+    private void validateMayCreateNewPeople(ClubApplication app, Request request, Response response) {
+        User user = getUser(request);
+        String programId = request.params(":id");
+        if (!leadsProgram(user, programId)) {
+            response.redirect("/protected/my");
+            halt();
+        } else if ("submit".equals(request.queryParams("submit"))) {
+            logger.info("Submitting family registration");
+            Family family = updateForm(app, request).register();
+            postRegistrationRedirect(response, family);
+            halt();
+        }
     }
 
     private void postRegistrationRedirect(Response response, Family family) {

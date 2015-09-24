@@ -3,10 +3,7 @@ package com.github.averyregier.club.domain.club;
 import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
-import com.github.averyregier.club.domain.utility.Action;
-import com.github.averyregier.club.domain.utility.InputField;
-import com.github.averyregier.club.domain.utility.InputFieldDesignator;
-import com.github.averyregier.club.domain.utility.InputFieldGroup;
+import com.github.averyregier.club.domain.utility.*;
 import com.github.averyregier.club.view.UserBean;
 import org.junit.Before;
 import org.junit.Test;
@@ -372,7 +369,7 @@ public class RegistrationFormTest {
 
     @Test
     public void visitorRegistration() {
-        RegistrationInformation registrationForm = program.createRegistrationForm();
+        RegistrationInformation registrationForm = program.updateRegistrationForm(UtilityMethods.map("action", "child").build());
 
         assertVisitorRegistration(registrationForm);
 

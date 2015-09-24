@@ -7,6 +7,7 @@ import com.github.averyregier.club.domain.program.Programs;
 import com.github.averyregier.club.domain.program.adapter.MasterCurriculum;
 import com.github.averyregier.club.domain.program.awana.TnTCurriculum;
 import com.github.averyregier.club.domain.utility.InputField;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 import com.github.averyregier.club.domain.utility.adapter.InputFieldBuilder;
 import org.junit.Test;
 
@@ -230,6 +231,11 @@ public class ProgramAdapterTest {
         assertEquals(program, program.addField(RegistrationSection.child, childField));
 
         RegistrationInformation form = program.createRegistrationForm();
+
+        assertFieldInGroup(form, 0, parentField);
+        assertFieldInGroup(form, 1, householdField);
+
+        form = program.updateRegistrationForm(UtilityMethods.map("action", "child").build());
 
         assertFieldInGroup(form, 0, parentField);
         assertFieldInGroup(form, 1, householdField);
