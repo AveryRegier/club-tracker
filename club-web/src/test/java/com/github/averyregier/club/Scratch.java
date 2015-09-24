@@ -39,7 +39,7 @@ public class Scratch {
         club.recruit(diane);
 
         User parent = userManager.createUser("provider", "Parent");
-        Map<String, String> values = UtilityMethods.map("child1.childName.friendly", "Betty")
+        Map<String, String> values = UtilityMethods.map("child1.childName.given", "Betty")
                 .put("child1.ageGroup", "THIRD_GRADE")
                 .put("child1.gender", "FEMALE")
                 .build();

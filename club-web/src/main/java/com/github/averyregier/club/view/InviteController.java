@@ -139,7 +139,14 @@ public class InviteController extends ModelMaker {
     private Program findInvitedProgram(Invitation invite) {
         LinkedHashSet<Club> clubs = new LinkedHashSet<>(invite.by().getClubs());
         clubs.retainAll(invite.getPerson().getClubs());
-        return clubs.stream().map(Club::getProgram).distinct().findFirst().orElseThrow(IllegalStateException::new);
+        return clubs.stream()
+                .map(Club::getProgram)
+                .distinct().findFirst()
+                .orElseGet(() -> chain(
+                        invite.by().asClubLeader(),
+                        ClubMember::getClub)
+                    .map(ClubGroup::getProgram)
+                    .orElseThrow(IllegalArgumentException::new));
     }
 
     private String lines(String... lines) {

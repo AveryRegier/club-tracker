@@ -77,7 +77,7 @@ public interface InputField extends InputFieldDesignator {
         };
 
         Object validate(String input) {
-            return input;
+            return UtilityMethods.killWhitespace(input);
         }
 
         public static ThreadLocal<DateFormat> dateFormat = new ThreadLocal<DateFormat>() {

@@ -67,4 +67,8 @@ public class AddressAdapter implements Address {
     public CountryValue getCountry() {
         return country;
     }
+
+    public boolean isEmpty() {
+        return line1 == null && line2 == null && city == null && postalCode == null && territory == null;
+    }
 }

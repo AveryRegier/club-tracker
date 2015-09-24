@@ -86,7 +86,7 @@ public class RegistrationTest {
                 .put("me.name.surname", "Flubber")
                 .put("child1.childName.given", "Johny")
                 .put("child1.childName.surname", "Flubber")
-                .put("child1.ageGroup","THIRD_GRADE")
+                .put("child1.ageGroup", "THIRD_GRADE")
                 .build();
         RegistrationInformation form = program.updateRegistrationForm(formValues);
         Family family = form.register(me);
@@ -166,6 +166,12 @@ public class RegistrationTest {
         assertTrue(allPeoplePresent(people, family.getParents()));
 
         return me;
+    }
+
+    @Test
+    public void emptyRegistration() {
+        Family family = program.createRegistrationForm().register();
+        assertNull(family);
     }
 
     private boolean allPeoplePresent(Collection<Person> people, Set<? extends Person> persons) {

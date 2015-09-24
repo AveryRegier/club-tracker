@@ -200,24 +200,28 @@ public enum StandardInputFields {
     }
 
     private static Optional<Object> mapName(Map<String, Object> m) {
-        return Optional.of(new NameBuilder().given((String) m.get("given"))
+        Name name = new NameBuilder().given((String) m.get("given"))
                 .surname((String) m.get("surname"))
                 .middle((String) m.get("middle"))
                 .title((String) m.get("title"))
                 .friendly((String) m.get("friendly"))
                 .honorific((String) m.get("honorific"))
-                .build());
+                .build();
+        if(name.isEmpty()) return Optional.empty();
+        return Optional.of(name);
     }
 
     private static Optional<Object> mapAddress(Map<String, Object> m) {
-        return Optional.of(new AddressAdapter(
+        AddressAdapter address = new AddressAdapter(
                 (String) m.get("line1"),
                 (String) m.get("line2"),
                 (String) m.get("city"),
                 (String) m.get("postal-code"),
                 (String) m.get("territory"),
                 CountryValue.findCountry((String) m.get("country"))
-        ));
+        );
+        if(address.isEmpty()) return Optional.empty();
+        return Optional.of(address);
     }
 
     public static Optional<StandardInputFields> find(String id) {

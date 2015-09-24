@@ -164,7 +164,8 @@ public class RegistrationController extends ModelMaker {
     }
 
     private boolean shouldInvite(Family family) {
-        return family.getParents().stream() // for now, parents only, until we get clubber features
+        return family != null &&
+                family.getParents().stream() // for now, parents only, until we get clubber features
                 .filter(p -> p.getEmail().isPresent())
                 .filter(p -> !p.getLogin().isPresent())
                 .findAny()

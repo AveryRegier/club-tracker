@@ -19,21 +19,28 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.getOther
 public abstract class RegistrationInformationAdapter implements RegistrationInformation {
     @Override
     public Family register(Person person) {
+        Map<InputFieldDesignator, Object> validate = validate();
+        if(validate.isEmpty()) return null;
+        return registerFamily(person, validate);
+    }
+
+    private Family registerFamily(Person person, Map<InputFieldDesignator, Object> validate) {
         ParentAdapter thisParent = (ParentAdapter) person.asParent().orElseGet(() -> new ParentAdapter(person));
         FamilyAdapter family = (FamilyAdapter) person.getFamily().orElseGet(() -> new FamilyAdapter(thisParent));
 
-        update(thisParent, family);
+        update(thisParent, family, validate);
 
         return family;
     }
 
     @Override
     public Family register() {
-        return register(createPerson());
+        Map<InputFieldDesignator, Object> validate = validate();
+        if(validate.isEmpty()) return null;
+        return registerFamily(createPerson(), validate);
     }
 
-    private void update(ParentAdapter thisParent, FamilyAdapter family) {
-        Map<InputFieldDesignator, Object> results = validate();
+    private void update(ParentAdapter thisParent, FamilyAdapter family, Map<InputFieldDesignator, Object> results) {
         Pattern pattern = Pattern.compile("([a-z]*)(\\d?)");
         for(InputFieldDesignator section: getForm()) {
             Map<String, Object> theResults = (Map<String, Object>) results.get(section);
