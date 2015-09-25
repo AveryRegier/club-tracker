@@ -134,7 +134,7 @@ public class ClubApplication implements SparkApplication, ServletContextListener
         return program;
     }
 
-    private void addExtraFields(Program program) {
+    public void addExtraFields(Program program) {
         program.addField(RegistrationSection.parent, new InputFieldBuilder()
                 .name("Phone")
 //                .id("phone")

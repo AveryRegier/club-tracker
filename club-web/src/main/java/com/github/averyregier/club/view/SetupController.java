@@ -38,29 +38,29 @@ public class SetupController extends ModelMaker {
             Program program = app.setupProgram(organizationName, curriculum, acceptLanguage);
             program.assign(getUser(request), ClubLeader.LeadershipRole.valueOf(myRole));
 
-            response.redirect("/protected/program/"+program.getId());
+            response.redirect("/protected/program/" + program.getId());
             return null;
         });
 
-        before("/protected/program/:id", (request, response)->{
-            if(app.getProgram(request.params(":id")) == null) {
+        before("/protected/program/:id", (request, response) -> {
+            if (app.getProgram(request.params(":id")) == null) {
                 response.redirect("/protected/setup");
                 halt();
             }
         });
 
         get("/protected/program/:id", (request, response) ->
-                new ModelAndView(toMap("program", app.getProgram(request.params(":id"))), "program.ftl"),
+                        new ModelAndView(toMap("program", app.getProgram(request.params(":id"))), "program.ftl"),
                 new FreeMarkerEngine());
 
         post("/protected/program/:id", (request, response) -> {
             Program program = app.getProgram(request.params(":id"));
 
             String clubId = request.queryParams("addClub");
-            if(clubId != null && clubId.trim().length() != 0) {
+            if (clubId != null && clubId.trim().length() != 0) {
                 // add the club
                 Optional<Curriculum> series = program.getCurriculum().getSeries(clubId);
-                if(series.isPresent()) {
+                if (series.isPresent()) {
                     program.addClub(series.get());
                 }
             }
@@ -68,8 +68,15 @@ public class SetupController extends ModelMaker {
             String organizationName = request.queryParams("organizationName");
             program.setName(organizationName);
 
-            response.redirect("/protected/program/"+program.getId());
+            response.redirect("/protected/program/" + program.getId());
             return null;
         });
+
+        get("/protected/program/:id/update", (request, response) -> {
+            Program program = app.getProgram(request.params(":id"));
+            app.addExtraFields(program);
+            return new ModelAndView(toMap("program", program), "program.ftl");
+        },
+        new FreeMarkerEngine());
     }
 }
