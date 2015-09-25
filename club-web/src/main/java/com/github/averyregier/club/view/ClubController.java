@@ -48,32 +48,54 @@ public class ClubController extends ModelMaker {
             }
         }, new FreeMarkerEngine());
 
-        get("/protected/club/:club/listeners", (request, response) -> {
+        get("/protected/club/:club/workers", (request, response) -> {
             Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
             if(club.isPresent()) {
                 HashMap<Object, Object> model = new HashMap<>();
                 model.put("club", club.get());
-                return new ModelAndView(model, "addListeners.ftl");
+                return new ModelAndView(model, "addWorker.ftl");
             } else {
                 response.redirect("/protected/my");
                 return null;
             }
         }, new FreeMarkerEngine());
 
-        post("/protected/club/:club/listeners", (request, response) -> {
+        get("/protected/club/:club/workers/:personId", (request, response) -> {
             Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
             if(club.isPresent()) {
-                String[] ids = request.queryParams("id").split(",");
-                for(String id: ids) {
-                    Optional<Person> person = club.get().getProgram().getPersonManager().lookup(id);
-                    if (person.isPresent()) {
+                Optional<Person> person = app.getPersonManager().lookup(request.params(":personId"));
+                if(person.isPresent()) {
+                    HashMap<Object, Object> model = new HashMap<>();
+                    model.put("club", club.get());
+                    model.put("person", person.get());
+                    model.put("roles", ClubLeader.LeadershipRole.values());
+                    return new ModelAndView(model, "workerRole.ftl");
+                } else {
+                    response.redirect("/protected/club/"+club.get().getId()+"/workers");
+                    return null;
+                }
+            } else {
+                response.redirect("/protected/my");
+                return null;
+            }
+        }, new FreeMarkerEngine());
+
+        post("/protected/club/:club/workers/:personId", (request, response) -> {
+            Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
+            if(club.isPresent()) {
+                Optional<Person> person = app.getPersonManager().lookup(request.params(":personId"));
+                if (person.isPresent()) {
+                    String roleName = request.queryParams("role");
+                    if("Listener".equalsIgnoreCase(roleName)) {
                         club.get().recruit(person.get());
+                    } else {
+                        ClubLeader.LeadershipRole leadershipRole = ClubLeader.LeadershipRole.valueOf(roleName);
+                        club.get().assign(person.get(), leadershipRole);
                     }
                 }
                 response.redirect("/protected/club/"+club.get().getId());
             } else {
-                response.redirect("/protected/program");
-                return null;
+                response.redirect("/protected/my");
             }
             return null;
         });
@@ -101,7 +123,7 @@ public class ClubController extends ModelMaker {
                 model.put("club", club.get());
                 return new ModelAndView(model, "awards.ftl");
             } else {
-                response.redirect("/protected/program");
+                response.redirect("/protected/my");
                 return null;
             }
         }, new FreeMarkerEngine());

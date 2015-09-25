@@ -7,14 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-    <div class="menu"><a href=/protected/club/${club.id}/listeners>Recruit ${club.shortCode} Listeners</a></a></div>
+    <div class="menu"><a href=/protected/club/${club.id}/workers>Recruit ${club.shortCode} Workers</a></a></div>
 
     <fieldset class="inputGroup">
         <legend class="inputGroupLabel">View your club.</legend>
         <div class="inputGroupFields">
             <div class="inputField">
                 <label>Organization Name:</label>
-                <div class="staticField">${club.shortCode}</div>
+                <div class="staticField">${club.program.shortCode}</div>
             </div>
             <div class="inputField">
                 <label>Program:</label>
