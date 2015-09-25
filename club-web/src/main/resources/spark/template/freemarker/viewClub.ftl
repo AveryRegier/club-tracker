@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-    <div class="menu"><a href=/protected/club/${club.id}/listeners>Add ${club.shortCode} Listeners</a></a></div>
+    <div class="menu"><a href=/protected/club/${club.id}/listeners>Recruit ${club.shortCode} Listeners</a></a></div>
 
     <fieldset class="inputGroup">
         <legend class="inputGroupLabel">View your club.</legend>

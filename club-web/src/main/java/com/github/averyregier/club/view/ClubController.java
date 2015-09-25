@@ -137,6 +137,7 @@ public class ClubController extends ModelMaker {
                     .put("clubber", clubber)
                     .put("section", record.getSection())
                     .put("record", record)
+                    .put("nextSection", clubber.getSectionAfter(record.getSection()))
                     .build();
             return new ModelAndView(model, "clubberSection.ftl");
         }, new FreeMarkerEngine());

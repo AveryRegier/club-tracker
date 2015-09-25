@@ -9,11 +9,13 @@ import java.util.Optional;
  * Created by avery on 9/5/2014.
  */
 public interface Clubber extends ClubMember {
-    public Optional<Section> getNextSection();
+    Optional<Section> getNextSection();
 
     List<ClubberRecord> getNextSections(int max);
 
     Optional<ClubberRecord> getRecord(Optional<Section> section);
 
     List<AwardPresentation> getAwards();
+
+    Optional<Section> getSectionAfter(Section current);
 }

@@ -62,11 +62,14 @@
             </#if>
         </div>
     </fieldset>
-        <#if !record.signing.isPresent()>
-            <div class="actions">
+        <div class="actions">
+            <#if !record.signing.isPresent()>
                 <button type='submit' name="sign" value="true">Sign</button>
-            </div>
-        </#if>
+            </#if>
+            <#if nextSection.isPresent()>
+                <a href="/protected/clubbers/${clubber.id}/sections/${nextSection.get().id}" class="button">Next</a>
+            </#if>
+        </div>
     </div>
 </form>
 </body>

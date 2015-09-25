@@ -107,7 +107,7 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
 
     private Stream<Section> getRequiredForBookStream(Book b) {
         return getClubberFutureSections(b)
-                .filter(s->s.getSectionType().requiredFor(AccomplishmentLevel.book));
+                .filter(s -> s.getSectionType().requiredFor(AccomplishmentLevel.book));
     }
 
     private Optional<Section> getExtraCredit() {
@@ -130,6 +130,13 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     private Stream<Section> getClubberFutureSections(Book b) {
         return getClubbersSections(b)
                 .filter(s -> !isSigned(s));
+    }
+
+    public Optional<Section> getSectionAfter(Section current) {
+        return getCurrentBookList().stream()
+                .flatMap(this::getRequiredForBookStream)
+                .filter(s -> s.isAfter(current))
+                .findFirst();
     }
 
     private Stream<Section> getClubbersSections(Book b) {

@@ -17,4 +17,16 @@ public interface Section extends Comparable<Section>, Contained<SectionGroup> {
     int sequence();
 
     String getId();
+
+    default boolean isAfter(Section section) {
+        if(getContainer().getBook().sequence() == section.getContainer().getBook().sequence()) {
+            if(getContainer().sequence() == section.getContainer().sequence()) {
+                return sequence() > section.sequence();
+            } else {
+                return getContainer().sequence() > section.getContainer().sequence();
+            }
+        } else {
+            return getContainer().getBook().sequence() > section.getContainer().getBook().sequence();
+        }
+    }
 }

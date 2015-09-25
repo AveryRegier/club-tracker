@@ -43,7 +43,7 @@ label {
     clear: left;
     width: 150px;
 }
-input, select, button, .staticField {
+input, select, button, .staticField, a.button {
     font-family: 'Open Sans', Arial, Helvetica, sans-serif;
     display: inline-block;
     float: left;
@@ -64,7 +64,7 @@ input:focus, input:hover {
 input[type="text"] {
     width: 200px;
 }
-button {
+button, a.button {
     margin: 1em;
     padding: 1em;
     cursor: pointer;
@@ -176,4 +176,25 @@ button.primary {
     background-repeat: repeat-x;
     border-color: #5ca941;
     float: right;
+}
+a.button {
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+
+    text-decoration: none;
+    font-size: 11px;
+    color: buttontext;
+    box-sizing: border-box;
+    text-shadow: none;
+    background-color: #60b044;
+    align-items: flex-start;
+    background-image: none;
+    background-repeat: repeat-x;
+    border-style: outset;
+    border-color: #5ca941;
+    float: right;
+    line-height: normal;
+    text-align: center;
+    border-width: 2;
 }
