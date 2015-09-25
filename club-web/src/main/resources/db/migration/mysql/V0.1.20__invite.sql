@@ -7,6 +7,6 @@ CREATE TABLE ${schema}.invite (
     completed TIMESTAMP,
     PRIMARY KEY(id, auth),
     FOREIGN KEY (id) REFERENCES ${schema}.person(id),
-    FOREIGN KEY (invited_by) REFERENCES ${schema}.person(id),
+    FOREIGN KEY (invited_by) REFERENCES ${schema}.person(id)
 );
 
