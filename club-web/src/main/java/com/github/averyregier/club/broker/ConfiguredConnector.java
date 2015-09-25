@@ -83,6 +83,7 @@ public class ConfiguredConnector implements Connector {
             locations[i] = locations[i]+"/"+getFolder(dialect);
         }
         flyway.setLocations(locations);
+        flyway.repair();
         flyway.migrate();
     }
 
