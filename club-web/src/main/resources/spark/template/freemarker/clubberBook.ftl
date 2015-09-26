@@ -31,7 +31,7 @@
                                 <a class ="section" href="/protected/clubbers/${clubber.id}/sections/${record.section.id}">
                                 <div>
                                     <label class="id">
-                                        ${record.section.sequence()}
+                                        ${record.section.shortCode}
                                     </label>
                                     <label class="date">
                                     <#if record.signing.isPresent()>

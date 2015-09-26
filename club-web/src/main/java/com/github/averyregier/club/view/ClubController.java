@@ -236,7 +236,7 @@ public class ClubController extends ModelMaker {
 
     private Optional<Book> findNextBook(Clubber clubber, Book book) {
         // get any optional extra books that may have been done in a previous year
-        Optional<Book> next = findNext(book, book.getContainer().recommendedBookList(findLast(book.getAgeGroups()).get()));
+        Optional<Book> next = findNext(book, book.getContainer().recommendedBookList(book.getAgeGroups().get(0)));
         if(next.isPresent()) return next;
         return findNext(book, book.getContainer().recommendedBookList(clubber.getCurrentAgeGroup()));
     }
@@ -254,14 +254,14 @@ public class ClubController extends ModelMaker {
         return optMap(clubber.getClub(), c -> findLast(c.getCurriculum().getBooks()));
     }
 
-    private Boolean maySeeRecords(User user, Clubber clubber) {
-        return  isLeaderInSameClub(user, clubber) ||
-                isListenerInSameClub(user, clubber) ||
-                isParentOf(user, clubber) ||
-                isSamePerson(user, clubber);
+    private boolean maySeeRecords(Person person, Clubber clubber) {
+        return  isLeaderInSameClub(person, clubber) ||
+                isListenerInSameClub(person, clubber) ||
+                isParentOf(person, clubber) ||
+                isSamePerson(person, clubber);
     }
 
-    private Boolean maySignRecords(User user, Clubber clubber) {
+    private boolean maySignRecords(Person user, Clubber clubber) {
         return  isListenerInSameClub(user, clubber) &&
                 !(
                     isParentOf(user, clubber) ||
@@ -269,24 +269,30 @@ public class ClubController extends ModelMaker {
                 );
     }
 
-    private boolean isSamePerson(User user, Clubber clubber) {
-        return user.getUpdater() == clubber.getUpdater();
+    private boolean isSamePerson(Person a, Person b) {
+        return a.getUpdater() == b.getUpdater();
     }
 
-    private boolean isLeaderInSameClub(User user, Clubber clubber) {
-        return user.asClubLeader()
-                .map(l -> clubber.getClub().map(Club::getId).orElse(null) == l.getClub().map(Club::getId).orElse(null))
+    private boolean isLeaderInSameClub(Person person, Clubber clubber) {
+        return isInSameClub(clubber, person.asClubLeader());
+    }
+
+    private boolean isListenerInSameClub(Person person, Clubber clubber) {
+        return isInSameClub(clubber, person.asListener());
+    }
+
+    private boolean isInSameClub(Clubber clubber, Optional<? extends ClubMember> listener) {
+        return listener
+                .map(l -> getClubId(clubber).map(id -> id.equals(getClubId(l).orElse(null))).orElse(false))
                 .orElse(false);
     }
 
-    private boolean isListenerInSameClub(User user, Clubber clubber) {
-        return user.asListener()
-                .map(l -> clubber.getClub().map(Club::getId).orElse(null) == l.getClub().map(Club::getId).orElse(null))
-                .orElse(false);
+    private Optional<String> getClubId(ClubMember member) {
+        return member.getClub().map(Club::getId);
     }
 
-    private boolean isParentOf(User user, Clubber clubber) {
-        return user.asParent()
+    private boolean isParentOf(Person person, Clubber clubber) {
+        return person.asParent()
                 .map(Person::getFamily)
                 .map(of -> of.map(f ->f.getId().equals(clubber.getFamily().map(Family::getId).orElse(null))).orElse(false))
                 .orElse(false);
