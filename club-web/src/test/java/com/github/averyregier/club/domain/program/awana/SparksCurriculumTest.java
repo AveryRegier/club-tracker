@@ -68,16 +68,16 @@ public class SparksCurriculumTest {
 
     @Test
     public void specialSections() {
-        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":1©2010:RJ1:1").get().getSectionType());
-        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":2©2010:RJ1:1").get().getSectionType());
-        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":3©2010:RJ1:1").get().getSectionType());
+        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":1c2010:RJ1:1").get().getSectionType());
+        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":2c2010:RJ1:1").get().getSectionType());
+        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":3c2010:RJ1:1").get().getSectionType());
     }
 
     @Test
     public void lookupViaAwana() {
         assertEquals(friend, Programs.AWANA
                 .get().getSeries("AWANA:Sparks")
-                .get().lookup("AWANA:Sparks:1©2010:RJ1:1")
+                .get().lookup("AWANA:Sparks:1c2010:RJ1:1")
                 .get().getSectionType());
     }
 
@@ -90,7 +90,7 @@ public class SparksCurriculumTest {
                 AgeGroup.DefaultAgeGroup.FIRST_GRADE,
                 AgeGroup.DefaultAgeGroup.SECOND_GRADE), j316.getAgeGroups());
         assertEquals(Year.of(2010), j316.getVersion().getPublicationYear());
-        assertEquals("©2010", j316.getVersion().toString());
+        assertEquals("c2010", j316.getVersion().toString());
         assertEquals(0, j316.sequence());
         assertEquals("Flight 3:16", j316.getName());
         assertEquals("Sparks Vest",
@@ -119,7 +119,7 @@ public class SparksCurriculumTest {
                 AgeGroup.DefaultAgeGroup.FIRST_GRADE,
                 AgeGroup.DefaultAgeGroup.SECOND_GRADE), book.getAgeGroups());
         assertEquals(Year.of(2010), book.getVersion().getPublicationYear());
-        assertEquals("©2010", book.getVersion().toString());
+        assertEquals("c2010", book.getVersion().toString());
         assertEquals(1, book.sequence());
         assertEquals("Hang Glider", book.getName());
         Award bookAward = book.getSections().get(0).getAwards(AccomplishmentLevel.book)
@@ -140,7 +140,7 @@ public class SparksCurriculumTest {
                 AgeGroup.DefaultAgeGroup.FIRST_GRADE,
                 AgeGroup.DefaultAgeGroup.SECOND_GRADE), book.getAgeGroups());
         assertEquals(Year.of(2010), book.getVersion().getPublicationYear());
-        assertEquals("©2010", book.getVersion().toString());
+        assertEquals("c2010", book.getVersion().toString());
         assertEquals(3, book.sequence());
         assertEquals("Wing Runner", book.getName());
         Award bookAward = book.getSections().get(0).getAwards(AccomplishmentLevel.book)
@@ -160,7 +160,7 @@ public class SparksCurriculumTest {
         assertEquals(Arrays.asList(
                 AgeGroup.DefaultAgeGroup.SECOND_GRADE), book.getAgeGroups());
         assertEquals(Year.of(2010), book.getVersion().getPublicationYear());
-        assertEquals("©2010", book.getVersion().toString());
+        assertEquals("c2010", book.getVersion().toString());
         assertEquals(4, book.sequence());
         assertEquals("Sky Stormer", book.getName());
         Award bookAward = book.getSections().get(0).getAwards(AccomplishmentLevel.book)

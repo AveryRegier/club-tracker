@@ -52,7 +52,7 @@ class BookVersionAdapter implements BookVersion {
     @Override
     public String toString() {
         if(major == 0 && minor == 0 && year != null) {
-            return "©"+year;
+            return "c"+year;
         }
         return "v"+major+"."+minor;
     }

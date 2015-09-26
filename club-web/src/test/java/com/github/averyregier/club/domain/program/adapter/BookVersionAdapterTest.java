@@ -15,7 +15,7 @@ public class BookVersionAdapterTest {
 
     @Test
     public void tostringYearOnly() {
-        assertEquals("©2010",
+        assertEquals("c2010",
                 new BookVersionAdapter(0,0,null,null, Year.of(2010)).toString());
     }
 }

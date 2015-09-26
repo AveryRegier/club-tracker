@@ -91,6 +91,6 @@ public class SectionGroupAdapterTest{
                         .group(2, g -> g
                                 .shortCode("ID"))) // what we're actually testing
                 .build();
-        assertEquals("A:B©1:ID", curriculum.getBooks().get(0).getSectionGroups().get(0).getId());
+        assertEquals("A:Bc1:ID", curriculum.getBooks().get(0).getSectionGroups().get(0).getId());
     }
 }

@@ -119,7 +119,7 @@ public class TnTCurriculumTest {
                 AgeGroup.DefaultAgeGroup.THIRD_GRADE,
                 AgeGroup.DefaultAgeGroup.FOURTH_GRADE), sz.getAgeGroups());
         assertEquals(Year.of(2010), sz.getVersion().getPublicationYear());
-        assertEquals("©2010", sz.getVersion().toString());
+        assertEquals("c2010", sz.getVersion().toString());
         assertEquals(0, sz.sequence());
         assertEquals("Ultimate Adventure Start Zone", sz.getName());
         assertEquals("T&T Ultimate Adventure Uniform",
@@ -148,7 +148,7 @@ public class TnTCurriculumTest {
                 AgeGroup.DefaultAgeGroup.THIRD_GRADE,
                 AgeGroup.DefaultAgeGroup.FOURTH_GRADE), book.getAgeGroups());
         assertEquals(Year.of(2010), book.getVersion().getPublicationYear());
-        assertEquals("©2010", book.getVersion().toString());
+        assertEquals("c2010", book.getVersion().toString());
         assertEquals(1, book.sequence());
         assertEquals("Ultimate Adventure Book 1", book.getName());
         Award bookAward = book.getSections().get(0).getAwards(AccomplishmentLevel.book)
@@ -169,7 +169,7 @@ public class TnTCurriculumTest {
         assertEquals(Arrays.asList(
                 AgeGroup.DefaultAgeGroup.FOURTH_GRADE), book.getAgeGroups());
         assertEquals(Year.of(2010), book.getVersion().getPublicationYear());
-        assertEquals("©2010", book.getVersion().toString());
+        assertEquals("c2010", book.getVersion().toString());
         assertEquals(2, book.sequence());
         assertEquals("Ultimate Adventure Book 2", book.getName());
         Award bookAward = book.getSections().get(0).getAwards(AccomplishmentLevel.book)
@@ -192,7 +192,7 @@ public class TnTCurriculumTest {
                 AgeGroup.DefaultAgeGroup.FIFTH_GRADE,
                 AgeGroup.DefaultAgeGroup.SIXTH_GRADE), sz.getAgeGroups());
         assertEquals(Year.of(2010), sz.getVersion().getPublicationYear());
-        assertEquals("©2010", sz.getVersion().toString());
+        assertEquals("c2010", sz.getVersion().toString());
         assertEquals(0, sz.sequence());
         assertEquals("Ultimate Challenge Start Zone", sz.getName());
         assertEquals("T&T Ultimate Challenge Uniform",
@@ -210,7 +210,7 @@ public class TnTCurriculumTest {
                 AgeGroup.DefaultAgeGroup.FIFTH_GRADE,
                 AgeGroup.DefaultAgeGroup.SIXTH_GRADE), book.getAgeGroups());
         assertEquals(Year.of(2010), book.getVersion().getPublicationYear());
-        assertEquals("©2010", book.getVersion().toString());
+        assertEquals("c2010", book.getVersion().toString());
         assertEquals(1, book.sequence());
         assertEquals("Ultimate Challenge Book 1", book.getName());
         Award bookAward = book.getSections().get(0).getAwards(AccomplishmentLevel.book)
@@ -233,7 +233,7 @@ public class TnTCurriculumTest {
         assertEquals(Arrays.asList(
                 AgeGroup.DefaultAgeGroup.SIXTH_GRADE), book.getAgeGroups());
         assertEquals(Year.of(2010), book.getVersion().getPublicationYear());
-        assertEquals("©2010", book.getVersion().toString());
+        assertEquals("c2010", book.getVersion().toString());
         assertEquals(2, book.sequence());
         assertEquals("Ultimate Challenge Book 2", book.getName());
         Award bookAward = book.getSections().get(0).getAwards(AccomplishmentLevel.book)
@@ -360,10 +360,10 @@ public class TnTCurriculumTest {
 
     @Test
     public void specialSections() {
-        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":UA:1©2010:5:7").get().getSectionType());
-        assertEquals(group, classUnderTest.lookup(classUnderTest.getId()+":UA:2©2010:4:3").get().getSectionType());
-        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":UA:2©2010:6:5").get().getSectionType());
-        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":UC:1©2010:1:7").get().getSectionType());
-        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":UC:2©2010:1:7").get().getSectionType());
+        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":UA:1c2010:5:7").get().getSectionType());
+        assertEquals(group, classUnderTest.lookup(classUnderTest.getId()+":UA:2c2010:4:3").get().getSectionType());
+        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":UA:2c2010:6:5").get().getSectionType());
+        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":UC:1c2010:1:7").get().getSectionType());
+        assertEquals(friend, classUnderTest.lookup(classUnderTest.getId()+":UC:2c2010:1:7").get().getSectionType());
     }
 }
