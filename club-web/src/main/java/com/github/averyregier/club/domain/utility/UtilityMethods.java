@@ -272,4 +272,30 @@ public class UtilityMethods {
         }
         return false;
     }
+
+    public static <T> Optional<T> findLast(Stream<T> stream) {
+        return stream.sorted(Collections.reverseOrder()).findFirst();
+    }
+
+    public static <T> Optional<T> findLast(Collection<T> collection) {
+        return findLast(collection.stream());
+    }
+
+    public static <T> Optional<T> findPrevious(T item, Collection<? extends T> collection) {
+        T previous = null;
+        for(T o: collection) {
+            if(o == item) return Optional.ofNullable(previous);
+            previous = o;
+        }
+        return Optional.empty();
+    }
+
+    public static <T> Optional<T> findNext(T item, Collection<? extends T> collection) {
+        boolean found = false;
+        for(T o: collection) {
+            if(found) return Optional.ofNullable(o);
+            if(o == item) found = true;
+        }
+        return Optional.empty();
+    }
 }

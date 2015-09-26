@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+    <#if previous.isPresent()><div class="menu"><a href=/protected/clubbers/${clubber.id}/books/${previous.get().id}>Previous</a></a></div></#if>
+    <#if next.isPresent()><div class="menu"><a href=/protected/clubbers/${clubber.id}/books/${next.get().id}>Next</a></a></div></#if>
+
     <fieldset class="inputGroup">
         <legend class="inputGroupLabel">Clubber Records</legend>
         <div class="inputGroupFields">

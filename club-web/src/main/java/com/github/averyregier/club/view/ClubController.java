@@ -8,7 +8,6 @@ import com.github.averyregier.club.domain.club.adapter.CeremonyAdapter;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
-import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -206,6 +205,8 @@ public class ClubController extends ModelMaker {
                 if (book.isPresent()) {
                     Map<String, Object> model = map("me", (Object) user)
                             .put("clubber", clubber)
+                            .put("previous", findPreviousBook(clubber, book.get()))
+                            .put("next", findNextBook(clubber, book.get()))
                             .put("book", book.get())
                             .put("sectionGroups", getBookRecordsByGroup(clubber, book).entrySet())
                             .build();
@@ -220,6 +221,25 @@ public class ClubController extends ModelMaker {
         }, new FreeMarkerEngine());
     }
 
+    private Optional<Book> findPreviousBook(Clubber clubber, Book book) {
+        Optional<Book> previous = findPrevious(book, book.getContainer().getBooks());
+        if(previous.isPresent()) {
+            Optional<Book> after = previous;
+            do {
+                previous = after;
+                after = findNextBook(clubber, after.get());
+            } while(after.isPresent() && after.get() != book);
+        }
+        return previous;
+    }
+
+    private Optional<Book> findNextBook(Clubber clubber, Book book) {
+        // get any optional extra books that may have been done in a previous year
+        Optional<Book> next = findNext(book, book.getContainer().recommendedBookList(findLast(book.getAgeGroups()).get()));
+        if(next.isPresent()) return next;
+        return findNext(book, book.getContainer().recommendedBookList(clubber.getCurrentAgeGroup()));
+    }
+
     private Map<SectionGroup, List<ClubberRecord>> getBookRecordsByGroup(Clubber clubber, Optional<Book> book) {
         return book.get().getSectionGroups().stream()
                 .flatMap(g -> g.getSections().stream())
@@ -230,7 +250,7 @@ public class ClubController extends ModelMaker {
     }
 
     private Optional<Book> getLastBook(Clubber clubber) {
-        return UtilityMethods.optMap(clubber.getClub(), c -> c.getCurriculum().getBooks().stream().sorted(Collections.reverseOrder()).findFirst());
+        return optMap(clubber.getClub(), c -> findLast(c.getCurriculum().getBooks()));
     }
 
     private Boolean maySeeRecords(User user, Clubber clubber) {
@@ -273,7 +293,7 @@ public class ClubController extends ModelMaker {
 
     private ClubberRecord getClubberRecord(Request request, Clubber clubber) {
         String sectionId = request.params(":sectionId");
-        Optional<Section> section = UtilityMethods.optMap(clubber.getClub(),
+        Optional<Section> section = optMap(clubber.getClub(),
                 c -> c.getCurriculum().lookup(decode(sectionId)));
         return clubber.getRecord(section).orElseThrow(IllegalArgumentException::new);
     }
