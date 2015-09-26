@@ -102,4 +102,12 @@ class CurriculumAdapter implements Curriculum {
     private Function<AgeGroup, Boolean> defaultAcceptsFn() {
         return ageGroup -> !recommendedBookList(ageGroup).isEmpty();
     }
+
+    @Override
+    public Optional<Book> lookupBook(String bookId) {
+        return
+                getBooks().stream()
+                .filter(b -> b.getId().equals(bookId))
+                .findFirst();
+    }
 }

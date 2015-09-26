@@ -19,4 +19,6 @@ public interface Curriculum extends Contained<Curriculum> {
     Optional<Curriculum> getSeries(String clubId);
 
     boolean accepts(AgeGroup ageGroup);
+
+    Optional<Book> lookupBook(String bookId);
 }

@@ -196,21 +196,11 @@ public class ClubController extends ModelMaker {
             Clubber clubber = findClubber(app, id);
             if(maySeeRecords(user, clubber)) {
                 String bookId = request.params(":bookId");
-                Optional<Book> book = clubber.getClub()
-                        .map(c -> c.getCurriculum()
-                                .getBooks().stream()
-                                .filter(b -> b.getId().equals(bookId))
-                                .findFirst())
-                        .orElse(Optional.empty());
-                if (book.isPresent()) {
-                    Map<String, Object> model = map("me", (Object) user)
-                            .put("clubber", clubber)
-                            .put("previous", findPreviousBook(clubber, book.get()))
-                            .put("next", findNextBook(clubber, book.get()))
-                            .put("book", book.get())
-                            .put("sectionGroups", getBookRecordsByGroup(clubber, book).entrySet())
-                            .build();
-                    return new ModelAndView(model, "clubberBook.ftl");
+                Optional<ModelAndView> modelAndView =
+                        optMap(clubber.getClub().map(Club::getCurriculum), c -> c.lookupBook(bookId))
+                        .map(book -> mapClubberBookRecords(user, clubber, book));
+                if (modelAndView.isPresent()) {
+                    return modelAndView.get();
                 } else {
                     response.status(HttpStatus.SC_NOT_FOUND);
                 }
@@ -219,6 +209,17 @@ public class ClubController extends ModelMaker {
             }
             return null;
         }, new FreeMarkerEngine());
+    }
+
+    private ModelAndView mapClubberBookRecords(Object user, Clubber clubber, Book book) {
+        Map<String, Object> model = map("me", user)
+                .put("clubber", clubber)
+                .put("previous", findPreviousBook(clubber, book))
+                .put("next", findNextBook(clubber, book))
+                .put("book", book)
+                .put("sectionGroups", getBookRecordsByGroup(clubber, book).entrySet())
+                .build();
+        return new ModelAndView(model, "clubberBook.ftl");
     }
 
     private Optional<Book> findPreviousBook(Clubber clubber, Book book) {
@@ -240,8 +241,8 @@ public class ClubController extends ModelMaker {
         return findNext(book, book.getContainer().recommendedBookList(clubber.getCurrentAgeGroup()));
     }
 
-    private Map<SectionGroup, List<ClubberRecord>> getBookRecordsByGroup(Clubber clubber, Optional<Book> book) {
-        return book.get().getSectionGroups().stream()
+    private Map<SectionGroup, List<ClubberRecord>> getBookRecordsByGroup(Clubber clubber, Book book) {
+        return book.getSectionGroups().stream()
                 .flatMap(g -> g.getSections().stream())
                 .map(s -> clubber.getRecord(Optional.of(s)))
                 .filter(Optional::isPresent)
@@ -274,13 +275,13 @@ public class ClubController extends ModelMaker {
 
     private boolean isLeaderInSameClub(User user, Clubber clubber) {
         return user.asClubLeader()
-                .map(l -> clubber.getClub().orElse(null) == l.getClub().orElse(null))
+                .map(l -> clubber.getClub().map(Club::getId).orElse(null) == l.getClub().map(Club::getId).orElse(null))
                 .orElse(false);
     }
 
     private boolean isListenerInSameClub(User user, Clubber clubber) {
         return user.asListener()
-                .map(l -> clubber.getClub().orElse(null) == l.getClub().orElse(null))
+                .map(l -> clubber.getClub().map(Club::getId).orElse(null) == l.getClub().map(Club::getId).orElse(null))
                 .orElse(false);
     }
 
