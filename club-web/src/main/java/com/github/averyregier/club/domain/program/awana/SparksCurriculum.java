@@ -45,7 +45,8 @@ public class SparksCurriculum {
                 .ageGroup(SECOND_GRADE)
                 .publicationYear(2010)
                 .group(0, g ->
-                        g.award(r -> r
+                        g.name("Flight 3:16")
+                         .award(r -> r
                                 .name("Sparks Vest")
                                 .section(1, regular)
                                 .section(2, regular)

@@ -43,15 +43,16 @@ public class TnTCurriculum {
                 .publicationYear(2010)
                 .catalog("80881")
                 .group(0, g ->
-                        g.award(r -> r
-                                .name("T&T Ultimate Adventure Uniform")
-                                .section(1, regular)
-                                .section(2, regular)
-                                .section(3, regular)
-                                .section(4, regular)
-                                .section(5, regular)
-                                .section(6, regular)
-                                .section(7, regular)));
+                        g.name("Start Zone")
+                         .award(r -> r
+                                 .name("T&T Ultimate Adventure Uniform")
+                                 .section(1, regular)
+                                 .section(2, regular)
+                                 .section(3, regular)
+                                 .section(4, regular)
+                                 .section(5, regular)
+                                 .section(6, regular)
+                                 .section(7, regular)));
     }
 
     private static UnaryOperator<BookBuilder> book1() {
@@ -107,7 +108,8 @@ public class TnTCurriculum {
                 .catalog("78369")
                 .award(a -> a)
                 .group(0, g ->
-                        g.award(r -> r
+                        g.name("Start Zone")
+                         .award(r -> r
                                 .name("T&T Ultimate Challenge Uniform")
                                 .section(1, regular)
                                 .section(2, regular)

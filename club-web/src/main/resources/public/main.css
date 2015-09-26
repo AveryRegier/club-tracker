@@ -198,3 +198,48 @@ a.button {
     text-align: center;
     border-width: 2;
 }
+
+.recordSheet {
+    display: table;
+    border-width: 1px;
+    border-collapse: collapse;
+    table-layout:fixed;
+    float: left;
+    clear: left;
+}
+.sectionGroupLabel {
+    border: 1px solid black !important;
+    display: table-cell;
+    width: 150px;
+    vertical-align: middle;
+}
+.sectionGroup {
+    display: table-row;
+    text-align: left;
+}
+.section {
+    border: 1px solid black !important;
+    display: table-cell;
+    width: 2%;
+    vertical-align: top;
+    min-width: 25px;
+}
+.section .id {
+    float: left;
+    font-size: 50%;
+    font-weight: lighter;
+    width: initial;
+}
+.section .date {
+    float: right;
+    font-weight: lighter;
+    width: initial;
+    font-size: 75%;
+    font-weight: lighter;
+    line-height: initial;
+}
+
+.pad {
+    display: table-cell;
+    border: none;
+}

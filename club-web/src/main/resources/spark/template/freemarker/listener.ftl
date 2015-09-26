@@ -8,7 +8,7 @@
         <tbody>
         <#list me.asListener().get().getQuickList() as clubber>
             <tr>
-                <td>${clubber.name.fullName}</td>
+                <td><a href="/protected/clubbers/${clubber.id}/sections">${clubber.name.fullName}</a></td>
                 <td>
                 <#if clubber.nextSection.isPresent()>
                     <#assign defaultSection=clubber.nextSection.get()>

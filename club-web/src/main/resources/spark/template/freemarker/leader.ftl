@@ -9,4 +9,5 @@
 </#if>
 <#include "clubMenu.ftl">
 
+<#assign group=mygroup>
 <#include "clubberStatus.ftl">

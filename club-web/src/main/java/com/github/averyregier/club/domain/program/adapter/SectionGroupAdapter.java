@@ -42,7 +42,7 @@ class SectionGroupAdapter implements SectionGroup {
 
     @Override
     public String getName() {
-        return name;
+        return name != null ? name : shortCode;
     }
 
     @Override
