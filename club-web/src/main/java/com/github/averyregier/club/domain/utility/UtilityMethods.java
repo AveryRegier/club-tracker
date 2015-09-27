@@ -298,4 +298,12 @@ public class UtilityMethods {
         }
         return Optional.empty();
     }
+
+    public static boolean notNull(Object o) {
+        return o != null;
+    }
+
+    public static boolean isNull(Object o) {
+        return o == null;
+    }
 }

@@ -1,19 +1,16 @@
 package com.github.averyregier.club.domain.club.adapter;
 
-import com.github.averyregier.club.domain.club.AwardPresentation;
-import com.github.averyregier.club.domain.club.Clubber;
-import com.github.averyregier.club.domain.club.ClubberRecord;
-import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.github.averyregier.club.domain.utility.UtilityMethods.firstSuccess;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Created by avery on 11/30/14.
@@ -37,11 +34,11 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     public List<AwardPresentation> getAwards() {
         return getRecords().values().stream()
                 .map(ClubberRecord::getSigning)
-                .filter(Optional::isPresent)
-                .map(s->s.get().getCompletionAwards())
-                .filter(r->r != null)
+                .flatMap(UtilityMethods::stream)
+                .map(Signing::getCompletionAwards)
+                .filter(UtilityMethods::notNull)
                 .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     protected LinkedHashMap<Section, ClubberRecord> loadRecords() {
@@ -165,14 +162,14 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
                     .flatMap(this::getRequiredForBookStream)
                     .map(s -> getRecord(Optional.of(s)).get())
                     .limit(max)
-                    .collect(Collectors.toList());
+                    .collect(toList());
             if(records.size() < max) {
                 int left = max - records.size();
                 records.addAll(getAgeLevelBook()
                         .map(b -> getExtraCreditLeft(b)
                                 .limit(left)
                                 .map(s -> getRecord(Optional.of(s)).get())
-                                .collect(Collectors.toList()))
+                                .collect(toList()))
                         .orElse(Collections.emptyList()));
             }
             return records;

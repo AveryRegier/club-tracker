@@ -212,6 +212,7 @@ a.button {
     display: table-cell;
     width: 150px;
     vertical-align: middle;
+    padding-left: 5px;
 }
 .sectionGroup {
     display: table-row;
@@ -232,7 +233,6 @@ a.button {
 }
 .section .date {
     float: right;
-    font-weight: lighter;
     width: initial;
     font-size: 75%;
     font-weight: lighter;
@@ -242,4 +242,29 @@ a.button {
 .pad {
     display: table-cell;
     border: none;
+}
+.award {
+    display: table-row;
+}
+.award-header {
+    display: table-cell;
+    border: 1px solid black !important;
+    vertical-align: middle;
+    padding: initial;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.award-note {
+    display: table-cell;
+    border: 1px solid black !important;
+    vertical-align: center;
+}
+.award-date {
+    display: table-cell;
+    border: 1px solid black !important;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 75%;
+    font-weight: lighter;
+    line-height: initial;
 }

@@ -5,9 +5,12 @@ import com.github.averyregier.club.broker.CeremonyBroker;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.CeremonyAdapter;
+import com.github.averyregier.club.domain.program.Award;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
+import com.github.averyregier.club.domain.utility.Named;
+import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +19,7 @@ import spark.Request;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
@@ -218,8 +222,21 @@ public class ClubController extends ModelMaker {
                 .put("next", findNextBook(clubber, book))
                 .put("book", book)
                 .put("sectionGroups", getBookRecordsByGroup(clubber, book).entrySet())
+                .put("awards", getBookAwards(clubber, book).entrySet())
                 .build();
         return new ModelAndView(model, "clubberBook.ftl");
+    }
+
+    private Map<Award, Optional<AwardPresentation>> getBookAwards(Clubber clubber, Book book) {
+        Map<Named, AwardPresentation> awarded = clubber.getAwards().stream()
+                .collect(Collectors.toMap(AwardPresentation::forAccomplishment, Function.identity()));
+        Map<Award, Optional<AwardPresentation>> map = new LinkedHashMap<>();
+        book.getSections().stream()
+                .flatMap(s -> s.getAwards().stream())
+                .filter(UtilityMethods::notNull)
+                .distinct()
+                .forEach(a-> map.put(a, Optional.ofNullable(awarded.get(a))));
+        return map;
     }
 
     private Optional<Book> findPreviousBook(Clubber clubber, Book book) {

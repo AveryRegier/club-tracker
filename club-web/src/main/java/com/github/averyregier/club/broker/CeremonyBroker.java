@@ -45,7 +45,7 @@ public class CeremonyBroker extends PersistenceBroker<Ceremony> {
         Function<DSLContext, Optional<Ceremony>> fn = create -> {
             CeremonyRecord record = create.selectFrom(CEREMONY).where(CEREMONY.ID.eq(ceremonyId.getBytes())).fetchOne();
             if (record == null) return Optional.empty();
-            LocalDate date = LocalDate.ofEpochDay(record.getPresentationDate().getTime());
+            LocalDate date = record.getPresentationDate().toLocalDate();
             String name = record.getName();
             return Optional.of(new Ceremony() {
 

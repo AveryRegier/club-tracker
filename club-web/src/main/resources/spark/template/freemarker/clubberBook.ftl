@@ -48,6 +48,40 @@
                     </#list>
                 </div>
             </div>
+            <br clear="all"></br>
+            <div class="recordSheet">
+                <div class="award">
+                    <div class="sectionGroupLabel" style="display: table-cell">Award</div>
+                    <div class="award-header">Earned</div>
+                    <div class="award-header">Presented</div>
+                    <div class="award-header">Token</div>
+                </div>
+                <#list awards as award>
+                    <div style="display: table-row;">
+                        <div class="sectionGroupLabel">${award.key.name}</div>
+                        <#if award.value.isPresent()>
+                            <#assign presentation = award.value.get()>
+                            <div class="award-date">
+                                ${presentation.earnedOn().month.value}/${presentation.earnedOn().dayOfMonth}
+                            </div>
+                            <div class="award-date">
+                                <#if presentation.presentedAt()??>
+                                    ${presentation.presentedAt().presentationDate().month.value}/${presentation.presentedAt().presentationDate().dayOfMonth}
+                                </#if>
+                            </div>
+                            <div class="award-note">
+                                <#if !presentation.token().isPresent()>
+                                    ${presentation.token().get().name}
+                                </#if>
+                            </div>
+                        <#else>
+                            <div class="award-date"></div>
+                            <div class="award-date"></div>
+                            <div class="award-note"></div>
+                        </#if>
+                    </div>
+                </#list>
+            </div>
         </div>
     </fieldset>
 </body>
