@@ -5,6 +5,7 @@ import com.github.averyregier.club.domain.club.Ceremony;
 import org.jooq.DSLContext;
 import org.jooq.TableField;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
@@ -45,7 +46,8 @@ public class CeremonyBroker extends PersistenceBroker<Ceremony> {
         Function<DSLContext, Optional<Ceremony>> fn = create -> {
             CeremonyRecord record = create.selectFrom(CEREMONY).where(CEREMONY.ID.eq(ceremonyId.getBytes())).fetchOne();
             if (record == null) return Optional.empty();
-            LocalDate date = record.getPresentationDate().toLocalDate();
+            Date sqlDate = record.getPresentationDate();
+            LocalDate date = sqlDate.toLocalDate();
             String name = record.getName();
             return Optional.of(new Ceremony() {
 

@@ -148,7 +148,7 @@ public class ClubController extends ModelMaker {
                 Clubber clubber = findClubber(app, id);
                 ClubberRecord record = getClubberRecord(request, clubber);
                 if ("true".equalsIgnoreCase(request.queryParams("sign"))) {
-                    if(maySignRecords(user, clubber))  {
+                    if (maySignRecords(user, clubber)) {
                         record.sign(user.asListener().orElseThrow(IllegalStateException::new), request.queryParams("note"));
                     } else {
                         throw new IllegalAccessException("You are not authorized to sign this section");
@@ -177,13 +177,13 @@ public class ClubController extends ModelMaker {
             User user = getUser(request);
             String id = request.params(":personId");
             Clubber clubber = findClubber(app, id);
-            if(maySeeRecords(user, clubber)) {
+            if (maySeeRecords(user, clubber)) {
                 Optional<Section> nextSection = clubber.getNextSection();
-                Optional<Book> book = nextSection.map(s->s.getContainer().getBook());
-                if(!nextSection.isPresent()) {
+                Optional<Book> book = nextSection.map(s -> s.getContainer().getBook());
+                if (!nextSection.isPresent()) {
                     book = getLastBook(clubber);
                 }
-                if(book.isPresent()) {
+                if (book.isPresent()) {
                     response.redirect("/protected/clubbers/" + clubber.getId() + "/books/" + book.get().getId());
                 } else {
                     response.status(HttpStatus.SC_NOT_FOUND);
@@ -198,11 +198,11 @@ public class ClubController extends ModelMaker {
             User user = getUser(request);
             String id = request.params(":personId");
             Clubber clubber = findClubber(app, id);
-            if(maySeeRecords(user, clubber)) {
+            if (maySeeRecords(user, clubber)) {
                 String bookId = request.params(":bookId");
                 Optional<ModelAndView> modelAndView =
                         optMap(clubber.getClub().map(Club::getCurriculum), c -> c.lookupBook(bookId))
-                        .map(book -> mapClubberBookRecords(user, clubber, book));
+                                .map(book -> mapClubberBookRecords(user, clubber, book));
                 if (modelAndView.isPresent()) {
                     return modelAndView.get();
                 } else {
@@ -213,6 +213,27 @@ public class ClubController extends ModelMaker {
             }
             return null;
         }, new FreeMarkerEngine());
+
+        get("/protected/clubbers/:personId/awards/:awardId/catchup", (request, response) -> {
+            User user = getUser(request);
+            String id = request.params(":personId");
+            Clubber clubber = findClubber(app, id);
+            if(maySignRecords(user, clubber)) {
+                Optional<Award> award = findAward(clubber, request.params(":awardId"));
+                if (award.isPresent()) {
+                    return new ModelAndView(map("clubber", clubber).build(), "catchup.ftl");
+                } else {
+                    response.status(HttpStatus.SC_NOT_FOUND);
+                }
+            } else {
+                response.status(HttpStatus.SC_FORBIDDEN);
+            }
+            return null;
+        }, new FreeMarkerEngine());
+    }
+
+    private Optional<Award> findAward(Clubber clubber, String params) {
+        return Optional.empty();
     }
 
     private ModelAndView mapClubberBookRecords(Object user, Clubber clubber, Book book) {

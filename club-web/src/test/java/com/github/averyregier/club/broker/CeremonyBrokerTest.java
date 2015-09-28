@@ -78,18 +78,18 @@ public class CeremonyBrokerTest {
     @Test
     public void findCeremony() {
         String ceremonyId = UUID.randomUUID().toString();
-        long date = LocalDate.now().toEpochDay();
+        LocalDate now = LocalDate.now();
 
         MockDataProvider provider = selectOne((s) -> s.assertUUID(ceremonyId, CEREMONY.ID), CEREMONY, (r) -> {
             r.setId(ceremonyId.getBytes());
             r.setName("Foobar");
-            r.setPresentationDate(new java.sql.Date(date));
+            r.setPresentationDate(UtilityMethods.toSqlDate(now));
         });
         Optional<Ceremony> ceremony = setup(provider).find(ceremonyId);
 
         assertTrue(ceremony.isPresent());
         assertEquals("Foobar", ceremony.get().getName());
         assertEquals(ceremonyId, ceremony.get().getId());
-        assertEquals(date, ceremony.get().presentationDate().toEpochDay());
+        assertEquals(now, ceremony.get().presentationDate());
     }
 }

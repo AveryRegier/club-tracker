@@ -181,7 +181,7 @@ public class UtilityMethods {
 
     public static java.sql.Date toSqlDate(LocalDate date) {
         if(date == null) return null;
-        return new java.sql.Date(date.toEpochDay() * 24 * 60 * 60 * 1000);
+        return new java.sql.Date((date.toEpochDay()+1) * 24 * 60 * 60 * 1000);
     }
 
     public static boolean safeEquals(Object a, Object b) {
