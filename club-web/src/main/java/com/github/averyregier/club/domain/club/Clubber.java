@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.club;
 
+import com.github.averyregier.club.domain.program.Award;
 import com.github.averyregier.club.domain.program.Section;
 
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.Optional;
 public interface Clubber extends ClubMember {
     Optional<Section> getNextSection();
 
+    Optional<ClubberRecord> getLastRecord();
+
     List<ClubberRecord> getNextSections(int max);
 
     Optional<ClubberRecord> getRecord(Optional<Section> section);
@@ -18,4 +21,6 @@ public interface Clubber extends ClubMember {
     List<AwardPresentation> getAwards();
 
     Optional<Section> getSectionAfter(Section current);
+
+    boolean hasAward(Award award);
 }

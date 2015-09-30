@@ -2,6 +2,7 @@ package com.github.averyregier.club.domain.program;
 
 import com.github.averyregier.club.domain.utility.Contained;
 
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -13,6 +14,12 @@ public interface Section extends Comparable<Section>, Contained<SectionGroup> {
 
     public Set<Award> getAwards();
     public Set<Award> getAwards(AccomplishmentLevel type);
+
+    public default Optional<Award> findAward(String name) {
+        return getAwards().stream()
+                .filter(a->a.getName().equals(name))
+                .findFirst();
+    }
 
     int sequence();
 

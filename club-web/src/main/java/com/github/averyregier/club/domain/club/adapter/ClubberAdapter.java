@@ -2,13 +2,16 @@ package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.AccomplishmentLevel;
+import com.github.averyregier.club.domain.program.Award;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.github.averyregier.club.domain.utility.UtilityMethods.asStream;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.firstSuccess;
 import static java.util.stream.Collectors.toList;
 
@@ -93,7 +96,7 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
 
     private Optional<Section> getRequiredToMoveOn(Book b) {
         return getClubberFutureSections(b)
-                .filter(s->s.getSectionType().requiredToMoveOn())
+                .filter(s -> s.getSectionType().requiredToMoveOn())
                 .findFirst();
     }
 
@@ -152,6 +155,15 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     }
 
     @Override
+    public Optional<ClubberRecord> getLastRecord() {
+        return asStream(records.values().stream()
+                .collect(Collectors.toCollection(ArrayDeque::new)) // or LinkedList
+                .descendingIterator())
+                .filter(r -> r.getSigning().isPresent())
+                .findFirst();
+    }
+
+    @Override
     public List<ClubberRecord> getNextSections(int max) {
         if(max == 1) {
             return getRecord(getNextSection())
@@ -179,5 +191,14 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     @Override
     public Optional<Clubber> asClubber() {
         return Optional.of(this);
+    }
+
+    @Override
+    public boolean hasAward(Award award) {
+        return getAwards().stream()
+                .map(AwardPresentation::forAccomplishment)
+                .filter(n -> n.getName().equals(award.getName()))
+                .findFirst()
+                .isPresent();
     }
 }

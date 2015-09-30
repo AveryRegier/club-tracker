@@ -7,6 +7,7 @@ import com.github.averyregier.club.domain.utility.adapter.UpdateFunction;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -66,7 +67,7 @@ public interface InputField extends InputFieldDesignator {
         },
         date {
             @Override
-            Object validate(String input) {
+            Date validate(String input) {
                 if(input == null) return null;
                 try {
                     return dateFormat.get().parse(input.trim());
@@ -83,7 +84,7 @@ public interface InputField extends InputFieldDesignator {
         public static ThreadLocal<DateFormat> dateFormat = new ThreadLocal<DateFormat>() {
             @Override
             protected DateFormat initialValue() {
-                return new SimpleDateFormat("yyyy-mm-dd");
+                return new SimpleDateFormat("yyyy-MM-dd");
             }
         };
 

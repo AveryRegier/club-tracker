@@ -76,7 +76,11 @@
                             </div>
                         <#else>
                             <div class="award-date"></div>
-                            <div class="award-date"></div>
+                            <div class="award-date">
+                                <#if catchup>
+                                    <a href="/protected/clubbers/${clubber.id}/sections/${award.key.getSections()[0].id}/awards/${award.key.name}/catchup" class="button">Catch Up</a>
+                                </#if>
+                            </div>
                             <div class="award-note"></div>
                         </#if>
                     </div>

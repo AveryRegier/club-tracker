@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by avery on 10/9/14.
@@ -40,7 +41,7 @@ public class UtilityMethods {
             result.add(0, item);
             return result;
         } else if(item != null) {
-            return Arrays.asList(item);
+            return Collections.singletonList(item);
         } else return Collections.emptyList();
     }
 
@@ -84,7 +85,7 @@ public class UtilityMethods {
     public static <R> Map<R, String> toStrings(Map<R, ?> input) {
         return input.entrySet().stream()
                 .filter(e -> e.getValue() != null)
-                .collect(Collectors.toMap(Map.Entry::getKey, e->e.getValue().toString()));
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toString()));
     }
 
     public static Map<String, String> transformToSingleValueMap(Map<String, String[]> map) {
@@ -239,6 +240,39 @@ public class UtilityMethods {
             return fn.apply(start.get());
         }
         return Optional.empty();
+    }
+
+    public static <A,B,C> Optional<C> chain(Optional<A> start, Function<A,Optional<B>> fn, Function<B, Optional<C>> fn2) {
+        if(start.isPresent()){
+            return chain(fn.apply(start.get()), fn2);
+        }
+        return Optional.empty();
+    }
+
+    public static <T> Stream<T> stream(Optional<? extends T> start, Function<T, Optional<? extends T>> nextFn) {
+        return asStream(new Iterator<T>() {
+            Optional<? extends T> current = start;
+            @Override
+            public boolean hasNext() {
+                return current.isPresent();
+            }
+
+            @Override
+            public T next() {
+                T next = current.orElseThrow(NoSuchElementException::new);
+                current = nextFn.apply(next);
+                return next;
+            }
+        });
+    }
+
+    public static <T> Stream<T> asStream(Iterator<T> sourceIterator) {
+        return asStream(sourceIterator, false);
+    }
+
+    public static <T> Stream<T> asStream(Iterator<T> sourceIterator, boolean parallel) {
+        Iterable<T> iterable = () -> sourceIterator;
+        return StreamSupport.stream(iterable.spliterator(), parallel);
     }
 
     public static <A,B> void ifPresent(Optional<A> start, Function<A,Optional<B>> fn, Consumer<B> cn) {

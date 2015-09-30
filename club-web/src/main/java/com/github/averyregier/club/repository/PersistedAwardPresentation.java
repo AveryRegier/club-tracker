@@ -64,9 +64,7 @@ public class PersistedAwardPresentation implements AwardPresentation {
     }
 
     private Optional<Award> findAward() {
-        return section.getAwards().stream()
-                .filter(a -> a.getName().equals(accomplishment))
-                .findFirst();
+        return section.findAward(accomplishment);
     }
 
     @Override

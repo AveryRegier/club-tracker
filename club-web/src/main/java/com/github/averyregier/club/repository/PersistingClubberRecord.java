@@ -6,6 +6,8 @@ import com.github.averyregier.club.broker.Connector;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.Section;
 
+import java.time.LocalDate;
+
 /**
  * Created by avery on 8/8/15.
  */
@@ -32,7 +34,15 @@ public class PersistingClubberRecord extends ClubberRecord {
 
     @Override
     public Signing sign(Listener byListener, String note) {
-        Signing sign = super.sign(byListener, note);
+        return persist(super.sign(byListener, note));
+    }
+
+    @Override
+    public Signing catchup(Listener byListener, String note, LocalDate date) {
+        return persist(super.catchup(byListener, note, date));
+    }
+
+    private Signing persist(Signing sign) {
         new ClubberRecordBroker(connector).persist(this);
         AwardBroker broker = new AwardBroker(connector);
         sign.getCompletionAwards().forEach(broker::persist);

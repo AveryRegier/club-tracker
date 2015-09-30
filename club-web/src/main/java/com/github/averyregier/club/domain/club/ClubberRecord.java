@@ -23,8 +23,18 @@ public abstract class ClubberRecord {
     public abstract Section getSection();
     public abstract Clubber getClubber();
     public Signing sign(Listener byListener, String note) {
-        signing = new RecordSigning(byListener, note);
-        signing.calculateAwards();
+        if(signing == null) {
+            signing = new RecordSigning(byListener, note);
+            signing.calculateAwards();
+        }
+        return signing;
+    }
+
+    public Signing catchup(Listener byListener, String note, LocalDate date) {
+        if(signing == null) {
+            signing = new RecordSigning(byListener, note, date);
+            signing.calculateAwards();
+        }
         return signing;
     }
 
@@ -52,15 +62,21 @@ public abstract class ClubberRecord {
         private final Listener byListener;
         private final String note;
         private Set<AwardPresentation> awards;
+        private final LocalDate date;
 
         public RecordSigning(Listener byListener, String note) {
+            this(byListener, note, LocalDate.now());
+        }
+
+        public RecordSigning(Listener byListener, String note, LocalDate date) {
             this.byListener = byListener;
             this.note = UtilityMethods.killWhitespace(note);
+            this.date = date;
         }
 
         @Override
         public LocalDate getDate() {
-            return LocalDate.now();
+            return date;
         }
 
         @Override
