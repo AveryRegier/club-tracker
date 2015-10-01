@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.URLDecoder;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -182,7 +183,7 @@ public class UtilityMethods {
 
     public static java.sql.Date toSqlDate(LocalDate date) {
         if(date == null) return null;
-        return new java.sql.Date((date.toEpochDay()+1) * 24 * 60 * 60 * 1000);
+        return new java.sql.Date(date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli());
     }
 
     public static boolean safeEquals(Object a, Object b) {
@@ -252,6 +253,7 @@ public class UtilityMethods {
     public static <T> Stream<T> stream(Optional<? extends T> start, Function<T, Optional<? extends T>> nextFn) {
         return asStream(new Iterator<T>() {
             Optional<? extends T> current = start;
+
             @Override
             public boolean hasNext() {
                 return current.isPresent();
