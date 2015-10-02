@@ -41,7 +41,7 @@ public class ClubController extends ModelMaker {
 
 
     public void init(ClubApplication app) {
-        before("/", (request, response)->{
+        before("/", (request, response) -> {
             response.redirect("/protected/my");
         });
 
@@ -366,9 +366,10 @@ public class ClubController extends ModelMaker {
 
     private Optional<Book> findNextBook(Clubber clubber, Book book) {
         // get any optional extra books that may have been done in a previous year
-        Optional<Book> next = findNext(book, book.getContainer().recommendedBookList(book.getAgeGroups().get(0)));
-        if(next.isPresent()) return next;
-        return findNext(book, book.getContainer().recommendedBookList(clubber.getCurrentAgeGroup()));
+        LinkedHashSet<Book> bookList = new LinkedHashSet<>(book.getContainer().recommendedBookList(book.getAgeGroups().get(0)));
+        bookList.addAll(book.getContainer().recommendedBookList(clubber.getCurrentAgeGroup()));
+
+        return findNext(book, bookList);
     }
 
     private Map<SectionGroup, List<ClubberRecord>> getBookRecordsByGroup(Clubber clubber, Book book) {
