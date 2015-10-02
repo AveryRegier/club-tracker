@@ -41,6 +41,10 @@ public class ClubController extends ModelMaker {
 
 
     public void init(ClubApplication app) {
+        before("/", (request, response)->{
+            response.redirect("/protected/my");
+        });
+
         get("/protected/:id/viewProgram", (request, response) -> {
             HashMap<Object, Object> model = new HashMap<>();
             model.put("program", app.getProgram(request.params(":id")));
