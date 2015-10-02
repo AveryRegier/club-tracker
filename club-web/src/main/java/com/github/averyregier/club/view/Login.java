@@ -18,7 +18,6 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 import static spark.Spark.*;
@@ -43,13 +42,16 @@ public class Login extends ModelMaker {
     public void init(final ClubApplication app) {
         before("/invite/:code", (request, response) -> {
             String code = request.params(":code");
-            Invitation invitation = findOpenInvite(app, code);
-
-            request.session().attribute("invite", invitation);
-            Optional<Program> program = app.getPrograms(invitation.getPerson()).stream().findFirst();
-            if (program.isPresent()) {
-                String programId = program.get().getId();
-                response.redirect("/protected/" + programId + "/family");
+            Optional<Invitation> invitation = findOpenInvite(app, code);
+            if(invitation.isPresent()) {
+                request.session().attribute("invite", invitation.get());
+                Optional<Program> program = app.getPrograms(invitation.get().getPerson()).stream().findFirst();
+                if (program.isPresent()) {
+                    String programId = program.get().getId();
+                    response.redirect("/protected/" + programId + "/family");
+                } else {
+                    response.redirect("/protected/my");
+                }
             } else {
                 response.redirect("/protected/my");
             }
@@ -116,16 +118,11 @@ public class Login extends ModelMaker {
         });
     }
 
-    private Invitation findOpenInvite(ClubApplication app, String code) {
-        List<Invitation> invitations = new InviteBroker(app).find(code)
+    private Optional<Invitation> findOpenInvite(ClubApplication app, String code) {
+        return new InviteBroker(app).find(code)
                 .stream()
                 .filter(i -> !i.getCompleted().isPresent())
-                .collect(Collectors.toList());
-        if (invitations.size() != 1) {
-            throw new IllegalArgumentException("Invalid invitation code");
-        }
-
-        return invitations.get(0);
+                .findFirst();
     }
 
     private List<Provider> getProviders(ClubApplication app) {
