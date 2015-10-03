@@ -203,7 +203,6 @@ public class TnTCurriculum {
         AwardBuilder gold4 = new AwardBuilder().name("Gold 4");
 
         return builder
-                .award()
                 .group(1, discovery(1, silver1, gold1))
                 .group(2, discovery(2, silver1, gold1))
                 .group(3, discovery(3, silver2, gold2))
