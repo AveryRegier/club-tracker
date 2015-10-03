@@ -105,4 +105,11 @@ public class PersistedAwardPresentation implements AwardPresentation {
         this.ceremony = ceremony;
         new AwardBroker(connector).persist(this);
     }
+
+    @Override
+    public String toString() {
+        return clubber.getName().getFullName()+" "+
+                forAccomplishment().getName()+" "+
+                token().map(Named::getName).orElse("");
+    }
 }

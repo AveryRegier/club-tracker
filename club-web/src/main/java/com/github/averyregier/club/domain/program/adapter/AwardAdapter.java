@@ -59,4 +59,9 @@ class AwardAdapter implements Award {
     public Book getBook() {
         return builtSections.get(0).getGroup().getBook();
     }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }
