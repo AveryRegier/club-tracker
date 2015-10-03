@@ -70,7 +70,7 @@
                                 </#if>
                             </div>
                             <div class="award-note">
-                                <#if !presentation.token().isPresent()>
+                                <#if presentation.token().isPresent()>
                                     ${presentation.token().get().name}
                                 </#if>
                             </div>
