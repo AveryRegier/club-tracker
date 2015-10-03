@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.github.averyregier.club.domain.program.awana.SparksSectionTypes.friend;
-import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.regular;
+import static com.github.averyregier.club.domain.program.awana.SparksSectionTypes.regular;
 import static org.junit.Assert.*;
 
 /**
