@@ -10,7 +10,6 @@ import java.util.function.UnaryOperator;
 
 import static com.github.averyregier.club.domain.program.AgeGroup.DefaultAgeGroup.*;
 import static com.github.averyregier.club.domain.program.awana.SparksSectionTypes.*;
-import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.regular;
 
 /**
  * Created by avery on 9/12/2014.
@@ -170,10 +169,10 @@ public class SparksCurriculum {
 
     private static BookBuilder frequentFlyerStructure(String name, BookBuilder builder) {
         return builder
-                .name(name+" Frequent Flyer")
+                .name(name + " Frequent Flyer")
                 .publicationYear(2008)
-                .award(r -> r.name(name+" Extra Credit Pin"))
-                .typeAssigner((g, s) -> extraCredit)
+                .award(r -> r.name(name + " Extra Credit Pin"))
+                .typeAssigner((g, s) -> regular)
                 .group(1, extraCredit("Takeoff", "TO"))
                 .group(2, extraCredit("Passport", "PP"))
                 .group(3, extraCredit("Passenger List", "PL"))
