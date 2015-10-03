@@ -28,8 +28,8 @@ public enum SparksSectionTypes implements SectionType {
     },
     extraCredit {
         @Override
-        public boolean requiredFor(AccomplishmentLevel type) {
-            return !type.isBook();
+        public boolean isExtraCredit() {
+            return true;
         }
     };
 

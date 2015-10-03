@@ -1,7 +1,6 @@
 package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.club.*;
-import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Award;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
@@ -107,24 +106,30 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
 
     private Stream<Section> getRequiredForBookStream(Book b) {
         return getClubberFutureSections(b)
-                .filter(s -> s.getSectionType().requiredFor(AccomplishmentLevel.book));
+                .filter(s -> !s.getSectionType().isExtraCredit());
     }
 
     private Optional<Section> getExtraCredit() {
-        return getAgeLevelBook()
-                .map(b -> getExtraCreditLeft(b).findFirst())
-                .orElse(Optional.empty());
+        return getAgeLevelBooks()
+                .flatMap(b -> getExtraCreditLeft(b))
+                .findFirst();
     }
 
-    private Optional<Book> getAgeLevelBook() {
-        return UtilityMethods.reverse(getCurrentBookList()).stream()
-                .findFirst();
+    private Stream<Book> getAgeLevelBooks() {
+        return getCurrentBookList().stream()
+                .filter(this::isAgeLevelBook);
+    }
+
+    private Boolean isAgeLevelBook(Book b) {
+        return b.getAgeGroups().stream().findFirst()
+                .map(l->l.equals(getCurrentAgeGroup()))
+                .orElse(false);
     }
 
     private Stream<Section> getExtraCreditLeft(Book b) {
         return b.getSections().stream()
-                .filter(s -> !isSigned(s))
-                .filter(s -> !s.getSectionType().requiredFor(AccomplishmentLevel.book));
+                .filter(s -> s.getSectionType().isExtraCredit())
+                .filter(s -> !isSigned(s));
     }
 
     private Stream<Section> getClubberFutureSections(Book b) {
@@ -177,12 +182,12 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
                     .collect(toList());
             if(records.size() < max) {
                 int left = max - records.size();
-                records.addAll(getAgeLevelBook()
-                        .map(b -> getExtraCreditLeft(b)
-                                .limit(left)
-                                .map(s -> getRecord(Optional.of(s)).get())
-                                .collect(toList()))
-                        .orElse(Collections.emptyList()));
+                List<Book> books = getAgeLevelBooks().collect(Collectors.toList());
+                records.addAll(books.stream()
+                        .flatMap(this::getExtraCreditLeft)
+                        .limit(left)
+                        .map(s -> getRecord(Optional.of(s)).get())
+                        .collect(toList()));
             }
             return records;
         }

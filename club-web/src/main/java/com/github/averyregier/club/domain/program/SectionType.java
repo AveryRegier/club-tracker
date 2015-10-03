@@ -16,4 +16,8 @@ public interface SectionType {
     public default boolean countsTowardsSectionMinimums() {
         return true;
     }
+
+    default boolean isExtraCredit() {
+        return !requiredFor(AccomplishmentLevel.book);
+    }
 }

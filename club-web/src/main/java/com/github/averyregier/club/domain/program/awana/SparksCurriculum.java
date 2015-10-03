@@ -172,7 +172,7 @@ public class SparksCurriculum {
                 .name(name + " Frequent Flyer")
                 .publicationYear(2008)
                 .award(r -> r.name(name + " Extra Credit Pin"))
-                .typeAssigner((g, s) -> regular)
+                .typeAssigner((g, s) -> extraCredit)
                 .group(1, extraCredit("Takeoff", "TO"))
                 .group(2, extraCredit("Passport", "PP"))
                 .group(3, extraCredit("Passenger List", "PL"))
