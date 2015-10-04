@@ -178,6 +178,7 @@ public class ClubController extends ModelMaker {
                     .put("section", record.getSection())
                     .put("record", record)
                     .put("nextSection", clubber.getSectionAfter(record.getSection()))
+                    .put("maySign", maySignRecords(user, clubber) && !record.getSigning().isPresent())
                     .build();
             return new ModelAndView(model, "clubberSection.ftl");
         }, new FreeMarkerEngine());
