@@ -144,10 +144,13 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     }
 
     private Stream<Section> sectionStream() {
-        return Stream.concat(getCurrentBookList().stream()
-                        .flatMap(this::getRequiredForBookStream),
+        return Stream.concat(
+                getCurrentBookList().stream()
+                        .flatMap(this::getClubbersSections)
+                        .filter(s -> !s.getSectionType().isExtraCredit()),
                 getAgeLevelBooks()
-                        .flatMap(this::getExtraCreditLeft));
+                        .flatMap(this::getClubbersSections)
+                        .filter(s -> s.getSectionType().isExtraCredit()));
     }
 
     @Override
