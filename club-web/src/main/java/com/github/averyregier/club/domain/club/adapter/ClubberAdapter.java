@@ -122,7 +122,7 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
 
     private Boolean isAgeLevelBook(Book b) {
         return b.getAgeGroups().stream().findFirst()
-                .map(l->l.equals(getCurrentAgeGroup()))
+                .map(l -> l.equals(getCurrentAgeGroup()))
                 .orElse(false);
     }
 
@@ -138,10 +138,15 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     }
 
     public Optional<Section> getSectionAfter(Section current) {
-        return getCurrentBookList().stream()
-                .flatMap(this::getRequiredForBookStream)
-                .filter(s -> s.isAfter(current))
-                .findFirst();
+        return firstSuccess(
+                () -> getCurrentBookList().stream()
+                        .flatMap(this::getRequiredForBookStream)
+                        .filter(s -> s.isAfter(current))
+                        .findFirst(),
+                () -> getAgeLevelBooks()
+                        .flatMap(this::getExtraCreditLeft)
+                        .filter(s -> s.isAfter(current))
+                        .findFirst());
     }
 
     private Stream<Section> getClubbersSections(Book b) {
