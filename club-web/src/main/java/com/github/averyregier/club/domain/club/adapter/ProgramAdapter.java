@@ -362,7 +362,9 @@ public class ProgramAdapter extends ClubAdapter implements Program {
 
     @Override
     public Set<Clubber> getClubbers() {
-        return clubs().stream().flatMap(c->c.getClubbers().stream()).collect(Collectors.toSet());
+        return clubs().stream()
+                .flatMap(c->c.getClubbers().stream())
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     @Override

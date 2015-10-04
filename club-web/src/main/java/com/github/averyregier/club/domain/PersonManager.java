@@ -4,10 +4,7 @@ import com.github.averyregier.club.domain.club.Family;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.github.averyregier.club.domain.utility.UtilityMethods.stream;
@@ -22,7 +19,7 @@ public class PersonManager {
     }
 
     public Collection<Person> getPeople() {
-        return people.values();
+        return new TreeSet<>(people.values());
     }
 
     public Person createPerson() {

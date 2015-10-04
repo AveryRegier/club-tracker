@@ -4,14 +4,14 @@ import com.github.averyregier.club.domain.club.ClubGroup;
 import com.github.averyregier.club.domain.club.Listener;
 import com.github.averyregier.club.domain.club.Person;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created by avery on 12/16/14.
  */
 public abstract class ClubGroupAdapter implements ClubGroup {
-    private Set<Listener> listeners = new LinkedHashSet<>();
+    private Set<Listener> listeners = new TreeSet<>();
 
     @Override
     public Set<Listener> getListeners() {

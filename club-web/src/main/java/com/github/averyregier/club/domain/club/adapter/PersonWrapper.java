@@ -93,4 +93,9 @@ public abstract class PersonWrapper implements Person {
     public Collection<Club> getClubs() {
         return getPerson().getClubs();
     }
+
+    @Override
+    public int compareTo(Person o) {
+        return getPerson().compareTo(o);
+    }
 }

@@ -56,7 +56,7 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     @Override
     public Set<Clubber> getClubbers() {
         ensureClubbersInitialized();
-        return Collections.unmodifiableSet(clubbers);
+        return Collections.unmodifiableSet(new TreeSet<>(clubbers));
     }
 
     private synchronized void ensureClubbersInitialized() {

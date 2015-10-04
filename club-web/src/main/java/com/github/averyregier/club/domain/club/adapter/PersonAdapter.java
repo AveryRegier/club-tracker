@@ -229,4 +229,22 @@ public class PersonAdapter implements Person, PersonUpdater {
     private static Consumer<ClubMember> addClub(HashSet<Club> clubs) {
         return member->member.getClub().ifPresent(clubs::add);
     }
+
+    @Override
+    public int compareTo(Person o) {
+        Name aName = getName();
+        Name bName = o.getName();
+        if(aName != null && bName != null) {
+            return aName.compareTo(bName);
+        } else {
+            if(aName == null) {
+                if(bName == null) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            }
+            return 1;
+        }
+    }
 }

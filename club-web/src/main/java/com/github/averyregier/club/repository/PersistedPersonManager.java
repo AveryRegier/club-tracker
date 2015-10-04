@@ -48,6 +48,7 @@ public class PersistedPersonManager extends PersonManager {
                 .findAll()
                 .stream()
                 .peek(this::addRegistrationFields)
+                .sorted()
                 .collect(Collectors.toList());
     }
 
