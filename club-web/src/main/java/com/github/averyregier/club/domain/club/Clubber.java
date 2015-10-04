@@ -21,6 +21,7 @@ public interface Clubber extends ClubMember {
     List<AwardPresentation> getAwards();
 
     Optional<Section> getSectionAfter(Section current);
+    Optional<Section> getSectionBefore(Section current);
 
     boolean hasAward(Award award);
 }

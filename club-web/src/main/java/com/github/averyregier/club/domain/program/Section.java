@@ -36,4 +36,16 @@ public interface Section extends Comparable<Section>, Contained<SectionGroup> {
             return getContainer().getBook().sequence() > section.getContainer().getBook().sequence();
         }
     }
+
+    default boolean isBefore(Section section) {
+        if(getContainer().getBook().sequence() == section.getContainer().getBook().sequence()) {
+            if(getContainer().sequence() == section.getContainer().sequence()) {
+                return sequence() < section.sequence();
+            } else {
+                return getContainer().sequence() < section.getContainer().sequence();
+            }
+        } else {
+            return getContainer().getBook().sequence() < section.getContainer().getBook().sequence();
+        }
+    }
 }

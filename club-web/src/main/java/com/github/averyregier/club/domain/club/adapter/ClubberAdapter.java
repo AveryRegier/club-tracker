@@ -10,8 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.github.averyregier.club.domain.utility.UtilityMethods.asStream;
-import static com.github.averyregier.club.domain.utility.UtilityMethods.firstSuccess;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -111,7 +110,7 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
 
     private Optional<Section> getExtraCredit() {
         return getAgeLevelBooks()
-                .flatMap(b -> getExtraCreditLeft(b))
+                .flatMap(this::getExtraCreditLeft)
                 .findFirst();
     }
 
@@ -137,16 +136,25 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
                 .filter(s -> !isSigned(s));
     }
 
+    @Override
     public Optional<Section> getSectionAfter(Section current) {
-        return firstSuccess(
-                () -> getCurrentBookList().stream()
-                        .flatMap(this::getRequiredForBookStream)
-                        .filter(s -> s.isAfter(current))
-                        .findFirst(),
-                () -> getAgeLevelBooks()
-                        .flatMap(this::getExtraCreditLeft)
-                        .filter(s -> s.isAfter(current))
-                        .findFirst());
+        return sectionStream()
+                .filter(s -> s.isAfter(current))
+                .findFirst();
+    }
+
+    private Stream<Section> sectionStream() {
+        return Stream.concat(getCurrentBookList().stream()
+                        .flatMap(this::getRequiredForBookStream),
+                getAgeLevelBooks()
+                        .flatMap(this::getExtraCreditLeft));
+    }
+
+    @Override
+    public Optional<Section> getSectionBefore(Section current) {
+        return reverse(sectionStream().collect(Collectors.toList())).stream()
+                .filter(s -> s.isBefore(current))
+                .findFirst();
     }
 
     private Stream<Section> getClubbersSections(Book b) {

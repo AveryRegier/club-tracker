@@ -177,6 +177,7 @@ public class ClubController extends ModelMaker {
                     .put("clubber", clubber)
                     .put("section", record.getSection())
                     .put("record", record)
+                    .put("previousSection", clubber.getSectionBefore(record.getSection()))
                     .put("nextSection", clubber.getSectionAfter(record.getSection()))
                     .put("maySign", maySignRecords(user, clubber) && !record.getSigning().isPresent())
                     .build();

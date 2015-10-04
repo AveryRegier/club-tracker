@@ -70,6 +70,9 @@
         </div>
     </fieldset>
         <div class="actions">
+            <#if previousSection.isPresent()>
+                <a href="/protected/clubbers/${clubber.id}/sections/${previousSection.get().id}" class="button" style="float: left">Previous</a>
+            </#if>
             <#if maySign>
                 <button type='submit' name="sign" value="true">Sign</button>
             </#if>
