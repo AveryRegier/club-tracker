@@ -40,8 +40,9 @@
                 <label>Clubbers</label>
                 <div class="staticField">
                     <UL>
-                        <#list club.clubbers as clubber>
-                            <LI><a href="/protected/clubbers/${clubber.id}/sections">${clubber.name.fullName}</a></LI>
+                        <#list clubbers as entry>
+                            <#assign clubber = entry.key>
+                            <LI>${clubber.name.fullName} - <a href="/protected/clubbers/${clubber.id}/sections">${entry.value} Sections</a></LI>
                         </#list>
                     </UL>
                 </div>

@@ -4,7 +4,9 @@ import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.Curriculum;
 
+import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -90,6 +92,17 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
                 .flatMap(c->c.getAwards().stream())
                 .filter(AwardPresentation::notPresented)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<Clubber, Integer> getClubNightReport() {
+        LocalDate date = LocalDate.now();
+        return getClubbers().stream()
+                .collect(Collectors.toMap(Function.identity(),
+                        c -> c.getRecords(
+                                (r) -> r.getSigning()
+                                        .map(s -> s.getDate().equals(date))
+                                        .orElse(false)).size()));
     }
 
     boolean accepts(ClubberAdapter clubber) {

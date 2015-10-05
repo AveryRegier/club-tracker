@@ -56,6 +56,7 @@ public class ClubController extends ModelMaker {
             if(club.isPresent()) {
                 HashMap<Object, Object> model = new HashMap<>();
                 model.put("club", club.get());
+                model.put("clubbers", club.get().getClubNightReport().entrySet());
                 return new ModelAndView(model, "viewClub.ftl");
             } else {
                 response.redirect("/protected/my");

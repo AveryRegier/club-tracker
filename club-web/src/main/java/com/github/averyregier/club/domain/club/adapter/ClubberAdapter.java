@@ -7,6 +7,7 @@ import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -177,7 +178,7 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
 
     @Override
     public Optional<ClubberRecord> getLastRecord() {
-        return asStream(records.values().stream()
+        return asStream(getRecords().values().stream()
                 .collect(Collectors.toCollection(ArrayDeque::new)) // or LinkedList
                 .descendingIterator())
                 .filter(r -> r.getSigning().isPresent())
@@ -207,6 +208,13 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
             }
             return records;
         }
+    }
+
+    @Override
+    public Collection<ClubberRecord> getRecords(Predicate<ClubberRecord> test) {
+        return getRecords().values().stream()
+                .filter(test::test)
+                .collect(Collectors.toList());
     }
 
     @Override

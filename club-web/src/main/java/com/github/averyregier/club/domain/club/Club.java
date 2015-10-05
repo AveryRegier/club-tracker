@@ -4,6 +4,7 @@ import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.Curriculum;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,4 +19,5 @@ public interface Club extends ClubGroup, Comparable<Club> {
     public Curriculum getCurriculum();
 
     public Collection<AwardPresentation> getAwardsNotYetPresented();
+    public Map<Clubber, Integer> getClubNightReport();
 }
