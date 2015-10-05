@@ -1,3 +1,4 @@
+<div class="menu"><a href="/protected/club/${me.asListener().get().club.get().id}/clubbers">More Clubbers</a></div>
 
 <div>
     <table>

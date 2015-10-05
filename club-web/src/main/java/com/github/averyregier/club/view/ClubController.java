@@ -64,6 +64,18 @@ public class ClubController extends ModelMaker {
             }
         }, new FreeMarkerEngine());
 
+        get("/protected/club/:club/clubbers", (request, response) -> {
+            Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
+            if(club.isPresent()) {
+                HashMap<Object, Object> model = new HashMap<>();
+                model.put("club", club.get());
+                return new ModelAndView(model, "allClubbersQuick.ftl");
+            } else {
+                response.redirect("/protected/my");
+                return null;
+            }
+        }, new FreeMarkerEngine());
+
         get("/protected/club/:club/workers", (request, response) -> {
             Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
             if(club.isPresent()) {
