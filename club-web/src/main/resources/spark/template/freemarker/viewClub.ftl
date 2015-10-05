@@ -25,7 +25,13 @@
                 <div class="staticField">
                     <UL>
                     <#list club.listeners as listener>
-                        <LI>${listener.name.fullName}</LI>
+                        <LI>
+                            <#if listener.club.isPresent() && listener.family.isPresent()>
+                                 <a href="/protected/${listener.club.get().program.id}/family/${listener.family.get().id}">${listener.name.fullName}</a>
+                            <#else>
+                                ${listener.name.fullName}
+                            </#if>
+                        </LI>
                     </#list>
                     </UL>
                 </div>
@@ -35,7 +41,7 @@
                 <div class="staticField">
                     <UL>
                         <#list club.clubbers as clubber>
-                            <LI>${clubber.name.fullName}</LI>
+                            <LI><a href="/protected/clubbers/${clubber.id}/sections">${clubber.name.fullName}</a></LI>
                         </#list>
                     </UL>
                 </div>

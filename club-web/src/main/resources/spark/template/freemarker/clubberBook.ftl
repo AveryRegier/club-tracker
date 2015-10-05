@@ -15,7 +15,13 @@
         <div class="inputGroupFields">
             <div class="inputField">
                 <label>Name:</label>
-                <div class="staticField">${clubber.name.fullName}</div>
+                <div class="staticField">
+                    <#if clubber.club.isPresent() && clubber.family.isPresent()>
+                         <a href="/protected/${clubber.club.get().program.id}/family/${clubber.family.get().id}">${clubber.name.fullName}</a>
+                    <#else>
+                        ${clubber.name.fullName}
+                    </#if>
+                </div>
             </div>
             <div class="inputField">
                 <label>Handbook:</label>
