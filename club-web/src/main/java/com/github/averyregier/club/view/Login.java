@@ -33,7 +33,7 @@ public class Login extends ModelMaker {
         res.cookie("provider", user.getLoginInformation().getProviderID(), 60 * 60 * 3, false);
         String location = req.session().attribute("location");
         if(location == null) {
-            location = "/protected/hello";
+            location = "/protected/my";
         }
         res.redirect(location);
         req.session().removeAttribute("location");
