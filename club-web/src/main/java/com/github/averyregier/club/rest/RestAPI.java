@@ -12,7 +12,7 @@ public class RestAPI extends ModelMaker {
     public void init(ClubApplication app) {
         get("/protected/hello", (request, response) -> {
             String name = getUser(request).getName().getFullName();
-            return "Hello "+ name +"!";
+            return "Hello "+ name +"!  You need to be invited to use this application.";
         });
     }
 }

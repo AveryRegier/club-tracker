@@ -87,7 +87,7 @@ public class RegistrationController extends ModelMaker {
             } else if ("submit".equals(request.queryParams("submit"))) {
                 logger.info("Submitting family registration");
                 Family family = updateForm(app, request).register(familyParent(app, familyId));
-                response.redirect("/protected/my");
+                postRegistrationRedirect(response, family);
                 halt();
             }
         });

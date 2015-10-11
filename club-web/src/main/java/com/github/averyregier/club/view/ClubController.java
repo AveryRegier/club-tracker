@@ -157,10 +157,17 @@ public class ClubController extends ModelMaker {
 
         get("/protected/my", (request, response) -> {
             User user = getUser(request);
-            Map<String, Object> model = toMap("me", user);
-            model.put("programs", app.getPrograms(user));
-            user.asClubLeader().ifPresent(l -> l.getClub().ifPresent(c -> model.put("mygroup", c)));
-            return new ModelAndView(model, "my.ftl");
+            Collection<Program> programs = app.getPrograms(user);
+            if(programs.isEmpty()) {
+                response.redirect("/protected/hello");
+                return null;
+            } else {
+                Map<String, Object> model = toMap("me", user);
+                model.put("programs", programs);
+
+                user.asClubLeader().ifPresent(l -> l.getClub().ifPresent(c -> model.put("mygroup", c)));
+                return new ModelAndView(model, "my.ftl");
+            }
         }, new FreeMarkerEngine());
 
         before("/protected/clubbers/:personId/sections/:sectionId", (request, response) -> {
