@@ -19,5 +19,5 @@ public interface Club extends ClubGroup, Comparable<Club> {
     public Curriculum getCurriculum();
 
     public Collection<AwardPresentation> getAwardsNotYetPresented();
-    public Map<Clubber, Integer> getClubNightReport();
+    public Map<Clubber, Object> getClubNightReport();
 }

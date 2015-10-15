@@ -38,13 +38,29 @@
             </div>
             <div class="inputField">
                 <label>Clubbers</label>
-                <div class="staticField">
-                    <UL>
+                <div>
+                    <table>
+                        <thead>
+                        <th>Name</th>
+                        <th>Today's Sections</th>
+                        </thead>
+                        <tbody>
                         <#list clubbers as entry>
                             <#assign clubber = entry.key>
-                            <LI>${clubber.name.fullName} - <a href="/protected/clubbers/${clubber.id}/sections">${entry.value} Sections</a></LI>
+                            <tr>
+                                <td><a href="/protected/clubbers/${clubber.id}/sections">${clubber.name.fullName}</a></td>
+                                <td>
+                                    <#list entry.value as record>
+                                        <#assign section=record.section>
+                                        <a href="/protected/clubbers/${clubber.id}/sections/${section.id}">
+                                            <#include "sectionName.ftl">
+                                        </a>,
+                                    </#list>
+                                </td>
+                            </tr>
                         </#list>
-                    </UL>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
