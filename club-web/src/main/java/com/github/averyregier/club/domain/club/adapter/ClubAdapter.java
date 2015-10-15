@@ -97,12 +97,12 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     @Override
     public Map<Clubber, Object> getClubNightReport() {
         LocalDate date = LocalDate.now();
-        return getClubbers().stream()
+        return new TreeMap<>(getClubbers().stream()
                 .collect(Collectors.toMap(Function.identity(),
                         c -> c.getRecords(
                                 (r) -> r.getSigning()
                                         .map(s -> s.getDate().equals(date))
-                                        .orElse(false))));
+                                        .orElse(false)))));
     }
 
     boolean accepts(ClubberAdapter clubber) {
