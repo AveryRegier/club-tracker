@@ -226,7 +226,7 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     public boolean hasAward(Award award) {
         return getAwards().stream()
                 .map(AwardPresentation::forAccomplishment)
-                .filter(n -> n.getName().equals(award.getName()))
+                .filter(n -> n.equals(award))
                 .findFirst()
                 .isPresent();
     }
