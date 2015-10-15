@@ -16,6 +16,7 @@ import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.StringReader;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -101,10 +102,12 @@ public class Login extends ModelMaker {
 
         get("/authSuccess", (request, response) -> {
             SocialAuthManager manager = getSocialAuthManager(request, app);
+            Map<String, String> requestParams = getRequestParams(request);
             try {
-                manager.connect(getRequestParams(request));
+                manager.connect(requestParams);
                 AuthProvider provider = manager.getCurrentAuthProvider();
                 if (provider == null) {
+                    printParams(requestParams);
                     response.redirect("/login");
                 } else {
                     User auser = setupUser(app, provider.getUserProfile(), request.session().attribute("invite"));
@@ -112,10 +115,17 @@ public class Login extends ModelMaker {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                printParams(requestParams);
                 response.redirect("/login");
             }
             return null;
         });
+    }
+
+    private void printParams(Map<String, String> requestParams) {
+        System.out.println("Login failure, params follow");
+        requestParams.entrySet().stream()
+                .forEach(e -> System.out.println(e.getKey() + "=" + e.getValue()));
     }
 
     private Optional<Invitation> findOpenInvite(ClubApplication app, String code) {
