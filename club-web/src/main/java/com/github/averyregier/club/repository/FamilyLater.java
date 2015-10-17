@@ -89,4 +89,9 @@ public class FamilyLater implements Family {
     public Map<InputField, String> getValues() {
         return getFamily().map(Registered::getValues).orElse(Collections.emptyMap());
     }
+
+    @Override
+    public boolean shouldInvite() {
+        return getFamily().map(Family::shouldInvite).orElse(false);
+    }
 }

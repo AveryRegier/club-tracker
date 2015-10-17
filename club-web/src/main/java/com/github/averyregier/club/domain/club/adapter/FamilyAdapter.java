@@ -89,4 +89,14 @@ public class FamilyAdapter implements Family {
     public void setValues(Map<InputField,String> values) {
         this.registration = new LinkedHashMap<>(values);
     }
+
+    @Override
+    public boolean shouldInvite() {
+        return this != null &&
+                getParents().stream() // for now, parents only, until we get clubber features
+                .filter(p -> p.getEmail().isPresent())
+                .filter(p -> !p.getLogin().isPresent())
+                .findAny()
+                .isPresent();
+    }
 }

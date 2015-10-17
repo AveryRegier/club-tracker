@@ -95,6 +95,7 @@ public class ClubController extends ModelMaker {
                 if(person.isPresent()) {
                     HashMap<Object, Object> model = new HashMap<>();
                     model.put("club", club.get());
+                    optMap(club, Club::asProgram).ifPresent(p-> model.put("clubs", getClubList(p)));
                     model.put("person", person.get());
                     model.put("roles", ClubLeader.LeadershipRole.values());
                     return new ModelAndView(model, "workerRole.ftl");
@@ -119,6 +120,11 @@ public class ClubController extends ModelMaker {
                     } else {
                         ClubLeader.LeadershipRole leadershipRole = ClubLeader.LeadershipRole.valueOf(roleName);
                         club.get().assign(person.get(), leadershipRole);
+                    }
+                    Optional<Family> family = person.get().getFamily();
+                    if(family.map(Family::shouldInvite).orElse(false)) {
+                        response.redirect("/protected/family/" + family.get().getId() + "/invite");
+                        return null;
                     }
                 }
                 response.redirect("/protected/club/" + club.get().getId());
@@ -296,6 +302,10 @@ public class ClubController extends ModelMaker {
             }
             return null;
         });
+    }
+
+    private List<Object> getClubList(Program p) {
+        return Stream.concat(Stream.of(p), p.getClubs().stream()).collect(Collectors.toList());
     }
 
     private String getDefaultListener(User user, Clubber clubber) {

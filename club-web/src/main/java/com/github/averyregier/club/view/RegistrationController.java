@@ -2,10 +2,7 @@ package com.github.averyregier.club.view;
 
 import com.github.averyregier.club.application.ClubApplication;
 import com.github.averyregier.club.domain.User;
-import com.github.averyregier.club.domain.club.Family;
-import com.github.averyregier.club.domain.club.Parent;
-import com.github.averyregier.club.domain.club.Program;
-import com.github.averyregier.club.domain.club.RegistrationInformation;
+import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +13,9 @@ import spark.template.freemarker.FreeMarkerEngine;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
+import static com.github.averyregier.club.domain.utility.UtilityMethods.optMap;
 import static spark.Spark.*;
 
 public class RegistrationController extends ModelMaker {
@@ -125,7 +124,8 @@ public class RegistrationController extends ModelMaker {
         }, new FreeMarkerEngine());
 
         before("/protected/:id/newClubber", (request, response) -> {
-            validateMayCreateNewPeople(app, request, response);
+            validateMayCreateNewPeople(app, request, response,
+                    f -> postRegistrationRedirect(response, f));
         });
 
         post("/protected/:id/newClubber", (request, response) -> {
@@ -133,7 +133,8 @@ public class RegistrationController extends ModelMaker {
         }, new FreeMarkerEngine());
 
         before("/protected/:id/newWorker", (request, response) -> {
-            validateMayCreateNewPeople(app, request, response);
+            validateMayCreateNewPeople(app, request, response,
+                    f -> postWorkerRegistrationRedirect(getUser(request), response, f));
         });
 
         post("/protected/:id/newWorker", (request, response) -> {
@@ -141,7 +142,8 @@ public class RegistrationController extends ModelMaker {
         }, new FreeMarkerEngine());
     }
 
-    private void validateMayCreateNewPeople(ClubApplication app, Request request, Response response) {
+    private void validateMayCreateNewPeople(
+            ClubApplication app, Request request, Response response, Consumer<Family> fn) {
         User user = getUser(request);
         String programId = request.params(":id");
         if (!leadsProgram(user, programId)) {
@@ -150,26 +152,32 @@ public class RegistrationController extends ModelMaker {
         } else if ("submit".equals(request.queryParams("submit"))) {
             logger.info("Submitting family registration");
             Family family = updateForm(app, request).register();
-            postRegistrationRedirect(response, family);
+            fn.accept(family);
             halt();
         }
     }
 
     private void postRegistrationRedirect(Response response, Family family) {
-        if (shouldInvite(family)) {
+        if (family.shouldInvite()) {
             response.redirect("/protected/family/" + family.getId() + "/invite");
         } else {
             response.redirect("/protected/my");
         }
     }
 
-    private boolean shouldInvite(Family family) {
-        return family != null &&
-                family.getParents().stream() // for now, parents only, until we get clubber features
-                .filter(p -> p.getEmail().isPresent())
-                .filter(p -> !p.getLogin().isPresent())
-                .findAny()
-                .isPresent();
+    private void postWorkerRegistrationRedirect(User user, Response response, Family family) {
+        Optional<Parent> aParent = family.getParents().stream()
+                .filter(p -> !p.asListener().isPresent())
+                .filter(p -> !p.asClubLeader().isPresent())
+                .findFirst();
+        if(aParent.isPresent()) {
+            Optional<Club> leadingClub = optMap(user.asClubLeader(), ClubMember::getClub);
+            if(leadingClub.isPresent()) {
+                response.redirect("/protected/club/"+leadingClub.get().getId()+"/workers/" + aParent.get().getId());
+                return;
+            }
+        }
+        postRegistrationRedirect(response, family);
     }
 
     private RegistrationInformation updateForm(ClubApplication app, Request request) {

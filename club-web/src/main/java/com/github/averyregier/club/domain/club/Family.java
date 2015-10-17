@@ -26,4 +26,6 @@ public interface Family extends Group, HasId, Registered {
     void setAddress(Address address);
 
     Optional<Clubber> findNthChild(int childNumber);
+
+    boolean shouldInvite();
 }

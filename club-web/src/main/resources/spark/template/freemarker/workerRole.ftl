@@ -7,6 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript">
         <#include "forms.js">
+
+        function updateForm() {
+            var selectBox = document.getElementById("club");
+            var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+            document.forms[0].action = '/protected/club/'+selectedValue='/workers/${person.id}';
+        }
     </script>
 </head>
 <body>
@@ -17,7 +23,14 @@
         <legend class="inputGroupLabel">Add leader to club.</legend>
         <div class="inputGroupFields">
             <div class="inputField">
-                <label for="role">${person.name.fullName}'s role in ${club.shortCode} is:</label>
+                <label for="role">${person.name.fullName}'s role in
+                <#if !clubs??>${club.shortCode}<#else>
+                    <select name="club" id="club" onchange="updateForm()">
+                        <#list clubs as current>
+                            <option value="${current.id}"/>${current.shortCode}</option>
+                        </#list>
+                    </select>
+                </#if> is:</label>
                 <select name="role" id="role">
                     <option value="listener" default>Listener</option>
                 <#list roles as role>
