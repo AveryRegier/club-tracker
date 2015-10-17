@@ -13,6 +13,7 @@ import com.github.averyregier.club.repository.PersistedProgram;
 
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * Created by avery on 9/6/2014.
@@ -64,7 +65,9 @@ public class ClubManager {
     }
 
     public Optional<Club> constructClub(String id, Club parent, String curriculum) {
-        return Programs.find(curriculum).map(s -> new PersistedClub(s, id, parent));
+        return Programs
+                .find(curriculum)
+                .map(s -> clubs.computeIfAbsent(id, a -> new PersistedClub(s, id, parent)));
     }
 
     public Program createProgram(String acceptLanguage, String organizationName, Curriculum curriculum, String id) {
@@ -88,16 +91,21 @@ public class ClubManager {
 
     public Optional<InputField> getRegistrationField(String inputFieldId) {
         doLoad();
-        return clubs.values().stream()
-                .filter(c->c instanceof Program)
-                .map(c -> (Program) c)
+        return streamPrograms()
                 .flatMap(p -> UtilityMethods.stream(p.findField(inputFieldId)))
                 .findFirst();
+    }
+
+    private Stream<Program> streamPrograms() {
+        return clubs.values().stream()
+                .filter(c->c instanceof Program)
+                .map(c -> (Program) c);
     }
 
     private synchronized void doLoad() {
         if(clubs.isEmpty()) {
             loadClubs();
+            streamPrograms().forEach(Program::getClubs);
         }
     }
 

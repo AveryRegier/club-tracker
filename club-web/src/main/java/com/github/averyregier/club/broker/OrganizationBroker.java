@@ -28,7 +28,7 @@ public class OrganizationBroker extends PersistenceBroker<Program> {
 
     @Override
     protected void persist(Program program, DSLContext create) {
-        if(create.insertInto(ORGANIZATION)
+        if (create.insertInto(ORGANIZATION)
                 .set(ORGANIZATION.ID, program.getId().getBytes())
                 .set(mapFields(program))
                 .onDuplicateKeyUpdate()
