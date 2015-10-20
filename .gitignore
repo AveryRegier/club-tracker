@@ -16,3 +16,5 @@ hs_err_pid*
 clubDB/*
 derby.log
 *.log
+
+src/main/ebextensions/*
