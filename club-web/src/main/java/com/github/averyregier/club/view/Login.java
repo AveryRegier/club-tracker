@@ -68,8 +68,16 @@ public class Login extends ModelMaker {
                 if (user.isPresent() && user.get().authenticate(auth)) {
                     request.attribute("user", user);
                     return;
+                } else {
+                    System.out.println("authentication failure: "+
+                            user.map(User::getId).orElse("")+"="+auth);
                 }
+            } else {
+                System.out.println("auth cookie not found");
             }
+            request.cookies().entrySet().forEach(e->{
+                System.out.println(e.getKey()+"="+e.getValue());
+            });
             request.session().attribute("location", request.url());
             String context = request.contextPath();
             context = context == null ? "" : context;
@@ -111,6 +119,7 @@ public class Login extends ModelMaker {
                     response.redirect("/login");
                 } else {
                     User auser = setupUser(app, provider.getUserProfile(), request.session().attribute("invite"));
+                    System.out.println("login success: "+auser.getId());
                     resetCookies(request, response, auser);
                 }
             } catch (Exception e) {
