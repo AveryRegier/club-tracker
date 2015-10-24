@@ -31,12 +31,13 @@ files:
           Allow from all
         </Proxy>
 
-        SSLEngine             on
-        SSLCertificateFile    "/etc/pki/tls/certs/server.crt"
-        SSLCertificateKeyFile "/etc/pki/tls/certs/server.key"
-        SSLCipherSuite        EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
-        SSLProtocol           All -SSLv2 -SSLv3
-        SSLHonorCipherOrder   On
+        SSLEngine                  on
+        SSLCertificateFile         "/etc/pki/tls/certs/server.crt"
+        SSLCertificateChainFile    "/etc/pki/tls/certs/ca-certificates.crt"
+        SSLCertificateKeyFile      "/etc/pki/tls/certs/server.key"
+        SSLCipherSuite             EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+        SSLProtocol                All -SSLv2 -SSLv3
+        SSLHonorCipherOrder        On
 
         Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains; preload"
         Header always set X-Frame-Options DENY
@@ -74,7 +75,7 @@ files:
       put your private key here
       -----END RSA PRIVATE KEY-----
 
-  /etc/pki/tls/certs/gd_bundle.crt:
+  /etc/pki/tls/certs/ca-certificates.crt:
     mode: "000400"
     owner: root
     group: root
@@ -89,6 +90,6 @@ services:
     httpd:
       enabled: true
       ensureRunning: true
-      files : [/etc/httpd/conf.d/ssl.conf,/etc/pki/tls/certs/server.key,/etc/pki/tls/certs/server.crt,/etc/pki/tls/certs/gd_bundle.crt]
+      files : [/etc/httpd/conf.d/ssl.conf,/etc/pki/tls/certs/server.key,/etc/pki/tls/certs/server.crt,/etc/pki/tls/certs/ca-certificates.crt]
 
 
