@@ -17,4 +17,5 @@ clubDB/*
 derby.log
 *.log
 
-src/main/ebextensions/*
+club-web/src/main/ebextensions/*.config
+
