@@ -33,7 +33,7 @@ files:
 
         SSLEngine                  on
         SSLCertificateFile         "/etc/pki/tls/certs/server.crt"
-        SSLCertificateChainFile    "/etc/pki/tls/certs/ca-certificates.crt"
+        SSLCertificateChainFile    "/etc/pki/tls/certs/gd_bundle.crt"
         SSLCertificateKeyFile      "/etc/pki/tls/certs/server.key"
         SSLCipherSuite             EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
         SSLProtocol                All -SSLv2 -SSLv3
@@ -47,10 +47,7 @@ files:
         ProxyPassReverse / http://localhost:8080/
         ProxyPreserveHost on
 
-        RewriteEngine On
-        RewriteCond %{HTTPS} !=on
-        RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
-        RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+        RequestHeader set X-Forwarded-Proto "https"
 
         LogFormat "%h (%{X-Forwarded-For}i) %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\""
         ErrorLog /var/log/httpd/elasticbeanstalk-error_log
@@ -75,7 +72,7 @@ files:
       put your private key here
       -----END RSA PRIVATE KEY-----
 
-  /etc/pki/tls/certs/ca-certificates.crt:
+  /etc/pki/tls/certs/gd_bundle.crt:
     mode: "000400"
     owner: root
     group: root
@@ -90,6 +87,4 @@ services:
     httpd:
       enabled: true
       ensureRunning: true
-      files : [/etc/httpd/conf.d/ssl.conf,/etc/pki/tls/certs/server.key,/etc/pki/tls/certs/server.crt,/etc/pki/tls/certs/ca-certificates.crt]
-
-
+      files : [/etc/httpd/conf.d/ssl.conf,/etc/pki/tls/certs/server.key,/etc/pki/tls/certs/server.crt,/etc/pki/tls/certs/gd_bundle.crt]
