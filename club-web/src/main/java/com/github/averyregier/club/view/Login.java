@@ -29,9 +29,9 @@ import static spark.Spark.*;
 public class Login extends ModelMaker {
 
     public static void resetCookies(Request req, Response res, User user) {
-        res.cookie("auth", user.getCurrentAuth(), 60 * 60 * 3, false);
-        res.cookie("userID", user.getLoginInformation().getUniqueID(), 60 * 60 * 3, false);
-        res.cookie("provider", user.getLoginInformation().getProviderID(), 60 * 60 * 3, false);
+        res.cookie("auth", user.getCurrentAuth(), 60 * 60 * 3, req.raw().isSecure());
+        res.cookie("userID", user.getLoginInformation().getUniqueID(), 60 * 60 * 3, req.raw().isSecure());
+        res.cookie("provider", user.getLoginInformation().getProviderID(), 60 * 60 * 3, req.raw().isSecure());
         String location = req.session().attribute("location");
         if(location == null || location.startsWith("/login")) {
             location = "/protected/my";
