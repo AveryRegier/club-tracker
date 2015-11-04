@@ -79,4 +79,8 @@ class ConcreteBook implements Book {
         return getContainer().getId()+":"+getShortCode()+getVersion();
     }
 
+    @Override
+    public int compareTo(Book o) {
+        return o == this ? 0 :  o.getContainer().getBooks().indexOf(o) - o.getContainer().getBooks().indexOf(this);
+    }
 }
