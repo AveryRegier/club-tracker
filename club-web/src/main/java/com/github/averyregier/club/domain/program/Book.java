@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by avery on 9/6/2014.
  */
-public interface Book extends SectionHolder, Catalogued, Contained<Curriculum> {
+public interface Book extends SectionHolder, Catalogued, Contained<Curriculum>, Comparable<Book> {
 
     public List<SectionGroup> getSectionGroups();
     public int sequence();

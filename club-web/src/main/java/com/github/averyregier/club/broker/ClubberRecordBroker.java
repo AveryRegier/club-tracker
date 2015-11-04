@@ -75,53 +75,7 @@ public class ClubberRecordBroker extends PersistenceBroker<ClubberRecord> {
             Listener byListener = findListener(listenerId, manager);
             LocalDate localDate = r.getSignDate().toLocalDate();
             String note = r.getNote();
-            clubberRecord = new PersistedClubberRecord(section, clubber, localDate, byListener, note);
-        }
-        return clubberRecord;
-    }
-
-    private Section findSection(String sectionId, Clubber clubber) {
-        return clubber.getClub().get().getCurriculum().lookup(sectionId)
-        .orElseThrow(illegal("section " + sectionId + " does not exist"));
-    }
-
-    private Listener findListener(String listenerId, PersonManager manager) {
-        Optional<Listener> listener = UtilityMethods.optMap(manager.lookup(listenerId), Person::asListener);
-        return listener.orElseThrow(illegal("Listener " + listenerId + " is not a listener"));
-    }
-
-    private Supplier<IllegalArgumentException> illegal(String message) {
-        return () -> new IllegalArgumentException(message);
-    }
-
-    private class PersistedClubberRecord extends ClubberRecord {
-        private final Section section;
-        private final Clubber clubber;
-        private final LocalDate localDate;
-        private final Listener byListener;
-        private final String note;
-
-        public PersistedClubberRecord(Section section, Clubber clubber, LocalDate localDate, Listener byListener, String note) {
-            this.section = section;
-            this.clubber = clubber;
-            this.localDate = localDate;
-            this.byListener = byListener;
-            this.note = note;
-        }
-
-        @Override
-        public Section getSection() {
-            return section;
-        }
-
-        @Override
-        public Clubber getClubber() {
-            return clubber;
-        }
-
-        @Override
-        public Optional<Signing> getSigning() {
-            return Optional.of(new Signing() {
+            Signing signing = new Signing() {
                 @Override
                 public LocalDate getDate() {
                     return localDate;
@@ -141,7 +95,23 @@ public class ClubberRecordBroker extends PersistenceBroker<ClubberRecord> {
                 public Set<AwardPresentation> getCompletionAwards() {
                     return new LinkedHashSet<>(new AwardBroker(connector).find(clubber, section));
                 }
-            });
+            };
+            clubberRecord = new PersistingClubberRecord(clubber, section, connector, signing);
         }
+        return clubberRecord;
+    }
+
+    private Section findSection(String sectionId, Clubber clubber) {
+        return clubber.getClub().get().getCurriculum().lookup(sectionId)
+        .orElseThrow(illegal("section " + sectionId + " does not exist"));
+    }
+
+    private Listener findListener(String listenerId, PersonManager manager) {
+        Optional<Listener> listener = UtilityMethods.optMap(manager.lookup(listenerId), Person::asListener);
+        return listener.orElseThrow(illegal("Listener " + listenerId + " is not a listener"));
+    }
+
+    private Supplier<IllegalArgumentException> illegal(String message) {
+        return () -> new IllegalArgumentException(message);
     }
 }

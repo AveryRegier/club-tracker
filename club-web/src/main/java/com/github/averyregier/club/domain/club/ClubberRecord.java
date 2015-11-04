@@ -8,32 +8,96 @@ import com.github.averyregier.club.domain.utility.Named;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 
 import java.time.LocalDate;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.github.averyregier.club.domain.utility.UtilityMethods.stream;
 
 /**
  * Created by avery on 9/6/2014.
  */
 public abstract class ClubberRecord {
-    private RecordSigning signing = null;
+    private Signing signing = null;
+
+    protected ClubberRecord() {}
+
+    protected ClubberRecord(Signing initialSigning) {
+        this.signing = initialSigning;
+    }
 
     public abstract Section getSection();
     public abstract Clubber getClubber();
     public Signing sign(Listener byListener, String note) {
         if(signing == null) {
             signing = new RecordSigning(byListener, note);
-            signing.calculateAwards();
+            ((RecordSigning)signing).calculateAwards();
         }
         return signing;
+    }
+
+    public List<AwardPresentation> unSign() {
+        if(mayBeUnsigned()) {
+            List<AwardPresentation> awardPresentations = getSection().getAwards().stream()
+                    .flatMap(this::removePresentationsOf)
+                    .collect(Collectors.toList());
+
+            if(awardPresentations.stream().anyMatch(p->!p.notPresented())) {
+                throw new IllegalStateException("This has already been presented so you can't un-sign it");
+            }
+
+            unSign(awardPresentations);
+            return awardPresentations;
+        }
+        return Collections.emptyList();
+    }
+
+    protected void unSign(List<AwardPresentation> awardPresentations) {
+        this.signing = null;
+    }
+
+    public boolean mayBeUnsigned() {
+        return getSigning().isPresent() &&
+                (matchingAwards().anyMatch(AwardPresentation::notPresented) ||
+                 !matchingAwards().findFirst().isPresent());
+    }
+
+    private Stream<AwardPresentation> matchingAwards() {
+        return getSection().getAwards().stream()
+                .flatMap((a) -> getSignings(a).flatMap(s -> getMatchingAwards(a, s)));
+    }
+
+    private Stream<AwardPresentation> removePresentationsOf(Award a) {
+        Map<Signing, Optional<AwardPresentation>> map = getSignings(a)
+                .collect(Collectors.toMap(Function.identity(),
+                        signing -> getMatchingAwards(a, signing).findFirst()));
+
+        map.entrySet().stream().filter(e->e.getValue().isPresent())
+                .forEach(e -> e.getKey().getCompletionAwards().remove(e.getValue().get()));
+
+        return map.entrySet().stream()
+                .map(Map.Entry::getValue)
+                .filter(Optional::isPresent)
+                .map(Optional::get);
+    }
+
+    private Stream<Signing> getSignings(Award a) {
+        return a.getSections().stream()
+                .flatMap(s -> stream(getClubber()
+                        .getRecord(Optional.of(s))
+                        .flatMap(ClubberRecord::getSigning)));
+    }
+
+    private Stream<AwardPresentation> getMatchingAwards(Award a, Signing signing) {
+        return signing.getCompletionAwards().stream()
+                .filter(ca -> ca.forAccomplishment().equals(a));
     }
 
     public Signing catchup(Listener byListener, String note, LocalDate date) {
         if(signing == null) {
             signing = new RecordSigning(byListener, note, date);
-            signing.calculateAwards();
+            ((RecordSigning)signing).calculateAwards();
         }
         return signing;
     }
@@ -64,11 +128,11 @@ public abstract class ClubberRecord {
         private Set<AwardPresentation> awards;
         private final LocalDate date;
 
-        public RecordSigning(Listener byListener, String note) {
+        RecordSigning(Listener byListener, String note) {
             this(byListener, note, LocalDate.now());
         }
 
-        public RecordSigning(Listener byListener, String note, LocalDate date) {
+        RecordSigning(Listener byListener, String note, LocalDate date) {
             this.byListener = byListener;
             this.note = UtilityMethods.killWhitespace(note);
             this.date = date;

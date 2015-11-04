@@ -28,7 +28,7 @@ public class AwardBroker extends PersistenceBroker<AwardPresentation> {
 
     @Override
     protected void persist(AwardPresentation award, DSLContext create) {
-        if(!equalsAny(create.insertInto(AWARD)
+        if (!equalsAny(create.insertInto(AWARD)
                 .set(AWARD.ID, award.getId().getBytes())
                 .set(mapFields(award))
                 .onDuplicateKeyUpdate()
@@ -49,7 +49,7 @@ public class AwardBroker extends PersistenceBroker<AwardPresentation> {
     }
 
     public List<AwardPresentation> find(Clubber clubber, Section section) {
-        return query(create->{
+        return query(create -> {
             Result<AwardRecord> result = create.selectFrom(AWARD)
                     .where(AWARD.CLUBBER_ID.eq(clubber.getId().getBytes()))
                     .and(AWARD.SECTION_ID.eq(section.getId())).fetch();
@@ -63,4 +63,10 @@ public class AwardBroker extends PersistenceBroker<AwardPresentation> {
         });
     }
 
+    public void delete(AwardPresentation presentation){
+        execute(c->c
+                .delete(AWARD)
+                .where(AWARD.ID.eq(presentation.getId().getBytes()))
+                .execute());
+    }
 }

@@ -188,6 +188,12 @@ public class ClubController extends ModelMaker {
                     } else {
                         throw new IllegalAccessException("You are not authorized to sign this section");
                     }
+                } else if("true".equalsIgnoreCase(request.queryParams("unsign"))) {
+                    if (maySignRecords(user, clubber)) {
+                        record.unSign();
+                    } else {
+                        throw new IllegalAccessException("You are not authorized to un-sign this section");
+                    }
                 }
                 response.redirect(request.url());
                 halt();
@@ -199,13 +205,15 @@ public class ClubController extends ModelMaker {
             String id = request.params(":personId");
             Clubber clubber = findClubber(app, id);
             ClubberRecord record = getClubberRecord(request, clubber);
+            boolean maySign = maySignRecords(user, clubber);
             Map<String, Object> model = map("me", (Object) user)
                     .put("clubber", clubber)
                     .put("section", record.getSection())
                     .put("record", record)
                     .put("previousSection", clubber.getSectionBefore(record.getSection()))
                     .put("nextSection", clubber.getSectionAfter(record.getSection()))
-                    .put("maySign", maySignRecords(user, clubber) && !record.getSigning().isPresent())
+                    .put("maySign", maySign && !record.getSigning().isPresent())
+                    .put("mayUnSign", maySign && record.mayBeUnsigned())
                     .build();
             return new ModelAndView(model, "clubberSection.ftl");
         }, new FreeMarkerEngine());

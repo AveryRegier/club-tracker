@@ -7,6 +7,7 @@ import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.Section;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Created by avery on 8/8/15.
@@ -17,6 +18,12 @@ public class PersistingClubberRecord extends ClubberRecord {
     private Connector connector;
 
     public PersistingClubberRecord(Clubber clubber, Section section, Connector connector) {
+        this.clubber = clubber;
+        this.section = section;
+        this.connector = connector;
+    }
+    public PersistingClubberRecord(Clubber clubber, Section section, Connector connector, Signing signing) {
+        super(signing);
         this.clubber = clubber;
         this.section = section;
         this.connector = connector;
@@ -35,6 +42,14 @@ public class PersistingClubberRecord extends ClubberRecord {
     @Override
     public Signing sign(Listener byListener, String note) {
         return persist(super.sign(byListener, note));
+    }
+
+    @Override
+    public void unSign(List<AwardPresentation> awardPresentations) {
+        AwardBroker awardBroker = new AwardBroker(connector);
+        awardPresentations.forEach(awardBroker::delete);
+        super.unSign(awardPresentations);
+        new ClubberRecordBroker(connector).persist(this);
     }
 
     @Override

@@ -76,6 +76,9 @@
             <#if maySign>
                 <button type='submit' name="sign" value="true">Sign</button>
             </#if>
+            <#if mayUnSign>
+                <button type='submit' name="unsign" value="true">Un-Sign</button>
+            </#if>
             <#if nextSection.isPresent()>
                 <a href="/protected/clubbers/${clubber.id}/sections/${nextSection.get().id}" class="button">Next</a>
             </#if>
