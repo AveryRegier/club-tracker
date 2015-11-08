@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -29,7 +30,7 @@ public class ListenerAdapter extends PersonWrapper implements Listener {
     private Set<Clubber> matchingClubbers(Group cl) {
         return cl.getClubbers().stream()
                 .filter(c -> matchesGender(c))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     private Boolean matchesGender(Clubber c) {

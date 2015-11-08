@@ -8,11 +8,10 @@ import com.github.averyregier.club.domain.program.AgeGroup;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static com.github.averyregier.club.TestUtility.assertEmpty;
+import static com.github.averyregier.club.domain.club.adapter.DomainTestUtil.registerClubber;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -40,7 +39,7 @@ public class QuickListTest {
     @Test
     public void oneClubberQuickList() {
         listener.getUpdater().setGender(Person.Gender.MALE);
-        Clubber clubber = DomainTestUtil.registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.MALE);
+        Clubber clubber = registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.MALE);
         Set<Clubber> quickList = listener.getQuickList();
         assertNotNull(quickList);
         assertEquals(1, quickList.size());
@@ -54,7 +53,7 @@ public class QuickListTest {
         // in the future add a policy, for now, just make it default
 
         Listener listener = club.recruit(person);
-        DomainTestUtil.registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.FEMALE);
+        registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.FEMALE);
         Set<Clubber> quickList = listener.getQuickList();
         assertEmpty(quickList);
 
@@ -65,9 +64,9 @@ public class QuickListTest {
         // in the future add a policy, for now, just make it default
 
         Listener listener = club.recruit(person);
-        DomainTestUtil.registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.FEMALE);
-        DomainTestUtil.registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, null);
-        DomainTestUtil.registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.MALE);
+        registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.FEMALE);
+        registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, null);
+        registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.MALE);
         Set<Clubber> quickList = listener.getQuickList();
         assertEmpty(quickList);
 
@@ -77,14 +76,43 @@ public class QuickListTest {
     public void preferClubbersWorkedWithBefore() {
         listener.getUpdater().setGender(Person.Gender.MALE);
         HashSet<Clubber> expected = new HashSet<>();
-        Clubber clubber = DomainTestUtil.registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.MALE);
+        Clubber clubber = registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.MALE);
         expected.add(clubber);
-        clubber.getRecord(clubber.getNextSection()).ifPresent(r->r.sign(listener, ""));
+        clubber.getRecord(clubber.getNextSection()).ifPresent(r -> r.sign(listener, ""));
 
         Set<Clubber> quickList = listener.getQuickList();
         assertNotNull(quickList);
         assertEquals(expected.size(), quickList.size());
         assertEquals(expected, quickList);
+    }
+
+
+    @Test
+    public void alhabetizedList() {
+        listener.getUpdater().setGender(Person.Gender.MALE);
+        TreeSet<Clubber> expected = new TreeSet<>();
+        addClubberWithName(expected, "A", "Z");
+        addClubberWithName(expected, "B", "Y");
+        addClubberWithName(expected, "A", "Y");
+        addClubberWithName(expected, "C", "X");
+
+        Set<Clubber> quickList = listener.getQuickList();
+        assertNotNull(quickList);
+        assertEquals(expected.size(), quickList.size());
+        assertSameOrder(expected, quickList);
+    }
+
+    private <T> void assertSameOrder(Collection<? extends T> expected, Collection<? extends T> checking) {
+        Iterator<? extends T> iterator = checking.iterator();
+        for(T e: expected) {
+            assertEquals(e, iterator.next());
+        }
+    }
+
+    private void addClubberWithName(TreeSet<Clubber> expected, String given, String surname) {
+        Clubber clubber = registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.MALE);
+        clubber.getUpdater().setName(new NameBuilder().given(given).surname(surname).build());
+        expected.add(clubber);
     }
 
 }
