@@ -139,7 +139,7 @@ public class ClubController extends ModelMaker {
                 Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
                 if (club.isPresent()) {
                     HashSet<String> awards = asLinkedSet(request.queryMap("award").values());
-                    Ceremony ceremony = persistCeremony(app, new CeremonyAdapter());
+                    Ceremony ceremony = persistCeremony(app, new CeremonyAdapter(findToday(club)));
                     club.get().getAwardsNotYetPresented().stream()
                             .filter(a -> awards.contains(a.getId()))
                             .forEach(a -> a.presentAt(ceremony));
@@ -296,7 +296,7 @@ public class ClubController extends ModelMaker {
                 if (award.isPresent()) {
                     Listener listener = findListener(app, request.queryParams("listener"), clubber.getClub().get());
                     if (!clubber.hasAward(award.get())) {
-                        LocalDate date = parseDate(request).orElse(LocalDate.now());
+                        LocalDate date = parseDate(request).orElseGet(()->findToday(clubber).minusDays(1));
                         catchUp(clubber, listener, award.get(), date,  app);
                         response.redirect("/protected/clubbers/"+clubber.getId()+"/sections");
                     } else {
@@ -360,7 +360,7 @@ public class ClubController extends ModelMaker {
     }
 
     private LocalDate getSuggestedDate(Clubber clubber) {
-        LocalDate defaultDate = LocalDate.now();
+        LocalDate defaultDate = findToday(clubber).minusDays(1);
         return clubber.getLastRecord()
                 .map(r -> r.getSigning().map(Signing::getDate)
                         .orElse(defaultDate))

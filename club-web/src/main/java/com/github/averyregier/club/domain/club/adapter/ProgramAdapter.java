@@ -9,6 +9,7 @@ import com.github.averyregier.club.domain.utility.*;
 import com.github.averyregier.club.domain.utility.adapter.InputFieldGroupBuilder;
 import com.github.averyregier.club.domain.utility.adapter.StandardInputFields;
 
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -324,6 +325,11 @@ public class ProgramAdapter extends ClubAdapter implements Program {
                 .filter(Optional::isPresent)
                 .findFirst()
                 .orElse(Optional.empty());
+    }
+
+    @Override
+    public ZoneId getTimeZone() {
+        return ZoneId.of("CST6CDT");
     }
 
     protected InputFieldGroup persist(InputFieldGroup group) {

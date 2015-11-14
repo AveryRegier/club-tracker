@@ -11,6 +11,7 @@ import com.github.averyregier.club.domain.utility.UtilityMethods;
 import com.github.averyregier.club.domain.utility.adapter.InputFieldBuilder;
 import org.junit.Test;
 
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Optional;
@@ -240,6 +241,13 @@ public class ProgramAdapterTest {
         assertFieldInGroup(form, 0, parentField);
         assertFieldInGroup(form, 1, householdField);
         assertFieldInGroup(form, 2, childField);
+    }
+
+    @Test
+    public void defaultTimeZoneIsCT() {
+        Program program = new ProgramAdapter("en_US", null, "AWANA");
+        ZoneId tz = program.getTimeZone();
+        assertEquals(ZoneId.of("CST6CDT"), tz);
     }
 
     private void assertFieldInGroup(RegistrationInformation form, int index, InputField field) {

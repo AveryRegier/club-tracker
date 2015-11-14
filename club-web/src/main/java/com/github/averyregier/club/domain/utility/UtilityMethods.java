@@ -1,5 +1,7 @@
 package com.github.averyregier.club.domain.utility;
 
+import com.github.averyregier.club.domain.club.Club;
+import com.github.averyregier.club.domain.club.ClubMember;
 import org.jooq.exception.DataAccessException;
 
 import java.io.UnsupportedEncodingException;
@@ -7,6 +9,7 @@ import java.lang.reflect.Array;
 import java.net.URLDecoder;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -341,5 +344,31 @@ public class UtilityMethods {
 
     public static boolean isNull(Object o) {
         return o == null;
+    }
+
+    public static LocalDate findToday(ClubMember member) {
+        return getToday(findZone(member));
+    }
+
+    public static LocalDate findToday(Optional<Club> club) {
+        return getToday(findZone(club));
+    }
+
+    public static LocalDate getToday(ZoneId zone) {
+        return ZonedDateTime.now(zone).toLocalDate();
+    }
+
+    private static ZoneId findZone(ClubMember member) {
+        Optional<Club> club = member.getClub();
+        return findZone(club);
+    }
+
+    private static ZoneId findZone(Optional<Club> club) {
+        return club.map(c -> c.getProgram().getTimeZone())
+                .orElseGet(()-> getDefaultZone());
+    }
+
+    public static ZoneId getDefaultZone() {
+        return ZoneId.of("CST6CDT");
     }
 }

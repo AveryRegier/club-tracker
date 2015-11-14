@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.github.averyregier.club.domain.utility.UtilityMethods.findToday;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.stream;
 
 /**
@@ -129,7 +130,7 @@ public abstract class ClubberRecord {
         private final LocalDate date;
 
         RecordSigning(Listener byListener, String note) {
-            this(byListener, note, LocalDate.now());
+            this(byListener, note, findToday(getClubber()));
         }
 
         RecordSigning(Listener byListener, String note, LocalDate date) {

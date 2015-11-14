@@ -5,6 +5,7 @@ import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 
+import java.time.ZoneId;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -30,4 +31,6 @@ public interface Program extends Club {
 
     Program addField(RegistrationSection section, InputFieldDesignator field);
     Optional<InputField> findField(String fieldId);
+
+    ZoneId getTimeZone();
 }

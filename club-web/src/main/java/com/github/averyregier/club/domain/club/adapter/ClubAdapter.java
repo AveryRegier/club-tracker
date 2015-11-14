@@ -9,6 +9,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.github.averyregier.club.domain.utility.UtilityMethods.findToday;
+
 /**
 * Created by avery on 9/26/14.
 */
@@ -96,7 +98,7 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
 
     @Override
     public Map<Clubber, Object> getClubNightReport() {
-        LocalDate date = LocalDate.now();
+        LocalDate date = findToday(Optional.of(this));
         return new TreeMap<>(getClubbers().stream()
                 .collect(Collectors.toMap(Function.identity(),
                         c -> c.getRecords(
