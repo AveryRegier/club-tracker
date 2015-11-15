@@ -10,6 +10,7 @@
     </script>
 </head>
 <body>
+<#include "header.ftl">
 
 <form method="post">
     <div class="inputForm">
@@ -85,5 +86,4 @@
         </div>
     </div>
 </form>
-</body>
-</html>
+<#include "footer.ftl">

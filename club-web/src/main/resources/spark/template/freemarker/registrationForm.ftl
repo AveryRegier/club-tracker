@@ -68,5 +68,4 @@
 	</table>
 </form>
 </div>
-</body>
-</html>
+<#include "footer.ftl">

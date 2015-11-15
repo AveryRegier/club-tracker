@@ -1,14 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <LINK href="/main.css" rel="stylesheet" type="text/css">
-    <title>All ${club.shortCode} Clubber's Upcoming Sections</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
+<#include "normalHeader.ftl">
 
-<form method="post">
     <fieldset class="inputGroup">
         <legend class="inputGroupLabel">All ${club.shortCode} Clubber's Upcoming Sections</legend>
         <div class="inputGroupFields">
@@ -38,6 +29,4 @@
 
         </div>
     </fieldset>
-</form>
-</body>
-</html>
+<#include "footer.ftl">

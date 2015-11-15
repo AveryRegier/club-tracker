@@ -42,5 +42,4 @@
 			</fieldset>
 		</div>
 	</div>
-</body>
-</html>
+<#include "footer.ftl">

@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <LINK href="/main.css" rel="stylesheet" type="text/css">
-    <title>${clubber.name.fullName} - ${book.name}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
+<#include "normalHeader.ftl">
     <#if previous.isPresent()><div class="menu"><a href=/protected/clubbers/${clubber.id}/books/${previous.get().id}>Previous</a></a></div></#if>
     <#if next.isPresent()><div class="menu"><a href=/protected/clubbers/${clubber.id}/books/${next.get().id}>Next</a></a></div></#if>
 
@@ -94,5 +86,4 @@
             </div>
         </div>
     </fieldset>
-</body>
-</html>
+<#include "footer.ftl">

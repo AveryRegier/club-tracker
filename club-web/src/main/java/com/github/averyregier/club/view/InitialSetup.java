@@ -12,7 +12,7 @@ import static spark.Spark.*;
 /**
  * Created by avery on 6/20/15.
  */
-public class InitialSetup {
+public class InitialSetup extends ModelMaker {
     public void init(ClubApplication app) {
         before("/initial-setup", (request, response) -> {
             List<Provider> providers = new ProviderBroker(app.getConnector()).find();
@@ -25,7 +25,7 @@ public class InitialSetup {
 
         get("/initial-setup", (request, response)->{
             return new spark.ModelAndView(
-                    new Object(),
+                    newModel(request, "Add Login Provider").build(),
                     "provider.ftl");
         }, new FreeMarkerEngine());
 

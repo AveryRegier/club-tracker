@@ -8,9 +8,9 @@ import com.github.averyregier.club.domain.program.Programs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.ModelAndView;
+import spark.Request;
 import spark.template.freemarker.FreeMarkerEngine;
 
-import java.util.HashMap;
 import java.util.Optional;
 
 import static spark.Spark.*;
@@ -22,10 +22,10 @@ public class SetupController extends ModelMaker {
 
     public void init(ClubApplication app) {
         get("/protected/setup", (request, response) -> {
-            HashMap<Object, Object> model = new HashMap<>();
-            model.put("roles", ClubLeader.LeadershipRole.values());
-            model.put("programs", Programs.values());
-            return new ModelAndView(model, "setup.ftl");
+            return new ModelAndView(newModel(request, "Club Setup")
+                .put("roles", ClubLeader.LeadershipRole.values())
+                .put("programs", Programs.values())
+                .build(), "setup.ftl");
         }, new FreeMarkerEngine());
 
         post("/protected/setup", (request, response) -> {
@@ -50,7 +50,7 @@ public class SetupController extends ModelMaker {
         });
 
         get("/protected/program/:id", (request, response) ->
-                        new ModelAndView(toMap("program", app.getProgram(request.params(":id"))), "program.ftl"),
+                        createProgramView(request, app.getProgram(request.params(":id"))),
                 new FreeMarkerEngine());
 
         post("/protected/program/:id", (request, response) -> {
@@ -75,8 +75,14 @@ public class SetupController extends ModelMaker {
         get("/protected/program/:id/update", (request, response) -> {
             Program program = app.getProgram(request.params(":id"));
             app.addExtraFields(program);
-            return new ModelAndView(toMap("program", program), "program.ftl");
+            return createProgramView(request, program);
         },
         new FreeMarkerEngine());
+    }
+
+    private ModelAndView createProgramView(Request request, Program program) {
+        return new ModelAndView(
+                newModel(request, "Program").put("program", program).build(),
+                "program.ftl");
     }
 }

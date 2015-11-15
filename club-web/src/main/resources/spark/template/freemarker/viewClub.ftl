@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <LINK href="/main.css" rel="stylesheet" type="text/css">
-    <title>Program</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
+<#include "normalHeader.ftl">
+
     <div class="menu"><a href=/protected/club/${club.id}/workers>Recruit ${club.shortCode} Workers</a></a></div>
 
     <fieldset class="inputGroup">
@@ -65,5 +58,4 @@
             </div>
         </div>
     </fieldset>
-</body>
-</html>
+<#include "footer.ftl">

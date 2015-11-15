@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <LINK href="/main.css" rel="stylesheet" type="text/css">
-    <title>Program</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
+<#include "formHeader.ftl">
 
 <form method="get" action="/protected/my">
     <fieldset class="inputGroup">
@@ -31,5 +23,4 @@
     </fieldset>
 
 </form>
-</body>
-</html>
+<#include "footer.ftl">

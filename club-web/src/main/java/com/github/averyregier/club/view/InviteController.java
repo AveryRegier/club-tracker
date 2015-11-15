@@ -52,7 +52,10 @@ public class InviteController extends ModelMaker {
         });
 
         get(familyInvitePath, (request, response) -> {
-            return new ModelAndView(toMap("people", request.attribute("people")),
+            return new ModelAndView(
+                    newModel(request, "Invite Family Members")
+                            .put("people", request.attribute("people"))
+                            .build(),
                     "inviteFamily.ftl");
         }, new FreeMarkerEngine());
 

@@ -11,6 +11,7 @@ import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
 import com.github.averyregier.club.domain.utility.InputField;
+import com.github.averyregier.club.domain.utility.MapBuilder;
 import com.github.averyregier.club.domain.utility.Named;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.apache.commons.httpclient.HttpStatus;
@@ -46,18 +47,23 @@ public class ClubController extends ModelMaker {
         });
 
         get("/protected/:id/viewProgram", (request, response) -> {
-            HashMap<Object, Object> model = new HashMap<>();
-            model.put("program", app.getProgram(request.params(":id")));
-            return new ModelAndView(model, "viewProgram.ftl");
+            Program program = app.getProgram(request.params(":id"));
+            return new ModelAndView(
+                    newModel(request, program.getShortCode())
+                        .put("program", program)
+                        .build(),
+                    "viewProgram.ftl");
         }, new FreeMarkerEngine());
 
         get("/protected/club/:club", (request, response) -> {
             Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
             if(club.isPresent()) {
-                HashMap<Object, Object> model = new HashMap<>();
-                model.put("club", club.get());
-                model.put("clubbers", club.get().getClubNightReport().entrySet());
-                return new ModelAndView(model, "viewClub.ftl");
+                return new ModelAndView(
+                        newModel(request, club.get().getShortCode())
+                            .put("club", club.get())
+                            .put("clubbers", club.get().getClubNightReport().entrySet())
+                            .build(),
+                        "viewClub.ftl");
             } else {
                 response.redirect("/protected/my");
                 return null;
@@ -67,9 +73,11 @@ public class ClubController extends ModelMaker {
         get("/protected/club/:club/clubbers", (request, response) -> {
             Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
             if(club.isPresent()) {
-                HashMap<Object, Object> model = new HashMap<>();
-                model.put("club", club.get());
-                return new ModelAndView(model, "allClubbersQuick.ftl");
+                return new ModelAndView(
+                        newModel(request, "All "+club.get().getShortCode()+" Clubber's Upcoming Sections")
+                            .put("club", club.get())
+                            .build(),
+                        "allClubbersQuick.ftl");
             } else {
                 response.redirect("/protected/my");
                 return null;
@@ -79,9 +87,11 @@ public class ClubController extends ModelMaker {
         get("/protected/club/:club/workers", (request, response) -> {
             Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
             if(club.isPresent()) {
-                HashMap<Object, Object> model = new HashMap<>();
-                model.put("club", club.get());
-                return new ModelAndView(model, "addWorker.ftl");
+                return new ModelAndView(
+                        newModel(request, "Add "+club.get().getShortCode()+" Workers")
+                            .put("club", club.get())
+                            .build(),
+                        "addWorker.ftl");
             } else {
                 response.redirect("/protected/my");
                 return null;
@@ -93,12 +103,13 @@ public class ClubController extends ModelMaker {
             if(club.isPresent()) {
                 Optional<Person> person = app.getPersonManager().lookup(request.params(":personId"));
                 if(person.isPresent()) {
-                    HashMap<Object, Object> model = new HashMap<>();
-                    model.put("club", club.get());
-                    optMap(club, Club::asProgram).ifPresent(p-> model.put("clubs", getClubList(p)));
-                    model.put("person", person.get());
-                    model.put("roles", ClubLeader.LeadershipRole.values());
-                    return new ModelAndView(model, "workerRole.ftl");
+                    MapBuilder<String, Object> model = newModel(request,
+                            "Assign "+club.get().getShortCode()+" role to "+person.get().getName().getFullName())
+                        .put("club", club.get())
+                        .put("person", person.get())
+                        .put("roles", ClubLeader.LeadershipRole.values());
+                    optMap(club, Club::asProgram).ifPresent(p -> model.put("clubs", getClubList(p)));
+                    return new ModelAndView(model.build(), "workerRole.ftl");
                 } else {
                     response.redirect("/protected/club/"+club.get().getId()+"/workers");
                     return null;
@@ -152,9 +163,11 @@ public class ClubController extends ModelMaker {
         get("/protected/club/:club/awards", (request, response) -> {
             Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
             if (club.isPresent()) {
-                HashMap<Object, Object> model = new HashMap<>();
-                model.put("club", club.get());
-                return new ModelAndView(model, "awards.ftl");
+                return new ModelAndView(
+                        newModel(request, club.get().getShortCode()+" Awards")
+                            .put("club", club.get())
+                            .build(),
+                        "awards.ftl");
             } else {
                 response.redirect("/protected/my");
                 return null;
@@ -168,11 +181,12 @@ public class ClubController extends ModelMaker {
                 response.redirect("/protected/hello");
                 return null;
             } else {
-                Map<String, Object> model = toMap("me", user);
-                model.put("programs", programs);
+                MapBuilder<String, Object> model = newModel(request, "Home")
+                        .put("me", user)
+                        .put("programs", programs);
 
                 user.asClubLeader().ifPresent(l -> l.getClub().ifPresent(c -> model.put("mygroup", c)));
-                return new ModelAndView(model, "my.ftl");
+                return new ModelAndView(model.build(), "my.ftl");
             }
         }, new FreeMarkerEngine());
 
@@ -206,12 +220,14 @@ public class ClubController extends ModelMaker {
             Clubber clubber = findClubber(app, id);
             ClubberRecord record = getClubberRecord(request, clubber);
             boolean maySign = maySignRecords(user, clubber);
-            Map<String, Object> model = map("me", (Object) user)
+            Section section = record.getSection();
+            Map<String, Object> model = newModel(request, getSectionTitle(section))
+                    .put("me", user)
                     .put("clubber", clubber)
-                    .put("section", record.getSection())
+                    .put("section", section)
                     .put("record", record)
-                    .put("previousSection", clubber.getSectionBefore(record.getSection()))
-                    .put("nextSection", clubber.getSectionAfter(record.getSection()))
+                    .put("previousSection", clubber.getSectionBefore(section))
+                    .put("nextSection", clubber.getSectionAfter(section))
                     .put("maySign", maySign && !record.getSigning().isPresent())
                     .put("mayUnSign", maySign && record.mayBeUnsigned())
                     .build();
@@ -247,7 +263,7 @@ public class ClubController extends ModelMaker {
                 String bookId = request.params(":bookId");
                 Optional<ModelAndView> modelAndView =
                         optMap(clubber.getClub().map(Club::getCurriculum), c -> c.lookupBook(bookId))
-                                .map(book -> mapClubberBookRecords(user, clubber, book));
+                                .map(book -> mapClubberBookRecords(request, user, clubber, book));
                 if (modelAndView.isPresent()) {
                     return modelAndView.get();
                 } else {
@@ -269,11 +285,13 @@ public class ClubController extends ModelMaker {
                 if (award.isPresent()) {
                     if(!clubber.hasAward(award.get())) {
                         return new ModelAndView(
-                                map("clubber", (Object) clubber)
-                                        .put("defaultListener", getDefaultListener(user, clubber))
-                                        .put("listeners", clubber.getClub().get().getListeners())
-                                        .put("suggestedDate", getSuggestedDate(clubber))
-                                        .build(), "catchup.ftl");
+                                newModel(request, "Catchup")
+                                    .put("clubber", clubber)
+                                    .put("defaultListener", getDefaultListener(user, clubber))
+                                    .put("listeners", clubber.getClub().get().getListeners())
+                                    .put("suggestedDate", getSuggestedDate(clubber))
+                                    .build(),
+                                "catchup.ftl");
                     } else {
                         response.status(HttpStatus.SC_PRECONDITION_FAILED);
                     }
@@ -296,7 +314,7 @@ public class ClubController extends ModelMaker {
                 if (award.isPresent()) {
                     Listener listener = findListener(app, request.queryParams("listener"), clubber.getClub().get());
                     if (!clubber.hasAward(award.get())) {
-                        LocalDate date = parseDate(request).orElseGet(()->findToday(clubber).minusDays(1));
+                        LocalDate date = parseDate(request).orElseGet(() -> findToday(clubber).minusDays(1));
                         catchUp(clubber, listener, award.get(), date,  app);
                         response.redirect("/protected/clubbers/"+clubber.getId()+"/sections");
                     } else {
@@ -310,6 +328,10 @@ public class ClubController extends ModelMaker {
             }
             return null;
         });
+    }
+
+    private String getSectionTitle(Section section) {
+        return section.getGroup().getContainer().getShortCode()+"-"+section.getGroup().getShortCode()+"."+section.getShortCode();
     }
 
     private List<Object> getClubList(Program p) {
@@ -367,8 +389,9 @@ public class ClubController extends ModelMaker {
                 .orElse(defaultDate);
     }
 
-    private ModelAndView mapClubberBookRecords(User user, Clubber clubber, Book book) {
-        Map<String, Object> model = map("me", (Object)user)
+    private ModelAndView mapClubberBookRecords(Request request, User user, Clubber clubber, Book book) {
+        Map<String, Object> model = newModel(request, clubber.getName().getFullName()+" - "+book.getName())
+                .put("me", user)
                 .put("clubber", clubber)
                 .put("previous", findPreviousBook(clubber, book))
                 .put("next", findNextBook(clubber, book))

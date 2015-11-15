@@ -43,9 +43,7 @@ public class RegistrationController extends ModelMaker {
 
         get("/protected/:id/family", (request, response) -> {
             User user = getUser(request);
-            return new spark.ModelAndView(
-                    toMap("regInfo", app.getProgram(request.params(":id")).createRegistrationForm(user)),
-                    "family.ftl");
+            return createRegistrationView(request, app.getProgram(request.params(":id")).createRegistrationForm(user));
         }, new FreeMarkerEngine());
 
         before("/protected/:id/family", (request, response) -> {
@@ -67,9 +65,7 @@ public class RegistrationController extends ModelMaker {
             String programId = request.params(":id");
             String familyId = request.params(":familyId");
             if (leadsProgram(user, programId)) {
-                return new spark.ModelAndView(
-                        toMap("regInfo", app.getProgram(programId).createRegistrationForm(familyParent(app, familyId))),
-                        "family.ftl");
+                return createRegistrationView(request, app.getProgram(programId).createRegistrationForm(familyParent(app, familyId)));
             }
             response.redirect("/protected/my");
             halt();
@@ -101,9 +97,7 @@ public class RegistrationController extends ModelMaker {
             if (leadsProgram(user, programId)) {
                 Program program = app.getProgram(programId);
                 RegistrationInformation form = program.updateRegistrationForm(UtilityMethods.map("action", "child").build());
-                return new spark.ModelAndView(
-                        toMap("regInfo", form),
-                        "family.ftl");
+                return createRegistrationView(request, form);
             }
             response.redirect("/protected/my");
             halt();
@@ -114,9 +108,7 @@ public class RegistrationController extends ModelMaker {
             User user = getUser(request);
             String programId = request.params(":id");
             if (leadsProgram(user, programId)) {
-                return new spark.ModelAndView(
-                        toMap("regInfo", app.getProgram(programId).createRegistrationForm()),
-                        "family.ftl");
+                return createRegistrationView(request, app.getProgram(programId).createRegistrationForm());
             }
             response.redirect("/protected/my");
             halt();
@@ -188,8 +180,12 @@ public class RegistrationController extends ModelMaker {
     private ModelAndView updateRegistrationForm(ClubApplication app, Request request) {
         logger.info("Adding additional family members");
         RegistrationInformation form = updateForm(app, request);
+        return createRegistrationView(request, form);
+    }
+
+    private ModelAndView createRegistrationView(Request request, RegistrationInformation form) {
         return new ModelAndView(
-                toMap("regInfo", form),
+                newModel(request, "Registration").put("regInfo", form).build(),
                 "family.ftl");
     }
 

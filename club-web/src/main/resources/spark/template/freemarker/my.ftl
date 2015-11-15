@@ -50,5 +50,4 @@
     </div>
 </#if>
 </div>
-</body>
-</html>
+<#include "footer.ftl">
