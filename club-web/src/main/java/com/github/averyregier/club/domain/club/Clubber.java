@@ -1,12 +1,15 @@
 package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.program.Award;
+import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+
+import static com.github.averyregier.club.domain.utility.UtilityMethods.optMap;
 
 /**
  * Created by avery on 9/5/2014.
@@ -28,4 +31,8 @@ public interface Clubber extends ClubMember {
     boolean hasAward(Award award);
 
     Collection<ClubberRecord> getRecords(Predicate<ClubberRecord> test);
+
+    default Optional<Book> getBook(String bookId) {
+        return optMap(getClub().map(Club::getCurriculum), c -> c.lookupBook(bookId));
+    }
 }

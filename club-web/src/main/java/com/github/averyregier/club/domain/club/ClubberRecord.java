@@ -77,8 +77,11 @@ public abstract class ClubberRecord {
         map.entrySet().stream().filter(e->e.getValue().isPresent())
                 .forEach(e -> e.getKey().getCompletionAwards().remove(e.getValue().get()));
 
-        return map.entrySet().stream()
-                .map(Map.Entry::getValue)
+        return streamPresentValues(map);
+    }
+
+    private <T> Stream<T> streamPresentValues(Map<?, Optional<T>> map) {
+        return map.values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get);
     }

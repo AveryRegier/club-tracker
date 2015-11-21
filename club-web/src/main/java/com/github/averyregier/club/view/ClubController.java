@@ -261,8 +261,7 @@ public class ClubController extends ModelMaker {
             Clubber clubber = findClubber(app, id);
             if (maySeeRecords(user, clubber)) {
                 String bookId = request.params(":bookId");
-                Optional<ModelAndView> modelAndView =
-                        optMap(clubber.getClub().map(Club::getCurriculum), c -> c.lookupBook(bookId))
+                Optional<ModelAndView> modelAndView = clubber.getBook(bookId)
                                 .map(book -> mapClubberBookRecords(request, user, clubber, book));
                 if (modelAndView.isPresent()) {
                     return modelAndView.get();
