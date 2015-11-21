@@ -333,7 +333,7 @@ public class ClubController extends ModelMaker {
     }
 
     private String getDefaultListener(User user, Clubber clubber) {
-        return isInSameClub(clubber, user.asListener()) ? user.getId() : getLastListener(clubber).map(Person::getId).orElse("");
+        return clubber.isInSameClub(user.asListener()) ? user.getId() : getLastListener(clubber).map(Person::getId).orElse("");
     }
 
     private Optional<Listener> getLastListener(Clubber clubber) {
@@ -420,7 +420,7 @@ public class ClubController extends ModelMaker {
         // if a leader is also a parent, we'll still allow them to maintain section history
     }
 
-    private boolean isSamePerson(Person a, Person b) {
+    private static boolean isSamePerson(Person a, Person b) {
         return a.getUpdater() == b.getUpdater();
     }
 
@@ -429,7 +429,7 @@ public class ClubController extends ModelMaker {
     }
 
     private boolean isInAncestorClub(Clubber clubber, Optional<? extends ClubMember> member) {
-        return getParentClubId(clubber)
+        return clubber.getParentClubId()
                 .map(parentClubId ->
                         streamAncestry(member)
                                 .filter(g -> parentClubId.equals(g.getId()))
@@ -443,22 +443,8 @@ public class ClubController extends ModelMaker {
         return stream(optMap(member, m -> m.getClub().map(c -> (ClubGroup) c)), ClubGroup::getParentGroup);
     }
 
-    private Optional<String> getParentClubId(ClubMember member) {
-        return chain(member.getClub(), Club::getParentGroup).map(ClubGroup::getId);
-    }
-
     private boolean isListenerInSameClub(Person person, Clubber clubber) {
-        return isInSameClub(clubber, person.asListener());
-    }
-
-    private boolean isInSameClub(Clubber clubber, Optional<? extends ClubMember> member) {
-        return member
-                .map(l -> getClubId(clubber).map(id -> id.equals(getClubId(l).orElse(null))).orElse(false))
-                .orElse(false);
-    }
-
-    private Optional<String> getClubId(ClubMember member) {
-        return member.getClub().map(Club::getId);
+        return clubber.isInSameClub(person.asListener());
     }
 
     private boolean isParentOf(Person person, Clubber clubber) {
