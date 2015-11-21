@@ -32,9 +32,33 @@ public interface Clubber extends ClubMember {
     Optional<Section> getSectionAfter(Section current);
     Optional<Section> getSectionBefore(Section current);
 
-    boolean hasAward(Award award);
 
     Collection<ClubberRecord> getRecords(Predicate<ClubberRecord> test);
+
+    default Optional<Clubber> asClubber() {
+        return Optional.of(this);
+    }
+
+    default boolean hasAward(Award award) {
+        return findAward(award)
+                .isPresent();
+    }
+
+    default Optional<Named> findAward(Award award) {
+        return getAwards().stream()
+                .map(AwardPresentation::forAccomplishment)
+                .filter(n -> n.equals(award))
+                .findFirst();
+    }
+
+    default Optional<AwardPresentation> findPresentation(Book book, String awardName) {
+        return getRecords(r->r.getSection().getGroup().getBook().equals(book))
+                .stream()
+                .flatMap(r->stream(r.getSigning()))
+                .flatMap(s->s.getCompletionAwards().stream())
+                .filter(n -> n.forAccomplishment().getName().equals(awardName))
+                .findFirst();
+    }
 
     default Optional<Book> getBook(String bookId) {
         return optMap(getClub().map(Club::getCurriculum), c -> c.lookupBook(bookId));

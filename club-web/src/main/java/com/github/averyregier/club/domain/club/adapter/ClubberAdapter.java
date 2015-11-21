@@ -1,7 +1,6 @@
 package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.club.*;
-import com.github.averyregier.club.domain.program.Award;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
@@ -52,6 +51,13 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
             records = loadRecords();
         }
         return records;
+    }
+
+    @Override
+    public Collection<ClubberRecord> getRecords(Predicate<ClubberRecord> test) {
+        return getRecords().values().stream()
+                .filter(test::test)
+                .collect(Collectors.toList());
     }
 
     private ClubberRecord mapToRecord(Section section) {
@@ -210,24 +216,4 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
         }
     }
 
-    @Override
-    public Collection<ClubberRecord> getRecords(Predicate<ClubberRecord> test) {
-        return getRecords().values().stream()
-                .filter(test::test)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Optional<Clubber> asClubber() {
-        return Optional.of(this);
-    }
-
-    @Override
-    public boolean hasAward(Award award) {
-        return getAwards().stream()
-                .map(AwardPresentation::forAccomplishment)
-                .filter(n -> n.equals(award))
-                .findFirst()
-                .isPresent();
-    }
 }

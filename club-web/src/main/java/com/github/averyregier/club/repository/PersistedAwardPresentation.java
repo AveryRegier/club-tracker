@@ -17,7 +17,7 @@ import java.util.Optional;
  */
 public class PersistedAwardPresentation implements AwardPresentation {
 
-    private final String presentationId;
+    private String presentationId;
     private final String id;
     private final String accomplishment;
     private final Clubber clubber;
@@ -103,7 +103,18 @@ public class PersistedAwardPresentation implements AwardPresentation {
     @Override
     public void presentAt(Ceremony ceremony) {
         this.ceremony = ceremony;
+        persist();
+    }
+
+    private void persist() {
         new AwardBroker(connector).persist(this);
+    }
+
+    @Override
+    public void undoPresentation() {
+        this.presentationId = null;
+        this.ceremony = null;
+        persist();
     }
 
     @Override

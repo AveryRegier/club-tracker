@@ -53,6 +53,7 @@
                     <div class="award-header">Earned</div>
                     <div class="award-header">Presented</div>
                     <div class="award-header">Token</div>
+                    <#if catchup><div class="award-header">Actions</div></#if>
                 </div>
                 <#list awards as award>
                     <div style="display: table-row;">
@@ -72,14 +73,25 @@
                                     ${presentation.token().get().name}
                                 </#if>
                             </div>
+                            <div class="award-note">
+                                <#if presentation.presentedAt()??>
+                                  <#if catchup>
+                                      <form method="post"
+                                          action="/protected/clubbers/${clubber.id}/books/${book.id}/awards/${award.key.name}/presentation">
+                                          <button type='submit' class="button">Undo</button>
+                                      </form>
+                                  </#if>
+                                </#if>
+                            </div>
                         <#else>
                             <div class="award-date"></div>
-                            <div class="award-date">
+                            <div class="award-date"></div>
+                            <div class="award-note"></div>
+                            <div class="award-note">
                                 <#if catchup>
                                     <a href="/protected/clubbers/${clubber.id}/sections/${award.key.getSections()[0].id}/awards/${award.key.name}/catchup" class="button">Catch Up</a>
                                 </#if>
                             </div>
-                            <div class="award-note"></div>
                         </#if>
                     </div>
                 </#list>

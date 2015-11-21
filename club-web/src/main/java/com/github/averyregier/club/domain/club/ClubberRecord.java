@@ -211,6 +211,12 @@ public abstract class ClubberRecord {
                 persistAward(this);
             }
 
+            @Override
+            public void undoPresentation() {
+                this.ceremony = null;
+                persistAward(this);
+            }
+
             private Optional<Catalogued> select() {
                 return Optional.ofNullable(award.select(c->getClubber().getAwards().stream()
                         .filter(a -> a.token().isPresent())

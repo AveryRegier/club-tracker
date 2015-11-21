@@ -45,8 +45,8 @@ public class ClubController extends ModelMaker {
             Program program = app.getProgram(request.params(":id"));
             return new ModelAndView(
                     newModel(request, program.getShortCode())
-                        .put("program", program)
-                        .build(),
+                            .put("program", program)
+                            .build(),
                     "viewProgram.ftl");
         }, new FreeMarkerEngine());
 
@@ -69,7 +69,7 @@ public class ClubController extends ModelMaker {
             Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
             if(club.isPresent()) {
                 return new ModelAndView(
-                        newModel(request, "All "+club.get().getShortCode()+" Clubber's Upcoming Sections")
+                        newModel(request, "All " + club.get().getShortCode() + " Clubber's Upcoming Sections")
                             .put("club", club.get())
                             .build(),
                         "allClubbersQuick.ftl");
@@ -128,7 +128,7 @@ public class ClubController extends ModelMaker {
                         club.get().assign(person.get(), leadershipRole);
                     }
                     Optional<Family> family = person.get().getFamily();
-                    if(family.map(Family::shouldInvite).orElse(false)) {
+                    if (family.map(Family::shouldInvite).orElse(false)) {
                         response.redirect("/protected/family/" + family.get().getId() + "/invite");
                         return null;
                     }
@@ -159,9 +159,9 @@ public class ClubController extends ModelMaker {
             Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
             if (club.isPresent()) {
                 return new ModelAndView(
-                        newModel(request, club.get().getShortCode()+" Awards")
-                            .put("club", club.get())
-                            .build(),
+                        newModel(request, club.get().getShortCode() + " Awards")
+                                .put("club", club.get())
+                                .build(),
                         "awards.ftl");
             } else {
                 response.redirect("/protected/my");
@@ -197,7 +197,7 @@ public class ClubController extends ModelMaker {
                     } else {
                         throw new IllegalAccessException("You are not authorized to sign this section");
                     }
-                } else if("true".equalsIgnoreCase(request.queryParams("unsign"))) {
+                } else if ("true".equalsIgnoreCase(request.queryParams("unsign"))) {
                     if (maySignRecords(user, clubber)) {
                         record.unSign();
                     } else {
@@ -257,7 +257,7 @@ public class ClubController extends ModelMaker {
             if (maySeeRecords(user, clubber)) {
                 String bookId = request.params(":bookId");
                 Optional<ModelAndView> modelAndView = clubber.getBook(bookId)
-                                .map(book -> mapClubberBookRecords(request, user, clubber, book));
+                        .map(book -> mapClubberBookRecords(request, user, clubber, book));
                 if (modelAndView.isPresent()) {
                     return modelAndView.get();
                 } else {
@@ -306,13 +306,40 @@ public class ClubController extends ModelMaker {
                 Optional<Section> section = lookupSection(clubber, request.params(":sectionId"));
                 Optional<Award> award = optMap(section, s -> s.findAward(request.params(":awardName")));
                 if (award.isPresent()) {
-                    Listener listener = findListener(app, request.queryParams("listener"), clubber.getClub().get());
                     if (!clubber.hasAward(award.get())) {
+                        Listener listener = findListener(app, request.queryParams("listener"), clubber.getClub().get());
                         LocalDate date = parseDate(request).orElseGet(() -> findToday(clubber).minusDays(1));
-                        catchUp(clubber, listener, award.get(), date,  app);
-                        response.redirect("/protected/clubbers/"+clubber.getId()+"/sections");
+                        catchUp(clubber, listener, award.get(), date, app);
+                        response.redirect("/protected/clubbers/" + clubber.getId() + "/sections");
                     } else {
                         response.status(HttpStatus.SC_NOT_MODIFIED);
+                    }
+                } else {
+                    response.status(HttpStatus.SC_NOT_FOUND);
+                }
+            } else {
+                response.status(HttpStatus.SC_FORBIDDEN);
+            }
+            return null;
+        });
+
+        post("/protected/clubbers/:personId/books/:bookId/awards/:awardName/presentation", (request, response) -> {
+            User user = getUser(request);
+            String id = request.params(":personId");
+            Clubber clubber = findClubber(app, id);
+            if (mayRecordSigning(user, clubber)) {
+                Optional<Book> book = clubber.getBook(request.params(":bookId"));
+                if(book.isPresent()) {
+                    Optional<AwardPresentation> award = clubber.findPresentation(book.get(), request.params(":awardName"));
+                    if (award.isPresent()) {
+                        if (!award.get().notPresented()) {
+                            award.get().undoPresentation();
+                            response.redirect("/protected/clubbers/" + clubber.getId() + "/sections");
+                        } else {
+                            response.status(HttpStatus.SC_NOT_MODIFIED);
+                        }
+                    } else {
+                        response.status(HttpStatus.SC_NOT_FOUND);
                     }
                 } else {
                     response.status(HttpStatus.SC_NOT_FOUND);
@@ -428,7 +455,7 @@ public class ClubController extends ModelMaker {
         return isInAncestorClub(clubber, person.asClubLeader());
     }
 
-    private boolean isInAncestorClub(Clubber clubber, Optional<? extends ClubMember> member) {
+    private boolean isInAncestorClub(ClubMember clubber, Optional<? extends ClubMember> member) {
         return clubber.getParentClubId()
                 .map(parentClubId ->
                         streamAncestry(member)

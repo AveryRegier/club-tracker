@@ -20,5 +20,7 @@ public interface AwardPresentation extends HasId {
 
     void presentAt(Ceremony ceremony);
 
+    void undoPresentation();
+
     boolean notPresented();
 }

@@ -257,7 +257,7 @@ a.button {
 .award-note {
     display: table-cell;
     border: 1px solid black !important;
-    vertical-align: center;
+    vertical-align: middle;
 }
 .award-date {
     display: table-cell;
