@@ -9,11 +9,8 @@ import com.github.averyregier.club.domain.club.adapter.CeremonyAdapter;
 import com.github.averyregier.club.domain.program.Award;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
-import com.github.averyregier.club.domain.program.SectionGroup;
 import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.MapBuilder;
-import com.github.averyregier.club.domain.utility.Named;
-import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +22,10 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
-import static java.util.stream.Collectors.toList;
 import static spark.Spark.*;
 
 /**
@@ -242,7 +237,7 @@ public class ClubController extends ModelMaker {
                 Optional<Section> nextSection = clubber.getNextSection();
                 Optional<Book> book = nextSection.map(s -> s.getContainer().getBook());
                 if (!nextSection.isPresent()) {
-                    book = getLastBook(clubber);
+                    book = clubber.getLastBook();
                 }
                 if (book.isPresent()) {
                     response.redirect("/protected/clubbers/" + clubber.getId() + "/books/" + book.get().getId());
@@ -392,60 +387,16 @@ public class ClubController extends ModelMaker {
         Map<String, Object> model = newModel(request, clubber.getName().getFullName()+" - "+book.getName())
                 .put("me", user)
                 .put("clubber", clubber)
-                .put("previous", findPreviousBook(clubber, book))
-                .put("next", findNextBook(clubber, book))
+                .put("previous", clubber.findPreviousBook(book))
+                .put("next", clubber.findNextBook(book))
                 .put("book", book)
-                .put("sectionGroups", getBookRecordsByGroup(clubber, book).entrySet())
-                .put("awards", getBookAwards(clubber, book).entrySet())
+                .put("sectionGroups", clubber.getBookRecordsByGroup(book).entrySet())
+                .put("awards", clubber.getBookAwards(book).entrySet())
                 .put("catchup", mayRecordSigning(user, clubber))
                 .build();
         return new ModelAndView(model, "clubberBook.ftl");
     }
 
-    private Map<Award, Optional<AwardPresentation>> getBookAwards(Clubber clubber, Book book) {
-        Map<Named, AwardPresentation> awarded = clubber.getAwards().stream()
-                .collect(Collectors.toMap(AwardPresentation::forAccomplishment, Function.identity(), (u,v)->u));
-        Map<Award, Optional<AwardPresentation>> map = new LinkedHashMap<>();
-        book.getSections().stream()
-                .flatMap(s -> s.getAwards().stream())
-                .filter(UtilityMethods::notNull)
-                .distinct()
-                .forEach(a-> map.put(a, Optional.ofNullable(awarded.get(a))));
-        return map;
-    }
-
-    private Optional<Book> findPreviousBook(Clubber clubber, Book book) {
-        Optional<Book> previous = findPrevious(book, book.getContainer().getBooks());
-        if(previous.isPresent()) {
-            Optional<Book> after = previous;
-            do {
-                previous = after;
-                after = findNextBook(clubber, after.get());
-            } while(after.isPresent() && after.get() != book);
-        }
-        return previous;
-    }
-
-    private Optional<Book> findNextBook(Clubber clubber, Book book) {
-        // get any optional extra books that may have been done in a previous year
-        LinkedHashSet<Book> bookList = new LinkedHashSet<>(book.getContainer().recommendedBookList(book.getAgeGroups().get(0)));
-        bookList.addAll(book.getContainer().recommendedBookList(clubber.getCurrentAgeGroup()));
-
-        return findNext(book, bookList);
-    }
-
-    private Map<SectionGroup, List<ClubberRecord>> getBookRecordsByGroup(Clubber clubber, Book book) {
-        return book.getSectionGroups().stream()
-                .flatMap(g -> g.getSections().stream())
-                .map(s -> clubber.getRecord(Optional.of(s)))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.groupingBy(r -> r.getSection().getContainer(), LinkedHashMap::new, toList()));
-    }
-
-    private Optional<Book> getLastBook(Clubber clubber) {
-        return optMap(clubber.getClub(), c -> findLast(c.getCurriculum().getBooks()));
-    }
 
     private boolean maySeeRecords(Person person, Clubber clubber) {
         return  isLeaderInSameClub(person, clubber) ||
