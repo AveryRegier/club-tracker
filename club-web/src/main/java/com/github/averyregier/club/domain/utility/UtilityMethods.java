@@ -7,6 +7,7 @@ import org.jooq.exception.DataAccessException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.URLDecoder;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -370,5 +371,16 @@ public class UtilityMethods {
 
     public static ZoneId getDefaultZone() {
         return ZoneId.of("CST6CDT");
+    }
+
+    public static Optional<LocalDate> parseDate(String date) {
+        if(killWhitespace(date) == null) return Optional.empty();
+        try {
+            Date input = InputField.Type.dateFormat.get()
+                    .parse(date);
+            return Optional.of(input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        } catch (ParseException e) {
+            return Optional.empty();
+        }
     }
 }

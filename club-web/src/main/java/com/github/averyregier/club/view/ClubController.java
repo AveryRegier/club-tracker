@@ -9,7 +9,6 @@ import com.github.averyregier.club.domain.club.adapter.CeremonyAdapter;
 import com.github.averyregier.club.domain.program.Award;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
-import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.MapBuilder;
 import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
@@ -18,9 +17,7 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.template.freemarker.FreeMarkerEngine;
 
-import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -216,7 +213,7 @@ public class ClubController extends ModelMaker {
             ClubberRecord record = getClubberRecord(request, clubber);
             boolean maySign = maySignRecords(user, clubber);
             Section section = record.getSection();
-            Map<String, Object> model = newModel(request, getSectionTitle(section))
+            Map<String, Object> model = newModel(request, section.getSectionTitle())
                     .put("me", user)
                     .put("clubber", clubber)
                     .put("section", section)
@@ -308,7 +305,7 @@ public class ClubController extends ModelMaker {
                 if (award.isPresent()) {
                     if (!clubber.hasAward(award.get())) {
                         Listener listener = findListener(app, request.queryParams("listener"), clubber.getClub().get());
-                        LocalDate date = parseDate(request).orElseGet(() -> findToday(clubber).minusDays(1));
+                        LocalDate date = parseDate(request.queryParams("date")).orElseGet(() -> findToday(clubber).minusDays(1));
                         catchUp(clubber, listener, award.get(), date, app);
                         response.redirect("/protected/clubbers/" + clubber.getId() + "/sections");
                     } else {
@@ -329,7 +326,7 @@ public class ClubController extends ModelMaker {
             Clubber clubber = findClubber(app, id);
             if (mayRecordSigning(user, clubber)) {
                 Optional<Book> book = clubber.getBook(request.params(":bookId"));
-                if(book.isPresent()) {
+                if (book.isPresent()) {
                     Optional<AwardPresentation> award = clubber.findPresentation(book.get(), request.params(":awardName"));
                     if (award.isPresent()) {
                         if (!award.get().notPresented()) {
@@ -351,32 +348,12 @@ public class ClubController extends ModelMaker {
         });
     }
 
-    private String getSectionTitle(Section section) {
-        return section.getGroup().getContainer().getShortCode()+"-"+section.getGroup().getShortCode()+"."+section.getShortCode();
-    }
-
     private List<Object> getClubList(Program p) {
         return Stream.concat(Stream.of(p), p.getClubs().stream()).collect(Collectors.toList());
     }
 
     private String getDefaultListener(User user, Clubber clubber) {
-        return clubber.isInSameClub(user.asListener()) ? user.getId() : getLastListener(clubber).map(Person::getId).orElse("");
-    }
-
-    private Optional<Listener> getLastListener(Clubber clubber) {
-        return chain(clubber.getLastRecord(), ClubberRecord::getSigning).map(Signing::by);
-    }
-
-    private Optional<LocalDate> parseDate(Request request) {
-        String date = request.queryParams("date");
-        if(killWhitespace(date) == null) return Optional.empty();
-        try {
-            Date input = InputField.Type.dateFormat.get()
-                    .parse(date);
-            return Optional.of(input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-        } catch (ParseException e) {
-            return Optional.empty();
-        }
+        return clubber.isInSameClub(user.asListener()) ? user.getId() : clubber.getLastListener().map(Person::getId).orElse("");
     }
 
     private Ceremony persistCeremony(ClubFactory factory, Ceremony ceremony) {

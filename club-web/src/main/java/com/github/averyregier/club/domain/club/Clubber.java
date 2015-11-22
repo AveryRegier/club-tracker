@@ -54,8 +54,8 @@ public interface Clubber extends ClubMember {
     default Optional<AwardPresentation> findPresentation(Book book, String awardName) {
         return getRecords(r->r.getSection().getGroup().getBook().equals(book))
                 .stream()
-                .flatMap(r->stream(r.getSigning()))
-                .flatMap(s->s.getCompletionAwards().stream())
+                .flatMap(r -> stream(r.getSigning()))
+                .flatMap(s -> s.getCompletionAwards().stream())
                 .filter(n -> n.forAccomplishment().getName().equals(awardName))
                 .findFirst();
     }
@@ -107,6 +107,10 @@ public interface Clubber extends ClubMember {
 
     default Optional<Book> getLastBook() {
         return optMap(getClub(), c -> findLast(c.getCurriculum().getBooks()));
+    }
+
+    default Optional<Listener> getLastListener() {
+        return chain(getLastRecord(), ClubberRecord::getSigning).map(Signing::by);
     }
 
 }

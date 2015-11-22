@@ -25,6 +25,11 @@ public interface Section extends Comparable<Section>, Contained<SectionGroup> {
 
     String getId();
 
+    default String getSectionTitle() {
+        return getGroup().getContainer().getShortCode()+"-"+getGroup().getShortCode()+"."+getShortCode();
+    }
+
+
     default boolean isAfter(Section section) {
         if(getContainer().getBook().sequence() == section.getContainer().getBook().sequence()) {
             if(getContainer().sequence() == section.getContainer().sequence()) {
