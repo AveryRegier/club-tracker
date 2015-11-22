@@ -5,7 +5,7 @@ import com.github.averyregier.club.domain.program.AgeGroup;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static com.github.averyregier.club.domain.utility.UtilityMethods.chain;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
 
 /**
  * Created by avery on 9/5/2014.
@@ -30,4 +30,21 @@ public interface ClubMember extends Person {
                 .orElse(false);
     }
 
+    default boolean isListenerInSameClub(Person person) {
+        return isInSameClub(person.asListener());
+    }
+
+    default boolean isInAncestorClub(Optional<? extends ClubMember> member) {
+        return getParentClubId()
+                .map(parentClubId -> stream(optMap(member, m -> m.getClub().map(c -> (ClubGroup) c)), ClubGroup::getParentGroup)
+                        .filter(g -> parentClubId.equals(g.getId()))
+                        .findFirst()
+                        .map(x -> true)
+                        .orElse(false))
+                .orElse(false);
+    }
+
+    default boolean isLeaderInSameClub(Person person) {
+        return isInAncestorClub(person.asClubLeader());
+    }
 }

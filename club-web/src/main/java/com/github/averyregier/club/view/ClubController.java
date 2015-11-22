@@ -189,13 +189,13 @@ public class ClubController extends ModelMaker {
                 Clubber clubber = findClubber(app, id);
                 ClubberRecord record = getClubberRecord(request, clubber);
                 if ("true".equalsIgnoreCase(request.queryParams("sign"))) {
-                    if (maySignRecords(user, clubber)) {
+                    if (clubber.maySignRecords(user)) {
                         record.sign(user.asListener().orElseThrow(IllegalStateException::new), request.queryParams("note"));
                     } else {
                         throw new IllegalAccessException("You are not authorized to sign this section");
                     }
                 } else if ("true".equalsIgnoreCase(request.queryParams("unsign"))) {
-                    if (maySignRecords(user, clubber)) {
+                    if (clubber.maySignRecords(user)) {
                         record.unSign();
                     } else {
                         throw new IllegalAccessException("You are not authorized to un-sign this section");
@@ -211,7 +211,7 @@ public class ClubController extends ModelMaker {
             String id = request.params(":personId");
             Clubber clubber = findClubber(app, id);
             ClubberRecord record = getClubberRecord(request, clubber);
-            boolean maySign = maySignRecords(user, clubber);
+            boolean maySign = clubber.maySignRecords(user);
             Section section = record.getSection();
             Map<String, Object> model = newModel(request, section.getSectionTitle())
                     .put("me", user)
@@ -230,7 +230,7 @@ public class ClubController extends ModelMaker {
             User user = getUser(request);
             String id = request.params(":personId");
             Clubber clubber = findClubber(app, id);
-            if (maySeeRecords(user, clubber)) {
+            if (clubber.maySeeRecords(user)) {
                 Optional<Section> nextSection = clubber.getNextSection();
                 Optional<Book> book = nextSection.map(s -> s.getContainer().getBook());
                 if (!nextSection.isPresent()) {
@@ -251,7 +251,7 @@ public class ClubController extends ModelMaker {
             User user = getUser(request);
             String id = request.params(":personId");
             Clubber clubber = findClubber(app, id);
-            if (maySeeRecords(user, clubber)) {
+            if (clubber.maySeeRecords(user)) {
                 String bookId = request.params(":bookId");
                 Optional<ModelAndView> modelAndView = clubber.getBook(bookId)
                         .map(book -> mapClubberBookRecords(request, user, clubber, book));
@@ -270,7 +270,7 @@ public class ClubController extends ModelMaker {
             User user = getUser(request);
             String id = request.params(":personId");
             Clubber clubber = findClubber(app, id);
-            if(mayRecordSigning(user, clubber)) {
+            if(clubber.mayRecordSigning(user)) {
                 Optional<Section> section = lookupSection(clubber, request.params(":sectionId"));
                 Optional<Award> award = optMap(section, s -> s.findAward(request.params(":awardName")));
                 if (award.isPresent()) {
@@ -299,7 +299,7 @@ public class ClubController extends ModelMaker {
             User user = getUser(request);
             String id = request.params(":personId");
             Clubber clubber = findClubber(app, id);
-            if (mayRecordSigning(user, clubber)) {
+            if (clubber.mayRecordSigning(user)) {
                 Optional<Section> section = lookupSection(clubber, request.params(":sectionId"));
                 Optional<Award> award = optMap(section, s -> s.findAward(request.params(":awardName")));
                 if (award.isPresent()) {
@@ -324,7 +324,7 @@ public class ClubController extends ModelMaker {
             User user = getUser(request);
             String id = request.params(":personId");
             Clubber clubber = findClubber(app, id);
-            if (mayRecordSigning(user, clubber)) {
+            if (clubber.mayRecordSigning(user)) {
                 Optional<Book> book = clubber.getBook(request.params(":bookId"));
                 if (book.isPresent()) {
                     Optional<AwardPresentation> award = clubber.findPresentation(book.get(), request.params(":awardName"));
@@ -396,67 +396,11 @@ public class ClubController extends ModelMaker {
                 .put("book", book)
                 .put("sectionGroups", clubber.getBookRecordsByGroup(book).entrySet())
                 .put("awards", clubber.getBookAwards(book).entrySet())
-                .put("catchup", mayRecordSigning(user, clubber))
+                .put("catchup", clubber.mayRecordSigning(user))
                 .build();
         return new ModelAndView(model, "clubberBook.ftl");
     }
 
-
-    private boolean maySeeRecords(Person person, Clubber clubber) {
-        return  isLeaderInSameClub(person, clubber) ||
-                isListenerInSameClub(person, clubber) ||
-                isParentOf(person, clubber) ||
-                isSamePerson(person, clubber);
-    }
-
-    private boolean maySignRecords(Person user, Clubber clubber) {
-        return  isListenerInSameClub(user, clubber) &&
-                !(
-                    isParentOf(user, clubber) ||
-                    isSamePerson(user, clubber)
-                );
-    }
-
-    private boolean mayRecordSigning(Person user, Clubber clubber) {
-        return  (isListenerInSameClub(user, clubber) ||
-                 isLeaderInSameClub(user, clubber)) &&
-                !isSamePerson(user, clubber);
-        // if a leader is also a parent, we'll still allow them to maintain section history
-    }
-
-    private static boolean isSamePerson(Person a, Person b) {
-        return a.getUpdater() == b.getUpdater();
-    }
-
-    private boolean isLeaderInSameClub(Person person, Clubber clubber) {
-        return isInAncestorClub(clubber, person.asClubLeader());
-    }
-
-    private boolean isInAncestorClub(ClubMember clubber, Optional<? extends ClubMember> member) {
-        return clubber.getParentClubId()
-                .map(parentClubId ->
-                        streamAncestry(member)
-                                .filter(g -> parentClubId.equals(g.getId()))
-                                .findFirst()
-                                .map(x -> true)
-                                .orElse(false))
-                .orElse(false);
-    }
-
-    private Stream<ClubGroup> streamAncestry(Optional<? extends ClubMember> member) {
-        return stream(optMap(member, m -> m.getClub().map(c -> (ClubGroup) c)), ClubGroup::getParentGroup);
-    }
-
-    private boolean isListenerInSameClub(Person person, Clubber clubber) {
-        return clubber.isInSameClub(person.asListener());
-    }
-
-    private boolean isParentOf(Person person, Clubber clubber) {
-        return person.asParent()
-                .map(Person::getFamily)
-                .map(of -> of.map(f -> f.getId().equals(clubber.getFamily().map(Family::getId).orElse(null))).orElse(false))
-                .orElse(false);
-    }
 
     private ClubberRecord getClubberRecord(Request request, Clubber clubber) {
         String sectionId = request.params(":sectionId");

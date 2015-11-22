@@ -68,4 +68,9 @@ public interface Person extends Registered, Comparable<Person> {
     public Optional<Family> getFamily();
 
     public PersonUpdater getUpdater();
+
+    default boolean isSamePerson(Person b) {
+        return getUpdater() == b.getUpdater();
+    }
+
 }

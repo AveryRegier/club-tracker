@@ -113,4 +113,30 @@ public interface Clubber extends ClubMember {
         return chain(getLastRecord(), ClubberRecord::getSigning).map(Signing::by);
     }
 
+    default boolean isChildOf(Person person) {
+        return person.asParent()
+                .map(Person::getFamily)
+                .map(of -> of.map(f -> f.getId().equals(getFamily().map(Family::getId).orElse(null))).orElse(false))
+                .orElse(false);
+    }
+
+    default boolean maySeeRecords(Person person) {
+        return  isLeaderInSameClub(person) ||
+                isListenerInSameClub(person) ||
+                isChildOf(person) ||
+                isSamePerson(person);
+    }
+
+    default boolean maySignRecords(Person person) {
+        return  isListenerInSameClub(person) &&
+                !(isChildOf(person) || isSamePerson(person));
+    }
+
+    default boolean mayRecordSigning(Person person) {
+        return  (isListenerInSameClub(person) ||
+                isLeaderInSameClub(person)) &&
+                !isSamePerson(person);
+        // if a leader is also a parent, we'll still allow them to maintain section history
+    }
+
 }
