@@ -7,6 +7,7 @@ import com.github.averyregier.club.domain.program.SectionGroup;
 import com.github.averyregier.club.domain.utility.Named;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -137,6 +138,18 @@ public interface Clubber extends ClubMember {
                 isLeaderInSameClub(person)) &&
                 !isSamePerson(person);
         // if a leader is also a parent, we'll still allow them to maintain section history
+    }
+
+    default Optional<Section> lookupSection(String sectionId) {
+        return optMap(getClub(), c -> c.getCurriculum().lookup(sectionId));
+    }
+
+    default void catchup(Listener listener, Award award, LocalDate date, Ceremony ceremony, String note) {
+        award.getSections().stream()
+                .flatMap(s -> stream(getRecord(Optional.of(s))))
+                .map(r -> r.catchup(listener, note, date))
+                .flatMap(s->s.getCompletionAwards().stream())
+                .forEach(awardPresentation -> awardPresentation.presentAt(ceremony));
     }
 
 }

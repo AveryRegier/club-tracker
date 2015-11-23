@@ -271,7 +271,7 @@ public class ClubController extends ModelMaker {
             String id = request.params(":personId");
             Clubber clubber = app.findClubber(id);
             if(clubber.mayRecordSigning(user)) {
-                Optional<Section> section = lookupSection(clubber, request.params(":sectionId"));
+                Optional<Section> section = clubber.lookupSection(request.params(":sectionId"));
                 Optional<Award> award = optMap(section, s -> s.findAward(request.params(":awardName")));
                 if (award.isPresent()) {
                     if(!clubber.hasAward(award.get())) {
@@ -300,7 +300,7 @@ public class ClubController extends ModelMaker {
             String id = request.params(":personId");
             Clubber clubber = app.findClubber(id);
             if (clubber.mayRecordSigning(user)) {
-                Optional<Section> section = lookupSection(clubber, request.params(":sectionId"));
+                Optional<Section> section = clubber.lookupSection(request.params(":sectionId"));
                 Optional<Award> award = optMap(section, s -> s.findAward(request.params(":awardName")));
                 if (award.isPresent()) {
                     if (!clubber.hasAward(award.get())) {
@@ -368,15 +368,7 @@ public class ClubController extends ModelMaker {
                 return "Catch-up";
             }
         });
-        award.getSections().stream()
-                .flatMap(s -> stream(clubber.getRecord(Optional.of(s))))
-                .map(r -> r.catchup(listener, "Catchup records to current status", date))
-                .flatMap(s->s.getCompletionAwards().stream())
-                .forEach(awardPresentation -> awardPresentation.presentAt(ceremony));
-    }
-
-    private Optional<Section> lookupSection(Clubber clubber, String sectionId) {
-        return optMap(clubber.getClub(), c -> c.getCurriculum().lookup(sectionId));
+        clubber.catchup(listener, award, date, ceremony, "Catchup records to current status");
     }
 
     private LocalDate getSuggestedDate(Clubber clubber) {
@@ -403,7 +395,7 @@ public class ClubController extends ModelMaker {
 
     private ClubberRecord getClubberRecord(Request request, Clubber clubber) {
         String sectionId = request.params(":sectionId");
-        Optional<Section> section = lookupSection(clubber, decode(sectionId));
+        Optional<Section> section = clubber.lookupSection(decode(sectionId));
         return clubber.getRecord(section).orElseThrow(IllegalArgumentException::new);
     }
 }
