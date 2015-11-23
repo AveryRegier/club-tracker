@@ -186,7 +186,7 @@ public class ClubController extends ModelMaker {
             if (request.requestMethod().equalsIgnoreCase("POST")) {
                 User user = getUser(request);
                 String id = request.params(":personId");
-                Clubber clubber = findClubber(app, id);
+                Clubber clubber = app.findClubber(id);
                 ClubberRecord record = getClubberRecord(request, clubber);
                 if ("true".equalsIgnoreCase(request.queryParams("sign"))) {
                     if (clubber.maySignRecords(user)) {
@@ -209,7 +209,7 @@ public class ClubController extends ModelMaker {
         get("/protected/clubbers/:personId/sections/:sectionId", (request, response) -> {
             User user = getUser(request);
             String id = request.params(":personId");
-            Clubber clubber = findClubber(app, id);
+            Clubber clubber = app.findClubber(id);
             ClubberRecord record = getClubberRecord(request, clubber);
             boolean maySign = clubber.maySignRecords(user);
             Section section = record.getSection();
@@ -229,7 +229,7 @@ public class ClubController extends ModelMaker {
         before("/protected/clubbers/:personId/sections", ((request, response) -> {
             User user = getUser(request);
             String id = request.params(":personId");
-            Clubber clubber = findClubber(app, id);
+            Clubber clubber = app.findClubber(id);
             if (clubber.maySeeRecords(user)) {
                 Optional<Section> nextSection = clubber.getNextSection();
                 Optional<Book> book = nextSection.map(s -> s.getContainer().getBook());
@@ -250,7 +250,7 @@ public class ClubController extends ModelMaker {
         get("/protected/clubbers/:personId/books/:bookId", (request, response) -> {
             User user = getUser(request);
             String id = request.params(":personId");
-            Clubber clubber = findClubber(app, id);
+            Clubber clubber = app.findClubber(id);
             if (clubber.maySeeRecords(user)) {
                 String bookId = request.params(":bookId");
                 Optional<ModelAndView> modelAndView = clubber.getBook(bookId)
@@ -269,7 +269,7 @@ public class ClubController extends ModelMaker {
         get("/protected/clubbers/:personId/sections/:sectionId/awards/:awardName/catchup", (request, response) -> {
             User user = getUser(request);
             String id = request.params(":personId");
-            Clubber clubber = findClubber(app, id);
+            Clubber clubber = app.findClubber(id);
             if(clubber.mayRecordSigning(user)) {
                 Optional<Section> section = lookupSection(clubber, request.params(":sectionId"));
                 Optional<Award> award = optMap(section, s -> s.findAward(request.params(":awardName")));
@@ -298,13 +298,13 @@ public class ClubController extends ModelMaker {
         post("/protected/clubbers/:personId/sections/:sectionId/awards/:awardName/catchup", (request, response) -> {
             User user = getUser(request);
             String id = request.params(":personId");
-            Clubber clubber = findClubber(app, id);
+            Clubber clubber = app.findClubber(id);
             if (clubber.mayRecordSigning(user)) {
                 Optional<Section> section = lookupSection(clubber, request.params(":sectionId"));
                 Optional<Award> award = optMap(section, s -> s.findAward(request.params(":awardName")));
                 if (award.isPresent()) {
                     if (!clubber.hasAward(award.get())) {
-                        Listener listener = findListener(app, request.queryParams("listener"), clubber.getClub().get());
+                        Listener listener = app.findListener(request.queryParams("listener"), clubber.getClub().get());
                         LocalDate date = parseDate(request.queryParams("date")).orElseGet(() -> findToday(clubber).minusDays(1));
                         catchUp(clubber, listener, award.get(), date, app);
                         response.redirect("/protected/clubbers/" + clubber.getId() + "/sections");
@@ -323,7 +323,7 @@ public class ClubController extends ModelMaker {
         post("/protected/clubbers/:personId/books/:bookId/awards/:awardName/presentation", (request, response) -> {
             User user = getUser(request);
             String id = request.params(":personId");
-            Clubber clubber = findClubber(app, id);
+            Clubber clubber = app.findClubber(id);
             if (clubber.mayRecordSigning(user)) {
                 Optional<Book> book = clubber.getBook(request.params(":bookId"));
                 if (book.isPresent()) {
@@ -401,31 +401,9 @@ public class ClubController extends ModelMaker {
         return new ModelAndView(model, "clubberBook.ftl");
     }
 
-
     private ClubberRecord getClubberRecord(Request request, Clubber clubber) {
         String sectionId = request.params(":sectionId");
         Optional<Section> section = lookupSection(clubber, decode(sectionId));
         return clubber.getRecord(section).orElseThrow(IllegalArgumentException::new);
-    }
-
-    private Clubber findClubber(ClubApplication app, String id) {
-        return findPerson(app, id)
-                        .asClubber()
-                        .orElseThrow(IllegalArgumentException::new);
-    }
-
-    private Listener findListener(ClubApplication app, String id, Club club) {
-        Listener listener = findPerson(app, id)
-                .asListener()
-                .orElseThrow(IllegalArgumentException::new);
-        if(listener.getClub().orElseThrow(IllegalArgumentException::new).getId().equals(club.getId())) {
-            return listener;
-        } else throw new IllegalArgumentException();
-    }
-
-    private Person findPerson(ClubApplication app, String id) {
-        return app.getPersonManager()
-                        .lookup(id)
-                        .orElseThrow(IllegalArgumentException::new);
     }
 }
