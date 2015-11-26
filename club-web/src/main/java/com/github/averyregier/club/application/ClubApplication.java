@@ -48,8 +48,13 @@ public class ClubApplication implements SparkApplication, ServletContextListener
 
     }
 
-    private final UserManager userManager = createUserManager();
-    private final ClubManager clubManager = new PersistedClubManager(this);
+    private ConfiguredConnector connector;
+    private UserManager userManager;
+    private ClubManager clubManager;
+
+    {
+        reset();
+    }
 
     private PersistedUserManager createUserManager() {
         PersonManager personManager = new PersistedPersonManager(
@@ -58,8 +63,6 @@ public class ClubApplication implements SparkApplication, ServletContextListener
                 () -> new PersonRegistrationBroker(this));
         return new PersistedUserManager(personManager, ()->new LoginBroker(connector));
     }
-
-    private ConfiguredConnector connector;
 
     @Override
     public void init() {
@@ -84,6 +87,7 @@ public class ClubApplication implements SparkApplication, ServletContextListener
         new InviteController().init(this);
         new RestAPI().init(this);
         new ClubController().init(this);
+        new AdminController().init(this);
     }
 
     private void loadConfig() {
@@ -237,5 +241,11 @@ public class ClubApplication implements SparkApplication, ServletContextListener
                     .map(Stream::of).orElse(Stream.empty()))
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public synchronized void reset() {
+        userManager = createUserManager();
+        clubManager = new PersistedClubManager(this);
     }
 }

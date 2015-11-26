@@ -50,4 +50,5 @@ public interface ClubFactory {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
+    void reset();
 }
