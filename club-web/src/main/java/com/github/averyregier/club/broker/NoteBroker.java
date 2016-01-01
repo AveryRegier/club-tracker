@@ -26,7 +26,7 @@ public class NoteBroker extends PersistenceBroker<Note> {
                 .onDuplicateKeyUpdate()
                 .set(mapFields(note))
                 .execute(), 1, 2)) {
-            fail("Clubber persistence failed: " + note.getId());
+            fail("Note metadata persistence failed: " + note.getId());
         }
 
     }
