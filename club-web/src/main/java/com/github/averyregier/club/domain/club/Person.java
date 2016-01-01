@@ -1,6 +1,7 @@
 package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.User;
+import com.github.averyregier.club.domain.utility.HasUUID;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -8,7 +9,7 @@ import java.util.Optional;
 /**
  * Created by avery on 9/5/2014.
  */
-public interface Person extends Registered, Comparable<Person> {
+public interface Person extends Registered, Comparable<Person>, HasUUID {
 
 
     Collection<Club> getClubs();

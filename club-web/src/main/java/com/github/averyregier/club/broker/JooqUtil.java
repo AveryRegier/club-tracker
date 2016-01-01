@@ -1,10 +1,13 @@
 package com.github.averyregier.club.broker;
 
 import com.github.averyregier.club.domain.utility.HasId;
+import com.github.averyregier.club.domain.utility.HasUUID;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.jooq.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +36,13 @@ public class JooqUtil {
         }
 
         /**
+         * Set a value for a field in the <code>INSERT</code> statement, converting ZoneDateTime to java.sql.Timestamp.
+         */
+        MapBuilder<R> set(TableField<R, java.sql.Timestamp> field, ZonedDateTime value) {
+            return set(field, Timestamp.from(value.toInstant()));
+        }
+
+        /**
          * Set a value for a field in the <code>INSERT</code> statement, converting LocalDate to java.sql.Date.
          */
         MapBuilder<R> setUUID(TableField<R, byte[]> field, Optional<String> value) {
@@ -42,8 +52,15 @@ public class JooqUtil {
         /**
          * Set a value for a field in the <code>INSERT</code> statement, converting LocalDate to java.sql.Date.
          */
-        MapBuilder<R> setHasId(TableField<R, byte[]> field, Optional<? extends HasId> value) {
+        MapBuilder<R> setHasUUID(TableField<R, byte[]> field, Optional<? extends HasUUID> value) {
             return set(field, value.map(v->v.getId().getBytes()).orElse(null));
+        }
+
+        /**
+         * Set a value for a field in the <code>INSERT</code> statement, converting LocalDate to java.sql.Date.
+         */
+        MapBuilder<R> setHasUUID(TableField<R, byte[]> field, HasUUID value) {
+            return set(field, value.getId());
         }
 
         /**

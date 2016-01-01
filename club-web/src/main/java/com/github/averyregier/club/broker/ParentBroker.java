@@ -34,7 +34,7 @@ public class ParentBroker extends PersistenceBroker<Parent> {
 
     private Map<TableField<ParentRecord, ?>, Object> mapFields(Parent thing) {
         return JooqUtil.<ParentRecord>map()
-                .setHasId(PARENT.FAMILY_ID, thing.getFamily())
+                .setHasUUID(PARENT.FAMILY_ID, thing.getFamily())
                 .build();
     }
 

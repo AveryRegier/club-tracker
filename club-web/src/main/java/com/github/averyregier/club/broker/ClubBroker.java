@@ -37,7 +37,7 @@ public class ClubBroker extends PersistenceBroker<Club> {
 
     private Map<TableField<ClubRecord, ?>, Object> mapFields(Club club) {
         return JooqUtil.<ClubRecord>map()
-                .setHasId(CLUB.PARENT_CLUB_ID, club.getParentGroup())
+                .setHasUUID(CLUB.PARENT_CLUB_ID, club.getParentGroup())
                 .set(CLUB.CURRICULUM, club.getCurriculum().getId())
                 .build();
     }

@@ -48,8 +48,8 @@ public class ClubberBroker extends PersistenceBroker<Clubber> {
 
     private Map<TableField<ClubberRecord, ?>, Object> mapFields(Clubber clubber) {
         return JooqUtil.<ClubberRecord>map()
-                .setHasId(CLUBBER.CLUB_ID, clubber.getClub())
-                .setHasId(CLUBBER.FAMILY_ID, clubber.getFamily())
+                .setHasUUID(CLUBBER.CLUB_ID, clubber.getClub())
+                .setHasUUID(CLUBBER.FAMILY_ID, clubber.getFamily())
                 .set(CLUBBER.AGE_GROUP, Optional.ofNullable(clubber.getCurrentAgeGroup()).map(AgeGroup::name))
                 .build();
     }

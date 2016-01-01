@@ -1,8 +1,12 @@
 package com.github.averyregier.club.broker;
 
-import com.github.averyregier.club.domain.utility.HasId;
+import com.github.averyregier.club.db.tables.records.NoteRecord;
+import com.github.averyregier.club.domain.utility.HasUUID;
 import org.jooq.Field;
+import org.jooq.TableField;
 
+import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -76,11 +80,11 @@ public class StatementVerifier {
         }
     }
 
-    void assertUUID(HasId identifiable, Field<byte[]> field) {
+    void assertUUID(HasUUID identifiable, Field<byte[]> field) {
         assertUUID(Optional.ofNullable(identifiable), field);
     }
 
-    void assertUUID(Optional<? extends HasId> identifiable, Field<byte[]> field) {
+    void assertUUID(Optional<? extends HasUUID> identifiable, Field<byte[]> field) {
         if(identifiable.isPresent()) {
             String uuid = identifiable.get().getId();
             assertUUID(uuid, field);
@@ -90,10 +94,16 @@ public class StatementVerifier {
     }
 
     void assertUUID(String uuid, Field<byte[]> field) {
-        assertEquals(uuid, new String(get(field)));
+        byte[] bytes = get(field);
+        assertNotNull("Field "+field.getName()+" was null instead of "+uuid, bytes);
+        assertEquals(uuid, new String(bytes));
     }
 
     public <T> void assertFieldEquals(T value, Field<T> field) {
         assertEquals(field.getName(), value, get(field));
+    }
+
+    void assertSameTime(ZonedDateTime time, TableField<NoteRecord, Timestamp> field) {
+        assertFieldEquals(Timestamp.from(time.toInstant()), field);
     }
 }

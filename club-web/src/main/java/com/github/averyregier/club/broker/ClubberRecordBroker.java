@@ -43,7 +43,7 @@ public class ClubberRecordBroker extends PersistenceBroker<ClubberRecord> {
         JooqUtil.MapBuilder<RecordRecord> map = JooqUtil.<RecordRecord>map();
         if(record.getSigning().isPresent()) {
             Signing signing = record.getSigning().get();
-            map .setHasId(RECORD.CLUB_ID, signing.by().getClub())
+            map .setHasUUID(RECORD.CLUB_ID, signing.by().getClub())
                 .set(RECORD.SIGNED_BY, signing.by().getId())
                 .set(RECORD.SIGN_DATE, signing.getDate())
                 .set(RECORD.NOTE, signing.getNote());
