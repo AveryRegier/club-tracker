@@ -30,5 +30,9 @@ public class NoteTextBroker extends PersistenceBroker<Note> {
                 fail("Note text persistence failed: " + note.getId());
             }
         }
+        create.delete(NOTE_TEXT)
+                .where(NOTE_TEXT.ID.eq(note.getId().getBytes()))
+                .and(NOTE_TEXT.SEQUENCE.ge(numParts))
+                .execute();
     }
 }

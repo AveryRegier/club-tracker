@@ -10,10 +10,10 @@ import org.junit.Test;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
-import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
+import static com.github.averyregier.club.broker.BrokerTestUtil.*;
 import static com.github.averyregier.club.db.tables.NoteText.NOTE_TEXT;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +27,9 @@ public class NoteTextBrokerTest {
     public void testPersistMerges() throws Exception {
         final Note note = new NoteAdapter(getPerson(), "A note");
 
-        MockDataProvider provider = mergeProvider(assertPrimaryKey(note), assertFields(note));
+        MockDataProvider provider = batch()
+                .statement(mergeProvider(assertPrimaryKey(note), assertFields(note)))
+                .statement(deleteExtraParts(note)).build();
 
         setup(provider).persist(note);
     }
@@ -54,7 +56,10 @@ public class NoteTextBrokerTest {
     public void testPersistsCorrectValues() throws Exception {
         final Note note = new NoteAdapter(getPerson(), "A note");
 
-        MockDataProvider provider = mergeProvider(assertPrimaryKey(note), (s) -> assertNoteFields(note, s));
+        MockDataProvider provider = batch()
+                .statement(insertPart(note))
+                .statement(deleteExtraParts(note))
+                .build();
 
         setup(provider).persist(note);
     }
@@ -63,9 +68,22 @@ public class NoteTextBrokerTest {
     public void testBigNote() throws Exception {
         final Note note = new NoteAdapter(getPerson(), thousandCharacters()+thousandCharacters());
 
-        MockDataProvider provider = mergeProvider(assertPrimaryKey(note), (s) -> assertNoteFields(note, s));
+        MockDataProvider provider = batch()
+                .statement(insertPart(note))
+                .statement(insertPart(note))
+                .statement(insertPart(note))
+                .statement(deleteExtraParts(note))
+                .build();
 
         setup(provider).persist(note);
+    }
+
+    private MockDataProvider insertPart(Note note) {
+        return mergeProvider(assertPrimaryKey(note), (s) -> assertNoteFields(note, s));
+    }
+
+    private MockDataProvider deleteExtraParts(Note note) {
+        return delete(assertPrimaryKey(note), 0);
     }
 
     private String thousandCharacters() {
@@ -87,11 +105,16 @@ public class NoteTextBrokerTest {
 
     private void assertPrimaryKey(Note note, StatementVerifier s) {
         s.assertUUID(note.getId(), NOTE_TEXT.ID);
-        if(s.getType() == StatementType.MERGE) {
-            s.assertFieldEquals(sequence + 1, NOTE_TEXT.SEQUENCE);
-
-        } else {
-            s.assertFieldEquals(sequence, NOTE_TEXT.SEQUENCE);
+        switch (s.getType()) {
+            case MERGE:
+            case DELETE:
+                s.assertFieldEquals(sequence + 1, NOTE_TEXT.SEQUENCE);
+                break;
+            case INSERT:
+                s.assertFieldEquals(sequence, NOTE_TEXT.SEQUENCE);
+                break;
+            default:
+                fail(s.getType()+" not expected");
         }
         sequence = s.get(NOTE_TEXT.SEQUENCE);
     }

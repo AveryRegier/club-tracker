@@ -11,11 +11,12 @@ public enum StatementType {
     SELECT,
     INSERT {
         @Override
-        public List<String> parseColumnsFrom(String sql) {
+        public List<Condition> parseColumnsFrom(String sql) {
             int start = sql.indexOf("(");
             int end = sql.indexOf(")", start);
             return Arrays.stream(sql.substring(start + 1, end).split(","))
                     .map(s -> s.trim().replaceAll("\"", ""))
+                    .map(c->new Condition(c, Operand.eq))
                     .collect(Collectors.toList());
         }
     },
@@ -33,7 +34,7 @@ public enum StatementType {
         return UNKNOWN;
     }
 
-    public List<String> parseColumnsFrom(String sql) {
+    public List<Condition> parseColumnsFrom(String sql) {
         return BrokerTestUtil.parseColumnsFrom(sql);
     }
 }

@@ -24,7 +24,7 @@ public class StatementVerifier {
     private StatementType type;
     private Consumer<StatementVerifier> fn;
     private String sql;
-    private List<String> columns;
+    private List<Condition> columns;
     private List<Object> values;
 
     StatementVerifier(StatementType type, Consumer<StatementVerifier> fn) {
@@ -33,9 +33,10 @@ public class StatementVerifier {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T getField(List<String> columns, List<Object> bindings, String name) {
+    private static <T> T getField(List<Condition> columns, List<Object> bindings, String name) {
         int i = 0;
-        for (String columnName : columns) {
+        for (Condition condition : columns) {
+            String columnName = condition.column;
             if (name.equalsIgnoreCase(columnName)) {
                 return (T) bindings.get(i);
             }

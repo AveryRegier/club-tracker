@@ -43,16 +43,16 @@ public class BrokerTestUtil {
         };
     }
 
-    public static List<String> parseColumnsFrom(String sql) {
-        List<String> columns;
-        columns = new ArrayList<>();
-        Pattern pattern = Pattern.compile(".*?(\\S+)\\s*=\\s*[.&&^[=\\?]]*?");
+    public static List<Condition> parseColumnsFrom(String sql) {
+        List<Condition> columns = new ArrayList<>();
+        Pattern pattern = Pattern.compile(".*?(\\S+)\\s*([<>]?=)\\s*[.&&^[=\\?]]*?");
         Matcher matcher = pattern.matcher(sql);
         while (matcher.find()) {
             String column = matcher.group(1);
+            String operator = matcher.group(2);
             List<String> split = Arrays.asList(column.split("\""));
             column = split.get(split.size() - 1);
-            columns.add(column);
+            columns.add(new Condition(column, Operand.lookup(operator)));
         }
         return columns;
     }
@@ -76,6 +76,13 @@ public class BrokerTestUtil {
                 .build();
     }
 
+    static MockDataProvider delete(Consumer<StatementVerifier> idFn, int count) {
+        return new MockDataProviderBuilder()
+                .updateCount(count)
+                .statement(StatementType.DELETE, idFn)
+                .build();
+    }
+
     static <R extends UpdatableRecord<R>> MockDataProvider selectOne(
             Consumer<StatementVerifier> assertWhereFn,
             Table<R> table,
@@ -93,5 +100,9 @@ public class BrokerTestUtil {
     static MockDataProvider select(Consumer<StatementVerifier> assertWhereFn, Function<DSLContext, Result<?>> addResultFn) {
         return new MockDataProviderBuilder().statement(StatementType.SELECT,
                 assertWhereFn).reply(addResultFn).build();
+    }
+
+    static MockBatchStatementProviderBuilder batch() {
+        return new MockBatchStatementProviderBuilder();
     }
 }
