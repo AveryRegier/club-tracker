@@ -1,7 +1,12 @@
 package com.github.averyregier.club.broker;
 
+import com.github.averyregier.club.db.tables.records.NoteTextRecord;
 import com.github.averyregier.club.domain.club.Note;
 import org.jooq.DSLContext;
+import org.jooq.Result;
+
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.db.tables.NoteText.NOTE_TEXT;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.equalsAny;
@@ -34,5 +39,20 @@ public class NoteTextBroker extends PersistenceBroker<Note> {
                 .where(NOTE_TEXT.ID.eq(note.getId().getBytes()))
                 .and(NOTE_TEXT.SEQUENCE.ge(numParts))
                 .execute();
+    }
+
+    public Optional<String> findNoteText(String id) {
+        return query((create) -> {
+            Result<NoteTextRecord> result = create
+                    .selectFrom(NOTE_TEXT)
+                    .where(NOTE_TEXT.ID.eq(id.getBytes()))
+                    .orderBy(NOTE_TEXT.SEQUENCE)
+                    .fetch();
+            Optional<String> note = result.isEmpty() ? Optional.empty() :
+                    Optional.of(result.stream()
+                        .map(NoteTextRecord::getNote)
+                        .collect(Collectors.joining()));
+            return note;
+        });
     }
 }

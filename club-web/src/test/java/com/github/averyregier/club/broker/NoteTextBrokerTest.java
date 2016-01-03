@@ -1,8 +1,11 @@
 package com.github.averyregier.club.broker;
 
+import com.github.averyregier.club.db.tables.records.NoteTextRecord;
 import com.github.averyregier.club.domain.club.Note;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.NoteAdapter;
+import org.jooq.DSLContext;
+import org.jooq.Result;
 import org.jooq.exception.DataAccessException;
 import org.jooq.tools.jdbc.MockDataProvider;
 import org.junit.Test;
@@ -12,8 +15,7 @@ import java.util.function.Consumer;
 
 import static com.github.averyregier.club.broker.BrokerTestUtil.*;
 import static com.github.averyregier.club.db.tables.NoteText.NOTE_TEXT;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -131,6 +133,47 @@ public class NoteTextBrokerTest {
         return new NoteTextBroker(mockConnector(provider));
     }
 
+    @Test
+    public void testFindsSimpleNoteById() throws InterruptedException {
+        String id = UUID.randomUUID().toString();
+        String message = "Some Text";
 
+        MockDataProvider provider = selectOne(
+                (s) -> s.assertUUID(id, NOTE_TEXT.ID),
+                NOTE_TEXT,
+                record->{
+                    record.setId(id.getBytes());
+                    record.setSequence(0);
+                    record.setNote(message);
+                });
 
+        String result = setup(provider).findNoteText(id).get();
+
+        assertEquals(result, message);
+    }
+
+    @Test
+    public void testFindsLargeNoteById() throws InterruptedException {
+        String id = UUID.randomUUID().toString();
+
+        MockDataProvider provider = select((s) -> s.assertUUID(id, NOTE_TEXT.ID),
+                (create) -> {
+                    Result<NoteTextRecord> result11 = create.newResult(NOTE_TEXT);
+                    addRecord(id, "Some ", create, result11, 0);
+                    addRecord(id, "Text", create, result11, 1);
+                    return result11;
+                });
+
+        String result = setup(provider).findNoteText(id).get();
+
+        assertEquals(result, "Some Text");
+    }
+
+    private void addRecord(String id, String message, DSLContext create, Result<NoteTextRecord> result11, int sequence) {
+        NoteTextRecord record = create.newRecord(NOTE_TEXT);
+        result11.add(record);
+        record.setId(id.getBytes());
+        record.setSequence(sequence);
+        record.setNote(message);
+    }
 }
