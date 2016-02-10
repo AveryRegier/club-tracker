@@ -51,4 +51,10 @@ public enum TnTSectionTypes implements SectionType {
     public String toString() {
         return name();
     }
+
+
+    @Override
+    public String getReadableName() {
+        return SectionType.super.getReadableName();
+    }
 }

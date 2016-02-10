@@ -25,6 +25,10 @@
                 <label>Section:</label>
                 <div class="staticField">${section.group.name}-${section.shortCode}</div>
             </div>
+            <div class="inputField">
+                <label>Type:</label>
+                <div class="staticField">${section.sectionType.readableName}</div>
+            </div>
             <#if record.signing.isPresent()>
                 <#assign signing=record.signing.get()>
                 <div class="inputField">
