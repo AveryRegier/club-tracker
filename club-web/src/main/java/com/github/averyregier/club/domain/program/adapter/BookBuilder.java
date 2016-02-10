@@ -28,6 +28,7 @@ public class BookBuilder implements Builder<Book> {
     private List<AgeGroup> ageGroups = new ArrayList<>();
     private String name;
     private SectionTypeDecider decider;
+    private String mwhCode;
 
     public BookBuilder(int sequence) {
         this.sequence = sequence;
@@ -40,6 +41,7 @@ public class BookBuilder implements Builder<Book> {
                 curriculumLater,
                 sequence,
                 name != null ? name : Integer.toString(sequence),
+                mwhCode != null ? mwhCode : Integer.toString(sequence),
                 sectionGroups,
                 new BookVersionAdapter(major, minor, translation, locale, year),
                 shortCode,
@@ -150,6 +152,11 @@ public class BookBuilder implements Builder<Book> {
 
     public BookBuilder typeAssigner(SectionTypeDecider decider) {
         this.decider = decider;
+        return this;
+    }
+
+    public BookBuilder mwhCode(String mwhCode) {
+        this.mwhCode = mwhCode;
         return this;
     }
 }

@@ -37,6 +37,7 @@ public class TnTCurriculum {
     private static UnaryOperator<BookBuilder> startZone() {
         return b -> b
                 .shortCode("SZ")
+                .mwhCode("UASZ")
                 .name("Ultimate Adventure Start Zone")
                 .ageGroup(THIRD_GRADE)
                 .ageGroup(FOURTH_GRADE)
@@ -58,6 +59,7 @@ public class TnTCurriculum {
     private static UnaryOperator<BookBuilder> book1() {
         return b -> {
             b.shortCode("1")
+             .mwhCode("UA1")
              .name("Ultimate Adventure Book 1")
              .ageGroup(THIRD_GRADE)
              .ageGroup(FOURTH_GRADE)
@@ -79,6 +81,7 @@ public class TnTCurriculum {
     private static UnaryOperator<BookBuilder> book2() {
         return b -> {
             b.shortCode("2")
+             .mwhCode("UA2")
              .name("Ultimate Adventure Book 2")
              .ageGroup(FOURTH_GRADE)
              .publicationYear(2010)
@@ -101,6 +104,7 @@ public class TnTCurriculum {
     private static UnaryOperator<BookBuilder> ucStartZone() {
         return b -> b
                 .shortCode("SZ")
+                .mwhCode("UCSZ")
                 .name("Ultimate Challenge Start Zone")
                 .ageGroup(FIFTH_GRADE)
                 .ageGroup(SIXTH_GRADE)
@@ -123,6 +127,7 @@ public class TnTCurriculum {
     private static UnaryOperator<BookBuilder> book3() {
         return b -> {
             b.shortCode("1")
+             .mwhCode("UC1")
              .name("Ultimate Challenge Book 1")
              .ageGroup(FIFTH_GRADE)
              .ageGroup(SIXTH_GRADE)
@@ -146,6 +151,7 @@ public class TnTCurriculum {
     private static UnaryOperator<BookBuilder> book4() {
         return b -> {
             b.shortCode("2")
+             .mwhCode("UC2")
              .name("Ultimate Challenge Book 2")
              .ageGroup(SIXTH_GRADE)
              .publicationYear(2010)

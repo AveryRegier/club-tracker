@@ -14,5 +14,5 @@ public interface Book extends SectionHolder, Catalogued, Contained<Curriculum>, 
     public List<AgeGroup> getAgeGroups();
 
     BookVersion getVersion();
-
+    String getMwhCode();
 }

@@ -12,16 +12,18 @@ import java.util.stream.Collectors;
 class ConcreteBook implements Book {
     private Later<Curriculum> curriculumLater;
     private String name;
+    private String mwhCode;
     private final List<SectionGroup> sectionGroups;
     private int sequence;
     private BookVersion bookVersion;
     private String shortCode;
     private List<AgeGroup> ageGroups;
 
-    public ConcreteBook(Later<Curriculum> curriculumLater, int sequence, String name, List<SectionGroup> sectionGroups,
+    public ConcreteBook(Later<Curriculum> curriculumLater, int sequence, String name, String mwhCode, List<SectionGroup> sectionGroups,
                         BookVersion bookVersion, String shortCode, List<AgeGroup> ageGroups) {
         this.curriculumLater = curriculumLater;
         this.name = name;
+        this.mwhCode = mwhCode;
         this.sectionGroups = sectionGroups;
         this.sequence = sequence;
         this.bookVersion = bookVersion;
@@ -82,5 +84,9 @@ class ConcreteBook implements Book {
     @Override
     public int compareTo(Book o) {
         return o == this ? 0 :  o.getContainer().getBooks().indexOf(o) - o.getContainer().getBooks().indexOf(this);
+    }
+
+    public String getMwhCode() {
+        return mwhCode;
     }
 }

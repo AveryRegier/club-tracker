@@ -115,6 +115,7 @@ public class TnTCurriculumTest {
         Curriculum ua = classUnderTest.getSeries().get(0);
         Book sz = ua.getBooks().get(0);
         assertEquals("SZ", sz.getShortCode());
+        assertEquals("UASZ", sz.getMwhCode());
         assertEquals(Arrays.asList(
                 AgeGroup.DefaultAgeGroup.THIRD_GRADE,
                 AgeGroup.DefaultAgeGroup.FOURTH_GRADE), sz.getAgeGroups());
@@ -144,6 +145,7 @@ public class TnTCurriculumTest {
         Curriculum ua = classUnderTest.getSeries().get(0);
         Book book = ua.getBooks().get(1);
         assertEquals("1", book.getShortCode());
+        assertEquals("UA1", book.getMwhCode());
         assertEquals(Arrays.asList(
                 AgeGroup.DefaultAgeGroup.THIRD_GRADE,
                 AgeGroup.DefaultAgeGroup.FOURTH_GRADE), book.getAgeGroups());
@@ -166,6 +168,7 @@ public class TnTCurriculumTest {
         Curriculum ua = classUnderTest.getSeries().get(0);
         Book book = ua.getBooks().get(2);
         assertEquals("2", book.getShortCode());
+        assertEquals("UA2", book.getMwhCode());
         assertEquals(Arrays.asList(
                 AgeGroup.DefaultAgeGroup.FOURTH_GRADE), book.getAgeGroups());
         assertEquals(Year.of(2010), book.getVersion().getPublicationYear());
@@ -188,6 +191,7 @@ public class TnTCurriculumTest {
         Curriculum ua = classUnderTest.getSeries().get(1);
         Book sz = ua.getBooks().get(0);
         assertEquals("SZ", sz.getShortCode());
+        assertEquals("UCSZ", sz.getMwhCode());
         assertEquals(Arrays.asList(
                 AgeGroup.DefaultAgeGroup.FIFTH_GRADE,
                 AgeGroup.DefaultAgeGroup.SIXTH_GRADE), sz.getAgeGroups());
@@ -206,6 +210,7 @@ public class TnTCurriculumTest {
         Curriculum ua = classUnderTest.getSeries().get(1);
         Book book = ua.getBooks().get(1);
         assertEquals("1", book.getShortCode());
+        assertEquals("UC1", book.getMwhCode());
         assertEquals(Arrays.asList(
                 AgeGroup.DefaultAgeGroup.FIFTH_GRADE,
                 AgeGroup.DefaultAgeGroup.SIXTH_GRADE), book.getAgeGroups());
@@ -230,6 +235,7 @@ public class TnTCurriculumTest {
         Curriculum ua = classUnderTest.getSeries().get(1);
         Book book = ua.getBooks().get(2);
         assertEquals("2", book.getShortCode());
+        assertEquals("UC2", book.getMwhCode());
         assertEquals(Arrays.asList(
                 AgeGroup.DefaultAgeGroup.SIXTH_GRADE), book.getAgeGroups());
         assertEquals(Year.of(2010), book.getVersion().getPublicationYear());

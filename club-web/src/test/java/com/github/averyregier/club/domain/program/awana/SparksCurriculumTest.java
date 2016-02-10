@@ -85,6 +85,7 @@ public class SparksCurriculumTest {
     public void flight316EntranceTest() {
         Book j316 = classUnderTest.getBooks().get(0);
         assertEquals("F316", j316.getShortCode());
+        assertEquals("F316", j316.getMwhCode());
         assertEquals(Arrays.asList(
                 AgeGroup.DefaultAgeGroup.KINDERGARTEN,
                 AgeGroup.DefaultAgeGroup.FIRST_GRADE,
@@ -114,6 +115,7 @@ public class SparksCurriculumTest {
     public void hangGlider() {
         Book book = classUnderTest.getBooks().get(1);
         assertEquals("1", book.getShortCode());
+        assertEquals("HG", book.getMwhCode());
         assertEquals(Arrays.asList(
                 AgeGroup.DefaultAgeGroup.KINDERGARTEN,
                 AgeGroup.DefaultAgeGroup.FIRST_GRADE,
@@ -136,6 +138,7 @@ public class SparksCurriculumTest {
     public void wingRunner() {
         Book book = classUnderTest.getBooks().get(3);
         assertEquals("2", book.getShortCode());
+        assertEquals("WR", book.getMwhCode());
         assertEquals(Arrays.asList(
                 AgeGroup.DefaultAgeGroup.FIRST_GRADE,
                 AgeGroup.DefaultAgeGroup.SECOND_GRADE), book.getAgeGroups());
@@ -157,6 +160,7 @@ public class SparksCurriculumTest {
     public void skyStormer() {
         Book book = classUnderTest.getBooks().get(5);
         assertEquals("3", book.getShortCode());
+        assertEquals("SS", book.getMwhCode());
         assertEquals(Arrays.asList(
                 AgeGroup.DefaultAgeGroup.SECOND_GRADE), book.getAgeGroups());
         assertEquals(Year.of(2010), book.getVersion().getPublicationYear());

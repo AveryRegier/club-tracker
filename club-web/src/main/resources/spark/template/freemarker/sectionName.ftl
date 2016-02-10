@@ -1,1 +1,1 @@
-${section.group.container.shortCode}-${section.group.shortCode}.${section.shortCode}
+${section.group.container.mwhCode}-${section.group.shortCode}.${section.shortCode}

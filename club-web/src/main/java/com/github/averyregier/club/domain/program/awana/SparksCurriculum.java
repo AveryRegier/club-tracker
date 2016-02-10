@@ -38,6 +38,7 @@ public class SparksCurriculum {
     private static UnaryOperator<BookBuilder> flight316() {
         return b -> b
                 .shortCode("F316")
+                .mwhCode("F316")
                 .name("Flight 3:16")
                 .ageGroup(KINDERGARTEN)
                 .ageGroup(FIRST_GRADE)
@@ -58,6 +59,7 @@ public class SparksCurriculum {
     private static UnaryOperator<BookBuilder> book1() {
         return b -> {
             b.shortCode("1")
+             .mwhCode("HG")
              .name("Hang Glider")
              .ageGroup(KINDERGARTEN)
              .ageGroup(FIRST_GRADE)
@@ -71,6 +73,7 @@ public class SparksCurriculum {
     private static UnaryOperator<BookBuilder> frequentFlyer1() {
         return b -> {
             b.shortCode("FF1")
+             .mwhCode("HG")
              .ageGroup(KINDERGARTEN);
             return frequentFlyerStructure("Hang Glider", b);
         };
@@ -79,6 +82,7 @@ public class SparksCurriculum {
     private static UnaryOperator<BookBuilder> book2() {
         return b -> {
             b.shortCode("2")
+             .mwhCode("WR")
              .name("Wing Runner")
              .ageGroup(FIRST_GRADE)
              .ageGroup(SECOND_GRADE)
@@ -91,6 +95,7 @@ public class SparksCurriculum {
     private static UnaryOperator<BookBuilder> frequentFlyer2() {
         return b -> {
             b.shortCode("FF2")
+             .mwhCode("HG")
              .ageGroup(FIRST_GRADE);
             return frequentFlyerStructure("Wing Runner", b);
         };
@@ -99,6 +104,7 @@ public class SparksCurriculum {
     private static UnaryOperator<BookBuilder> book3() {
         return b -> {
             b.shortCode("3")
+             .mwhCode("SS")
              .name("Sky Stormer")
              .ageGroup(SECOND_GRADE)
              .publicationYear(2010)
@@ -110,6 +116,7 @@ public class SparksCurriculum {
     private static UnaryOperator<BookBuilder> frequentFlyer3() {
         return b -> {
             b.shortCode("FF3")
+             .mwhCode("SS")
              .ageGroup(SECOND_GRADE);
             return frequentFlyerStructure("Sky Stormer", b);
         };
