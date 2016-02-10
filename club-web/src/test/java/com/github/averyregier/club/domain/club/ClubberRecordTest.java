@@ -7,12 +7,12 @@ import com.github.averyregier.club.domain.program.adapter.BookBuilder;
 import com.github.averyregier.club.domain.program.adapter.CurriculumBuilder;
 import org.junit.Test;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.*;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.findToday;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
@@ -151,7 +151,7 @@ public class ClubberRecordTest {
         assertTrue(record.getSigning().isPresent());
         assertEquals(signing, record.getSigning().get());
         assertEquals(me, signing.by());
-        assertEquals(LocalDate.now(), signing.getDate());
+        assertEquals(findToday(record.getClubber()), signing.getDate());
         assertEquals(expectedNote, signing.getNote());
         return signing;
     }
@@ -173,7 +173,7 @@ public class ClubberRecordTest {
         assertTrue(signing2.getCompletionAwards().stream()
                 .allMatch(a -> a.forAccomplishment().getName().equals(Integer.toString(bookIndex+1))));
         assertTrue(signing2.getCompletionAwards().stream()
-                .allMatch(a -> LocalDate.now().equals(a.earnedOn())));
+                .allMatch(a -> findToday(record2.getClubber()).equals(a.earnedOn())));
     }
 
     @Test
