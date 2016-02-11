@@ -85,4 +85,9 @@ class SectionAdapter implements Section {
     public String toString() {
         return getId();
     }
+
+    @Override
+    public String getSectionTitle() {
+        return Section.super.getSectionTitle();
+    }
 }

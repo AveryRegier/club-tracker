@@ -26,7 +26,7 @@ public interface Section extends Comparable<Section>, Contained<SectionGroup> {
     String getId();
 
     default String getSectionTitle() {
-        return getGroup().getContainer().getShortCode()+"-"+getGroup().getShortCode()+"."+getShortCode();
+        return getGroup().getBook().getMwhCode()+"-"+getGroup().getShortCode()+"."+getShortCode();
     }
 
 
