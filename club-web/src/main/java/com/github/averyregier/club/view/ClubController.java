@@ -190,7 +190,8 @@ public class ClubController extends ModelMaker {
                 ClubberRecord record = getClubberRecord(request, clubber);
                 if ("true".equalsIgnoreCase(request.queryParams("sign"))) {
                     if (clubber.maySignRecords(user)) {
-                        record.sign(user.asListener().orElseThrow(IllegalStateException::new), request.queryParams("note"));
+                        Listener listener = app.findListener(request.queryParams("listener"), clubber.getClub().get());
+                        record.sign(listener, request.queryParams("note"));
                     } else {
                         throw new IllegalAccessException("You are not authorized to sign this section");
                     }
@@ -213,7 +214,7 @@ public class ClubController extends ModelMaker {
             ClubberRecord record = getClubberRecord(request, clubber);
             boolean maySign = clubber.maySignRecords(user);
             Section section = record.getSection();
-            Map<String, Object> model = newModel(request, section.getSectionTitle())
+            MapBuilder<String, Object> builder = newModel(request, section.getSectionTitle())
                     .put("me", user)
                     .put("clubber", clubber)
                     .put("section", section)
@@ -221,9 +222,13 @@ public class ClubController extends ModelMaker {
                     .put("previousSection", clubber.getSectionBefore(section))
                     .put("nextSection", clubber.getSectionAfter(section))
                     .put("maySign", maySign && !record.getSigning().isPresent())
-                    .put("mayUnSign", maySign && record.mayBeUnsigned())
-                    .build();
-            return new ModelAndView(model, "clubberSection.ftl");
+                    .put("mayUnSign", maySign && record.mayBeUnsigned());
+            if(clubber.isLeaderInSameClub(user)) {
+                builder = builder
+                        .put("defaultListener", getDefaultListener(user, clubber))
+                        .put("listeners", clubber.getClub().get().getListeners());
+            }
+            return new ModelAndView(builder.build(), "clubberSection.ftl");
         }, new FreeMarkerEngine());
 
         before("/protected/clubbers/:personId/sections", ((request, response) -> {
