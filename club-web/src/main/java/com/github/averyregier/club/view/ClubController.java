@@ -191,7 +191,8 @@ public class ClubController extends ModelMaker {
                 if ("true".equalsIgnoreCase(request.queryParams("sign"))) {
                     if (clubber.maySignRecords(user)) {
                         Listener listener = app.findListener(request.queryParams("listener"), clubber.getClub().get());
-                        record.sign(listener, request.queryParams("note"));
+                        LocalDate date = parseDate(request.queryParams("date")).orElseGet(() -> findToday(clubber));
+                        record.sign(listener, request.queryParams("note"), date);
                     } else {
                         throw new IllegalAccessException("You are not authorized to sign this section");
                     }
@@ -222,7 +223,8 @@ public class ClubController extends ModelMaker {
                     .put("previousSection", clubber.getSectionBefore(section))
                     .put("nextSection", clubber.getSectionAfter(section))
                     .put("maySign", maySign && !record.getSigning().isPresent())
-                    .put("mayUnSign", maySign && record.mayBeUnsigned());
+                    .put("mayUnSign", maySign && record.mayBeUnsigned())
+                    .put("suggestedDate", findToday(clubber));
             if(clubber.isLeaderInSameClub(user)) {
                 builder = builder
                         .put("defaultListener", getDefaultListener(user, clubber))

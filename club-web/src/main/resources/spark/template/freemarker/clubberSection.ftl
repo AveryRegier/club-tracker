@@ -70,14 +70,18 @@
                             <label for="listener">Listener:</label>
                             <select name="listener" id="listener">
                             <#list listeners as listener>
-                                <option value="${listener.id}"<#if listener.id == defaultListener> default</#if>>${listener.name.fullName}</option>
+                                <option value="${listener.id}"<#if listener.id == defaultListener> selected="selected"</#if>>${listener.name.fullName}</option>
                             </#list>
                             </select>
                         </div>
                     <#else>
                         <input type="hidden" name="listener" id="listener" value="${me.id}"/>
                     </#if>
-                <#else>
+                    <div class="inputField">
+                        <label for="date">Sign Date:</label>
+                        <input type="date" name="date" id="date" value="${suggestedDate}"/>
+                    </div>
+               <#else>
                     <div class="staticField">
                         <label for="note">Note:</label>
                         Not signed

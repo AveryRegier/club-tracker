@@ -45,6 +45,11 @@ public class PersistingClubberRecord extends ClubberRecord {
     }
 
     @Override
+    public Signing sign(Listener byListener, String note, LocalDate date) {
+        return persist(super.sign(byListener, note, date));
+    }
+
+    @Override
     public void unSign(List<AwardPresentation> awardPresentations) {
         AwardBroker awardBroker = new AwardBroker(connector);
         awardPresentations.forEach(awardBroker::delete);

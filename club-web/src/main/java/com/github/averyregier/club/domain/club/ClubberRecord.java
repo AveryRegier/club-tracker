@@ -38,6 +38,14 @@ public abstract class ClubberRecord {
         return signing;
     }
 
+    public Signing sign(Listener byListener, String note, LocalDate date) {
+        if(signing == null) {
+            signing = new RecordSigning(byListener, note, date);
+            ((RecordSigning)signing).calculateAwards();
+        }
+        return signing;
+    }
+
     public List<AwardPresentation> unSign() {
         if(mayBeUnsigned()) {
             List<AwardPresentation> awardPresentations = getSection().getAwards().stream()
