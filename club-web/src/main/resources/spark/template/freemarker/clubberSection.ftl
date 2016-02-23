@@ -79,7 +79,7 @@
                     </#if>
                     <div class="inputField">
                         <label for="date">Sign Date:</label>
-                        <input type="date" name="date" id="date" value="${suggestedDate}"/>
+                        <input type="date" name="date" id="date" value="${suggestedDate}" max="${suggestedDate}"/>
                     </div>
                <#else>
                     <div class="staticField">
