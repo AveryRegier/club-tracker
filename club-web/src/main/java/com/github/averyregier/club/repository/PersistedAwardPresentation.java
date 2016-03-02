@@ -4,6 +4,7 @@ import com.github.averyregier.club.broker.AwardBroker;
 import com.github.averyregier.club.broker.CeremonyBroker;
 import com.github.averyregier.club.broker.Connector;
 import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Award;
 import com.github.averyregier.club.domain.program.Catalogued;
 import com.github.averyregier.club.domain.program.Section;
@@ -39,6 +40,11 @@ public class PersistedAwardPresentation implements AwardPresentation {
     @Override
     public boolean notPresented() {
         return presentationId == null && ceremony == null;
+    }
+
+    @Override
+    public AccomplishmentLevel getLevel() {
+        return findAward().map(Award::getAccomplishmentLevel).orElse(AccomplishmentLevel.book);
     }
 
     @Override

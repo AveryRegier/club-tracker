@@ -1,4 +1,5 @@
-<div class="menu"><a href="/protected/club/${mygroup.id}/awards">Awards</a></div>
+<div class="menu"><a href="/protected/club/${mygroup.id}/awards">Nightly Awards</a></div>
+<div class="menu"><a href="/protected/club/${mygroup.id}/awards?accomplishmentLevel=book">End of Year Awards</a></div>
 
 <#if mygroup.asProgram().isPresent()>
     <#assign program=mygroup.asProgram().get()>

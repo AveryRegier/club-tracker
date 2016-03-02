@@ -4,6 +4,7 @@ import com.github.averyregier.club.TestUtility;
 import com.github.averyregier.club.domain.club.AwardPresentation;
 import com.github.averyregier.club.domain.club.Ceremony;
 import com.github.averyregier.club.domain.club.Club;
+import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.program.Section;
 import org.junit.Before;
@@ -12,6 +13,7 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
@@ -32,15 +34,27 @@ public class AwardCeremonyTest {
     }
 
     @Test
-    public void basicAwardList() {
+    public void basicGroupAwardList() {
+        assertAwardsList(AccomplishmentLevel.group);
+    }
+
+    private void assertAwardsList(AccomplishmentLevel level) {
         sign(s -> TestUtility.anyEqual(s.getContainer().getBook().sequence(), 0));
 
-        Collection<AwardPresentation> awards = club.getAwardsNotYetPresented();
+        Collection<AwardPresentation> awards = club.getAwardsNotYetPresented(level);
         assertNotNull(awards);
-        assertEquals(2, awards.size());
-        assertTrue(awards.containsAll(clubber.getAwards()));
+        assertEquals(1, awards.size());
+        assertTrue(awards.containsAll(
+                clubber.getAwards().stream()
+                        .filter(a->a.getLevel()== level)
+                        .collect(Collectors.toList())));
 
-        assertEquals(awards, program.getAwardsNotYetPresented());
+        assertEquals(awards, program.getAwardsNotYetPresented(level));
+    }
+
+    @Test
+    public void basicBookAwardList() {
+        assertAwardsList(AccomplishmentLevel.book);
     }
 
     private void sign(Predicate<Section> predicate) {
@@ -69,7 +83,7 @@ public class AwardCeremonyTest {
 
         AwardPresentation awaredPresented = clubber.getAwards().stream().findFirst().get();
         assertEquals(ceremony, awaredPresented.presentedAt());
-        assertFalse(program.getAwardsNotYetPresented().stream()
+        assertFalse(program.getAwardsNotYetPresented(AccomplishmentLevel.group).stream()
                 .anyMatch(a -> a.presentedAt() != null));
 
     }

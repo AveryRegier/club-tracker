@@ -1,9 +1,6 @@
 package com.github.averyregier.club.domain.club;
 
-import com.github.averyregier.club.domain.program.Award;
-import com.github.averyregier.club.domain.program.Catalogued;
-import com.github.averyregier.club.domain.program.Section;
-import com.github.averyregier.club.domain.program.SectionHolder;
+import com.github.averyregier.club.domain.program.*;
 import com.github.averyregier.club.domain.utility.Named;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 
@@ -249,6 +246,11 @@ public abstract class ClubberRecord {
             @Override
             public boolean notPresented() {
                 return ceremony == null;
+            }
+
+            @Override
+            public AccomplishmentLevel getLevel() {
+                return award.getAccomplishmentLevel();
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.club;
 
+import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Catalogued;
 import com.github.averyregier.club.domain.utility.HasId;
 import com.github.averyregier.club.domain.utility.Named;
@@ -23,4 +24,6 @@ public interface AwardPresentation extends HasId {
     void undoPresentation();
 
     boolean notPresented();
+
+    AccomplishmentLevel getLevel();
 }

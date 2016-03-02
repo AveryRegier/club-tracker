@@ -2,6 +2,7 @@ package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.policy.Policy;
+import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Curriculum;
 
 import java.time.LocalDate;
@@ -89,10 +90,11 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     }
 
     @Override
-    public Collection<AwardPresentation> getAwardsNotYetPresented() {
+    public Collection<AwardPresentation> getAwardsNotYetPresented(AccomplishmentLevel type) {
         return getClubbers().stream()
                 .flatMap(c->c.getAwards().stream())
                 .filter(AwardPresentation::notPresented)
+                .filter(a->a.getLevel() == type)
                 .collect(Collectors.toList());
     }
 

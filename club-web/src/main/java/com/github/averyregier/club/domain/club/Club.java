@@ -1,6 +1,7 @@
 package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.policy.Policy;
+import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Curriculum;
 
 import java.util.Collection;
@@ -18,6 +19,6 @@ public interface Club extends ClubGroup, Comparable<Club> {
     public ClubLeader assign(Person person, ClubLeader.LeadershipRole role);
     public Curriculum getCurriculum();
 
-    public Collection<AwardPresentation> getAwardsNotYetPresented();
+    public Collection<AwardPresentation> getAwardsNotYetPresented(AccomplishmentLevel type);
     public Map<Clubber, Object> getClubNightReport();
 }

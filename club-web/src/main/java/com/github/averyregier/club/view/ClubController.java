@@ -6,6 +6,7 @@ import com.github.averyregier.club.broker.CeremonyBroker;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.CeremonyAdapter;
+import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Award;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
@@ -143,7 +144,7 @@ public class ClubController extends ModelMaker {
                 if (club.isPresent()) {
                     HashSet<String> awards = asLinkedSet(request.queryMap("award").values());
                     Ceremony ceremony = persistCeremony(app, new CeremonyAdapter(findToday(club)));
-                    club.get().getAwardsNotYetPresented().stream()
+                    club.get().getAwardsNotYetPresented(AccomplishmentLevel.group).stream()
                             .filter(a -> awards.contains(a.getId()))
                             .forEach(a -> a.presentAt(ceremony));
                 }
@@ -155,9 +156,13 @@ public class ClubController extends ModelMaker {
         get("/protected/club/:club/awards", (request, response) -> {
             Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
             if (club.isPresent()) {
+                String accomplishmentLevel = request.queryParams("accomplishmentLevel");
+                AccomplishmentLevel type = AccomplishmentLevel.valueOf(
+                        accomplishmentLevel != null ? accomplishmentLevel : AccomplishmentLevel.group.name());
                 return new ModelAndView(
                         newModel(request, club.get().getShortCode() + " Awards")
                                 .put("club", club.get())
+                                .put("awards", club.get().getAwardsNotYetPresented(type))
                                 .build(),
                         "awards.ftl");
             } else {
