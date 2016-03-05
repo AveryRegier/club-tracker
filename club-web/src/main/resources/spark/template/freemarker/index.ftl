@@ -19,23 +19,9 @@
                 <a href="socialauth?id=${provider.id}"><img src="${provider.image}" alt="${provider.name}" title="${provider.name}" border="0"/></a>
             </div>
         </#list>
+	       	<div class="provider">
+                <a href="/openid"><img src="http://openid.net/logo-graphics/openid-icon-100x100.png" alt="OpenID" title="OpenID" border="0"/></a>
+            </div>
         </div>
     </div>
-
-    <br/>
-    <br/>
-
-	<fieldset>
-		<legend for="openid_identifier">Login with OpenID</legend>
-		<form action="consumer" method="post">
-
-            <div class="inputField">
-                <label for="openid_identifier"><img src="http://wiki.openid.net/f/openid-16x16.gif"/></label>
-				<input type="text" name="openid_identifier" id="openid_identifier" style="width: calc(100% - 30px);"/>
-			</div>
-			<div class="action">
-				<button type="submit" name="login">Login</button>
-			</div>
-		</form>
-	</fieldset>
 <#include "footer.ftl">

@@ -15,10 +15,7 @@ import spark.Session;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.StringReader;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 import static java.util.stream.Collectors.joining;
 import static spark.Spark.*;
@@ -91,6 +88,9 @@ public class Login extends ModelMaker {
                 new spark.ModelAndView(toMap("providers",
                         getProviders(app)
                         ), "index.ftl"), new FreeMarkerEngine());
+
+        get("/openid", (request, response) ->
+                new spark.ModelAndView(new HashMap<Object, Object>(), "openid.ftl"), new FreeMarkerEngine());
 
         get("/socialauth", (request, response) -> {
             SocialAuthManager manager = getSocialAuthManager(request, app);
