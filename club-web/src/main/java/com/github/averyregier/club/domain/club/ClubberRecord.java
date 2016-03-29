@@ -1,7 +1,7 @@
 package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.program.*;
-import com.github.averyregier.club.domain.utility.Named;
+import com.github.averyregier.club.domain.utility.DisplayNamed;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 
 import java.time.LocalDate;
@@ -191,7 +191,7 @@ public abstract class ClubberRecord {
             }
 
             @Override
-            public Named forAccomplishment() {
+            public DisplayNamed forAccomplishment() {
                 return award;
             }
 

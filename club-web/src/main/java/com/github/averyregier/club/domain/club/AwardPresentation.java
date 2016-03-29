@@ -2,8 +2,8 @@ package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Catalogued;
+import com.github.averyregier.club.domain.utility.DisplayNamed;
 import com.github.averyregier.club.domain.utility.HasId;
-import com.github.averyregier.club.domain.utility.Named;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 public interface AwardPresentation extends HasId {
     Person to();
-    Named forAccomplishment();
+    DisplayNamed forAccomplishment();
     LocalDate earnedOn();
     Ceremony presentedAt();
     Optional<Catalogued> token();

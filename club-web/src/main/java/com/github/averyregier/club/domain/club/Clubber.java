@@ -4,6 +4,7 @@ import com.github.averyregier.club.domain.program.Award;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.SectionGroup;
+import com.github.averyregier.club.domain.utility.DisplayNamed;
 import com.github.averyregier.club.domain.utility.Named;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 
@@ -45,7 +46,7 @@ public interface Clubber extends ClubMember {
                 .isPresent();
     }
 
-    default Optional<Named> findAward(Award award) {
+    default Optional<DisplayNamed> findAward(Award award) {
         return getAwards().stream()
                 .map(AwardPresentation::forAccomplishment)
                 .filter(n -> n.equals(award))

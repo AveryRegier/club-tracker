@@ -8,6 +8,7 @@ import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Award;
 import com.github.averyregier.club.domain.program.Catalogued;
 import com.github.averyregier.club.domain.program.Section;
+import com.github.averyregier.club.domain.utility.DisplayNamed;
 import com.github.averyregier.club.domain.utility.Named;
 
 import java.time.LocalDate;
@@ -63,10 +64,20 @@ public class PersistedAwardPresentation implements AwardPresentation {
     }
 
     @Override
-    public Named forAccomplishment() {
+    public DisplayNamed forAccomplishment() {
         return findAward()
-                .map(a -> (Named) a)
-                .orElse(() -> accomplishment);
+                .map(a -> (DisplayNamed) a)
+                .orElseGet(() -> new DisplayNamed() {
+                    @Override
+                    public String getDisplayName() {
+                        return section.getGroup().getBook().getName()+" "+accomplishment;
+                    }
+
+                    @Override
+                    public String getName() {
+                        return accomplishment;
+                    }
+                });
     }
 
     private Optional<Award> findAward() {

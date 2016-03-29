@@ -64,4 +64,9 @@ class AwardAdapter implements Award {
     public String toString() {
         return getName();
     }
+
+    @Override
+    public String getDisplayName() {
+        return accomplishmentLevel.isBook() ? getName() : getBook().getName() + " " + getName();
+    }
 }
