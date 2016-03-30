@@ -9,7 +9,7 @@
         <div class="list-item-detail">
             ${presentation.forAccomplishment().displayName}
         </div>
-        <#if !presentation.token().isPresent()>
+        <#if presentation.token().isPresent() && presentation.forAccomplishment().name != presentation.token().get().name>
             <div class="list-item-detail">${presentation.token().get().name}</div>
         </#if>
     </div>
