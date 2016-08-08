@@ -78,8 +78,8 @@ public interface Clubber extends ClubMember {
         return map;
     }
 
-    default Optional<Book> findPreviousBook(Book book) {
-        Optional<Book> previous = findPrevious(book, book.getContainer().getBooks());
+    default Optional<Book> findPreviousBook(Book book, Program program) {
+        Optional<Book> previous = findPrevious(book, program.getCurriculum().getBooks());
         if(previous.isPresent()) {
             Optional<Book> after = previous;
             do {

@@ -395,7 +395,7 @@ public class ClubController extends ModelMaker {
         Map<String, Object> model = newModel(request, clubber.getName().getFullName()+" - "+book.getName())
                 .put("me", user)
                 .put("clubber", clubber)
-                .put("previous", clubber.findPreviousBook(book))
+                .put("previous", clubber.findPreviousBook(book, clubber.getClub().get().getProgram()))
                 .put("next", clubber.findNextBook(book))
                 .put("book", book)
                 .put("sectionGroups", clubber.getBookRecordsByGroup(book).entrySet())
