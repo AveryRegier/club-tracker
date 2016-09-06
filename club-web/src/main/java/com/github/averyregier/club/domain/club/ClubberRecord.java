@@ -7,6 +7,7 @@ import com.github.averyregier.club.domain.utility.UtilityMethods;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -116,10 +117,14 @@ public abstract class ClubberRecord {
     }
 
     private boolean allCompleted(Stream<Section> stream) {
-        return stream.allMatch(s -> {
+        return stream.allMatch(isSigned());
+    }
+
+    private Predicate<Section> isSigned() {
+        return s -> {
             Optional<ClubberRecord> record = getClubber().getRecord(Optional.of(s));
             return record.isPresent() && record.get().getSigning().isPresent();
-        });
+        };
     }
 
     public Optional<Signing> getSigning() {
