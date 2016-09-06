@@ -115,15 +115,7 @@ public abstract class ClubberRecord {
         return signing;
     }
 
-    private boolean isCompleted(Award award) {
-        return allCompleted(award.getSections().stream());
-    }
-
-    private boolean allCompleted(Stream<Section> stream) {
-        return stream.allMatch(isSigned());
-    }
-
-    private Predicate<Section> isSigned() {
+    public Predicate<Section> isSigned() {
         return s -> {
             Optional<ClubberRecord> record = getClubber().getRecord(Optional.of(s));
             return record.isPresent() && record.get().getSigning().isPresent();
@@ -177,7 +169,7 @@ public abstract class ClubberRecord {
 
         void calculateAwards() {
             awards = getSection().getAwards().stream()
-                    .filter(ClubberRecord.this::isCompleted)
+                    .filter((award) -> award.isCompleted(ClubberRecord.this))
                     .map(AwardPresentationAdapter::new)
                     .collect(Collectors.toSet());
         }

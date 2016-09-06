@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.program;
 
+import com.github.averyregier.club.domain.club.ClubberRecord;
 import com.github.averyregier.club.domain.utility.DisplayNamed;
 
 import java.util.List;
@@ -14,4 +15,8 @@ public interface Award extends SectionHolder, DisplayNamed {
     public List<Catalogued> list();
 
     public Catalogued select();
+
+    default boolean isCompleted(ClubberRecord clubberRecord) {
+        return getSections().stream().allMatch(clubberRecord.isSigned());
+    }
 }
