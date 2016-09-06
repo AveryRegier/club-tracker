@@ -1,6 +1,9 @@
 package com.github.averyregier.club.domain.club;
 
-import com.github.averyregier.club.domain.program.*;
+import com.github.averyregier.club.domain.program.AccomplishmentLevel;
+import com.github.averyregier.club.domain.program.Award;
+import com.github.averyregier.club.domain.program.Catalogued;
+import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.utility.DisplayNamed;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 
@@ -112,8 +115,8 @@ public abstract class ClubberRecord {
         return signing;
     }
 
-    private boolean isCompleted(SectionHolder g) {
-        return allCompleted(g.getSections().stream());
+    private boolean isCompleted(Award award) {
+        return allCompleted(award.getSections().stream());
     }
 
     private boolean allCompleted(Stream<Section> stream) {
