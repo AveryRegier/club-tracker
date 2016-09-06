@@ -76,4 +76,8 @@ public class SectionGroupBuilder extends SectionHolderBuilder<SectionGroupBuilde
         this.shortCode = shortCode;
         return this;
     }
+
+    public int getSequence() {
+        return sequence;
+    }
 }
