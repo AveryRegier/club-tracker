@@ -223,9 +223,7 @@ public abstract class ClubberRecord {
             }
 
             private Optional<Catalogued> select() {
-                return Optional.ofNullable(award.select(c->getClubber().getAwards().stream()
-                        .filter(a -> a.token().isPresent())
-                        .allMatch(a -> !a.token().get().equals(c))));
+                return Optional.ofNullable(award.select(()->getClubberAwardsStream()));
             }
 
             @Override
@@ -253,6 +251,10 @@ public abstract class ClubberRecord {
                 return award.getAccomplishmentLevel();
             }
         }
+    }
+
+    private Stream<AwardPresentation> getClubberAwardsStream() {
+        return getClubber().getAwards().stream();
     }
 
     protected void persistAward(AwardPresentation awardPresentation) {}

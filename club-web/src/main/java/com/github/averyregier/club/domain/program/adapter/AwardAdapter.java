@@ -38,7 +38,7 @@ class AwardAdapter implements Award {
 
     @Override
     public Catalogued select() {
-        return select(null);
+        return select((Predicate<Catalogued>) null);
     }
 
     @Override
