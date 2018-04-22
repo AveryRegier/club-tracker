@@ -171,7 +171,7 @@ public class AwardBrokerTest {
                 mockClubber.getId().getBytes(),
                 sectionId,
                 anAward.getName(),
-                anAward.selectAwarded().getName(),
+                anAward.award().getName(),
                 UUID.randomUUID().toString().getBytes()
         ));
 

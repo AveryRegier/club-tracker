@@ -47,7 +47,7 @@ public class AwardForEach extends AwardAdapter {
     }
 
     @Override
-    public Catalogued selectAwarded(Predicate<Catalogued> filter) {
+    public Catalogued award(Predicate<Catalogued> filter) {
         List<Catalogued> list = list();
         if(filter == null) return list.get(0);
         return list.stream().filter(filter).findFirst().orElse(list.get(0));

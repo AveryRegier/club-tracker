@@ -111,7 +111,7 @@ public class BookAdapterTest {
                 .getAwards().iterator().next();
         assertEquals("Award Name", award.getName());
         assertEquals(1, award.list().size());
-        assertEquals("Award Name", award.selectAwarded().getName());
+        assertEquals("Award Name", award.award().getName());
     }
 
     @Test
@@ -127,7 +127,7 @@ public class BookAdapterTest {
                 .getAwards().iterator().next();
         assertEquals("Book One", award.getName());
         assertEquals(1, award.list().size());
-        assertEquals("Book One", award.selectAwarded().getName());
+        assertEquals("Book One", award.award().getName());
     }
 
     @Test
@@ -143,7 +143,7 @@ public class BookAdapterTest {
                 .getAwards().iterator().next();
         assertEquals("1", award.getName());
         assertEquals(1, award.list().size());
-        assertEquals("1", award.selectAwarded().getName());
+        assertEquals("1", award.award().getName());
     }
 
     @Test
@@ -191,8 +191,8 @@ public class BookAdapterTest {
                 .getAwards().iterator().next();
         assertEquals("0", award.getName());
         assertEquals(3, award.list().size());
-        assertEquals("Award Name 1", award.selectAwarded().getName());
-        assertEquals("Award Name 2", award.selectAwarded(c->c.getName().equals("Award Name 2")).getName());
+        assertEquals("Award Name 1", award.award().getName());
+        assertEquals("Award Name 2", award.award(c->c.getName().equals("Award Name 2")).getName());
 
     }
 
@@ -222,8 +222,8 @@ public class BookAdapterTest {
                 .getAwards().iterator().next();
         assertEquals("badge", award.getName());
         assertEquals(3, award.list().size());
-        assertEquals("badge 1", award.selectAwarded().getName());
-        assertEquals("badge 3", award.selectAwarded(c->c.getName().equals("badge 3")).getName());
+        assertEquals("badge 1", award.award().getName());
+        assertEquals("badge 3", award.award(c->c.getName().equals("badge 3")).getName());
 
     }
 

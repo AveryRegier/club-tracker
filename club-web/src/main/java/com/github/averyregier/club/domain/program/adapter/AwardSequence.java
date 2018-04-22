@@ -24,7 +24,7 @@ class AwardSequence extends AwardAdapter {
     }
 
     @Override
-    public Catalogued selectAwarded(Predicate<Catalogued> filter) {
+    public Catalogued award(Predicate<Catalogued> filter) {
         if(filter == null) return sequence.get(0);
         return sequence.stream().filter(filter).findFirst().orElse(sequence.get(0));
     }
