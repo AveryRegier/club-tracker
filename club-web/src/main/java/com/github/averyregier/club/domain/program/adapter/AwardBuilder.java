@@ -18,6 +18,7 @@ public class AwardBuilder extends SectionHolderBuilder<AwardBuilder> implements 
     private List<Section> builtSections = new ArrayList<>();
     private AccomplishmentLevel accomplishmentLevel;
     private List<Catalogued> sequence;
+    private int numSections = -1;
 
     @SuppressWarnings("unchecked")
     List<Section> build(Later<SectionGroup> futureGroup, List<Later<Award>> bookRewards) {
@@ -34,7 +35,9 @@ public class AwardBuilder extends SectionHolderBuilder<AwardBuilder> implements 
             throw new IllegalStateException();
         }
         Award award;
-        if(sequence == null) {
+        if(numSections > 0) {
+            award = new AwardForEach(name, builtSections, accomplishmentLevel, numSections);
+        } else if(sequence == null) {
             award = new AwardAdapter(name, builtSections, accomplishmentLevel);
         } else {
             award = new AwardSequence(sequence, name, builtSections, accomplishmentLevel);
@@ -71,6 +74,11 @@ public class AwardBuilder extends SectionHolderBuilder<AwardBuilder> implements 
 
     public AwardBuilder sequence(UnaryOperator<AwardSequenceBuilder> fn) {
         sequence = fn.apply(new AwardSequenceBuilder()).build();
+        return this;
+    }
+
+    public AwardBuilder forEach(int numSections) {
+        this.numSections = numSections;
         return this;
     }
 

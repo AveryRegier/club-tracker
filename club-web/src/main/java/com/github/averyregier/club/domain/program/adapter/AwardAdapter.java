@@ -27,7 +27,7 @@ class AwardAdapter implements Award {
     }
 
     @Override
-    public Catalogued select(Predicate<Catalogued> filter) {
+    public Catalogued selectAwarded(Predicate<Catalogued> filter) {
         return list().get(0);
     }
 
@@ -37,8 +37,8 @@ class AwardAdapter implements Award {
     }
 
     @Override
-    public Catalogued select() {
-        return select((Predicate<Catalogued>) null);
+    public Catalogued selectAwarded() {
+        return selectAwarded((Predicate<Catalogued>) null);
     }
 
     @Override

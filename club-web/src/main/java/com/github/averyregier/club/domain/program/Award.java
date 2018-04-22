@@ -15,10 +15,10 @@ import java.util.stream.Stream;
  */
 public interface Award extends SectionHolder, DisplayNamed {
     public AccomplishmentLevel getAccomplishmentLevel();
-    public Catalogued select(Predicate<Catalogued> filter);
+    public Catalogued selectAwarded(Predicate<Catalogued> filter);
     public List<Catalogued> list();
 
-    public Catalogued select();
+    public Catalogued selectAwarded();
 
     default boolean isCompleted(ClubberRecord clubberRecord) {
         return getSections().stream().allMatch(clubberRecord.isSigned());
@@ -31,7 +31,7 @@ public interface Award extends SectionHolder, DisplayNamed {
                 .allMatch(a -> !a.token().get().equals(c));
     }
 
-    default Catalogued select(Supplier<Stream<AwardPresentation>> alreadyAwarded) {
-        return select(mayAwardMatcher(alreadyAwarded.get()));
+    default Catalogued selectAwarded(Supplier<Stream<AwardPresentation>> alreadyAwarded) {
+        return selectAwarded(mayAwardMatcher(alreadyAwarded.get()));
     }
 }

@@ -19,7 +19,10 @@ import org.jooq.tools.jdbc.MockDataProvider;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static com.github.averyregier.club.broker.BrokerTestUtil.*;
@@ -168,7 +171,7 @@ public class AwardBrokerTest {
                 mockClubber.getId().getBytes(),
                 sectionId,
                 anAward.getName(),
-                anAward.select().getName(),
+                anAward.selectAwarded().getName(),
                 UUID.randomUUID().toString().getBytes()
         ));
 

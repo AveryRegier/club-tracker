@@ -108,7 +108,7 @@ public class PersistedAwardPresentation implements AwardPresentation {
     public Optional<Catalogued> token() {
         if (token == null) return Optional.empty();
         return Optional.of(findAward()
-                .map(a -> a.select(t -> t.getName().equalsIgnoreCase(token)))
+                .map(a -> a.selectAwarded(t -> t.getName().equalsIgnoreCase(token)))
                 .orElse(() -> token));
     }
 

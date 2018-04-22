@@ -223,7 +223,7 @@ public abstract class ClubberRecord {
             }
 
             private Optional<Catalogued> select() {
-                return Optional.ofNullable(award.select(()->getClubberAwardsStream()));
+                return Optional.ofNullable(award.selectAwarded(()->getClubberAwardsStream()));
             }
 
             @Override

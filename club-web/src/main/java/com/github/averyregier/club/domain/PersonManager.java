@@ -13,7 +13,7 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.stream;
  * Created by avery on 9/6/2014.
  */
 public class PersonManager {
-    protected Map<String, Person> people = new ConcurrentHashMap<>();
+    protected final Map<String, Person> people = new ConcurrentHashMap<>();
     public Optional<Person> lookup(String id) {
         return Optional.ofNullable(people.get(id));
     }

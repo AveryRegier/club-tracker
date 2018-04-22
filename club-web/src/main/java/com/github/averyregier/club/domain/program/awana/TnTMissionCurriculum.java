@@ -8,8 +8,7 @@ import com.github.averyregier.club.domain.program.adapter.SectionGroupBuilder;
 
 import java.util.function.UnaryOperator;
 
-import static com.github.averyregier.club.domain.program.AgeGroup.DefaultAgeGroup.FOURTH_GRADE;
-import static com.github.averyregier.club.domain.program.AgeGroup.DefaultAgeGroup.THIRD_GRADE;
+import static com.github.averyregier.club.domain.program.AgeGroup.DefaultAgeGroup.*;
 import static com.github.averyregier.club.domain.program.awana.TnTMissionSectionTypes.*;
 
 /**
@@ -29,7 +28,8 @@ public class TnTMissionCurriculum {
                 .curriculum(c -> c
                         .shortCode("UA")
                         .book(0, startZone())
-                        .book(1, book1()));
+                        .book(1, book1())
+                        .book(2, book2()));
     }
 
     private static UnaryOperator<BookBuilder> startZone() {
@@ -39,6 +39,8 @@ public class TnTMissionCurriculum {
                 .name("Mission Start Zone")
                 .ageGroup(THIRD_GRADE)
                 .ageGroup(FOURTH_GRADE)
+                .ageGroup(FIFTH_GRADE)
+                .ageGroup(SIXTH_GRADE)
                 .publicationYear(2016)
                 .catalog("34146")
                 .group(0, g ->
@@ -56,6 +58,8 @@ public class TnTMissionCurriculum {
                     .name("Mission: Grace In Action")
                     .ageGroup(THIRD_GRADE)
                     .ageGroup(FOURTH_GRADE)
+                    .ageGroup(FIFTH_GRADE)
+                    .ageGroup(SIXTH_GRADE)
                     .publicationYear(2016)
                     .award(r -> r.sequence(s->s
                             .item(i-> alpha(i))
@@ -66,20 +70,65 @@ public class TnTMissionCurriculum {
                         //else if (g == 5 && s == 7) return friend;
                         else return regular;
                     });
-            return missionStructure(b);
+            return missionB1Structure(b);
         };
     }
 
-    private static BookBuilder missionStructure(BookBuilder builder) {
-        return builder
-                .group(1, group1())
-                .group(2, group2())
-                .group(3, group3())
-                .group(4, group4());
+    private static UnaryOperator<BookBuilder> book2() {
+        return b -> {
+            b.shortCode("1")
+                    .mwhCode("UAM2")
+                    .name("Mission: Evidence of Grace")
+                    .ageGroup(THIRD_GRADE)
+                    .ageGroup(FOURTH_GRADE)
+                    .ageGroup(FIFTH_GRADE)
+                    .ageGroup(SIXTH_GRADE)
+                    .publicationYear(2017)
+                    .award(r -> r.sequence(s->s
+                            .item(i-> alpha(i))
+                            .item(i-> excellence(i))))
+                    .typeAssigner((g, s) -> {
+                        if (s == 0) return parent;
+                        else if (s > 7) return extraCredit;
+                            //else if (g == 5 && s == 7) return friend;
+                        else return regular;
+                    });
+            return missionB2Structure(b);
+        };
     }
 
-    private static UnaryOperator<SectionGroupBuilder> group1() {
+    private static UnaryOperator<BookBuilder> book3() {
+        return b -> {
+            b.shortCode("1")
+                    .mwhCode("UAM3")
+                    .name("Mission: Agents of Grace")
+                    .ageGroup(THIRD_GRADE)
+                    .ageGroup(FOURTH_GRADE)
+                    .ageGroup(FIFTH_GRADE)
+                    .ageGroup(SIXTH_GRADE)
+                    .publicationYear(2018)
+                    .award(r -> r.sequence(s->s
+                            .item(i-> alpha(i))
+                            .item(i-> excellence(i))))
+                    .typeAssigner((g, s) -> {
+                        if (s == 0) return parent;
+                        else if (s > 7) return extraCredit;
+                            //else if (g == 5 && s == 7) return friend;
+                        else return regular;
+                    });
+            return b;
+        };
+    }
 
+    private static BookBuilder missionB1Structure(BookBuilder builder) {
+        return builder
+                .group(1, b1group1())
+                .group(2, b1group2())
+                .group(3, b1group3())
+                .group(4, b1group4());
+    }
+
+    private static UnaryOperator<SectionGroupBuilder> b1group1() {
         return g3 -> new MissionSectionBuilder(g3.name("GOD IS ..."))
                 .completeWeek("GOD IS CREATOR")
                 .completeWeek("GOD IS HOLY")
@@ -90,7 +139,7 @@ public class TnTMissionCurriculum {
                 .go("GOD IS WITH YOU").parent();
     }
 
-    private static UnaryOperator<SectionGroupBuilder> group2() {
+    private static UnaryOperator<SectionGroupBuilder> b1group2() {
         return g3 -> new MissionSectionBuilder(g3.name("THE BIBLE"))
                 .completeWeek("THE BIBLE IS TRUE AND WITHOUT ERROR")
                 .completeWeek("THE BIBLE HELPS US KNOW GOD")
@@ -102,7 +151,7 @@ public class TnTMissionCurriculum {
                 .go("THE BIBLE IS OUR GUIDE").parent();
     }
 
-    private static UnaryOperator<SectionGroupBuilder> group3() {
+    private static UnaryOperator<SectionGroupBuilder> b1group3() {
         return g3 -> new MissionSectionBuilder(g3.name("JESUS"))
                 .completeWeek("JESUS IS FULLY GOD")
                 .completeWeek("JESUS IS FULLY MAN")
@@ -114,7 +163,7 @@ public class TnTMissionCurriculum {
                 .go("JESUS WANTS YOU TO SHARE THE GOSPEL").parent();
     }
 
-    private static UnaryOperator<SectionGroupBuilder> group4() {
+    private static UnaryOperator<SectionGroupBuilder> b1group4() {
         return g3 -> new MissionSectionBuilder(g3.name("LIVING BY GRACE"))
                 .completeWeek("WHAT IS GRACE")
                 .completeWeek("GRACE AND THE LAW")
@@ -123,6 +172,59 @@ public class TnTMissionCurriculum {
                 .completeWeek("GRACE AND PAUL")
                 .completeWeek("GRACE IN ACTION")
                 .review("LIVING BY GRACE REVIEW").parent();
+    }
+
+    private static BookBuilder missionB2Structure(BookBuilder builder) {
+        return builder
+                .group(1, b2group1())
+                .group(2, b2group2())
+                .group(3, b2group3())
+                .group(4, b2group4());
+    }
+
+    private static UnaryOperator<SectionGroupBuilder> b2group1() {
+        return g3 -> new MissionSectionBuilder(g3.name("GOD IS ..."))
+                .completeWeek("GOD IS TRUTH")
+                .completeWeek("GOD IS ALL-POWERFUL")
+                .completeWeek("GOD IS EVERYWHERE")
+                .completeWeek("GOD IS ALL-KNOWING")
+                .completeWeek("GOD IS THREE IN ONE")
+                .review("GOD IS ... REVIEW").parent();
+    }
+
+    private static UnaryOperator<SectionGroupBuilder> b2group2() {
+        return g3 -> new MissionSectionBuilder(g3.name("THE BIBLE"))
+                .completeWeek("BOOKS OF HISTORY")
+                .completeWeek("BOOKS OF WISDOM")
+                .completeWeek("BOOKS OF PROPHECY")
+                .completeWeek("THE GOSPELS")
+                .completeWeek("ACTS")
+                .completeWeek("THE EPISTLES")
+                .completeWeek("REVELATIONS")
+                .review("THE BIBLE REVIEW").parent();
+    }
+
+    private static UnaryOperator<SectionGroupBuilder> b2group3() {
+        return g3 -> new MissionSectionBuilder(g3.name("REDEMPTION"))
+                .completeWeek("IMAGE OF GOD")
+                .completeWeek("SATAN")
+                .completeWeek("THE FALL")
+                .completeWeek("SIN AND SUFFERING")
+                .completeWeek("JESUS CHRIST")
+                .completeWeek("THE LORD'S RETURN")
+                .completeWeek("ETERNITY")
+                .review("REDEMPTION REVIEW").parent();
+    }
+
+    private static UnaryOperator<SectionGroupBuilder> b2group4() {
+        return g3 -> new MissionSectionBuilder(g3.name("EVIDENCE"))
+                .completeWeek("FAITH")
+                .completeWeek("PRAYER")
+                .completeWeek("STUDYING GOD'S WORD")
+                .completeWeek("WORSHIP")
+                .completeWeek("FELLOWSHIP")
+                .completeWeek("WITNESSING")
+                .review("EVIDENCE REVIEW").parent();
     }
 
     private static CatalogueBuilder alpha(CatalogueBuilder i) {
@@ -137,5 +239,4 @@ public class TnTMissionCurriculum {
                 .catalog("79556", "Award and Pin")
                 .catalog("79564", "Replacement Pin");
     }
-
 }

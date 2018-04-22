@@ -7,8 +7,8 @@ import java.util.*;
 
 import static com.github.averyregier.club.domain.program.AccomplishmentLevel.book;
 import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.parent;
+import static com.github.averyregier.club.domain.program.awana.TnTSectionTypes.regular;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 public class BookAdapterTest {
 
@@ -111,7 +111,7 @@ public class BookAdapterTest {
                 .getAwards().iterator().next();
         assertEquals("Award Name", award.getName());
         assertEquals(1, award.list().size());
-        assertEquals("Award Name", award.select(null).getName());
+        assertEquals("Award Name", award.selectAwarded().getName());
     }
 
     @Test
@@ -127,7 +127,7 @@ public class BookAdapterTest {
                 .getAwards().iterator().next();
         assertEquals("Book One", award.getName());
         assertEquals(1, award.list().size());
-        assertEquals("Book One", award.select(null).getName());
+        assertEquals("Book One", award.selectAwarded().getName());
     }
 
     @Test
@@ -143,7 +143,7 @@ public class BookAdapterTest {
                 .getAwards().iterator().next();
         assertEquals("1", award.getName());
         assertEquals(1, award.list().size());
-        assertEquals("1", award.select(null).getName());
+        assertEquals("1", award.selectAwarded().getName());
     }
 
     @Test
@@ -191,9 +191,39 @@ public class BookAdapterTest {
                 .getAwards().iterator().next();
         assertEquals("0", award.getName());
         assertEquals(3, award.list().size());
-        assertEquals("Award Name 1", award.select(null).getName());
-        assertEquals("Award Name 1", award.select().getName());
-        assertEquals("Award Name 2", award.select(c->c.getName().equals("Award Name 2")).getName());
+        assertEquals("Award Name 1", award.selectAwarded().getName());
+        assertEquals("Award Name 2", award.selectAwarded(c->c.getName().equals("Award Name 2")).getName());
+
+    }
+
+    @Test
+    public void forEachXTest() {
+        Book classUnderTest = new CurriculumBuilder().book(0, b -> b
+                .award(r -> r
+                        .forEach(4).name("badge")
+                )
+                .group(1, g -> g
+                        .section(0, regular)
+                        .section(1, regular)
+                        .section(2, regular)
+                        .section(3, regular)
+                        .section(4, regular)
+                        .section(5, regular))
+                .group(1, g -> g
+                        .section(0, regular)
+                        .section(1, regular)
+                        .section(2, regular)
+                        .section(3, regular)
+                        .section(4, regular)
+                        .section(5, regular)))
+                .build().getBooks().get(0);
+
+        Award award = classUnderTest.getSectionGroups().get(0).getSections().get(0)
+                .getAwards().iterator().next();
+        assertEquals("badge", award.getName());
+        assertEquals(3, award.list().size());
+        assertEquals("badge 1", award.selectAwarded().getName());
+        assertEquals("badge 3", award.selectAwarded(c->c.getName().equals("badge 3")).getName());
 
     }
 
