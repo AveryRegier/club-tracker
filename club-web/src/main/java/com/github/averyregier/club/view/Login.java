@@ -26,6 +26,11 @@ import static spark.Spark.*;
 public class Login extends ModelMaker {
 
     public static void resetCookies(Request req, Response res, User user) {
+        if(!req.raw().isSecure()) {
+            Session session = req.session(true);
+            session.attribute("userID", user.getLoginInformation().getUniqueID());
+            session.attribute("provider", user.getLoginInformation().getProviderID());
+        }
         res.cookie("auth", user.getCurrentAuth(), 60 * 60 * 3, req.raw().isSecure());
         res.cookie("userID", user.getLoginInformation().getUniqueID(), 60 * 60 * 3, req.raw().isSecure());
         res.cookie("provider", user.getLoginInformation().getProviderID(), 60 * 60 * 3, req.raw().isSecure());
@@ -58,19 +63,34 @@ public class Login extends ModelMaker {
 
         before("/protected/*", (request, response) -> {
             // ... check if authenticated
-            String auth = request.cookie("auth");
-            if (auth != null) {
-                Optional<User> user = app.getUserManager().getUser(
-                        request.cookie("provider"), request.cookie("userID"));
-                if (user.isPresent() && user.get().authenticate(auth)) {
+            if(request.raw().isSecure()) {
+                String auth = request.cookie("auth");
+                if (auth != null) {
+                    String provider = request.cookie("provider");
+                    String userID = request.cookie("userID");
+                    Optional<User> user = app.getUserManager().getUser(
+                            provider, userID);
+                    if (user.isPresent() && user.get().authenticate(auth)) {
+                        request.attribute("user", user);
+                        return;
+                    } else {
+                        System.out.println("authentication failure: " +
+                                user.map(User::getId).orElse("") + "=" + auth);
+                    }
+                } else {
+                    System.out.println("auth cookie not found");
+                }
+            } else {
+                String provider = request.session().attribute("provider");
+                String userID = request.session().attribute("userID");
+                Optional<User> user = app.getUserManager().getUser(provider, userID);
+                if (user.isPresent()) {
                     request.attribute("user", user);
                     return;
                 } else {
-                    System.out.println("authentication failure: "+
-                            user.map(User::getId).orElse("")+"="+auth);
+                    System.out.println("authentication failure: " +
+                            user.map(User::getId).orElse(""));
                 }
-            } else {
-                System.out.println("auth cookie not found");
             }
             request.cookies().entrySet().forEach(e->{
                 System.out.println(e.getKey()+"="+e.getValue());
