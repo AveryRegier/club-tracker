@@ -20,6 +20,7 @@ public class SectionBuilder implements Builder<Section> {
     private Later<SectionGroup> group;
     private List<Later<Award>> awards = new ArrayList<>(2);
     private Later<SectionGroup> futureGroup;
+    private String name;
 
     public SectionBuilder(int sequence, SectionType sectionType) {
         this.sequence = sequence;
@@ -50,7 +51,8 @@ public class SectionBuilder implements Builder<Section> {
                 sectionType,
                 sequence,
                 shortCode != null ? shortCode : Integer.toString(sequence),
-                awards);
+                awards,
+                name);
     }
 
     SectionBuilder setGroup(Later<SectionGroup> group) {
@@ -77,5 +79,10 @@ public class SectionBuilder implements Builder<Section> {
 
     Later<SectionGroup> getGroup() {
         return futureGroup;
+    }
+
+    public SectionBuilder name(String name) {
+        this.name = name;
+        return this;
     }
 }

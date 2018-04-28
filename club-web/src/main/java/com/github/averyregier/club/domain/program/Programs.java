@@ -3,6 +3,7 @@ package com.github.averyregier.club.domain.program;
 import com.github.averyregier.club.domain.program.adapter.CurriculumBuilder;
 import com.github.averyregier.club.domain.program.awana.SparksCurriculum;
 import com.github.averyregier.club.domain.program.awana.TnTCurriculum;
+import com.github.averyregier.club.domain.program.awana.TnTMissionCurriculum;
 
 import java.util.Optional;
 
@@ -25,7 +26,22 @@ public enum Programs {
         public Curriculum get() {
             return awana;
         }
+    },
+    AWANA_2018 {
+        private Curriculum awana = new CurriculumBuilder()
+                .shortCode("AWANA2018")
+                .curriculum(c -> c.shortCode("Puggles").accepts(TWO, THREE))
+                .curriculum(c -> c.shortCode("Cubbies").accepts(FOUR, FIVE))
+                .curriculum(SparksCurriculum::build)
+                .curriculum(TnTMissionCurriculum::build)
+                .build();
+
+        @Override
+        public Curriculum get() {
+            return awana;
+        }
     };
+
 
     public abstract Curriculum get();
 

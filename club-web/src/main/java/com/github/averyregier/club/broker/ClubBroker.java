@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static com.github.averyregier.club.db.tables.Club.CLUB;
+import static com.github.averyregier.club.db.tables.Club.CLUB_;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.equalsAny;
 
@@ -25,8 +25,8 @@ public class ClubBroker extends PersistenceBroker<Club> {
 
     @Override
     protected void persist(Club club, DSLContext create) {
-        if(!equalsAny(create.insertInto(CLUB)
-                .set(CLUB.ID, club.getId().getBytes())
+        if(!equalsAny(create.insertInto(CLUB_)
+                .set(CLUB_.ID, club.getId().getBytes())
                 .set(mapFields(club))
                 .onDuplicateKeyUpdate()
                 .set(mapFields(club))
@@ -37,15 +37,15 @@ public class ClubBroker extends PersistenceBroker<Club> {
 
     private Map<TableField<ClubRecord, ?>, Object> mapFields(Club club) {
         return JooqUtil.<ClubRecord>map()
-                .setHasId(CLUB.PARENT_CLUB_ID, club.getParentGroup())
-                .set(CLUB.CURRICULUM, club.getCurriculum().getId())
+                .setHasId(CLUB_.PARENT_CLUB_ID, club.getParentGroup())
+                .set(CLUB_.CURRICULUM, club.getCurriculum().getId())
                 .build();
     }
 
     public Optional<Club> find(String clubId, ClubManager clubManager) {
         Function<DSLContext, Optional<Club>> fn = create -> {
-            ClubRecord record = create.selectFrom(CLUB)
-                    .where(CLUB.ID.eq(clubId.getBytes()))
+            ClubRecord record = create.selectFrom(CLUB_)
+                    .where(CLUB_.ID.eq(clubId.getBytes()))
                     .fetchOne();
             if (record == null) return Optional.empty();
             return clubManager.constructClub(
@@ -59,8 +59,8 @@ public class ClubBroker extends PersistenceBroker<Club> {
 
     public Collection<Club> findChildren(Club parentClub, ClubManager clubManager) {
         return query((Function<DSLContext, Collection<Club>>) create -> create
-                .selectFrom(CLUB)
-                .where(CLUB.PARENT_CLUB_ID.eq(parentClub.getId().getBytes()))
+                .selectFrom(CLUB_)
+                .where(CLUB_.PARENT_CLUB_ID.eq(parentClub.getId().getBytes()))
                 .fetch()
                 .map(record -> clubManager.constructClub(
                         convert(record.getId()),

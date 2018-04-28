@@ -16,7 +16,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import static com.github.averyregier.club.broker.BrokerTestUtil.*;
-import static com.github.averyregier.club.db.tables.Club.CLUB;
+import static com.github.averyregier.club.db.tables.Club.CLUB_;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -80,12 +80,12 @@ public class ClubBrokerTest {
     }
 
     private Consumer<StatementVerifier> assertUUID(Club club) {
-        return (s) -> s.assertUUID(club, CLUB.ID);
+        return (s) -> s.assertUUID(club, CLUB_.ID);
     }
 
     private void assertFields(Club club, StatementVerifier s) {
-        s.assertUUID(club.getParentGroup(), CLUB.PARENT_CLUB_ID);
-        s.assertFieldEquals(club.getCurriculum().getId(), CLUB.CURRICULUM);
+        s.assertUUID(club.getParentGroup(), CLUB_.PARENT_CLUB_ID);
+        s.assertFieldEquals(club.getCurriculum().getId(), CLUB_.CURRICULUM);
     }
 
     @Test
@@ -98,8 +98,8 @@ public class ClubBrokerTest {
         String curriculumId = curriculum.getId();
 
         MockDataProvider provider = selectOne((s) -> {
-            s.assertUUID(clubId, CLUB.ID);
-        }, CLUB, (r)-> {
+            s.assertUUID(clubId, CLUB_.ID);
+        }, CLUB_, (r)-> {
             r.setId(clubId.getBytes());
             r.setParentClubId(parentClubId.getBytes());
             r.setCurriculum(curriculumId);
@@ -117,8 +117,8 @@ public class ClubBrokerTest {
         ClubManager manager = new ClubManager();
 
         MockDataProvider provider = select((s) -> {
-            s.assertUUID(clubId, CLUB.ID);
-        }, (r) -> r.newResult(CLUB));
+            s.assertUUID(clubId, CLUB_.ID);
+        }, (r) -> r.newResult(CLUB_));
 
         assertFalse(setup(provider).find(clubId, manager).isPresent());
     }

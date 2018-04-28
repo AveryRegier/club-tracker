@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 import static com.github.averyregier.club.domain.utility.InputField.Type.date;
 import static com.github.averyregier.club.domain.utility.InputField.Type.text;
 import static spark.Spark.exception;
-import static spark.SparkBase.port;
+import static spark.Spark.port;
 
 /**
  * Created by avery on 8/30/14.

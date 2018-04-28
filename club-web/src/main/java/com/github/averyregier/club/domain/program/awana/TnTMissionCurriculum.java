@@ -221,6 +221,7 @@ public class TnTMissionCurriculum {
                 .completeWeek("FAITH")
                 .completeWeek("PRAYER")
                 .completeWeek("STUDYING GOD'S WORD")
+                .completeWeek("SERVING")
                 .completeWeek("WORSHIP")
                 .completeWeek("FELLOWSHIP")
                 .completeWeek("WITNESSING")

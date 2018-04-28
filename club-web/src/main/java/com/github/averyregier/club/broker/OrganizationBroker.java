@@ -13,7 +13,7 @@ import org.jooq.TableField;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.github.averyregier.club.db.tables.Club.CLUB;
+import static com.github.averyregier.club.db.tables.Club.CLUB_;
 import static com.github.averyregier.club.db.tables.Organization.ORGANIZATION;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.convert;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.parseLocale;
@@ -48,8 +48,8 @@ public class OrganizationBroker extends PersistenceBroker<Program> {
 
     public Optional<Program> find(String id, ClubManager clubManager) {
         return query(create -> create
-                .selectFrom(ORGANIZATION.join(CLUB)
-                        .on(ORGANIZATION.CLUB_ID.eq(CLUB.ID)))
+                .selectFrom(ORGANIZATION.join(CLUB_)
+                        .on(ORGANIZATION.CLUB_ID.eq(CLUB_.ID)))
                 .where(ORGANIZATION.ID.eq(id.getBytes()))
                 .fetch().stream().findFirst()
                 .map(r -> mapProgram(id, clubManager, r)));
@@ -60,7 +60,7 @@ public class OrganizationBroker extends PersistenceBroker<Program> {
         return clubManager.loadProgram(
                 locale,
                 r.getValue(ORGANIZATION.ORGANIZATIONNAME),
-                Programs.find(r.getValue(CLUB.CURRICULUM)).orElseThrow(IllegalArgumentException::new),
+                Programs.find(r.getValue(CLUB_.CURRICULUM)).orElseThrow(IllegalArgumentException::new),
                 id,
                 () -> getRegistrationMap(id, locale));
     }
@@ -72,8 +72,8 @@ public class OrganizationBroker extends PersistenceBroker<Program> {
 
     public void load(ClubManager clubManager) {
         query(create -> create
-                .selectFrom(ORGANIZATION.join(CLUB)
-                        .on(ORGANIZATION.CLUB_ID.eq(CLUB.ID)))
+                .selectFrom(ORGANIZATION.join(CLUB_)
+                        .on(ORGANIZATION.CLUB_ID.eq(CLUB_.ID)))
                 .fetch().stream().findFirst()
                 .map(r -> mapProgram(convert(r.getValue(ORGANIZATION.ID)), clubManager, r)));
     }

@@ -3,6 +3,7 @@ package com.github.averyregier.club.domain.program.awana;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Curriculum;
+import com.github.averyregier.club.domain.program.Section;
 import org.junit.Test;
 
 import java.util.List;
@@ -40,6 +41,12 @@ public class TnTMissionCurriculumTest {
     public void curriculumID() {
         assertEquals("TnT", classUnderTest.getId());
         assertEquals("TnT", classUnderTest.getShortCode());
+    }
+
+    @Test
+    public void correctSectionName() {
+        Section firstSection = classUnderTest.getBooks().get(1).getSections().get(0);
+        assertEquals("GOD IS CREATOR", firstSection.getSectionTitle());
     }
 
 }

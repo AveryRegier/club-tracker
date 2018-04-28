@@ -14,17 +14,20 @@ import java.util.function.Predicate;
 class SectionAdapter implements Section {
     private String shortCode;
     private final List<Later<Award>> awards;
+    private String name;
     private Later<SectionGroup> group;
     private SectionType sectionType;
     private int sequence;
 
     public SectionAdapter(Later<SectionGroup> group, SectionType sectionType,
-                          int sequence, String shortCode, List<Later<Award>> awards) {
+                          int sequence, String shortCode, List<Later<Award>> awards,
+                          String name) {
         this.group = group;
         this.sectionType = sectionType;
         this.sequence = sequence;
         this.shortCode = shortCode;
         this.awards = awards;
+        this.name = name;
     }
 
     @Override
@@ -88,6 +91,6 @@ class SectionAdapter implements Section {
 
     @Override
     public String getSectionTitle() {
-        return Section.super.getSectionTitle();
+        return name != null ? name : Section.super.getSectionTitle();
     }
 }

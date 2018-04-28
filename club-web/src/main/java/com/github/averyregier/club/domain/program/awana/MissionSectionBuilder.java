@@ -10,31 +10,34 @@ import static com.github.averyregier.club.domain.program.awana.TnTMissionSection
  */
 public class MissionSectionBuilder {
     private SectionGroupBuilder b;
+    private AwardBuilder discovery;
     private AwardBuilder silver;
     private AwardBuilder gold;
     private int sequence = 0;
 
     public MissionSectionBuilder(SectionGroupBuilder b) {
         this.b = b;
-        silver = new AwardBuilder().name("Silver " + b.getSequence());
-        gold = new AwardBuilder().name("Gold " + b.getSequence());
+
+        discovery = new AwardBuilder().forEach(4).name("Discovery");
+        silver = new AwardBuilder().forEach(4).name("Silver");
+        gold = new AwardBuilder().forEach(4).name("Gold");
     }
 
     public MissionSectionBuilder completeWeek(String name)
     {
-        b.section(++sequence, regular).name(name)
-         .section(sequence).name("SILVER").award(silver)
-         .section(sequence).name("GOLD").award(gold);
+        b.award(discovery.section(++sequence, regular, s->s.name(name)))
+         .award(silver.section(sequence, extraCredit, s->s.shortCode("S")))
+         .award(gold.section(sequence, extraCredit, s->s.shortCode("G")));
         return this;
     }
 
     public MissionSectionBuilder review(String name) {
-        b.section(++sequence, review).name(name);
+        b.award(discovery.section(++sequence, review, s->s.name(name)));
         return this;
     }
 
     public MissionSectionBuilder go(String name) {
-        b.section(++sequence, go).name(name);
+        b.award(discovery.section(++sequence, go, s->s.name(name)));
         return this;
     }
 
