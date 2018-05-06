@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 
 import static com.github.averyregier.club.broker.BrokerTestUtil.mergeProvider;
 import static com.github.averyregier.club.broker.BrokerTestUtil.mockConnector;
-import static com.github.averyregier.club.db.tables.Club.CLUB_;
+import static com.github.averyregier.club.db.tables.Club.CLUB;
 import static com.github.averyregier.club.db.tables.Organization.ORGANIZATION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -119,9 +119,9 @@ public class OrganizationBrokerTest {
                         ORGANIZATION.ORGANIZATIONNAME,
                         ORGANIZATION.LOCALE,
                         ORGANIZATION.CLUB_ID,
-                        CLUB_.ID,
-                        CLUB_.PARENT_CLUB_ID,
-                        CLUB_.CURRICULUM);
+                        CLUB.ID,
+                        CLUB.PARENT_CLUB_ID,
+                        CLUB.CURRICULUM);
 
             Record7<byte[], String, String, byte[], byte[], byte[], String> record =
                     create.newRecord(
@@ -129,18 +129,18 @@ public class OrganizationBrokerTest {
                         ORGANIZATION.ORGANIZATIONNAME,
                         ORGANIZATION.LOCALE,
                         ORGANIZATION.CLUB_ID,
-                        CLUB_.ID,
-                        CLUB_.PARENT_CLUB_ID,
-                        CLUB_.CURRICULUM);
+                        CLUB.ID,
+                        CLUB.PARENT_CLUB_ID,
+                        CLUB.CURRICULUM);
             result.add(record);
 
             record.setValue(ORGANIZATION.ID, id.getBytes());
             record.setValue(ORGANIZATION.CLUB_ID, id.getBytes());
             record.setValue(ORGANIZATION.ORGANIZATIONNAME, orgName);
             record.setValue(ORGANIZATION.LOCALE, locale);
-            record.setValue(CLUB_.ID, id.getBytes());
-            record.setValue(CLUB_.PARENT_CLUB_ID, null);
-            record.setValue(CLUB_.CURRICULUM, curriculum.getId());
+            record.setValue(CLUB.ID, id.getBytes());
+            record.setValue(CLUB.PARENT_CLUB_ID, null);
+            record.setValue(CLUB.CURRICULUM, curriculum.getId());
             return new MockResult[] {new MockResult(1, result)};
         };
 

@@ -35,8 +35,6 @@
 
         <flyway.placeholders.generate_uuid></flyway.placeholders.generate_uuid>
         <flyway.placeholders.uuid>uuid</flyway.placeholders.uuid>
-        <jooq.version>3.10.6</jooq.version>
-        <sparkjava.version>2.7.2</sparkjava.version>
     </properties>
 
     <profiles>
@@ -133,7 +131,7 @@
         <dependency>
             <groupId>com.sparkjava</groupId>
             <artifactId>spark-template-freemarker</artifactId>
-            <version>2.7.1</version>
+            <version>2.0.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.sparkjava</groupId>
@@ -144,7 +142,7 @@
         <dependency>
             <groupId>com.sparkjava</groupId>
             <artifactId>spark-core</artifactId>
-            <version>${sparkjava.version}</version>
+            <version>2.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -161,7 +159,7 @@
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
-            <version>${jooq.version}</version>
+            <version>3.4.2</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -289,7 +287,7 @@
                 <!-- Specify the maven code generator plugin -->
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq-codegen-maven</artifactId>
-                <version>${jooq.version}</version>
+                <version>3.4.2</version>
 
                 <dependencies>
                     <dependency>
