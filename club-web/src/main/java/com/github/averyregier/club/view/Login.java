@@ -63,42 +63,8 @@ public class Login extends ModelMaker {
 
         before("/protected/*", (request, response) -> {
             // ... check if authenticated
-            if(request.raw().isSecure()) {
-                String auth = request.cookie("auth");
-                if (auth != null) {
-                    String provider = request.cookie("provider");
-                    String userID = request.cookie("userID");
-                    Optional<User> user = app.getUserManager().getUser(
-                            provider, userID);
-                    if (user.isPresent() && user.get().authenticate(auth)) {
-                        request.attribute("user", user);
-                        return;
-                    } else {
-                        System.out.println("authentication failure: " +
-                                user.map(User::getId).orElse("") + "=" + auth);
-                    }
-                } else {
-                    System.out.println("auth cookie not found");
-                }
-            } else {
-                String provider = request.session().attribute("provider");
-                String userID = request.session().attribute("userID");
-                Optional<User> user = app.getUserManager().getUser(provider, userID);
-                if (user.isPresent()) {
-                    request.attribute("user", user);
-                    return;
-                } else {
-                    System.out.println("authentication failure: " +
-                            user.map(User::getId).orElse(""));
-                }
-            }
-            request.cookies().entrySet().forEach(e->{
-                System.out.println(e.getKey()+"="+e.getValue());
-            });
-            request.session().attribute("location", request.url());
-            String context = request.contextPath();
-            context = context == null ? "" : context;
-            response.redirect(context + "/login");
+            if (loggedIn(app, request)) return;
+            redirectToLogin(request, response);
             halt();
         });
 
@@ -149,6 +115,63 @@ public class Login extends ModelMaker {
             }
             return null;
         });
+    }
+
+    private boolean loggedIn(ClubApplication app, Request request) {
+        if(request.raw().isSecure()) {
+            if (isLoggedInSecure(app, request)) return true;
+        } else {
+            if (isLoggedInInsecure(app, request)) return true;
+        }
+        printCookies(request);
+        return false;
+    }
+
+    private void redirectToLogin(Request request, Response response) {
+        request.session().attribute("location", request.url());
+        String context = request.contextPath();
+        context = context == null ? "" : context;
+        response.redirect(context + "/login");
+    }
+
+    private void printCookies(Request request) {
+        request.cookies().entrySet().forEach(e->{
+            System.out.println(e.getKey()+"="+e.getValue());
+        });
+    }
+
+    private boolean isLoggedInInsecure(ClubApplication app, Request request) {
+        String provider = request.session().attribute("provider");
+        String userID = request.session().attribute("userID");
+        Optional<User> user = app.getUserManager().getUser(provider, userID);
+        if (user.isPresent()) {
+            request.attribute("user", user);
+            return true;
+        } else {
+            System.out.println("authentication failure: " +
+                    user.map(User::getId).orElse(""));
+        }
+        return false;
+    }
+
+    private boolean isLoggedInSecure(ClubApplication app, Request request) {
+        String auth = request.cookie("auth");
+        if (auth != null) {
+            String provider = request.cookie("provider");
+            String userID = request.cookie("userID");
+            Optional<User> user = app.getUserManager().getUser(
+                    provider, userID);
+            if (user.isPresent() && user.get().authenticate(auth)) {
+                request.attribute("user", user);
+                return true;
+            } else {
+                System.out.println("authentication failure: " +
+                        user.map(User::getId).orElse("") + "=" + auth);
+            }
+        } else {
+            System.out.println("auth cookie not found");
+        }
+        return false;
     }
 
     private void printParams(Map<String, String> requestParams) {
@@ -258,11 +281,9 @@ public class Login extends ModelMaker {
         if (manager == null) {
             try {
                 List<Provider> providers = getProviders(app);
-                String propString = providers.stream().map(p -> {
-                    return "#" + p.getName() + "\n" +
-                            p.getSite() + ".consumer_key = " + p.getClientKey() + "\n" +
-                            p.getSite() + ".consumer_secret = " + p.getSecret() + "\n";
-                }).collect(joining("\n"));
+                String propString = providers.stream()
+                        .map(p -> buildProviderComment(p))
+                        .collect(joining("\n"));
 
 //                InputStream in = Login.class.getClassLoader()
 //                        .getResourceAsStream("oauth_consumer.properties");
@@ -280,5 +301,11 @@ public class Login extends ModelMaker {
             }
         }
         return manager;
+    }
+
+    private String buildProviderComment(Provider p) {
+        return "#" + p.getName() + "\n" +
+                p.getSite() + ".consumer_key = " + p.getClientKey() + "\n" +
+                p.getSite() + ".consumer_secret = " + p.getSecret() + "\n";
     }
 }
