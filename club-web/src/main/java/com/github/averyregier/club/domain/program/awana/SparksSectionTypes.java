@@ -46,4 +46,9 @@ public enum SparksSectionTypes implements SectionType {
     public String getReadableName() {
         return SectionType.super.getReadableName();
     }
+
+    @Override
+    public String getCssClass() {
+        return SectionType.super.getCssClass();
+    }
 }

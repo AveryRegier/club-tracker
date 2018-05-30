@@ -65,7 +65,7 @@ public class SectionGroupAdapterTest{
                         .section(1, TnTSectionTypes.regular)
                         .section(3, TnTSectionTypes.regular))
                 .award(a -> a
-                        .section(2, TnTSectionTypes.extraCredit))
+                        .section(2, TnTSectionTypes.silver))
                 .build(bookBuilder);
         bookBuilder.build();
 

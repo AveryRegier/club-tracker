@@ -26,7 +26,7 @@
                         <div class="sectionGroup">
                             <div class="sectionGroupLabel">${sectionGroup.key.name}</div>
                             <#list sectionGroup.value as record>
-                                <a class ="section" href="/protected/clubbers/${clubber.id}/sections/${record.section.id}">
+                                <a class="section ${record.section.sectionType.cssClass}" href="/protected/clubbers/${clubber.id}/sections/${record.section.id}">
                                 <div>
                                     <label class="id">
                                         ${record.section.shortCode}

@@ -66,8 +66,7 @@ public class OrganizationBroker extends PersistenceBroker<Program> {
     }
 
     private Map<RegistrationSection, InputFieldGroup> getRegistrationMap(String id, String locale) {
-        Map<RegistrationSection, InputFieldGroup> map = new RegistrationFormBroker(connector).find(id, parseLocale(locale));
-        return map;
+        return new RegistrationFormBroker(connector).find(id, parseLocale(locale));
     }
 
     public void load(ClubManager clubManager) {

@@ -38,4 +38,13 @@ public class MasterCurriculum extends CurriculumAdapter {
     public List<Curriculum> getSeries() {
         return series;
     }
+
+    @Override
+    public Optional<Curriculum> findCurriculum(String curriculum) {
+        String[] split = curriculum.split(":");
+        String cShortCode = split[split.length - 1];
+        return series.stream()
+                .filter(s->s.getShortCode().equals(cShortCode))
+                .findFirst();
+    }
 }

@@ -173,8 +173,7 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
 
     private List<Book> getCurrentBookList() {
         return getClub()
-                .map(c -> c.getCurriculum()
-                        .recommendedBookList(getCurrentAgeGroup()))
+                .map(c -> c.getCurrentBookList(getCurrentAgeGroup()))
                 .orElse(Collections.emptyList());
     }
 

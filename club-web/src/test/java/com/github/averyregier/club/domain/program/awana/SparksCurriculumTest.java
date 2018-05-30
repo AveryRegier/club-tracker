@@ -82,6 +82,15 @@ public class SparksCurriculumTest {
     }
 
     @Test
+    public void lookupViaAwana2018() {
+        // not entirely sure want his behavior long term
+        assertEquals(friend, Programs.AWANA_2018
+                .get().getSeries("AWANA2018:Sparks")
+                .get().lookup("AWANA2018:Sparks:1c2010:RJ1:1")
+                .get().getSectionType());
+    }
+
+    @Test
     public void flight316EntranceTest() {
         Book j316 = classUnderTest.getBooks().get(0);
         assertEquals("F316", j316.getShortCode());

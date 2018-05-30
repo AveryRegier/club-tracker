@@ -1,12 +1,14 @@
 package com.github.averyregier.club.domain.program.adapter;
 
-import com.github.averyregier.club.domain.program.*;
+import com.github.averyregier.club.domain.program.Award;
+import com.github.averyregier.club.domain.program.Section;
+import com.github.averyregier.club.domain.program.SectionGroup;
+import com.github.averyregier.club.domain.program.SectionType;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
 /**
 * Created by avery on 9/10/2014.
@@ -48,15 +50,8 @@ class SectionAdapter implements Section {
     }
 
     @Override
-    public Set<Award> getAwards(AccomplishmentLevel type) {
-        return getAwards().stream()
-                .filter(t->t.getAccomplishmentLevel() == type)
-                .filter(isValidAward())
-                .collect(UtilityMethods.toLinkedSet());
-    }
-
-    private Predicate<Award> isValidAward() {
-        return t-> getSectionType().requiredFor(t.getAccomplishmentLevel());
+    public String getId() {
+        return Section.super.getId();
     }
 
     @Override
@@ -65,18 +60,8 @@ class SectionAdapter implements Section {
     }
 
     @Override
-    public String getId() {
-        return getContainer().getId()+":"+getShortCode();
-    }
-
-    @Override
     public String getShortCode() {
         return shortCode;
-    }
-
-    @Override
-    public int compareTo(Section o) {
-        return sequence() - o.sequence();
     }
 
     @Override

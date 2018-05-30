@@ -18,7 +18,12 @@ public class SectionAdapterTest {
 
     @Test
     public void sectionType() {
-        SectionType sectionType = new SectionType() {};
+        SectionType sectionType = new SectionType() {
+            @Override
+            public int ordinal() {
+                return 0;
+            }
+        };
         Section section = new SectionBuilder(2, sectionType).build();
         assertEquals(sectionType, section.getSectionType());
     }

@@ -1,15 +1,12 @@
 package com.github.averyregier.club.domain.program.awana;
 
 import com.github.averyregier.club.domain.program.Curriculum;
-import com.github.averyregier.club.domain.program.adapter.BookBuilder;
-import com.github.averyregier.club.domain.program.adapter.CatalogueBuilder;
-import com.github.averyregier.club.domain.program.adapter.CurriculumBuilder;
-import com.github.averyregier.club.domain.program.adapter.SectionGroupBuilder;
+import com.github.averyregier.club.domain.program.adapter.*;
 
 import java.util.function.UnaryOperator;
 
 import static com.github.averyregier.club.domain.program.AgeGroup.DefaultAgeGroup.*;
-import static com.github.averyregier.club.domain.program.awana.TnTMissionSectionTypes.*;
+import static com.github.averyregier.club.domain.program.awana.TnTMissionSectionTypes.regular;
 
 /**
  * Created by avery on 8/7/16.
@@ -29,7 +26,10 @@ public class TnTMissionCurriculum {
                         .shortCode("UA")
                         .book(0, startZone())
                         .book(1, book1())
-                        .book(2, book2()));
+                        .book(2, startZone())
+                        .book(3, book2())
+                        .book(4, startZone())
+                        .book(5, book3()));
     }
 
     private static UnaryOperator<BookBuilder> startZone() {
@@ -47,15 +47,15 @@ public class TnTMissionCurriculum {
                         g.name("Start Zone")
                                 .award(r -> r
                                         .name("T&T Ultimate Adventure Uniform")
-                                        .section(1, regular).name("The Gospel")
-                                        .section(2, regular).name("Bible Basics")));
+                                        .section(1, regular, s->s.name("The Gospel"))
+                                        .section(2, regular, s->s.name("Bible Basics"))));
     }
 
     private static UnaryOperator<BookBuilder> book1() {
         return b -> {
             b.shortCode("1")
-                    .mwhCode("UAM1")
-                    .name("Mission: Grace In Action")
+                    .mwhCode("M1")
+                    .name("Mission: Grace in Action")
                     .ageGroup(THIRD_GRADE)
                     .ageGroup(FOURTH_GRADE)
                     .ageGroup(FIFTH_GRADE)
@@ -63,13 +63,7 @@ public class TnTMissionCurriculum {
                     .publicationYear(2016)
                     .award(r -> r.sequence(s->s
                             .item(i-> alpha(i))
-                            .item(i-> excellence(i))))
-                    .typeAssigner((g, s) -> {
-                        if (s == 0) return parent;
-                        else if (s > 7) return extraCredit;
-                        //else if (g == 5 && s == 7) return friend;
-                        else return regular;
-                    });
+                            .item(i-> excellence(i))));
             return missionB1Structure(b);
         };
     }
@@ -77,7 +71,7 @@ public class TnTMissionCurriculum {
     private static UnaryOperator<BookBuilder> book2() {
         return b -> {
             b.shortCode("1")
-                    .mwhCode("UAM2")
+                    .mwhCode("M2")
                     .name("Mission: Evidence of Grace")
                     .ageGroup(THIRD_GRADE)
                     .ageGroup(FOURTH_GRADE)
@@ -86,13 +80,7 @@ public class TnTMissionCurriculum {
                     .publicationYear(2017)
                     .award(r -> r.sequence(s->s
                             .item(i-> alpha(i))
-                            .item(i-> excellence(i))))
-                    .typeAssigner((g, s) -> {
-                        if (s == 0) return parent;
-                        else if (s > 7) return extraCredit;
-                            //else if (g == 5 && s == 7) return friend;
-                        else return regular;
-                    });
+                            .item(i-> excellence(i))));
             return missionB2Structure(b);
         };
     }
@@ -100,7 +88,7 @@ public class TnTMissionCurriculum {
     private static UnaryOperator<BookBuilder> book3() {
         return b -> {
             b.shortCode("1")
-                    .mwhCode("UAM3")
+                    .mwhCode("M3")
                     .name("Mission: Agents of Grace")
                     .ageGroup(THIRD_GRADE)
                     .ageGroup(FOURTH_GRADE)
@@ -109,27 +97,35 @@ public class TnTMissionCurriculum {
                     .publicationYear(2018)
                     .award(r -> r.sequence(s->s
                             .item(i-> alpha(i))
-                            .item(i-> excellence(i))))
-                    .typeAssigner((g, s) -> {
-                        if (s == 0) return parent;
-                        else if (s > 7) return extraCredit;
-                            //else if (g == 5 && s == 7) return friend;
-                        else return regular;
-                    });
-            return b;
+                            .item(i-> excellence(i))));
+            return missionB3Structure(b);
         };
     }
 
     private static BookBuilder missionB1Structure(BookBuilder builder) {
+        AwardBuilder discovery = createDiscoveries();
         return builder
-                .group(1, b1group1())
-                .group(2, b1group2())
-                .group(3, b1group3())
-                .group(4, b1group4());
+                .group(1, b1unit1(discovery))
+                .group(2, b1unit2(discovery))
+                .group(3, b1unit3(discovery))
+                .group(4, b1unit4(discovery));
     }
 
-    private static UnaryOperator<SectionGroupBuilder> b1group1() {
-        return g3 -> new MissionSectionBuilder(g3.name("GOD IS ..."))
+    private static AwardBuilder createDiscoveries() {
+        return new AwardBuilder().name("Discovery")
+                .forEach(4)
+                .sequence(a->a.item(i->i.name("Discovery 1"))
+                              .item(i->i.name("Discovery 2"))
+                              .item(i->i.name("Discovery 3"))
+                              .item(i->i.name("Discovery 4"))
+                              .item(i->i.name("Discovery 5"))
+                              .item(i->i.name("Discovery 6"))
+                              .item(i->i.name("Discovery 7"))
+                              .item(i->i.name("Discovery 8")));
+    }
+
+    private static UnaryOperator<SectionGroupBuilder> b1unit1(AwardBuilder discovery) {
+        return g3 -> new MissionSectionBuilder(g3.name("GOD IS ..."), discovery)
                 .completeWeek("GOD IS CREATOR")
                 .completeWeek("GOD IS HOLY")
                 .completeWeek("GOD IS JUST")
@@ -139,8 +135,8 @@ public class TnTMissionCurriculum {
                 .go("GOD IS WITH YOU").parent();
     }
 
-    private static UnaryOperator<SectionGroupBuilder> b1group2() {
-        return g3 -> new MissionSectionBuilder(g3.name("THE BIBLE"))
+    private static UnaryOperator<SectionGroupBuilder> b1unit2(AwardBuilder discovery) {
+        return g3 -> new MissionSectionBuilder(g3.name("THE BIBLE"), discovery)
                 .completeWeek("THE BIBLE IS TRUE AND WITHOUT ERROR")
                 .completeWeek("THE BIBLE HELPS US KNOW GOD")
                 .completeWeek("THE BIBLE SHOULD BE STUDIED CAREFULLY")
@@ -151,8 +147,8 @@ public class TnTMissionCurriculum {
                 .go("THE BIBLE IS OUR GUIDE").parent();
     }
 
-    private static UnaryOperator<SectionGroupBuilder> b1group3() {
-        return g3 -> new MissionSectionBuilder(g3.name("JESUS"))
+    private static UnaryOperator<SectionGroupBuilder> b1unit3(AwardBuilder discovery) {
+        return g3 -> new MissionSectionBuilder(g3.name("JESUS"), discovery)
                 .completeWeek("JESUS IS FULLY GOD")
                 .completeWeek("JESUS IS FULLY MAN")
                 .completeWeek("JESUS IS SAVIOR")
@@ -163,8 +159,8 @@ public class TnTMissionCurriculum {
                 .go("JESUS WANTS YOU TO SHARE THE GOSPEL").parent();
     }
 
-    private static UnaryOperator<SectionGroupBuilder> b1group4() {
-        return g3 -> new MissionSectionBuilder(g3.name("LIVING BY GRACE"))
+    private static UnaryOperator<SectionGroupBuilder> b1unit4(AwardBuilder discovery) {
+        return g3 -> new MissionSectionBuilder(g3.name("LIVING BY GRACE"), discovery)
                 .completeWeek("WHAT IS GRACE")
                 .completeWeek("GRACE AND THE LAW")
                 .completeWeek("GRACE TO OBEY")
@@ -175,15 +171,16 @@ public class TnTMissionCurriculum {
     }
 
     private static BookBuilder missionB2Structure(BookBuilder builder) {
+        AwardBuilder discovery = createDiscoveries();
         return builder
-                .group(1, b2group1())
-                .group(2, b2group2())
-                .group(3, b2group3())
-                .group(4, b2group4());
+                .group(1, b2unit1(discovery))
+                .group(2, b2unit2(discovery))
+                .group(3, b2unit3(discovery))
+                .group(4, b2unit4(discovery));
     }
 
-    private static UnaryOperator<SectionGroupBuilder> b2group1() {
-        return g3 -> new MissionSectionBuilder(g3.name("GOD IS ..."))
+    private static UnaryOperator<SectionGroupBuilder> b2unit1(AwardBuilder discovery) {
+        return g3 -> new MissionSectionBuilder(g3.name("GOD IS ..."), discovery)
                 .completeWeek("GOD IS TRUTH")
                 .completeWeek("GOD IS ALL-POWERFUL")
                 .completeWeek("GOD IS EVERYWHERE")
@@ -192,8 +189,8 @@ public class TnTMissionCurriculum {
                 .review("GOD IS ... REVIEW").parent();
     }
 
-    private static UnaryOperator<SectionGroupBuilder> b2group2() {
-        return g3 -> new MissionSectionBuilder(g3.name("THE BIBLE"))
+    private static UnaryOperator<SectionGroupBuilder> b2unit2(AwardBuilder discovery) {
+        return g3 -> new MissionSectionBuilder(g3.name("THE BIBLE"), discovery)
                 .completeWeek("BOOKS OF HISTORY")
                 .completeWeek("BOOKS OF WISDOM")
                 .completeWeek("BOOKS OF PROPHECY")
@@ -204,8 +201,8 @@ public class TnTMissionCurriculum {
                 .review("THE BIBLE REVIEW").parent();
     }
 
-    private static UnaryOperator<SectionGroupBuilder> b2group3() {
-        return g3 -> new MissionSectionBuilder(g3.name("REDEMPTION"))
+    private static UnaryOperator<SectionGroupBuilder> b2unit3(AwardBuilder discovery) {
+        return g3 -> new MissionSectionBuilder(g3.name("REDEMPTION"), discovery)
                 .completeWeek("IMAGE OF GOD")
                 .completeWeek("SATAN")
                 .completeWeek("THE FALL")
@@ -216,8 +213,8 @@ public class TnTMissionCurriculum {
                 .review("REDEMPTION REVIEW").parent();
     }
 
-    private static UnaryOperator<SectionGroupBuilder> b2group4() {
-        return g3 -> new MissionSectionBuilder(g3.name("EVIDENCE"))
+    private static UnaryOperator<SectionGroupBuilder> b2unit4(AwardBuilder discovery) {
+        return g3 -> new MissionSectionBuilder(g3.name("EVIDENCE"), discovery)
                 .completeWeek("FAITH")
                 .completeWeek("PRAYER")
                 .completeWeek("STUDYING GOD'S WORD")
@@ -226,6 +223,61 @@ public class TnTMissionCurriculum {
                 .completeWeek("FELLOWSHIP")
                 .completeWeek("WITNESSING")
                 .review("EVIDENCE REVIEW").parent();
+    }
+
+    private static BookBuilder missionB3Structure(BookBuilder builder) {
+        AwardBuilder discovery = createDiscoveries();
+        return builder
+                .group(1, b3unit1(discovery))
+                .group(2, b3unit2(discovery))
+                .group(3, b3unit3(discovery))
+                .group(4, b3unit4(discovery));
+    }
+
+    private static UnaryOperator<SectionGroupBuilder> b3unit1(AwardBuilder discovery) {
+        return g3 -> new MissionSectionBuilder(g3.name("God Is ..."), discovery)
+                .completeWeek("God Is Our Savior")
+                .completeWeek("God Is Our Hope")
+                .completeWeek("God Is Our Advocate")
+                .completeWeek("God Is Our Strength")
+                .completeWeek("God Is Our Peace")
+                .review("Unit 1 Review").parent();
+    }
+
+    private static UnaryOperator<SectionGroupBuilder> b3unit2(AwardBuilder discovery) {
+        return g3 -> new MissionSectionBuilder(g3.name("The Bible"), discovery)
+                .completeWeek("The Bible Is God’s Revelation")
+                .completeWeek("The Bible Is God’s Inspired Word")
+                .completeWeek("The Bible Lights Our Path")
+                .completeWeek("The Bible Is True and Useful")
+                .completeWeek("The Bible Is the Standard")
+                .completeWeek("The Bible Is Trustworthy")
+                .completeWeek("The Bible Is Helpful to Correct")
+                .review("Unit 2 Review").parent();
+    }
+
+    private static UnaryOperator<SectionGroupBuilder> b3unit3(AwardBuilder discovery) {
+        return g3 -> new MissionSectionBuilder(g3.name("Jesus … I Am"), discovery)
+                .completeWeek("I Am the Bread of Life ")
+                .completeWeek("I Am the Light of the World")
+                .completeWeek("I Am the Gate")
+                .completeWeek("I Am the Good Shepherd")
+                .completeWeek("I Am the Resurrection and the Life")
+                .completeWeek("I Am the Way, the Truth, and the Life")
+                .completeWeek("I Am the True Vine")
+                .review("Unit 3 Review").parent();
+    }
+
+    private static UnaryOperator<SectionGroupBuilder> b3unit4(AwardBuilder discovery) {
+        return g3 -> new MissionSectionBuilder(g3.name("Agents of ..."), discovery)
+                .completeWeek("Agents of Courage")
+                .completeWeek("Agents of Humility")
+                .completeWeek("Agents of Wisdom")
+                .completeWeek("Agents of Obedience")
+                .completeWeek("Agents of Honor")
+                .completeWeek("Agents of Hope")
+                .completeWeek("Agents of Grace")
+                .review("Unit 4 Review").parent();
     }
 
     private static CatalogueBuilder alpha(CatalogueBuilder i) {

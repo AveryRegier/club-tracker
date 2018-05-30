@@ -14,34 +14,41 @@ public class MissionSectionBuilder {
     private AwardBuilder silver;
     private AwardBuilder gold;
     private int sequence = 0;
+    private int week = 0;
 
-    public MissionSectionBuilder(SectionGroupBuilder b) {
+    public MissionSectionBuilder(SectionGroupBuilder b, AwardBuilder discovery) {
         this.b = b;
-
-        discovery = new AwardBuilder().forEach(4).name("Discovery");
-        silver = new AwardBuilder().forEach(4).name("Silver");
-        gold = new AwardBuilder().forEach(4).name("Gold");
+        this.discovery = discovery;
+        silver = new AwardBuilder().name("Silver");
+        gold = new AwardBuilder().name("Gold");
     }
 
-    public MissionSectionBuilder completeWeek(String name)
-    {
-        b.award(discovery.section(++sequence, regular, s->s.name(name)))
-         .award(silver.section(sequence, extraCredit, s->s.shortCode("S")))
-         .award(gold.section(sequence, extraCredit, s->s.shortCode("G")));
+    public MissionSectionBuilder completeWeek(String name) {
+
+        discovery.section(++sequence, regular,
+                s -> s.name(name).shortCode(getCode()));
+        silver.section(++sequence, TnTMissionSectionTypes.silver,
+                s -> s.shortCode(week+"S"));
+        gold.section(++sequence, TnTMissionSectionTypes.gold,
+                s -> s.shortCode(week+"G"));
         return this;
     }
 
+    private String getCode() {
+        return Integer.toString(++week);
+    }
+
     public MissionSectionBuilder review(String name) {
-        b.award(discovery.section(++sequence, review, s->s.name(name)));
+        b.award(discovery.section(++sequence, review, s -> s.name(name).shortCode(getCode())));
         return this;
     }
 
     public MissionSectionBuilder go(String name) {
-        b.award(discovery.section(++sequence, go, s->s.name(name)));
+        b.award(discovery.section(++sequence, go, s -> s.name(name).shortCode(getCode())));
         return this;
     }
 
     public SectionGroupBuilder parent() {
-        return b;
+        return b.award(discovery).award(silver).award(gold);
     }
 }

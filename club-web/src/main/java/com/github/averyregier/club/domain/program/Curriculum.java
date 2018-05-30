@@ -21,4 +21,8 @@ public interface Curriculum extends Contained<Curriculum> {
     boolean accepts(AgeGroup ageGroup);
 
     Optional<Book> lookupBook(String bookId);
+
+    default Optional<Curriculum> findCurriculum(String curriculum) {
+        return Optional.empty();
+    }
 }

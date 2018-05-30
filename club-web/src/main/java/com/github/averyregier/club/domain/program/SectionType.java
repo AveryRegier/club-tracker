@@ -6,16 +6,19 @@ import org.apache.commons.lang.StringUtils;
  * Created by avery on 9/6/2014.
  */
 public interface SectionType {
-    public default boolean mustBeSigned() {
+    default boolean mustBeSigned() {
         return true;
     }
-    public default boolean requiredToMoveOn() {
+
+    default boolean requiredToMoveOn() {
         return true;
     }
-    public default boolean requiredFor(AccomplishmentLevel type) {
+
+    default boolean requiredFor(AccomplishmentLevel type) {
         return true;
     }
-    public default boolean countsTowardsSectionMinimums() {
+
+    default boolean countsTowardsSectionMinimums() {
         return true;
     }
 
@@ -28,5 +31,11 @@ public interface SectionType {
                 StringUtils.splitByCharacterTypeCamelCase(toString()),
                 ' '
         ));
+    }
+
+    int ordinal();
+
+    default String getCssClass() {
+        return toString();
     }
 }

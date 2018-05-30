@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 class AwardSequence extends AwardAdapter {
     private List<Catalogued> sequence;
 
-    public AwardSequence(List<Catalogued> sequence, String name, List<Section> builtSections, AccomplishmentLevel accomplishmentLevel) {
+    public AwardSequence(String name, List<Section> builtSections, AccomplishmentLevel accomplishmentLevel, List<Catalogued> sequence) {
         super(name, builtSections, accomplishmentLevel);
         this.sequence = sequence;
     }

@@ -36,11 +36,11 @@ public class AwardBuilder extends SectionHolderBuilder<AwardBuilder> implements 
         }
         Award award;
         if(numSections > 0) {
-            award = new AwardForEach(name, builtSections, accomplishmentLevel, numSections);
+            award = new AwardForEach(name, builtSections, accomplishmentLevel, sequence, numSections);
         } else if(sequence == null) {
             award = new AwardAdapter(name, builtSections, accomplishmentLevel);
         } else {
-            award = new AwardSequence(sequence, name, builtSections, accomplishmentLevel);
+            award = new AwardSequence(name, builtSections, accomplishmentLevel, sequence);
         }
         futureAward.set(award);
         return award;

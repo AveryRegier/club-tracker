@@ -31,7 +31,18 @@ public enum TnTSectionTypes implements SectionType {
             return false;
         }
     },
-    extraCredit {
+    silver {
+        @Override
+        public boolean requiredToMoveOn() {
+            return false;
+        }
+
+        @Override
+        public boolean requiredFor(AccomplishmentLevel type) {
+            return !type.isBook();
+        }
+    },
+    gold {
         @Override
         public boolean requiredToMoveOn() {
             return false;
@@ -56,5 +67,11 @@ public enum TnTSectionTypes implements SectionType {
     @Override
     public String getReadableName() {
         return SectionType.super.getReadableName();
+    }
+
+
+    @Override
+    public String getCssClass() {
+        return SectionType.super.getCssClass();
     }
 }

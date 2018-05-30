@@ -65,8 +65,8 @@ public class ClubManager {
     }
 
     public Optional<Club> constructClub(String id, Club parent, String curriculum) {
-        return Programs
-                .find(curriculum)
+
+        return parent.getCurriculum().findCurriculum(curriculum)
                 .map(s -> clubs.computeIfAbsent(id, a -> new PersistedClub(s, id, parent)));
     }
 

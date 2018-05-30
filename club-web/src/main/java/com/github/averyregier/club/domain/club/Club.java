@@ -2,12 +2,11 @@ package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.AccomplishmentLevel;
+import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Curriculum;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by avery on 9/5/2014.
@@ -21,4 +20,8 @@ public interface Club extends ClubGroup, Comparable<Club> {
 
     public Collection<AwardPresentation> getAwardsNotYetPresented(AccomplishmentLevel type);
     public Map<Clubber, Object> getClubNightReport();
+
+    default List<Book> getCurrentBookList(AgeGroup currentAgeGroup) {
+        return getCurriculum().recommendedBookList(currentAgeGroup);
+    }
 }

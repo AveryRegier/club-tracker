@@ -322,7 +322,8 @@ public class TnTCurriculumTest {
 
     private int assertRegularSections(SectionGroup group) {
         List<Section> regular = group.getSections().stream()
-                .filter(s -> s.getSectionType() != extraCredit &&
+                .filter(s -> s.getSectionType() != silver &&
+                        s.getSectionType() != gold &&
                         s.getSectionType() != parent)
                 .collect(Collectors.toList());
 
@@ -346,7 +347,7 @@ public class TnTCurriculumTest {
 
     private void assertExtraCreditSections(SectionGroup group, int sectionNumber) {
         List<Section> extraCredit = group.getSections().stream()
-                .filter(s -> s.getSectionType() == TnTSectionTypes.extraCredit)
+                .filter(s -> s.getSectionType() == TnTSectionTypes.silver || s.getSectionType() == TnTSectionTypes.gold)
                 .collect(Collectors.toList());
 
         assertEquals(3, extraCredit.size());
