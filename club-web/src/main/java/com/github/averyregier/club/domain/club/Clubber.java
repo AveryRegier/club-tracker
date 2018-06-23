@@ -1,9 +1,6 @@
 package com.github.averyregier.club.domain.club;
 
-import com.github.averyregier.club.domain.program.Award;
-import com.github.averyregier.club.domain.program.Book;
-import com.github.averyregier.club.domain.program.Section;
-import com.github.averyregier.club.domain.program.SectionGroup;
+import com.github.averyregier.club.domain.program.*;
 import com.github.averyregier.club.domain.utility.DisplayNamed;
 import com.github.averyregier.club.domain.utility.Named;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
@@ -153,4 +150,10 @@ public interface Clubber extends ClubMember {
                 .forEach(awardPresentation -> awardPresentation.presentAt(ceremony));
     }
 
+    default boolean shouldAward(AccomplishmentLevel level) {
+        return getClub()
+                .map(c -> c.findPolicy(Policy::getAwardsPolicy)
+                        .allMatch(t -> t.test(level)))
+                .orElse(true);
+    }
 }

@@ -4,6 +4,7 @@ import com.github.averyregier.club.TestUtility;
 import com.github.averyregier.club.domain.club.AwardPresentation;
 import com.github.averyregier.club.domain.club.Ceremony;
 import com.github.averyregier.club.domain.club.Club;
+import com.github.averyregier.club.domain.club.Policy;
 import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.program.Section;
@@ -38,12 +39,29 @@ public class AwardCeremonyTest {
         assertAwardsList(AccomplishmentLevel.group);
     }
 
+    @Test
+    public void policyNoGroupAwardsStillAwardsBooks() {
+        club.addPolicy(Policy.noSectionAwards);
+        assertAwardsList(AccomplishmentLevel.book);
+    }
+
+    @Test
+    public void policyNoGroupAwards() {
+        club.addPolicy(Policy.noSectionAwards);
+        assertAwardsList(AccomplishmentLevel.group, 0);
+    }
+
     private void assertAwardsList(AccomplishmentLevel level) {
+        int expectedAwards = 1;
+        assertAwardsList(level, expectedAwards);
+    }
+
+    private void assertAwardsList(AccomplishmentLevel level, int expectedAwards) {
         sign(s -> TestUtility.anyEqual(s.getContainer().getBook().sequence(), 0));
 
         Collection<AwardPresentation> awards = club.getAwardsNotYetPresented(level);
         assertNotNull(awards);
-        assertEquals(1, awards.size());
+        assertEquals(expectedAwards, awards.size());
         assertTrue(awards.containsAll(
                 clubber.getAwards().stream()
                         .filter(a->a.getLevel()== level)

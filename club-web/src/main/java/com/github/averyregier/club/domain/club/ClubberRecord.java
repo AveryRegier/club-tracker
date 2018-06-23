@@ -169,6 +169,7 @@ public abstract class ClubberRecord {
 
         void calculateAwards() {
             awards = getSection().getAwards().stream()
+                    .filter(a->getClubber().shouldAward(a.getAccomplishmentLevel()))
                     .filter((award) -> award.isCompleted(ClubberRecord.this))
                     .map(AwardPresentationAdapter::new)
                     .collect(Collectors.toSet());
