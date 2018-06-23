@@ -13,7 +13,17 @@ import static com.github.averyregier.club.domain.program.awana.TnTMissionSection
  */
 public class TnTMissionCurriculum {
 
-    public static final Curriculum curriculum = build(new CurriculumBuilder()).build();
+    public static final Curriculum curriculum;
+
+    static {
+        Curriculum temp = null;
+        try {
+            temp = build(new CurriculumBuilder()).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        curriculum = temp;
+    }
 
     public static Curriculum get() {
         return curriculum;
@@ -22,17 +32,22 @@ public class TnTMissionCurriculum {
     public static CurriculumBuilder build(CurriculumBuilder builder) {
         return builder
                 .shortCode("TnT")
-                .curriculum(c -> c
-                        .shortCode("UA")
-                        .book(0, startZone())
-                        .book(1, book1())
-                        .book(2, startZone())
-                        .book(3, book2())
-                        .book(4, startZone())
-                        .book(5, book3()));
+                .curriculum(c -> {
+                    AwardBuilder b1Discoveries = createDiscoveries();
+                    AwardBuilder b2Discoveries = createDiscoveries();
+                    AwardBuilder b3Discoveries = createDiscoveries();
+                    return c
+                            .shortCode("UA")
+                            .book(0, startZone(b1Discoveries))
+                            .book(1, book1(b1Discoveries))
+                            .book(2, startZone(b2Discoveries))
+                            .book(3, book2(b2Discoveries))
+                            .book(4, startZone(b3Discoveries))
+                            .book(5, book3(b3Discoveries));
+                });
     }
 
-    private static UnaryOperator<BookBuilder> startZone() {
+    private static UnaryOperator<BookBuilder> startZone(AwardBuilder discoveries) {
         return b -> b
                 .shortCode("MSZ")
                 .mwhCode("MSZ")
@@ -47,11 +62,15 @@ public class TnTMissionCurriculum {
                         g.name("Start Zone")
                                 .award(r -> r
                                         .name("T&T Ultimate Adventure Uniform")
-                                        .section(1, regular, s->s.name("The Gospel"))
-                                        .section(2, regular, s->s.name("Bible Basics"))));
+                                        .section(1, regular, s -> awardAndName(discoveries, s, "The Gospel")))
+                                        .section(2, regular, s -> awardAndName(discoveries, s, "Bible Basics")));
     }
 
-    private static UnaryOperator<BookBuilder> book1() {
+    private static SectionBuilder awardAndName(AwardBuilder discoveries, SectionBuilder s, String name) {
+        return discoveries.addSection(s).name(name);
+    }
+
+    private static UnaryOperator<BookBuilder> book1(AwardBuilder discovery) {
         return b -> {
             b.shortCode("1")
                     .mwhCode("M1")
@@ -61,14 +80,14 @@ public class TnTMissionCurriculum {
                     .ageGroup(FIFTH_GRADE)
                     .ageGroup(SIXTH_GRADE)
                     .publicationYear(2016)
-                    .award(r -> r.sequence(s->s
-                            .item(i-> alpha(i))
-                            .item(i-> excellence(i))));
-            return missionB1Structure(b);
+                    .award(r -> r.sequence(s -> s
+                            .item(i -> alpha(i))
+                            .item(i -> excellence(i))));
+            return missionB1Structure(b, discovery);
         };
     }
 
-    private static UnaryOperator<BookBuilder> book2() {
+    private static UnaryOperator<BookBuilder> book2(AwardBuilder discoveries) {
         return b -> {
             b.shortCode("1")
                     .mwhCode("M2")
@@ -78,14 +97,14 @@ public class TnTMissionCurriculum {
                     .ageGroup(FIFTH_GRADE)
                     .ageGroup(SIXTH_GRADE)
                     .publicationYear(2017)
-                    .award(r -> r.sequence(s->s
-                            .item(i-> alpha(i))
-                            .item(i-> excellence(i))));
-            return missionB2Structure(b);
+                    .award(r -> r.sequence(s -> s
+                            .item(i -> alpha(i))
+                            .item(i -> excellence(i))));
+            return missionB2Structure(b, discoveries);
         };
     }
 
-    private static UnaryOperator<BookBuilder> book3() {
+    private static UnaryOperator<BookBuilder> book3(AwardBuilder discoveries) {
         return b -> {
             b.shortCode("1")
                     .mwhCode("M3")
@@ -95,15 +114,14 @@ public class TnTMissionCurriculum {
                     .ageGroup(FIFTH_GRADE)
                     .ageGroup(SIXTH_GRADE)
                     .publicationYear(2018)
-                    .award(r -> r.sequence(s->s
-                            .item(i-> alpha(i))
-                            .item(i-> excellence(i))));
-            return missionB3Structure(b);
+                    .award(r -> r.sequence(s -> s
+                            .item(i -> alpha(i))
+                            .item(i -> excellence(i))));
+            return missionB3Structure(b, discoveries);
         };
     }
 
-    private static BookBuilder missionB1Structure(BookBuilder builder) {
-        AwardBuilder discovery = createDiscoveries();
+    private static BookBuilder missionB1Structure(BookBuilder builder, AwardBuilder discovery) {
         return builder
                 .group(1, b1unit1(discovery))
                 .group(2, b1unit2(discovery))
@@ -114,14 +132,14 @@ public class TnTMissionCurriculum {
     private static AwardBuilder createDiscoveries() {
         return new AwardBuilder().name("Discovery")
                 .forEach(4)
-                .sequence(a->a.item(i->i.name("Discovery 1"))
-                              .item(i->i.name("Discovery 2"))
-                              .item(i->i.name("Discovery 3"))
-                              .item(i->i.name("Discovery 4"))
-                              .item(i->i.name("Discovery 5"))
-                              .item(i->i.name("Discovery 6"))
-                              .item(i->i.name("Discovery 7"))
-                              .item(i->i.name("Discovery 8")));
+                .sequence(a -> a.item(i -> i.name("Discovery 1"))
+                        .item(i -> i.name("Discovery 2"))
+                        .item(i -> i.name("Discovery 3"))
+                        .item(i -> i.name("Discovery 4"))
+                        .item(i -> i.name("Discovery 5"))
+                        .item(i -> i.name("Discovery 6"))
+                        .item(i -> i.name("Discovery 7"))
+                        .item(i -> i.name("Discovery 8")));
     }
 
     private static UnaryOperator<SectionGroupBuilder> b1unit1(AwardBuilder discovery) {
@@ -170,8 +188,7 @@ public class TnTMissionCurriculum {
                 .review("LIVING BY GRACE REVIEW").parent();
     }
 
-    private static BookBuilder missionB2Structure(BookBuilder builder) {
-        AwardBuilder discovery = createDiscoveries();
+    private static BookBuilder missionB2Structure(BookBuilder builder, AwardBuilder discovery) {
         return builder
                 .group(1, b2unit1(discovery))
                 .group(2, b2unit2(discovery))
@@ -225,8 +242,7 @@ public class TnTMissionCurriculum {
                 .review("EVIDENCE REVIEW").parent();
     }
 
-    private static BookBuilder missionB3Structure(BookBuilder builder) {
-        AwardBuilder discovery = createDiscoveries();
+    private static BookBuilder missionB3Structure(BookBuilder builder, AwardBuilder discovery) {
         return builder
                 .group(1, b3unit1(discovery))
                 .group(2, b3unit2(discovery))

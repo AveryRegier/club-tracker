@@ -32,7 +32,7 @@ public class AwardBuilder extends SectionHolderBuilder<AwardBuilder> implements 
 
     public Award build() {
         if(!sections.isEmpty()) {
-            throw new IllegalStateException();
+            throw new BuildFailedException(name);
         }
         Award award;
         if(numSections > 0) {

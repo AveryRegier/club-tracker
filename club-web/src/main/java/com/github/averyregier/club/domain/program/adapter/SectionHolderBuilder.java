@@ -19,6 +19,11 @@ public abstract class SectionHolderBuilder<T extends SectionHolderBuilder> {
         return self();
     }
 
+    public SectionBuilder addSection(SectionBuilder sectionBuilder) {
+        section(sectionBuilder);
+        return sectionBuilder;
+    }
+
     @SuppressWarnings("unchecked")
     private T self() {
         return (T)this;

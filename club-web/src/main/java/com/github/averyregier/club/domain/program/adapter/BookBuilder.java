@@ -35,28 +35,30 @@ public class BookBuilder implements Builder<Book> {
     }
 
     public Book build() {
-        Later<Book> futureBook = new Later<>();
-        List<SectionGroup> sectionGroups = buildSectionGroups(futureBook);
-        Book book = new ConcreteBook(
-                curriculumLater,
-                sequence,
-                name != null ? name : Integer.toString(sequence),
-                mwhCode != null ? mwhCode : Integer.toString(sequence),
-                sectionGroups,
-                new BookVersionAdapter(major, minor, translation, locale, year),
-                shortCode,
-                ageGroups);
-        futureBook.set(book);
-        completions.forEach(AwardBuilder::build);
-        if(!awards.isEmpty()) {
-            for(int i=0; i< awards.size(); i++) {
-                book.getSections().stream()
-                        .filter(s -> s.getSectionType().requiredFor(AccomplishmentLevel.book))
-                        .forEach(awardBuilders.get(i)::section);
-                awards.get(i).set(awardBuilders.get(i).build());
+        return BuildFailedException.attempt(mwhCode, ()->{
+            Later<Book> futureBook = new Later<>();
+            List<SectionGroup> sectionGroups = buildSectionGroups(futureBook);
+            Book book = new ConcreteBook(
+                    curriculumLater,
+                    sequence,
+                    name != null ? name : Integer.toString(sequence),
+                    mwhCode != null ? mwhCode : Integer.toString(sequence),
+                    sectionGroups,
+                    new BookVersionAdapter(major, minor, translation, locale, year),
+                    shortCode,
+                    ageGroups);
+            futureBook.set(book);
+            completions.forEach(AwardBuilder::build);
+            if(!awards.isEmpty()) {
+                for(int i=0; i< awards.size(); i++) {
+                    book.getSections().stream()
+                            .filter(s -> s.getSectionType().requiredFor(AccomplishmentLevel.book))
+                            .forEach(awardBuilders.get(i)::section);
+                    awards.get(i).set(awardBuilders.get(i).build());
+                }
             }
-        }
-        return book;
+            return book;
+        });
     }
 
     private List<SectionGroup> buildSectionGroups(Later<Book> futureBook) {

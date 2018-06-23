@@ -1,6 +1,7 @@
 package com.github.averyregier.club.domain.program.awana;
 
 import com.github.averyregier.club.domain.program.*;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.time.Year;
@@ -19,7 +20,12 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.*;
 
 public class TnTMissionCurriculumTest {
-    Curriculum classUnderTest = TnTMissionCurriculum.get();
+    Curriculum classUnderTest;
+
+    @Before
+    public void setup() {
+        classUnderTest = TnTMissionCurriculum.get();
+    }
 
     @Test
     public void seventhGradeGetsNoBooks() {

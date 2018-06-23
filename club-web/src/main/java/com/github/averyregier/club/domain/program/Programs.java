@@ -28,13 +28,20 @@ public enum Programs {
         }
     },
     AWANA_2018 {
-        private Curriculum awana = new CurriculumBuilder()
-                .shortCode("AWANA2018")
-                .curriculum(c -> c.shortCode("Puggles").accepts(TWO, THREE))
-                .curriculum(c -> c.shortCode("Cubbies").accepts(FOUR, FIVE))
-                .curriculum(SparksCurriculum::build)
-                .curriculum(TnTMissionCurriculum::build)
-                .build();
+        private Curriculum awana;
+        {
+            try {
+                awana = new CurriculumBuilder()
+                        .shortCode("AWANA2018")
+                        .curriculum(c -> c.shortCode("Puggles").accepts(TWO, THREE))
+                        .curriculum(c -> c.shortCode("Cubbies").accepts(FOUR, FIVE))
+                        .curriculum(SparksCurriculum::build)
+                        .curriculum(TnTMissionCurriculum::build)
+                        .build();
+            } catch(Throwable e) {
+                e.printStackTrace();
+            }
+        }
 
         @Override
         public Curriculum get() {
