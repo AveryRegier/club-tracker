@@ -2,7 +2,6 @@ package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.club.*;
-import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
 import com.github.averyregier.club.domain.utility.*;
@@ -334,11 +333,6 @@ public class ProgramAdapter extends ClubAdapter implements Program {
 
     protected InputFieldGroup persist(InputFieldGroup group) {
         return group;
-    }
-
-    @Override
-    public Set<Policy> getPolicies() {
-        return null;
     }
 
     @Override

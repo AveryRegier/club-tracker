@@ -1,7 +1,6 @@
 package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.club.*;
-import com.github.averyregier.club.domain.policy.Policy;
 import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 import com.github.averyregier.club.domain.program.Curriculum;
 
@@ -21,11 +20,6 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
 
     public ClubAdapter(Curriculum series) {
         this.series = series;
-    }
-
-    @Override
-    public Set<Policy> getPolicies() {
-        return null;
     }
 
     @Override
