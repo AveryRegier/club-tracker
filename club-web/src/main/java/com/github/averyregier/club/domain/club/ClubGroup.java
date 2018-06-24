@@ -2,6 +2,7 @@ package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.utility.HasId;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -18,6 +19,10 @@ public interface ClubGroup extends Group, HasId {
     Program getProgram();
     Optional<Club> asClub();
 
-    <T> Stream<T> findPolicy(Function<Policy, Optional<T>> policy);
+    default <T> Stream<T> findPolicy(Function<Policy, Optional<T>> policy) {
+        return Policy.findPolicies(getPolicies(), policy);
+    }
+
     void addPolicy(Policy policy);
+    Collection<Policy> getPolicies();
 }

@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.ModelAndView;
 import spark.Request;
+import spark.Response;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import java.time.LocalDate;
@@ -49,7 +50,7 @@ public class ClubController extends ModelMaker {
         }, new FreeMarkerEngine());
 
         get("/protected/club/:club", (request, response) -> {
-            Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
+            Optional<Club> club = lookupClub(app, request);
             if(club.isPresent()) {
                 return new ModelAndView(
                         newModel(request, club.get().getShortCode())
@@ -58,13 +59,50 @@ public class ClubController extends ModelMaker {
                             .build(),
                         "viewClub.ftl");
             } else {
-                response.redirect("/protected/my");
-                return null;
+                return gotoMy(response);
             }
         }, new FreeMarkerEngine());
 
+        before("/protected/club/:club/policies", (request, response) -> {
+            User user = getUser(request);
+            Optional<Club> club = lookupClub(app, request);
+            if (!club.map(c -> c.isLeader(user)).orElse(false)) {
+                response.redirect("/protected/my");
+                halt();
+            }
+        });
+
+        get("/protected/club/:club/policies", (request, response) -> {
+            Optional<Club> club = lookupClub(app, request);
+            if(club.isPresent()) {
+                MapBuilder<String, Object> builder = newModel(request, "Club " + club.get().getShortCode() + " Policies")
+                        .put("club", club.get());
+                Stream.of(Policy.values()).forEach(policy -> builder.put(policy.name(), ""));
+                club.get().getPolicies().forEach(policy -> builder.put(policy.name(), "checked"));
+                return new ModelAndView(
+                        builder.build(),
+                        "policies.ftl");
+            } else return gotoMy(response);
+        }, new FreeMarkerEngine());
+
+        post("/protected/club/:club/policies", (request, response) -> {
+            Optional<Club> club = lookupClub(app, request);
+            if (club.isPresent()) {
+                String temp = request.queryParams("policy");
+                if(temp != null) {
+                    for(String policy: temp.split(",")) {
+                        club.get().addPolicy(Policy.valueOf(policy));
+                    }
+                }
+                response.redirect("/protected/club/" + club.get().getId());
+            } else {
+                response.redirect("/protected/my");
+            }
+            return null;
+        });
+
         get("/protected/club/:club/clubbers", (request, response) -> {
-            Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
+            Optional<Club> club = lookupClub(app, request);
             if(club.isPresent()) {
                 return new ModelAndView(
                         newModel(request, "All " + club.get().getShortCode() + " Clubber's Upcoming Sections")
@@ -72,13 +110,12 @@ public class ClubController extends ModelMaker {
                             .build(),
                         "allClubbersQuick.ftl");
             } else {
-                response.redirect("/protected/my");
-                return null;
+                return gotoMy(response);
             }
         }, new FreeMarkerEngine());
 
         get("/protected/club/:club/workers", (request, response) -> {
-            Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
+            Optional<Club> club = lookupClub(app, request);
             if(club.isPresent()) {
                 return new ModelAndView(
                         newModel(request, "Add "+club.get().getShortCode()+" Workers")
@@ -86,13 +123,12 @@ public class ClubController extends ModelMaker {
                             .build(),
                         "addWorker.ftl");
             } else {
-                response.redirect("/protected/my");
-                return null;
+                return gotoMy(response);
             }
         }, new FreeMarkerEngine());
 
         get("/protected/club/:club/workers/:personId", (request, response) -> {
-            Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
+            Optional<Club> club = lookupClub(app, request);
             if(club.isPresent()) {
                 Optional<Person> person = app.getPersonManager().lookup(request.params(":personId"));
                 if(person.isPresent()) {
@@ -108,13 +144,12 @@ public class ClubController extends ModelMaker {
                     return null;
                 }
             } else {
-                response.redirect("/protected/my");
-                return null;
+                return gotoMy(response);
             }
         }, new FreeMarkerEngine());
 
         post("/protected/club/:club/workers/:personId", (request, response) -> {
-            Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
+            Optional<Club> club = lookupClub(app, request);
             if (club.isPresent()) {
                 Optional<Person> person = app.getPersonManager().lookup(request.params(":personId"));
                 if (person.isPresent()) {
@@ -140,7 +175,7 @@ public class ClubController extends ModelMaker {
 
         before("/protected/club/:club/awards", (request, response) -> {
             if (request.requestMethod().equalsIgnoreCase("POST")) {
-                Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
+                Optional<Club> club = lookupClub(app, request);
                 if (club.isPresent()) {
                     HashSet<String> awards = asLinkedSet(request.queryMap("award").values());
                     Ceremony ceremony = persistCeremony(app, new CeremonyAdapter(findToday(club)));
@@ -154,7 +189,7 @@ public class ClubController extends ModelMaker {
         });
 
         get("/protected/club/:club/awards", (request, response) -> {
-            Optional<Club> club = app.getClubManager().lookup(request.params(":club"));
+            Optional<Club> club = lookupClub(app, request);
             if (club.isPresent()) {
                 String accomplishmentLevel = request.queryParams("accomplishmentLevel");
                 AccomplishmentLevel type = AccomplishmentLevel.valueOf(
@@ -166,8 +201,7 @@ public class ClubController extends ModelMaker {
                                 .build(),
                         "awards.ftl");
             } else {
-                response.redirect("/protected/my");
-                return null;
+                return gotoMy(response);
             }
         }, new FreeMarkerEngine());
 
@@ -358,6 +392,15 @@ public class ClubController extends ModelMaker {
             }
             return null;
         });
+    }
+
+    private ModelAndView gotoMy(Response response) {
+        response.redirect("/protected/my");
+        return null;
+    }
+
+    private Optional<Club> lookupClub(ClubApplication app, Request request) {
+        return app.getClubManager().lookup(request.params(":club"));
     }
 
     private List<Object> getClubList(Program p) {

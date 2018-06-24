@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.github.averyregier.club.domain.utility.UtilityMethods.findToday;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
 
 /**
 * Created by avery on 9/26/14.
@@ -101,6 +101,12 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
                                 (r) -> r.getSigning()
                                         .map(s -> s.getDate().equals(date))
                                         .orElse(false)))));
+    }
+
+    @Override
+    public boolean isLeader(Person person) {
+        return stream(Optional.of(this), ClubGroup::getParentGroup)
+                .anyMatch(c->c.equals(optMap(person.asClubLeader(), ClubMember::getClub).orElse(null)));
     }
 
     boolean accepts(ClubberAdapter clubber) {

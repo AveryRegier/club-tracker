@@ -1,6 +1,8 @@
 <#include "normalHeader.ftl">
 
     <div class="menu"><a href=/protected/club/${club.id}/workers>Recruit ${club.shortCode} Workers</a></a></div>
+    <div class="menu"><a href=/protected/club/${club.id}/policies>Edit ${club.shortCode} Policies</a></a></div>
+
 
     <fieldset class="inputGroup">
         <legend class="inputGroupLabel">View your club.</legend>

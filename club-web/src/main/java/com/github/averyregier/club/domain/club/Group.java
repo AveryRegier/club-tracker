@@ -7,5 +7,9 @@ import java.util.Set;
  */
 public interface Group {
 
-    public Set<Clubber> getClubbers();
+    Set<Clubber> getClubbers();
+
+    default boolean isLeader(Person person) {
+        return false;
+    }
 }

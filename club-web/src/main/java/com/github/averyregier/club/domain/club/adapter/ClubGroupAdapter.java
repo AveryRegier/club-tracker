@@ -5,10 +5,7 @@ import com.github.averyregier.club.domain.club.Listener;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.Policy;
 
-import java.util.EnumSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -45,6 +42,11 @@ public abstract class ClubGroupAdapter implements ClubGroup {
     @Override
     public void addPolicy(Policy policy) {
         this.policies.add(policy);
+    }
+
+    @Override
+    public Collection<Policy> getPolicies() {
+        return EnumSet.copyOf(policies);
     }
 
     protected void persist(Listener listener) {

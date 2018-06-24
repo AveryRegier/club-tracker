@@ -35,12 +35,10 @@ public interface ClubMember extends Person {
     }
 
     default boolean isInAncestorClub(Optional<? extends ClubMember> member) {
+        Optional<Club> start = optMap(member, ClubMember::getClub);
         return getParentClubId()
-                .map(parentClubId -> stream(optMap(member, m -> m.getClub().map(c -> (ClubGroup) c)), ClubGroup::getParentGroup)
-                        .filter(g -> parentClubId.equals(g.getId()))
-                        .findFirst()
-                        .map(x -> true)
-                        .orElse(false))
+                .map(parentClubId -> stream(start, ClubGroup::getParentGroup)
+                        .anyMatch(g -> parentClubId.equals(g.getId())))
                 .orElse(false);
     }
 

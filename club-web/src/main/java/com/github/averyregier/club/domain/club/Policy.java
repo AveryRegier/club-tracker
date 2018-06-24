@@ -2,7 +2,7 @@ package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.program.AccomplishmentLevel;
 
-import java.util.EnumSet;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -16,7 +16,7 @@ public enum Policy {
         }
     };
 
-    public static <T> Stream<T> findPolicies(EnumSet<Policy> policies, Function<Policy, Optional<T>> policy) {
+    public static <T> Stream<T> findPolicies(Collection<Policy> policies, Function<Policy, Optional<T>> policy) {
         return policies.stream().map(policy)
                 .filter(Optional::isPresent)
                 .map(Optional::get);
