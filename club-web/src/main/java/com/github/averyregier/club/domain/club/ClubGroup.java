@@ -23,6 +23,6 @@ public interface ClubGroup extends Group, HasId {
         return Policy.findPolicies(getPolicies(), policy);
     }
 
-    void addPolicy(Policy policy);
     Collection<Policy> getPolicies();
+    void replacePolicies(Collection<Policy> policies);
 }

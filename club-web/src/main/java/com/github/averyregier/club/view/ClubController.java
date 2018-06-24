@@ -88,12 +88,14 @@ public class ClubController extends ModelMaker {
         post("/protected/club/:club/policies", (request, response) -> {
             Optional<Club> club = lookupClub(app, request);
             if (club.isPresent()) {
+                EnumSet<Policy> policies = EnumSet.noneOf(Policy.class);
                 String temp = request.queryParams("policy");
                 if(temp != null) {
                     for(String policy: temp.split(",")) {
-                        club.get().addPolicy(Policy.valueOf(policy));
+                        policies.add(Policy.valueOf(policy));
                     }
                 }
+                club.get().replacePolicies(policies);
                 response.redirect("/protected/club/" + club.get().getId());
             } else {
                 response.redirect("/protected/my");

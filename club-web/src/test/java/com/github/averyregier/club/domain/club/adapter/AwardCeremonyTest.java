@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -41,13 +42,13 @@ public class AwardCeremonyTest {
 
     @Test
     public void policyNoGroupAwardsStillAwardsBooks() {
-        club.addPolicy(Policy.noSectionAwards);
+        club.replacePolicies(EnumSet.of(Policy.noSectionAwards));
         assertAwardsList(AccomplishmentLevel.book);
     }
 
     @Test
     public void policyNoGroupAwards() {
-        club.addPolicy(Policy.noSectionAwards);
+        club.replacePolicies(EnumSet.of(Policy.noSectionAwards));
         assertAwardsList(AccomplishmentLevel.group, 0);
     }
 

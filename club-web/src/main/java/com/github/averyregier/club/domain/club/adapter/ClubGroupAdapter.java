@@ -40,8 +40,8 @@ public abstract class ClubGroupAdapter implements ClubGroup {
     }
 
     @Override
-    public void addPolicy(Policy policy) {
-        this.policies.add(policy);
+    public void replacePolicies(Collection<Policy> policies) {
+        this.policies = EnumSet.copyOf(policies);
     }
 
     @Override
