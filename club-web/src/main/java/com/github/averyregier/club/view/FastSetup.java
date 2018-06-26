@@ -3,15 +3,13 @@ package com.github.averyregier.club.view;
 import com.github.averyregier.club.application.ClubApplication;
 import com.github.averyregier.club.broker.ProviderBroker;
 import com.github.averyregier.club.domain.User;
-import com.github.averyregier.club.domain.club.ClubLeader;
-import com.github.averyregier.club.domain.club.Family;
-import com.github.averyregier.club.domain.club.Program;
-import com.github.averyregier.club.domain.club.RegistrationInformation;
+import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.login.Provider;
 import org.brickred.socialauth.Profile;
 import spark.Request;
 import spark.Response;
 
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,7 +33,12 @@ public class FastSetup {
                     if (app.getProgram(demoId) == null) {
 
                         Program program = app.setupProgramWithId("ABC", programName, "en_US", demoId);
-                        program.getCurriculum().getSeries().stream().forEach(program::addClub);
+                        program.getCurriculum().getSeries().stream()
+                                .map(program::addClub)
+                                .filter(c->c.getShortCode().equals("TnT"))
+                                .forEach(c->{
+                                    c.replacePolicies(EnumSet.of(Policy.noSectionAwards));
+                                });
 
                         program.assign(user, ClubLeader.LeadershipRole.COMMANDER);
                         program.getClubs().stream().skip(3).findFirst().ifPresent(c -> c.recruit(user));

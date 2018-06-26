@@ -146,8 +146,38 @@ public class ClubManager {
         }
 
         @Override
+        protected void persist(Collection<Policy> policies) {
+            ClubManager.this.persist(new PolicyHolder() {
+                @Override
+                public String getId() {
+                    return PersistedClub.this.getId();
+                }
+
+                @Override
+                public String getShortCode() {
+                    return PersistedClub.this.getShortCode();
+                }
+
+                @Override
+                public Collection<Policy> getPolicies() {
+                    return policies;
+                }
+
+                @Override
+                public void replacePolicies(Collection<Policy> policies) {
+                    PersistedClub.this.replacePolicies(policies);
+                }
+            });
+        }
+
+        @Override
         public Set<Listener> getListeners() {
             return ClubManager.this.getListeners(this, super::getListeners);
+        }
+
+        @Override
+        protected EnumSet<Policy> loadPolicies() {
+            return ClubManager.this.loadPolicies(this);
         }
 
         @Override
@@ -161,6 +191,13 @@ public class ClubManager {
         protected HashSet<Clubber> initializeClubbers() {
             return new LinkedHashSet<>(new ClubberBroker(factory).find(this));
         }
+    }
+
+    protected EnumSet<Policy> loadPolicies(PolicyHolder policyHolder) {
+        return EnumSet.noneOf(Policy.class);
+    }
+
+    protected void persist(PolicyHolder policyHolder) {
     }
 
     protected void persist(ClubLeader leader) {}

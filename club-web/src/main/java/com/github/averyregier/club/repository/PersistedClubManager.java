@@ -1,16 +1,11 @@
 package com.github.averyregier.club.repository;
 
 import com.github.averyregier.club.application.ClubFactory;
-import com.github.averyregier.club.broker.ClubBroker;
-import com.github.averyregier.club.broker.LeaderBroker;
-import com.github.averyregier.club.broker.ListenerBroker;
-import com.github.averyregier.club.broker.OrganizationBroker;
+import com.github.averyregier.club.broker.*;
 import com.github.averyregier.club.domain.ClubManager;
-import com.github.averyregier.club.domain.club.Club;
-import com.github.averyregier.club.domain.club.ClubLeader;
-import com.github.averyregier.club.domain.club.Listener;
-import com.github.averyregier.club.domain.club.Program;
+import com.github.averyregier.club.domain.club.*;
 
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -53,6 +48,16 @@ public class PersistedClubManager extends ClubManager {
     @Override
     protected void persist(ClubLeader leader) {
         new LeaderBroker(factory.getConnector()).persist(leader);
+    }
+
+    @Override
+    protected void persist(PolicyHolder policyHolder) {
+        new PolicyBroker(factory.getConnector()).persist(policyHolder);
+    }
+
+    @Override
+    protected EnumSet<Policy> loadPolicies(PolicyHolder policyHolder) {
+        return new PolicyBroker(factory.getConnector()).loadPolicies(policyHolder);
     }
 
     @Override

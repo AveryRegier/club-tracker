@@ -58,8 +58,9 @@ public class FamilyBroker extends PersistenceBroker<Family> {
                 .where(Parent.PARENT.FAMILY_ID.eq(familyId.getBytes()))
                 .union(create.select(Clubber.CLUBBER.ID)
                         .from(Clubber.CLUBBER)
-                        .where(Clubber.CLUBBER.FAMILY_ID.eq(familyId.getBytes()))).fetch()
-                .stream().map(r -> convert(r.value1())));
+                        .where(Clubber.CLUBBER.FAMILY_ID.eq(familyId.getBytes())))
+                .fetch().stream()
+                .map(r -> convert(r.value1())));
     }
 
     public PersistedFamily getPersistedFamily(String familyId, List<Person> members) {
