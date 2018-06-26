@@ -89,9 +89,9 @@ public class ClubController extends ModelMaker {
             Optional<Club> club = lookupClub(app, request);
             if (club.isPresent()) {
                 EnumSet<Policy> policies = EnumSet.noneOf(Policy.class);
-                String temp = request.queryParams("policy");
+                String[] temp = request.queryMap("policy").values();
                 if(temp != null) {
-                    for(String policy: temp.split(",")) {
+                    for(String policy: temp) {
                         policies.add(Policy.valueOf(policy));
                     }
                 }

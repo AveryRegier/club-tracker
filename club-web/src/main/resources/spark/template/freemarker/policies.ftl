@@ -17,6 +17,10 @@
                 <label>No Section Awards</label>
                 <input type="checkbox" name="policy" id="noSectionAwards" value="noSectionAwards" ${noSectionAwards}>
             </div>
+            <div class="inputField">
+                <label>Listener Groups by Gender</label>
+                <input type="checkbox" name="policy" id="listenerGroupsByGender" value="listenerGroupsByGender" ${listenerGroupsByGender}>
+            </div>
         </div>
     </fieldset>
     <div class="actions">

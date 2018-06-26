@@ -11,6 +11,12 @@ import java.util.Optional;
 public interface Person extends Registered, Comparable<Person> {
 
 
+    static boolean gendersMatch(Person a, Person b) {
+        return b.getGender().map(
+                g -> g.equals(a.getGender().orElse(null)))
+                .orElse(false);
+    }
+
     Collection<Club> getClubs();
 
     public enum Gender {

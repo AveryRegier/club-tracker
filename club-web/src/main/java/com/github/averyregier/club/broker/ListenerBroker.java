@@ -49,8 +49,7 @@ public class ListenerBroker extends PersistenceBroker<Listener> {
             Listener listener = map(id, personManager, clubAdapter);
             return Optional.of(listener);
         };
-        Optional<Listener> result = query(fn);
-        return result;
+        return query(fn);
     }
 
     private Listener map(String id, PersonManager personManager, Club club) {

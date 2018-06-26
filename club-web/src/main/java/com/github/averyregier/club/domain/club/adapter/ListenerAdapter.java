@@ -24,19 +24,14 @@ public class ListenerAdapter extends PersonWrapper implements Listener {
 
     @Override
     public Set<Clubber> getQuickList() {
-        return getClub().map(cl -> matchingClubbers(cl)).orElse(Collections.emptySet());
+        return getClub().map(this::matchingClubbers).orElse(Collections.emptySet());
     }
 
     private Set<Clubber> matchingClubbers(Group cl) {
         return cl.getClubbers().stream()
-                .filter(c -> matchesGender(c))
+                .filter(clubber -> clubGroup.findPolicy(Policy::getListenerGroupPolicy)
+                        .allMatch(p->p.test(this, clubber)))
                 .collect(Collectors.toCollection(TreeSet::new));
-    }
-
-    private Boolean matchesGender(Clubber c) {
-        return c.getGender().map(
-                    g -> g.equals(getGender().orElse(null)))
-                .orElse(false);
     }
 
     @Override

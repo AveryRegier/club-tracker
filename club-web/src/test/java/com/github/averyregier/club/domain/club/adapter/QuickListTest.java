@@ -1,9 +1,6 @@
 package com.github.averyregier.club.domain.club.adapter;
 
-import com.github.averyregier.club.domain.club.Club;
-import com.github.averyregier.club.domain.club.Clubber;
-import com.github.averyregier.club.domain.club.Listener;
-import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +47,7 @@ public class QuickListTest {
     public void sameGenderPolicyQuickList() {
         person.getUpdater().setGender(Person.Gender.MALE);
 
-        // in the future add a policy, for now, just make it default
+        club.replacePolicies(EnumSet.of(Policy.listenerGroupsByGender));
 
         Listener listener = club.recruit(person);
         registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.FEMALE);
@@ -61,7 +58,7 @@ public class QuickListTest {
 
     @Test
     public void noGenderNoAutoQuickList() {
-        // in the future add a policy, for now, just make it default
+        club.replacePolicies(EnumSet.of(Policy.listenerGroupsByGender));
 
         Listener listener = club.recruit(person);
         registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.FEMALE);
