@@ -37,12 +37,17 @@ public abstract class ClubGroupAdapter implements ClubGroup {
 
     @Override
     public <T> Stream<T> findPolicy(Function<Policy, Optional<T>> policy) {
-        return Policy.findPolicies(loadPolicies(), policy);
+        return Policy.findPolicies(getPolicies(), policy);
+    }
+
+    private void ensurePoliciesLoaded() {
+        if(policies.get() == null) {
+            policies.compareAndSet(null, loadPolicies());
+        }
     }
 
     protected EnumSet<Policy> loadPolicies() {
-        policies.compareAndSet(null, EnumSet.noneOf(Policy.class));
-        return policies.get();
+        return EnumSet.noneOf(Policy.class);
     }
 
     @Override
@@ -56,6 +61,7 @@ public abstract class ClubGroupAdapter implements ClubGroup {
 
     @Override
     public Collection<Policy> getPolicies() {
+        ensurePoliciesLoaded();
         return EnumSet.copyOf(policies.get());
     }
 

@@ -71,6 +71,7 @@ public interface Clubber extends ClubMember {
                 .flatMap(s -> s.getAwards().stream())
                 .filter(UtilityMethods::notNull)
                 .distinct()
+                .filter(a->shouldAward(a.getAccomplishmentLevel()))
                 .forEach(a-> map.put(a, Optional.ofNullable(awarded.get(a))));
         return map;
     }
