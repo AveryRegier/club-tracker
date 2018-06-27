@@ -14,6 +14,10 @@ public interface SectionType {
         return true;
     }
 
+    default boolean requiredForStart() {
+        return false;
+    }
+
     default boolean requiredFor(AccomplishmentLevel type) {
         return true;
     }

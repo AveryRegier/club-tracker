@@ -85,7 +85,7 @@ public class TnTMissionCurriculumTest {
         for (Section s : sz.getSections()) {
             assertEquals(Integer.toString(++number), s.getShortCode());
             assertEquals(1, s.getAwards(group).size());
-            assertEquals(regular, s.getSectionType());
+            assertEquals(start, s.getSectionType());
             assertEquals(number, s.sequence());
         }
     }

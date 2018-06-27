@@ -6,6 +6,7 @@ import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -85,18 +86,40 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     @Override
     public Optional<Section> getNextSection() {
         return firstSuccess(
+                this::getRequiredForStart,
+                this::getScheduled,
                 this::getRequiredForBooks,
                 this::getExtraCredit);
     }
 
-    private Optional<Section> getRequiredForBooks() {
-        for(Book b: getCurrentBookList()) {
-            Optional<Section> section = firstSuccess(
-                    () -> getRequiredToMoveOn(b),
-                    () -> getRequiredForBook(b));
-            if(section.isPresent()) return section;
-        }
+    private Optional<Section> getRequiredForStart() {
+        return getFirstMatch(this::getRequiredForStart);
+    }
+
+    private Optional<Section> getFirstMatch(Function<Book, Optional<Section>> firstMatch) {
+        return getCurrentBookList().stream()
+                .map(firstMatch)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+    }
+
+    private Optional<Section> getScheduled() {
+        // All together support hooked in here
         return Optional.empty();
+    }
+
+    private Optional<Section> getRequiredForBooks() {
+        return getFirstMatch(b->firstSuccess(
+                    () -> getRequiredToMoveOn(b),
+                    () -> getRequiredForBook(b)));
+    }
+
+
+    private Optional<Section> getRequiredForStart(Book b) {
+        return getClubberFutureSections(b)
+                .filter(s -> s.getSectionType().requiredForStart())
+                .findFirst();
     }
 
     private Optional<Section> getRequiredToMoveOn(Book b) {

@@ -7,6 +7,12 @@ import com.github.averyregier.club.domain.program.SectionType;
 * Created by avery on 9/6/2014.
 */
 public enum TnTMissionSectionTypes implements SectionType {
+    start {
+        @Override
+        public boolean requiredForStart() {
+            return true;
+        }
+    },
     regular {
         @Override
         public boolean requiredToMoveOn() {

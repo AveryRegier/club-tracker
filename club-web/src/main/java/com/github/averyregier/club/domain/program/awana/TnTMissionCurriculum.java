@@ -6,7 +6,7 @@ import com.github.averyregier.club.domain.program.adapter.*;
 import java.util.function.UnaryOperator;
 
 import static com.github.averyregier.club.domain.program.AgeGroup.DefaultAgeGroup.*;
-import static com.github.averyregier.club.domain.program.awana.TnTMissionSectionTypes.regular;
+import static com.github.averyregier.club.domain.program.awana.TnTMissionSectionTypes.start;
 
 /**
  * Created by avery on 8/7/16.
@@ -47,8 +47,8 @@ public class TnTMissionCurriculum {
                         g.name("Start Zone")
                                 .award(r -> r
                                         .name("T&T Ultimate Adventure Uniform")
-                                        .section(1, regular, s->s.name("The Gospel"))
-                                        .section(2, regular, s->s.name("Bible Basics"))));
+                                        .section(1, start, s->s.name("The Gospel"))
+                                        .section(2, start, s->s.name("Bible Basics"))));
     }
 
     private static UnaryOperator<BookBuilder> book1() {
