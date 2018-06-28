@@ -32,7 +32,7 @@
                     <#list club.curriculum.ageGroups as ageGroup>
                         <label for="${ageGroup}-book">${ageGroup.displayName}:</label>
                         <select name="${ageGroup}-book" id="${ageGroup}-book">
-                            <#list club.curriculum.series as series>
+                            <#list club.curriculum.allSeries as series>
                                 <option value="${series.id}">${series.name}</option>
                             </#list>
                         </select>

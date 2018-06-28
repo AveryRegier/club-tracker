@@ -130,6 +130,11 @@ class CurriculumAdapter implements Curriculum {
     }
 
     @Override
+    public List<Curriculum> getAllSeries() {
+        return Curriculum.super.getAllSeries();
+    }
+
+    @Override
     public String getName() {
         return name;
     }
