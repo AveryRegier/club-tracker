@@ -80,7 +80,7 @@ public class ClubController extends ModelMaker {
                 Stream.of(Policy.values()).forEach(policy -> builder.put(policy.name(), ""));
                 club.get().getPolicies().forEach(policy -> builder.put(policy.name(), "checked"));
 
-                club.get().getCurriculum().getAgeGroups().forEach(ageGroup ->
+                club.get().getCurriculum().getAgeGroups().stream().forEach(ageGroup ->
                         club.get().getCurriculum().recommendedBookList(ageGroup).stream().findFirst().ifPresent(book ->
                             builder.put(ageGroup.name()+"-book", book)));
 
