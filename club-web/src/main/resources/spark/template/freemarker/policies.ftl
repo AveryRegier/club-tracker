@@ -24,22 +24,23 @@
         </div>
     </fieldset>
 
-    <fieldset class="inputGroup">
-        <legend class="inputGroupLabel">Customized Book List</legend>
-        <div class="inputGroupFields">
-            <div class="inputField">
-                <#list club.curriculum.ageGroups as ageGroup>
-                    <label for="${ageGroup}-book">${ageGroup.displayName}:</label>
-                    <select name="${ageGroup}-book" id="${ageGroup}-book">
-                        <#list club.curriculum.series as series>
-                            <option value="${series.id}">${series.name}</option>
-                        </#list>
-                    </select>
-                </#list>
+    <#if club.curriculum.series?size != 0>
+        <fieldset class="inputGroup">
+            <legend class="inputGroupLabel">Customized Book List</legend>
+            <div class="inputGroupFields">
+                <div class="inputField">
+                    <#list club.curriculum.ageGroups as ageGroup>
+                        <label for="${ageGroup}-book">${ageGroup.displayName}:</label>
+                        <select name="${ageGroup}-book" id="${ageGroup}-book">
+                            <#list club.curriculum.series as series>
+                                <option value="${series.id}">${series.name}</option>
+                            </#list>
+                        </select>
+                    </#list>
+                </div>
             </div>
-        </div>
-    </fieldset>
-
+        </fieldset>
+    </#if>
 
     <div class="actions">
         <button type='submit'>Submit</button>
