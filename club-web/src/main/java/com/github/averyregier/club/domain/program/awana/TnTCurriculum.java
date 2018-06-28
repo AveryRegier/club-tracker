@@ -20,15 +20,20 @@ public class TnTCurriculum {
     }
 
     public static CurriculumBuilder build(CurriculumBuilder builder) {
+        return buildUltimate(builder.shortCode("TnT"));
+    }
+
+    public static CurriculumBuilder buildUltimate(CurriculumBuilder builder) {
         return builder
-                .shortCode("TnT")
                 .curriculum(c -> c
                         .shortCode("UA")
+                        .name("Ultimate Adventure")
                         .book(0, startZone())
                         .book(1, book1())
                         .book(2, book2()))
                 .curriculum(c -> c
                         .shortCode("UC")
+                        .name("Ultimate Challenge")
                         .book(0, ucStartZone())
                         .book(1, book3())
                         .book(2, book4()));

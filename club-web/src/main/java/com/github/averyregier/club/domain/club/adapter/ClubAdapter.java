@@ -33,6 +33,11 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     }
 
     @Override
+    public String getName() {
+        return series.getName();
+    }
+
+    @Override
     public String getId() {
         throw new UnsupportedOperationException();
     }

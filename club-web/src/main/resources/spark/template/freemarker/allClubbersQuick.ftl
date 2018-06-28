@@ -1,11 +1,11 @@
 <#include "normalHeader.ftl">
 
     <fieldset class="inputGroup">
-        <legend class="inputGroupLabel">All ${club.shortCode} Clubber's Upcoming Sections</legend>
+        <legend class="inputGroupLabel">All ${club.name} Clubber's Upcoming Sections</legend>
         <div class="inputGroupFields">
             <div class="inputField">
                 <label>Club Name:</label>
-                <div class="staticField">${club.shortCode}</div>
+                <div class="staticField">${club.name}</div>
             </div>
             <br clear="all">
             <div>

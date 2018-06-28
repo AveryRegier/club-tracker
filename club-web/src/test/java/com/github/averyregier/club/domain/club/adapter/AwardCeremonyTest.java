@@ -29,7 +29,7 @@ public class AwardCeremonyTest {
     @Before
     public void setup() {
         program = new ProgramAdapter("en_US", null, "AWANA");
-        club = program.addClub(program.getCurriculum().getSeries("TnT").get());
+        club = program.addClub(program.getCurriculum().getSeries("TnT:U").get());
         clubber = new ClubberAdapter();
         clubber.getUpdater().setAgeGroup(AgeGroup.DefaultAgeGroup.FIFTH_GRADE);
         program.register(clubber);

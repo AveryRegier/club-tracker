@@ -1,7 +1,7 @@
 <#include "normalHeader.ftl">
 
-    <div class="menu"><a href=/protected/club/${club.id}/workers>Recruit ${club.shortCode} Workers</a></a></div>
-    <div class="menu"><a href=/protected/club/${club.id}/policies>Edit ${club.shortCode} Policies</a></a></div>
+    <div class="menu"><a href=/protected/club/${club.id}/workers>Recruit ${club.name} Workers</a></a></div>
+    <div class="menu"><a href=/protected/club/${club.id}/policies>Edit ${club.name} Policies</a></a></div>
 
 
     <fieldset class="inputGroup">

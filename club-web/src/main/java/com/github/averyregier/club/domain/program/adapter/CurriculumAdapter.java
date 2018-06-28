@@ -3,6 +3,7 @@ package com.github.averyregier.club.domain.program.adapter;
 import com.github.averyregier.club.domain.program.*;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -13,12 +14,14 @@ import java.util.stream.Collectors;
 * Created by avery on 9/15/14.
 */
 class CurriculumAdapter implements Curriculum {
+    private String name;
     private final List<Book> bookList;
     private String shortCode;
     private Later<Curriculum> parentCurriculum;
     private Function<AgeGroup, Boolean> acceptsFn;
 
-    public CurriculumAdapter(String shortCode, List<Book> bookList, Later<Curriculum> parentCurriculum, Function<AgeGroup, Boolean> acceptsFn) {
+    public CurriculumAdapter(String shortCode, String name, List<Book> bookList, Later<Curriculum> parentCurriculum, Function<AgeGroup, Boolean> acceptsFn) {
+        this.name = name;
         this.bookList = bookList;
         this.shortCode = shortCode;
         this.parentCurriculum = parentCurriculum;
@@ -79,9 +82,19 @@ class CurriculumAdapter implements Curriculum {
 
     @Override
     public Optional<Curriculum> getSeries(String clubId) {
-        return getSeries().stream()
-                .filter(s->s.getId().equals(clubId))
-                .findFirst();
+        String[] parts = clubId.split(":");
+        if(parts[0].equals(getShortCode())) {
+            String[] temp = new String[parts.length - 1];
+            System.arraycopy(parts, 1, temp, 0,parts.length-1);
+            parts = temp;
+        }
+        Optional<Curriculum> current = Optional.of(this);
+        for(String part: parts) {
+            current = current.flatMap(c->c.getSeries().stream()
+                    .filter(s -> s.getShortCode().equals(part))
+                    .findFirst());
+        }
+        return current.orElse(null) != this ? current : Optional.empty();
     }
 
     @Override
@@ -109,5 +122,15 @@ class CurriculumAdapter implements Curriculum {
                 getBooks().stream()
                 .filter(b -> b.getId().equals(bookId))
                 .findFirst();
+    }
+
+    @Override
+    public Collection<AgeGroup> getAgeGroups() {
+        return Curriculum.super.getAgeGroups();
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

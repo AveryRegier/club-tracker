@@ -9,6 +9,7 @@ import com.github.averyregier.club.domain.utility.builder.Later;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ public class CurriculumBuilder implements Builder<Curriculum> {
     private List<CurriculumBuilder> series = new ArrayList<>();
     private Later<Curriculum> parentCurriculum;
     private Function<AgeGroup, Boolean> acceptsFn;
+    private String name;
 
     public Curriculum build() {
         Later<Curriculum> curriculumLater = new Later<>();
@@ -30,13 +32,17 @@ public class CurriculumBuilder implements Builder<Curriculum> {
             List<Curriculum> series = this.series.stream()
                     .map(s->s.setCurriculum(curriculumLater).build())
                     .collect(Collectors.toList());
-            curriculum = new MasterCurriculum(shortCode, series);
+            curriculum = new MasterCurriculum(shortCode, getName(), series);
         } else {
             List<Book> bookList = buildBooks(curriculumLater);
-            curriculum = new CurriculumAdapter(shortCode, bookList, parentCurriculum, acceptsFn);
+            curriculum = new CurriculumAdapter(shortCode, getName(), bookList, parentCurriculum, acceptsFn);
         }
         curriculumLater.set(curriculum);
         return curriculum;
+    }
+
+    public String getName() {
+        return Optional.ofNullable(name).orElse(shortCode);
     }
 
     private CurriculumBuilder setCurriculum(Later<Curriculum> curriculumLater) {
@@ -50,6 +56,11 @@ public class CurriculumBuilder implements Builder<Curriculum> {
 
     public CurriculumBuilder shortCode(String shortCode) {
         this.shortCode = shortCode;
+        return this;
+    }
+
+    public CurriculumBuilder name(String name) {
+        this.name = name;
         return this;
     }
 

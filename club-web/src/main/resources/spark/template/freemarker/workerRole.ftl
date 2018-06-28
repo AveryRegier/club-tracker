@@ -28,7 +28,7 @@
                 <#if !clubs??>${club.shortCode}<#else>
                     <select name="club" id="club" onchange="updateForm()">
                         <#list clubs as current>
-                            <option value="${current.id}"/>${current.shortCode}</option>
+                            <option value="${current.id}"/>${current.name}</option>
                         </#list>
                     </select>
                 </#if> is:</label>

@@ -1,14 +1,17 @@
 package com.github.averyregier.club.domain.program;
 
 import com.github.averyregier.club.domain.utility.Contained;
+import com.github.averyregier.club.domain.utility.Named;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by avery on 9/6/2014.
  */
-public interface Curriculum extends Contained<Curriculum> {
+public interface Curriculum extends Contained<Curriculum>, Named {
     List<Book> getBooks();
 
     Optional<Section> lookup(String sectionId);
@@ -24,5 +27,12 @@ public interface Curriculum extends Contained<Curriculum> {
 
     default Optional<Curriculum> findCurriculum(String curriculum) {
         return Optional.empty();
+    }
+
+    default Collection<AgeGroup> getAgeGroups() {
+        return getBooks().stream()
+                .flatMap(b->b.getAgeGroups().stream())
+                .distinct()
+                .collect(Collectors.toSet());
     }
 }

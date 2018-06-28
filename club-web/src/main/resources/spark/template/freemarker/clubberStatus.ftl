@@ -10,7 +10,7 @@
             <tr>
                 <td>${clubber.name.fullName}</td>
                 <#if clubber.club.isPresent()>
-                    <td><a href="/protected/clubbers/${clubber.id}/sections">${clubber.club.get().shortCode}</td>
+                    <td><a href="/protected/clubbers/${clubber.id}/sections">${clubber.club.get().name}</td>
                 <#else>
                     <td></td>
                 </#if>
