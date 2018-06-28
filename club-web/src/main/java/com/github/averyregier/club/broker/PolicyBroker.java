@@ -28,12 +28,12 @@ public class PolicyBroker extends PersistenceBroker<PolicyHolder> {
     }
 
     public EnumSet<Policy> loadPolicies(PolicyHolder policyHolder) {
-        return query(create-> create
+        return query(create -> create
                 .select(POLICY.POLICY_NAME)
                 .from(POLICY)
                 .where(POLICY.CLUB_ID.eq(policyHolder.getId().getBytes()))
                 .fetch().stream()
-                .map(record->Policy.valueOf(record.value1()))
-                .collect(Collectors.toCollection(()->EnumSet.noneOf(Policy.class))));
+                .map(record -> Policy.valueOf(record.value1()))
+                .collect(Collectors.toCollection(() -> EnumSet.noneOf(Policy.class))));
     }
 }

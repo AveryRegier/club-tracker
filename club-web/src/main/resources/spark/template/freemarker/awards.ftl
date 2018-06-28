@@ -1,6 +1,6 @@
 <#include "normalHeader.ftl">
     <form method="post">
-        <header>${club.shortCode} Awards</header>
+        <header>${club.name} Awards</header>
         <div class="list">
             <header class="list-header">
                 <div class="list-item-checkbox"></div>

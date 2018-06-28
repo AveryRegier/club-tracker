@@ -46,8 +46,8 @@ public class TnTMissionCurriculumTest {
 
     @Test
     public void curriculumID() {
-        assertEquals("TnT", classUnderTest.getId());
-        assertEquals("TnT", classUnderTest.getShortCode());
+        assertEquals("Mission", classUnderTest.getId());
+        assertEquals("Mission", classUnderTest.getShortCode());
     }
 
     @Test

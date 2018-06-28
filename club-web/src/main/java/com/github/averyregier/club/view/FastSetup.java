@@ -21,9 +21,8 @@ import static spark.Spark.halt;
  */
 public class FastSetup {
     public void init(ClubApplication app) {
-        before("/test-setup/:program", (request, response) -> {
+        before("/test-setup", (request, response) -> {
 
-            String programName = request.params(":program");
             User user;
             if(new ProviderBroker(app.getConnector()).find().isEmpty()) {
                 new ProviderBroker(app.getConnector()).persist(new Provider("example", "Example", "", "", "", ""));
@@ -32,7 +31,7 @@ public class FastSetup {
                     String demoId = new UUID(1, 1).toString();
                     if (app.getProgram(demoId) == null) {
 
-                        Program program = app.setupProgramWithId("ABC", programName, "en_US", demoId);
+                        Program program = app.setupProgramWithId("ABC", "AWANA", "en_US", demoId);
                         program.getCurriculum().getSeries().stream()
                                 .map(program::addClub)
                                 .filter(c->c.getShortCode().equals("TnT"))

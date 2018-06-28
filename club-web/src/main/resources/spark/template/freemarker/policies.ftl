@@ -10,19 +10,37 @@
                 <div class="staticField">${club.program.shortCode}</div>
             </div>
             <div class="inputField">
-                <label>Program:</label>
-                <div class="staticField">${club.curriculum.shortCode}</div>
+                <label>Club:</label>
+                <div class="staticField">${club.curriculum.name}</div>
             </div>
             <div class="inputField">
-                <label>No Section Awards</label>
+                <label for="noSectionAwards">No Section Awards</label>
                 <input type="checkbox" name="policy" id="noSectionAwards" value="noSectionAwards" ${noSectionAwards}>
             </div>
             <div class="inputField">
-                <label>Listener Groups by Gender</label>
+                <label for="listenerGroupsByGender">Listener Groups by Gender</label>
                 <input type="checkbox" name="policy" id="listenerGroupsByGender" value="listenerGroupsByGender" ${listenerGroupsByGender}>
             </div>
         </div>
     </fieldset>
+
+    <fieldset class="inputGroup">
+        <legend class="inputGroupLabel">Customized Book List</legend>
+        <div class="inputGroupFields">
+            <div class="inputField">
+                <#list club.curriculum.ageGroups as ageGroup>
+                    <label for="${ageGroup}-book">${ageGroup.displayName}:</label>
+                    <select name="${ageGroup}-book" id="${ageGroup}-book">
+                        <#list club.curriculum.series as series>
+                            <option value="${series.id}">${series.name}</option>
+                        </#list>
+                    </select>
+                </#list>
+            </div>
+        </div>
+    </fieldset>
+
+
     <div class="actions">
         <button type='submit'>Submit</button>
     </div>

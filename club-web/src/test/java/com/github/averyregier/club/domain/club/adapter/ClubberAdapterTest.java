@@ -3,7 +3,10 @@ package com.github.averyregier.club.domain.club.adapter;
 import com.github.averyregier.club.TestUtility;
 import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.club.ClubberRecord;
-import com.github.averyregier.club.domain.program.*;
+import com.github.averyregier.club.domain.program.AccomplishmentLevel;
+import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.domain.program.Book;
+import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.program.awana.TnTSectionTypes;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +25,7 @@ public class ClubberAdapterTest {
     @Before
     public void setup() {
         program = new ProgramAdapter("en_US", null, "AWANA");
-        club = program.addClub(program.getCurriculum().getSeries("TnT").get());
+        club = program.addClub(program.getCurriculum().getSeries("TnT:U").get());
         clubber = new ClubberAdapter();
         clubber.getUpdater().setAgeGroup(AgeGroup.DefaultAgeGroup.FIFTH_GRADE);
         program.register(clubber);

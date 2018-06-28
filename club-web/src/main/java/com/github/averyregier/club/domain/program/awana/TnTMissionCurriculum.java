@@ -20,14 +20,26 @@ public class TnTMissionCurriculum {
     }
 
     public static CurriculumBuilder build(CurriculumBuilder builder) {
+        return buildMission(builder
+                .shortCode("Mission")
+                .name("TnT"));
+    }
+
+    public static CurriculumBuilder buildMission(CurriculumBuilder builder) {
         return builder
-                .shortCode("TnT")
                 .curriculum(c -> c
-                        .shortCode("UA")
+                        .shortCode("GiA")
+                        .name("Grace in Action")
                         .book(0, startZone())
-                        .book(1, book1())
+                        .book(1, book1()))
+                .curriculum(c -> c
+                        .shortCode("EoG")
+                        .name("Evidence of Grace")
                         .book(2, startZone())
-                        .book(3, book2())
+                        .book(3, book2()))
+                .curriculum(c -> c
+                        .shortCode("AoG")
+                        .name("Agents of Grace")
                         .book(4, startZone())
                         .book(5, book3()));
     }
@@ -47,8 +59,8 @@ public class TnTMissionCurriculum {
                         g.name("Start Zone")
                                 .award(r -> r
                                         .name("T&T Ultimate Adventure Uniform")
-                                        .section(1, start, s->s.name("The Gospel"))
-                                        .section(2, start, s->s.name("Bible Basics"))));
+                                        .section(1, start, s -> s.name("The Gospel"))
+                                        .section(2, start, s -> s.name("Bible Basics"))));
     }
 
     private static UnaryOperator<BookBuilder> book1() {
@@ -61,9 +73,9 @@ public class TnTMissionCurriculum {
                     .ageGroup(FIFTH_GRADE)
                     .ageGroup(SIXTH_GRADE)
                     .publicationYear(2016)
-                    .award(r -> r.sequence(s->s
-                            .item(i-> alpha(i))
-                            .item(i-> excellence(i))));
+                    .award(r -> r.sequence(s -> s
+                            .item(i -> alpha(i))
+                            .item(i -> excellence(i))));
             return missionB1Structure(b);
         };
     }
@@ -78,9 +90,9 @@ public class TnTMissionCurriculum {
                     .ageGroup(FIFTH_GRADE)
                     .ageGroup(SIXTH_GRADE)
                     .publicationYear(2017)
-                    .award(r -> r.sequence(s->s
-                            .item(i-> alpha(i))
-                            .item(i-> excellence(i))));
+                    .award(r -> r.sequence(s -> s
+                            .item(i -> alpha(i))
+                            .item(i -> excellence(i))));
             return missionB2Structure(b);
         };
     }
@@ -95,9 +107,9 @@ public class TnTMissionCurriculum {
                     .ageGroup(FIFTH_GRADE)
                     .ageGroup(SIXTH_GRADE)
                     .publicationYear(2018)
-                    .award(r -> r.sequence(s->s
-                            .item(i-> alpha(i))
-                            .item(i-> excellence(i))));
+                    .award(r -> r.sequence(s -> s
+                            .item(i -> alpha(i))
+                            .item(i -> excellence(i))));
             return missionB3Structure(b);
         };
     }
@@ -114,14 +126,14 @@ public class TnTMissionCurriculum {
     private static AwardBuilder createDiscoveries() {
         return new AwardBuilder().name("Discovery")
                 .forEach(4)
-                .sequence(a->a.item(i->i.name("Discovery 1"))
-                              .item(i->i.name("Discovery 2"))
-                              .item(i->i.name("Discovery 3"))
-                              .item(i->i.name("Discovery 4"))
-                              .item(i->i.name("Discovery 5"))
-                              .item(i->i.name("Discovery 6"))
-                              .item(i->i.name("Discovery 7"))
-                              .item(i->i.name("Discovery 8")));
+                .sequence(a -> a.item(i -> i.name("Discovery 1"))
+                        .item(i -> i.name("Discovery 2"))
+                        .item(i -> i.name("Discovery 3"))
+                        .item(i -> i.name("Discovery 4"))
+                        .item(i -> i.name("Discovery 5"))
+                        .item(i -> i.name("Discovery 6"))
+                        .item(i -> i.name("Discovery 7"))
+                        .item(i -> i.name("Discovery 8")));
     }
 
     private static UnaryOperator<SectionGroupBuilder> b1unit1(AwardBuilder discovery) {
