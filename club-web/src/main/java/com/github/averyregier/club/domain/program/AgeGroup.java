@@ -6,7 +6,22 @@ import java.util.Arrays;
  * Created by avery on 9/6/2014.
  */
 public interface AgeGroup {
-    public enum DefaultAgeGroup implements AgeGroup {
+    class Comparator implements java.util.Comparator<AgeGroup> {
+        public Comparator() {}
+
+        @Override
+        public int compare(AgeGroup o1, AgeGroup o2) {
+            if(o1 == o2)
+                return 0;
+            if(o1 == null)
+                return -1;
+            if(o2 == null)
+                return 1;
+            return o1.ordinal() - o2.ordinal();
+        }
+    }
+
+    enum DefaultAgeGroup implements AgeGroup {
         NURSERY,
         TWO,
         THREE,
@@ -38,11 +53,9 @@ public interface AgeGroup {
                     .map(s->s.substring(0,1).toUpperCase()+s.substring(1).toLowerCase())
                     .reduce("", (a,b)->(a+' '+b).trim());
         }
-
-
     }
 
-    public String getDisplayName();
-    public String name();
-
+    String getDisplayName();
+    String name();
+    int ordinal();
 }

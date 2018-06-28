@@ -33,6 +33,7 @@ public interface Curriculum extends Contained<Curriculum>, Named {
         return getBooks().stream()
                 .flatMap(b->b.getAgeGroups().stream())
                 .distinct()
-                .collect(Collectors.toSet());
+                .sorted(new AgeGroup.Comparator())
+                .collect(Collectors.toList());
     }
 }
