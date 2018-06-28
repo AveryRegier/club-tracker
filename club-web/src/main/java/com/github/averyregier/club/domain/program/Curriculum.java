@@ -3,9 +3,7 @@ package com.github.averyregier.club.domain.program;
 import com.github.averyregier.club.domain.utility.Contained;
 import com.github.averyregier.club.domain.utility.Named;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -35,5 +33,11 @@ public interface Curriculum extends Contained<Curriculum>, Named {
                 .distinct()
                 .sorted(new AgeGroup.Comparator())
                 .collect(Collectors.toList());
+    }
+
+    default List<Curriculum> getAllSeries() {
+        Set<Curriculum> allSeries = new LinkedHashSet<>(getSeries());
+        while(allSeries.addAll(allSeries.stream().flatMap(c->c.getSeries().stream()).collect(Collectors.toCollection(LinkedHashSet::new))));
+        return new ArrayList<>(allSeries);
     }
 }
