@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by avery on 9/5/2014.
@@ -20,10 +21,20 @@ public interface Club extends ClubGroup, Comparable<Club>, Named {
     ClubLeader assign(Person person, ClubLeader.LeadershipRole role);
     Curriculum getCurriculum();
 
-    Collection<AwardPresentation> getAwardsNotYetPresented(AccomplishmentLevel type);
     Map<Clubber, Object> getClubNightReport();
 
+    default Collection<AwardPresentation> getAwardsNotYetPresented(AccomplishmentLevel type) {
+        return getClubbers().stream()
+                .flatMap(c->c.getAwards().stream())
+                .filter(AwardPresentation::notPresented)
+                .filter(a->a.getLevel() == type)
+                .collect(Collectors.toList());
+    }
+
     default List<Book> getCurrentBookList(AgeGroup currentAgeGroup) {
-        return getCurriculum().recommendedBookList(currentAgeGroup);
+        return findPolicies(Policy::getBookListPolicy, ()->(ag)->getCurriculum().recommendedBookList(ag))
+                .flatMap(fn->fn.apply(currentAgeGroup).stream())
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

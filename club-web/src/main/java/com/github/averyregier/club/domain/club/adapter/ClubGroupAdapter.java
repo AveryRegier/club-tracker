@@ -36,7 +36,7 @@ public abstract class ClubGroupAdapter implements ClubGroup {
     }
 
     @Override
-    public <T> Stream<T> findPolicy(Function<Policy, Optional<T>> policy) {
+    public <T> Stream<T> findPolicies(Function<Policy, Optional<T>> policy) {
         return Policy.findPolicies(getPolicies(), policy);
     }
 
