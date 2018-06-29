@@ -37,7 +37,9 @@ public interface Curriculum extends Contained<Curriculum>, Named {
 
     default List<Curriculum> getAllSeries() {
         Set<Curriculum> allSeries = new LinkedHashSet<>(getSeries());
-        while(allSeries.addAll(allSeries.stream().flatMap(c->c.getSeries().stream()).collect(Collectors.toCollection(LinkedHashSet::new))));
+        while(allSeries.addAll(allSeries.stream()
+                .flatMap(c->c.getSeries().stream())
+                .collect(Collectors.toCollection(LinkedHashSet::new))));
         return new ArrayList<>(allSeries);
     }
 }
