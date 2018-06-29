@@ -29,7 +29,7 @@ public class ListenerAdapter extends PersonWrapper implements Listener {
 
     private Set<Clubber> matchingClubbers(Group cl) {
         return cl.getClubbers().stream()
-                .filter(clubber -> clubGroup.findPolicy(Policy::getListenerGroupPolicy)
+                .filter(clubber -> clubGroup.findPolicies(Policy::getListenerGroupPolicy)
                         .allMatch(p->p.test(this, clubber)))
                 .collect(Collectors.toCollection(TreeSet::new));
     }

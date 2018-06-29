@@ -153,7 +153,7 @@ public interface Clubber extends ClubMember {
 
     default boolean shouldAward(AccomplishmentLevel level) {
         return getClub()
-                .map(c -> c.findPolicy(Policy::getAwardsPolicy)
+                .map(c -> c.findPolicies(Policy::getAwardsPolicy)
                         .allMatch(t -> t.test(level)))
                 .orElse(true);
     }

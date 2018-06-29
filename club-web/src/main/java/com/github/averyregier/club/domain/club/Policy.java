@@ -1,8 +1,11 @@
 package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.program.AccomplishmentLevel;
+import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.domain.program.Book;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -34,6 +37,10 @@ public enum Policy {
     }
 
     public Optional<BiPredicate<Listener, Clubber>> getListenerGroupPolicy() {
+        return Optional.empty();
+    }
+
+    public Optional<Function<AgeGroup, List<Book>>> getBookListPolicy() {
         return Optional.empty();
     }
 }
