@@ -119,3 +119,12 @@ function addEvent(obj, evType, fn){
         return false;
     }
 }
+
+function showMe(id, section) {
+    var chboxs = document.getElementById(id);
+    var vis = "none";
+    if(chboxs && chboxs.checked) {
+        vis = "block";
+    }
+    document.getElementById(section).style.display = vis;
+}
