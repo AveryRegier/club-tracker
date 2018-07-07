@@ -25,7 +25,8 @@
             <#if club.curriculum.series?size != 0>
             <div class="inputField">
                 <label for="customizedBookSelections">Customized Curriculum Selections</label>
-                <input type="checkbox" name="policy" id="customizedBookSelections" value="customizedBookSelections" ${customizedBookSelections}>
+                <input type="checkbox" name="policy" id="customizedBookSelections" value="customizedBookSelections"
+                    ${customizedBookSelections} onclick="showMe('customizedBookSelections', 'customizedBookSelections-div');">
             </div>
             </#if>
 
@@ -33,7 +34,7 @@
     </fieldset>
 
     <#if club.curriculum.series?size != 0>
-        <fieldset class="inputGroup">
+        <fieldset class="inputGroup" id="customizedBookSelections-div" <#if customizedBookSelections != "checked"> style="display: none"</#if>>
             <legend class="inputGroupLabel">Customized Curriculum List</legend>
             <div class="inputGroupFields">
                 <div class="inputField">
