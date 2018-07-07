@@ -4,10 +4,12 @@ import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.broker.ClubberBroker;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
+import com.github.averyregier.club.domain.club.adapter.SettingsAdapter;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
 import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldGroup;
+import com.github.averyregier.club.domain.utility.Settings;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import com.github.averyregier.club.repository.PersistedProgram;
 
@@ -166,6 +168,11 @@ public class ClubManager {
                 @Override
                 public void replacePolicies(Collection<Policy> policies) {
                     PersistedClub.this.replacePolicies(policies);
+                }
+
+                @Override
+                public Settings getSettings() {
+                    return new SettingsAdapter(this);
                 }
             });
         }

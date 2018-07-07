@@ -6,10 +6,8 @@ import com.github.averyregier.club.broker.CeremonyBroker;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.CeremonyAdapter;
-import com.github.averyregier.club.domain.program.AccomplishmentLevel;
-import com.github.averyregier.club.domain.program.Award;
-import com.github.averyregier.club.domain.program.Book;
-import com.github.averyregier.club.domain.program.Section;
+import com.github.averyregier.club.domain.program.*;
+import com.github.averyregier.club.domain.utility.Contained;
 import com.github.averyregier.club.domain.utility.MapBuilder;
 import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
@@ -80,9 +78,12 @@ public class ClubController extends ModelMaker {
                 Stream.of(Policy.values()).forEach(policy -> builder.put(policy.name(), ""));
                 club.get().getPolicies().forEach(policy -> builder.put(policy.name(), "checked"));
 
-                club.get().getCurriculum().getAgeGroups().stream().forEach(ageGroup ->
-                        club.get().getCurriculum().recommendedBookList(ageGroup).stream().findFirst().ifPresent(book ->
-                            builder.put(ageGroup.name()+"-book", book)));
+                Map<String, String> defaults = club.get().getCurriculum().getAgeGroups().stream()
+                        .collect(Collectors.toMap(AgeGroup::name,
+                        ageGroup -> getCurriculum(club, ageGroup).getId()));
+                System.out.println(defaults);
+
+                builder.put("defaultCurriculum", defaults);
 
                 return new ModelAndView(
                         builder.build(),
@@ -399,6 +400,14 @@ public class ClubController extends ModelMaker {
             }
             return null;
         });
+    }
+
+    public Curriculum getCurriculum(Optional<Club> club, AgeGroup ageGroup) {
+        return club.get().getCurriculum()
+                .recommendedBookList(ageGroup).stream()
+                .findFirst()
+                .map(Contained::getContainer)
+                .orElseGet(() -> club.get().getCurriculum());
     }
 
     private ModelAndView gotoMy(Response response) {

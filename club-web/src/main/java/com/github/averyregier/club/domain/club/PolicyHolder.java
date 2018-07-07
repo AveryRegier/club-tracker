@@ -1,6 +1,7 @@
 package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.utility.HasId;
+import com.github.averyregier.club.domain.utility.Settings;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,4 +23,6 @@ public interface PolicyHolder extends HasId {
 
     Collection<Policy> getPolicies();
     void replacePolicies(Collection<Policy> policies);
+    
+    Settings getSettings();
 }

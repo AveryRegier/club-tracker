@@ -4,6 +4,7 @@ import com.github.averyregier.club.domain.club.ClubGroup;
 import com.github.averyregier.club.domain.club.Listener;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.Policy;
+import com.github.averyregier.club.domain.utility.Settings;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -71,4 +72,10 @@ public abstract class ClubGroupAdapter implements ClubGroup {
     private ListenerAdapter findListener(Person person) {
         return (ListenerAdapter) person.asListener().orElseGet(() -> new ListenerAdapter(person));
     }
+
+    @Override
+    public Settings getSettings() {
+        return new SettingsAdapter(this);
+    }
+
 }

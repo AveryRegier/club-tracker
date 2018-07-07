@@ -21,19 +21,29 @@
                 <label for="listenerGroupsByGender">Listener Groups by Gender</label>
                 <input type="checkbox" name="policy" id="listenerGroupsByGender" value="listenerGroupsByGender" ${listenerGroupsByGender}>
             </div>
+
+            <#if club.curriculum.series?size != 0>
+            <div class="inputField">
+                <label for="customizedBookSelections">Customized Curriculum Selections</label>
+                <input type="checkbox" name="policy" id="customizedBookSelections" value="customizedBookSelections" ${customizedBookSelections}>
+            </div>
+            </#if>
+
         </div>
     </fieldset>
 
     <#if club.curriculum.series?size != 0>
         <fieldset class="inputGroup">
-            <legend class="inputGroupLabel">Customized Book List</legend>
+            <legend class="inputGroupLabel">Customized Curriculum List</legend>
             <div class="inputGroupFields">
                 <div class="inputField">
                     <#list club.curriculum.ageGroups as ageGroup>
+                        <#assign defaultValue = defaultCurriculum[ageGroup]>
+                        <!-- default = ${defaultValue} -->
                         <label for="${ageGroup}-book">${ageGroup.displayName}:</label>
                         <select name="${ageGroup}-book" id="${ageGroup}-book">
                             <#list club.curriculum.allSeries as series>
-                                <option value="${series.id}">${series.name}</option>
+                                <option value="${series.id}" <#if series.id == defaultValue> selected="selected"</#if>>${series.name}</option>
                             </#list>
                         </select>
                     </#list>
