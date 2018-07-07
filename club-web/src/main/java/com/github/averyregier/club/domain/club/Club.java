@@ -32,8 +32,8 @@ public interface Club extends ClubGroup, Comparable<Club>, Named {
     }
 
     default List<Book> getCurrentBookList(AgeGroup currentAgeGroup) {
-        return findPolicies(Policy::getBookListPolicy, ()->(ag)->getCurriculum().recommendedBookList(ag))
-                .flatMap(fn->fn.apply(currentAgeGroup).stream())
+        return findPolicies(Policy::getBookListPolicy, ()->(ag, settings)->getCurriculum().recommendedBookList(ag))
+                .flatMap(fn->fn.apply(currentAgeGroup, getSettings()).stream())
                 .distinct()
                 .collect(Collectors.toList());
     }
