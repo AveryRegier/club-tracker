@@ -102,7 +102,7 @@ public class ClubberRecordBroker extends PersistenceBroker<ClubberRecord> {
     }
 
     private Section findSection(String sectionId, Clubber clubber) {
-        return clubber.getClub().get().getCurriculum().lookup(sectionId)
+        return clubber.getClub().get().getProgram().getCurriculum().lookup(sectionId)
         .orElseThrow(illegal("section " + sectionId + " does not exist"));
     }
 

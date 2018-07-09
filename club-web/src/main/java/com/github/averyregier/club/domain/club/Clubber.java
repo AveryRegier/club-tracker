@@ -140,7 +140,7 @@ public interface Clubber extends ClubMember {
     }
 
     default Optional<Section> lookupSection(String sectionId) {
-        return optMap(getClub(), c -> c.getCurriculum().lookup(sectionId));
+        return optMap(getClub(), c -> c.getProgram().getCurriculum().lookup(sectionId));
     }
 
     default void catchup(Listener listener, Award award, LocalDate date, Ceremony ceremony, String note) {

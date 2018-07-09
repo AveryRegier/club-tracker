@@ -32,7 +32,7 @@ public class CurriculumBuilder implements Builder<Curriculum> {
             List<Curriculum> series = this.series.stream()
                     .map(s->s.setCurriculum(curriculumLater).build())
                     .collect(Collectors.toList());
-            curriculum = new MasterCurriculum(shortCode, getName(), series);
+            curriculum = new MasterCurriculum(shortCode, getName(), series, parentCurriculum);
         } else {
             List<Book> bookList = buildBooks(curriculumLater);
             curriculum = new CurriculumAdapter(shortCode, getName(), bookList, parentCurriculum, acceptsFn);

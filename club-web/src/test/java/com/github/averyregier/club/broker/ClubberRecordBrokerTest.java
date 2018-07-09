@@ -8,6 +8,8 @@ import com.github.averyregier.club.domain.club.Clubber;
 import com.github.averyregier.club.domain.club.ClubberRecord;
 import com.github.averyregier.club.domain.club.Signing;
 import com.github.averyregier.club.domain.club.adapter.*;
+import com.github.averyregier.club.domain.program.Curriculum;
+import com.github.averyregier.club.domain.program.Programs;
 import com.github.averyregier.club.domain.program.awana.TnTCurriculum;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.jooq.Result;
@@ -113,10 +115,12 @@ public class ClubberRecordBrokerTest {
     public void findClubberRecords() {
         PersonManager personManager = new PersonManager();
         ClubberAdapter mockClubber = new ClubberAdapter(personManager.createPerson());
-        Club club = new ClubManager().createClub(null, TnTCurriculum.get());
+        ProgramAdapter program = new ProgramAdapter(null, null, "AWANA");
+        Club club = new ClubManager().createClub(program, TnTCurriculum.get());
         mockClubber.setClub((ClubAdapter)club);
-        String firstSection = TnTCurriculum.get().getBooks().get(0).getSections().get(0).getId();
-        String secondSection = TnTCurriculum.get().getBooks().get(0).getSections().get(1).getId();
+        Curriculum tnt = Programs.AWANA.get().getSeries("TnT").get();
+        String firstSection = tnt.getBooks().get(0).getSections().get(0).getId();
+        String secondSection = tnt.getBooks().get(0).getSections().get(1).getId();
         ListenerAdapter listener = new ListenerAdapter(personManager.createPerson());
         listener.setClubGroup(club);
         List<RecordRecord> recordList = new ArrayList<>(2);
