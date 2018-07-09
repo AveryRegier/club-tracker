@@ -1,11 +1,10 @@
 package com.github.averyregier.club.domain.club;
 
 import com.github.averyregier.club.domain.utility.HasId;
+import com.github.averyregier.club.domain.utility.Setting;
 import com.github.averyregier.club.domain.utility.Settings;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -22,7 +21,12 @@ public interface PolicyHolder extends HasId {
     }
 
     Collection<Policy> getPolicies();
-    void replacePolicies(Collection<Policy> policies);
-    
+
+    void replacePolicies(Collection<Policy> policies, Settings settings);
+
     Settings getSettings();
+
+    default Map<String, Setting.Type<?>> createSettingDefinitions() {
+        return Collections.emptyMap();
+    }
 }

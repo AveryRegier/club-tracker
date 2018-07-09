@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 public abstract class ClubGroupAdapter implements ClubGroup {
     private Set<Listener> listeners = new TreeSet<>();
     private AtomicReference<EnumSet<Policy>> policies = new AtomicReference<>();
+    private AtomicReference<Settings> settings = new AtomicReference<>();
 
     @Override
     public Set<Listener> getListeners() {
@@ -42,9 +43,16 @@ public abstract class ClubGroupAdapter implements ClubGroup {
     }
 
     private void ensurePoliciesLoaded() {
-        if(policies.get() == null) {
+        if (policies.get() == null) {
             policies.compareAndSet(null, loadPolicies());
         }
+        if (settings.get() == null) {
+            settings.compareAndSet(null, loadSettings());
+        }
+    }
+
+    protected Settings loadSettings() {
+        return new SettingsAdapter(this);
     }
 
     protected EnumSet<Policy> loadPolicies() {
@@ -52,12 +60,13 @@ public abstract class ClubGroupAdapter implements ClubGroup {
     }
 
     @Override
-    public void replacePolicies(Collection<Policy> policies) {
-        persist(policies);
+    public void replacePolicies(Collection<Policy> policies, Settings settings) {
+        persist(policies, settings);
         this.policies.set(EnumSet.copyOf(policies));
+        this.settings.set(settings);
     }
 
-    protected void persist(Collection<Policy> policies) {
+    protected void persist(Collection<Policy> policies, Settings settings) {
     }
 
     @Override
@@ -75,7 +84,8 @@ public abstract class ClubGroupAdapter implements ClubGroup {
 
     @Override
     public Settings getSettings() {
-        return new SettingsAdapter(this);
+        ensurePoliciesLoaded();
+        return settings.get();
     }
 
 }

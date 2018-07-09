@@ -148,7 +148,7 @@ public class ClubManager {
         }
 
         @Override
-        protected void persist(Collection<Policy> policies) {
+        protected void persist(Collection<Policy> policies, Settings settings) {
             ClubManager.this.persist(new PolicyHolder() {
                 @Override
                 public String getId() {
@@ -166,13 +166,13 @@ public class ClubManager {
                 }
 
                 @Override
-                public void replacePolicies(Collection<Policy> policies) {
-                    PersistedClub.this.replacePolicies(policies);
+                public void replacePolicies(Collection<Policy> policies, Settings settings) {
+                    PersistedClub.this.replacePolicies(policies, settings);
                 }
 
                 @Override
                 public Settings getSettings() {
-                    return new SettingsAdapter(this);
+                    return settings;
                 }
             });
         }
@@ -188,6 +188,11 @@ public class ClubManager {
         }
 
         @Override
+        protected Settings loadSettings() {
+            return ClubManager.this.loadSettings(this);
+        }
+
+        @Override
         public ClubLeader assign(Person person, ClubLeader.LeadershipRole role) {
             ClubLeader leader = super.assign(person, role);
             ClubManager.this.persist(leader);
@@ -198,6 +203,10 @@ public class ClubManager {
         protected HashSet<Clubber> initializeClubbers() {
             return new LinkedHashSet<>(new ClubberBroker(factory).find(this));
         }
+    }
+
+    protected Settings loadSettings(PolicyHolder club) {
+        return new SettingsAdapter(club);
     }
 
     protected EnumSet<Policy> loadPolicies(PolicyHolder policyHolder) {

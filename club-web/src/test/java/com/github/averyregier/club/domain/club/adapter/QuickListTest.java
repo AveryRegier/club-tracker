@@ -47,7 +47,7 @@ public class QuickListTest {
     public void sameGenderPolicyQuickList() {
         person.getUpdater().setGender(Person.Gender.MALE);
 
-        club.replacePolicies(EnumSet.of(Policy.listenerGroupsByGender));
+        club.replacePolicies(EnumSet.of(Policy.listenerGroupsByGender), new SettingsAdapter(club));
 
         Listener listener = club.recruit(person);
         registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.FEMALE);
@@ -58,7 +58,7 @@ public class QuickListTest {
 
     @Test
     public void noGenderNoAutoQuickList() {
-        club.replacePolicies(EnumSet.of(Policy.listenerGroupsByGender));
+        club.replacePolicies(EnumSet.of(Policy.listenerGroupsByGender), new SettingsAdapter(club));
 
         Listener listener = club.recruit(person);
         registerClubber(program, AgeGroup.DefaultAgeGroup.THIRD_GRADE, Person.Gender.FEMALE);
@@ -101,7 +101,7 @@ public class QuickListTest {
 
     private <T> void assertSameOrder(Collection<? extends T> expected, Collection<? extends T> checking) {
         Iterator<? extends T> iterator = checking.iterator();
-        for(T e: expected) {
+        for (T e : expected) {
             assertEquals(e, iterator.next());
         }
     }
