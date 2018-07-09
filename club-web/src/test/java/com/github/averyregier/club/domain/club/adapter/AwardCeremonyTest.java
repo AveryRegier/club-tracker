@@ -42,13 +42,13 @@ public class AwardCeremonyTest {
 
     @Test
     public void policyNoGroupAwardsStillAwardsBooks() {
-        club.replacePolicies(EnumSet.of(Policy.noSectionAwards));
+        club.replacePolicies(EnumSet.of(Policy.noSectionAwards), new SettingsAdapter(club));
         assertAwardsList(AccomplishmentLevel.book);
     }
 
     @Test
     public void policyNoGroupAwards() {
-        club.replacePolicies(EnumSet.of(Policy.noSectionAwards));
+        club.replacePolicies(EnumSet.of(Policy.noSectionAwards), new SettingsAdapter(club));
         assertAwardsList(AccomplishmentLevel.group, 0);
     }
 
@@ -65,7 +65,7 @@ public class AwardCeremonyTest {
         assertEquals(expectedAwards, awards.size());
         assertTrue(awards.containsAll(
                 clubber.getAwards().stream()
-                        .filter(a->a.getLevel()== level)
+                        .filter(a -> a.getLevel() == level)
                         .collect(Collectors.toList())));
 
         assertEquals(awards, program.getAwardsNotYetPresented(level));

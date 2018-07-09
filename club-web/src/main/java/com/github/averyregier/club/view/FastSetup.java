@@ -4,6 +4,7 @@ import com.github.averyregier.club.application.ClubApplication;
 import com.github.averyregier.club.broker.ProviderBroker;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.*;
+import com.github.averyregier.club.domain.club.adapter.SettingsAdapter;
 import com.github.averyregier.club.domain.login.Provider;
 import org.brickred.socialauth.Profile;
 import spark.Request;
@@ -24,7 +25,7 @@ public class FastSetup {
         before("/test-setup", (request, response) -> {
 
             User user;
-            if(new ProviderBroker(app.getConnector()).find().isEmpty()) {
+            if (new ProviderBroker(app.getConnector()).find().isEmpty()) {
                 new ProviderBroker(app.getConnector()).persist(new Provider("example", "Example", "", "", "", ""));
                 user = setupJohnDoe(app);
                 synchronized (this) {
@@ -34,9 +35,9 @@ public class FastSetup {
                         Program program = app.setupProgramWithId("ABC", "AWANA", "en_US", demoId);
                         program.getCurriculum().getSeries().stream()
                                 .map(program::addClub)
-                                .filter(c->c.getShortCode().equals("TnT"))
-                                .forEach(c->{
-                                    c.replacePolicies(EnumSet.of(Policy.noSectionAwards));
+                                .filter(c -> c.getShortCode().equals("TnT"))
+                                .forEach(c -> {
+                                    c.replacePolicies(EnumSet.of(Policy.noSectionAwards), new SettingsAdapter(c));
                                 });
 
                         program.assign(user, ClubLeader.LeadershipRole.COMMANDER);
@@ -59,9 +60,9 @@ public class FastSetup {
     }
 
     private void signSomeSections(User user, Family family) {
-        family.getClubbers().stream().flatMap(c->c
+        family.getClubbers().stream().flatMap(c -> c
                 .getNextSections(10).stream())
-                .forEach(r->r.sign(user.asListener().get(), ""));
+                .forEach(r -> r.sign(user.asListener().get(), ""));
     }
 
     private Family registerSmithFamily(ClubApplication app, Program program) {
