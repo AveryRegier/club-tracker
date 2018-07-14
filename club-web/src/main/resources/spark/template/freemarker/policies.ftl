@@ -11,7 +11,7 @@
             </div>
             <div class="inputField">
                 <label>Club:</label>
-                <div class="staticField">${club.curriculum.name}</div>
+                <div class="staticField">${club.name}</div>
             </div>
             <div class="inputField">
                 <label for="noSectionAwards">No Section Awards</label>
