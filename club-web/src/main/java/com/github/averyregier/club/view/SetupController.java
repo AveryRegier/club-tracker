@@ -7,6 +7,7 @@ import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.Filter;
 import spark.ModelAndView;
 import spark.Request;
 import spark.template.freemarker.FreeMarkerEngine;
@@ -42,15 +43,10 @@ public class SetupController extends ModelMaker {
             return null;
         });
 
-        before("/protected/program/:id", (request, response) -> {
-            if (app.getProgram(request.params(":id")) == null) {
-                response.redirect("/protected/setup");
-                halt();
-            }
-        });
+        before("/protected/program/:id", gotoSetupScreenIfNecessary(app));
 
         get("/protected/program/:id", (request, response) ->
-                        createProgramView(request, app.getProgram(request.params(":id"))),
+                        createProgramView(request, app.getProgram(request.params(":id")), "program.ftl"),
                 new FreeMarkerEngine());
 
         post("/protected/program/:id", (request, response) -> {
@@ -75,14 +71,30 @@ public class SetupController extends ModelMaker {
         get("/protected/program/:id/update", (request, response) -> {
             Program program = app.getProgram(request.params(":id"));
             app.addExtraFields(program);
-            return createProgramView(request, program);
+            return createProgramView(request, program, "program.ftl");
         },
         new FreeMarkerEngine());
+
+        before("/protected/program/:id/schedule", gotoSetupScreenIfNecessary(app));
+
+        get("/protected/program/:id/schedule", (request, response) ->
+                        createProgramView(request, app.getProgram(request.params(":id")), "schedule.ftl"),
+                new FreeMarkerEngine());
+
     }
 
-    private ModelAndView createProgramView(Request request, Program program) {
+    public Filter gotoSetupScreenIfNecessary(ClubApplication app) {
+        return (request, response) -> {
+            if (app.getProgram(request.params(":id")) == null) {
+                response.redirect("/protected/setup");
+                halt();
+            }
+        };
+    }
+
+    private ModelAndView createProgramView(Request request, Program program, String viewName) {
         return new ModelAndView(
                 newModel(request, "Program").put("program", program).build(),
-                "program.ftl");
+                viewName);
     }
 }

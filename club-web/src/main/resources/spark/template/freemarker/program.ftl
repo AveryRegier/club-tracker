@@ -38,6 +38,7 @@
     <div class="actions">
         <button type='submit'>Submit</button>
     </div>
+    <a href="/protected/program/${program.id}/schedule">Generate Schedule</a>
     </div>
 </form>
 <#include "footer.ftl">
