@@ -30,6 +30,10 @@ public interface SectionType {
         return !requiredFor(AccomplishmentLevel.book);
     }
 
+    default boolean isScheduled() {
+        return !isExtraCredit();
+    }
+
     default String getReadableName() {
         return StringUtils.capitalize(StringUtils.join(
                 StringUtils.splitByCharacterTypeCamelCase(toString()),

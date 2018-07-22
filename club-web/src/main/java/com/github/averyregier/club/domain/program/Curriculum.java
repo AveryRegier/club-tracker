@@ -52,7 +52,7 @@ public interface Curriculum extends Contained<Curriculum>, Named {
     default List<Section> getScheduledSections() {
         return getBooks().stream()
                 .flatMap(b -> b.getSections().stream())
-                .filter(s -> !s.getSectionType().isExtraCredit())
+                .filter(s -> s.getSectionType().isScheduled())
                 .collect(Collectors.toList());
     }
 
