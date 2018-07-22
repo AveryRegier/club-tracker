@@ -1,8 +1,11 @@
 package com.github.averyregier.club.domain.club.adapter;
 
+import com.codepoetics.protonpack.StreamUtils;
+import com.codepoetics.protonpack.selectors.Selectors;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Section;
+import com.github.averyregier.club.domain.program.SectionType;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 
 import java.util.*;
@@ -11,7 +14,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.asStream;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.reverse;
+import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -48,7 +53,7 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     }
 
     private synchronized Map<Section, ClubberRecord> getRecords() {
-        if(records == null) {
+        if (records == null) {
             records = loadRecords();
         }
         return records;
@@ -85,63 +90,24 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
 
     @Override
     public Optional<Section> getNextSection() {
-        return firstSuccess(
-                this::getRequiredForStart,
-                this::getScheduled,
-                this::getRequiredForBooks,
-                this::getExtraCredit);
+        return getNextSections(1).stream().findFirst().map(ClubberRecord::getSection);
     }
 
-    private Optional<Section> getRequiredForStart() {
-        return getFirstMatch(this::getRequiredForStart);
+    private Stream<Section> getScheduled() {
+        return getClub().map(club ->
+                club.findPolicies(Policy::getNextSectionPolicy)
+                        .flatMap(fn -> fn.apply(this)
+                                .filter(s -> !isSigned(s))))
+                .orElse(Stream.empty());
     }
 
-    private Optional<Section> getFirstMatch(Function<Book, Optional<Section>> firstMatch) {
-        return getCurrentBookList().stream()
-                .map(firstMatch)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
-    }
-
-    private Optional<Section> getScheduled() {
-        // All together support hooked in here
-        return Optional.empty();
-    }
-
-    private Optional<Section> getRequiredForBooks() {
-        return getFirstMatch(b->firstSuccess(
-                    () -> getRequiredToMoveOn(b),
-                    () -> getRequiredForBook(b)));
-    }
-
-
-    private Optional<Section> getRequiredForStart(Book b) {
-        return getClubberFutureSections(b)
-                .filter(s -> s.getSectionType().requiredForStart())
-                .findFirst();
-    }
-
-    private Optional<Section> getRequiredToMoveOn(Book b) {
-        return getClubberFutureSections(b)
-                .filter(s -> s.getSectionType().requiredToMoveOn())
-                .findFirst();
-    }
-
-    private Optional<Section> getRequiredForBook(Book b) {
-        return getRequiredForBookStream(b)
-                .findFirst();
+    private boolean isScheduled() {
+        return getClub().map(Club::isScheduled).orElse(false);
     }
 
     private Stream<Section> getRequiredForBookStream(Book b) {
         return getClubberFutureSections(b)
                 .filter(s -> !s.getSectionType().isExtraCredit());
-    }
-
-    private Optional<Section> getExtraCredit() {
-        return getAgeLevelBooks()
-                .flatMap(this::getExtraCreditLeft)
-                .findFirst();
     }
 
     private Stream<Book> getAgeLevelBooks() {
@@ -156,9 +122,15 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
     }
 
     private Stream<Section> getExtraCreditLeft(Book b) {
+        Stream<Section>[] objectStream = getExtraCreditByType(b).values().stream().map(List::stream).toArray(Stream[]::new);
+        return StreamUtils.interleave(Selectors.roundRobin(), objectStream);
+    }
+
+    private Map<SectionType, List<Section>> getExtraCreditByType(Book b) {
         return b.getSections().stream()
-                .filter(s -> s.getSectionType().isExtraCredit())
-                .filter(s -> !isSigned(s));
+        .filter(s -> s.getSectionType().isExtraCredit())
+        .filter(s -> !isSigned(s))
+        .collect(Collectors.groupingBy(Section::getSectionType, TreeMap::new, mapping(Function.identity(), Collectors.toList())));
     }
 
     private Stream<Section> getClubberFutureSections(Book b) {
@@ -215,27 +187,39 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
 
     @Override
     public List<ClubberRecord> getNextSections(int max) {
-        if(max == 1) {
-            return getRecord(getNextSection())
-                    .map(Arrays::asList)
-                    .orElse(Collections.emptyList());
-        } else {
-            List<ClubberRecord> records = getCurrentBookList().stream()
-                    .flatMap(this::getRequiredForBookStream)
+        List<ClubberRecord> records = getCurrentBookList().stream()
+                .flatMap(this::getUpcomingSectionsStream)
+                .map(s -> getRecord(Optional.of(s)).get())
+                .distinct()
+                .limit(max)
+                .collect(toList());
+
+        if(records.size() < max) {
+            int left = max - records.size();
+            List<Book> books = getAgeLevelBooks().collect(Collectors.toList());
+            records.addAll(books.stream()
+                    .flatMap(this::getExtraCreditLeft)
+                    .limit(left)
                     .map(s -> getRecord(Optional.of(s)).get())
-                    .limit(max)
-                    .collect(toList());
-            if(records.size() < max) {
-                int left = max - records.size();
-                List<Book> books = getAgeLevelBooks().collect(Collectors.toList());
-                records.addAll(books.stream()
-                        .flatMap(this::getExtraCreditLeft)
-                        .limit(left)
-                        .map(s -> getRecord(Optional.of(s)).get())
-                        .collect(toList()));
-            }
-            return records;
+                    .collect(toList()));
         }
+
+        return records;
+    }
+
+    public Stream<Section> getUpcomingSectionsStream(Book b) {
+        if(isScheduled()) {
+            return getScheduled();
+        }
+        return UtilityMethods.concat(
+                getRequiredToMoveOn(b),
+                getRequiredForBookStream(b)
+        );
+    }
+
+    private Stream<Section> getRequiredToMoveOn(Book b) {
+        return getClubberFutureSections(b)
+                .filter(s -> s.getSectionType().requiredToMoveOn());
     }
 
 }

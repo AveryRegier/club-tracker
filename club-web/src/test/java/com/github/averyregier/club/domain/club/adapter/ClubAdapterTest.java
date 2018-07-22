@@ -23,14 +23,14 @@ public class ClubAdapterTest {
 
     @Test
     public void testGetShortName() throws Exception {
-        MasterCurriculum curriculum = new MasterCurriculum("a name", null, Collections.emptyList(), null);
+        MasterCurriculum curriculum = new MasterCurriculum("a name", null, Collections.emptyList(), null, false);
         Club classUnderTest = DomainTestUtil.createClubAdapter(null, curriculum);
         assertEquals("a name", classUnderTest.getShortCode());
     }
 
     @Test
     public void testGetCurriculum() throws Exception {
-        MasterCurriculum curriculum = new MasterCurriculum(null, null, Collections.emptyList(), null);
+        MasterCurriculum curriculum = new MasterCurriculum(null, null, Collections.emptyList(), null, false);
         Club classUnderTest = DomainTestUtil.createClubAdapter(null, curriculum);
         assertEquals(curriculum, classUnderTest.getCurriculum());
     }

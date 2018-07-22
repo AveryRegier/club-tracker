@@ -14,4 +14,8 @@ public class Later<T> {
         this.value = value;
         return value;
     }
+
+    public boolean isPresent() {
+        return value != null;
+    }
 }

@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -272,6 +273,13 @@ public class UtilityMethods {
         });
     }
 
+    public static <A,B,R> Optional<R> both(Optional<A> a, Optional<B> b, BiFunction<A,B,R> fn) {
+        if(a.isPresent() && b.isPresent()) {
+            return Optional.ofNullable(fn.apply(a.get(), b.get()));
+        }
+        return Optional.empty();
+    }
+
     public static <T> Stream<T> asStream(Iterator<T> sourceIterator) {
         return asStream(sourceIterator, false);
     }
@@ -382,5 +390,11 @@ public class UtilityMethods {
         } catch (ParseException e) {
             return Optional.empty();
         }
+    }
+
+    @SafeVarargs
+    @SuppressWarnings({ "unchecked", "varargs" })
+    public static <T> Stream<T> concat(Stream<? extends T>... streams) {
+        return StreamConcatenation.concat(streams);
     }
 }

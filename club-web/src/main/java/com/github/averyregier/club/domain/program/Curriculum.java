@@ -45,6 +45,17 @@ public interface Curriculum extends Contained<Curriculum>, Named {
         return new ArrayList<>(allSeries);
     }
 
+    default boolean isScheduled() {
+        return false;
+    }
+
+    default List<Section> getScheduledSections() {
+        return getBooks().stream()
+                .flatMap(b -> b.getSections().stream())
+                .filter(s -> !s.getSectionType().isExtraCredit())
+                .collect(Collectors.toList());
+    }
+
     class Type implements Setting.Type<Curriculum> {
 
         private static Type type = new Type();

@@ -27,6 +27,7 @@ public class TnTMissionCurriculum {
 
     public static CurriculumBuilder buildMission(CurriculumBuilder builder) {
         return builder
+                .scheduled(true)
                 .curriculum(c -> c
                         .shortCode("GiA")
                         .name("Grace in Action")

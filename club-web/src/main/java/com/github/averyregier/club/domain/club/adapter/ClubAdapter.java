@@ -2,20 +2,24 @@ package com.github.averyregier.club.domain.club.adapter;
 
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.Curriculum;
+import com.github.averyregier.club.domain.program.Section;
+import com.github.averyregier.club.domain.utility.Schedule;
 
-import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
-import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.optMap;
+import static com.github.averyregier.club.domain.utility.UtilityMethods.stream;
 
 /**
-* Created by avery on 9/26/14.
-*/
+ * Created by avery on 9/26/14.
+ */
 public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     private final Curriculum series;
     private Set<Clubber> clubbers;
+    private ConcurrentMap<Curriculum, Schedule<Club, Section>> schedules =
+            new ConcurrentHashMap<>();
 
     public ClubAdapter(Curriculum series) {
         this.series = series;
@@ -63,7 +67,7 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     }
 
     private synchronized void ensureClubbersInitialized() {
-        if(clubbers == null) clubbers = initializeClubbers();
+        if (clubbers == null) clubbers = initializeClubbers();
     }
 
     protected HashSet<Clubber> initializeClubbers() {
@@ -88,24 +92,22 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     }
 
     @Override
-    public Map<Clubber, Object> getClubNightReport() {
-        LocalDate date = findToday(Optional.of(this));
-        return new TreeMap<>(getClubbers().stream()
-                .collect(Collectors.toMap(Function.identity(),
-                        c -> c.getRecords(
-                                (r) -> r.getSigning()
-                                        .map(s -> s.getDate().equals(date))
-                                        .orElse(false)))));
-    }
-
-    @Override
     public boolean isLeader(Person person) {
         return stream(Optional.of(this), ClubGroup::getParentGroup)
-                .anyMatch(c->c.equals(optMap(person.asClubLeader(), ClubMember::getClub).orElse(null)));
+                .anyMatch(c -> c.equals(optMap(person.asClubLeader(), ClubMember::getClub).orElse(null)));
     }
 
     boolean accepts(ClubberAdapter clubber) {
         return getCurriculum().accepts(clubber.getCurrentAgeGroup());
     }
 
+    @Override
+    public void setSchedule(Curriculum curriculum, Schedule<Club, Section> schedule) {
+        schedules.put(curriculum, schedule);
+    }
+
+    @Override
+    public Optional<Schedule<Club, Section>> getSchedule(Curriculum curriculum) {
+        return Optional.ofNullable(schedules.get(curriculum));
+    }
 }

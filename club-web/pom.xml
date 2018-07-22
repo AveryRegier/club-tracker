@@ -214,6 +214,11 @@
             <version>2.0.26-beta</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.codepoetics</groupId>
+            <artifactId>protonpack</artifactId>
+            <version>1.13</version>
+        </dependency>
     </dependencies>
 
     <build>

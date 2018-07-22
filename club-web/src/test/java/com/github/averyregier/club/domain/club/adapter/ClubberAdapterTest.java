@@ -57,6 +57,8 @@ public class ClubberAdapterTest {
                 .forEach(s->clubber.getRecord(Optional.of(s)).ifPresent(r -> r.sign(mockListener, "")));
 
         Optional<Section> section = assertNextSection();
+        System.out.println(section.get().getId());
+        System.out.println(section.get().getSectionType());
         assertTrue(section.get().getSectionType().requiredToMoveOn());
     }
 
