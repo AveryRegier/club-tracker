@@ -21,6 +21,10 @@
                 <label for="listenerGroupsByGender">Listener Groups by Gender</label>
                 <input type="checkbox" name="policy" id="listenerGroupsByGender" value="listenerGroupsByGender" ${listenerGroupsByGender}>
             </div>
+            <div class="inputField">
+                <label for="allTogether">All Together Curriculum</label>
+                <input type="checkbox" name="policy" id="allTogether" value="allTogether" ${allTogether}>
+            </div>
 
             <#if club.curriculum.series?size != 0>
             <div class="inputField">
