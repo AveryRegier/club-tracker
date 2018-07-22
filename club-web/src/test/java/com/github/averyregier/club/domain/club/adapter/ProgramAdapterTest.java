@@ -46,7 +46,7 @@ public class ProgramAdapterTest {
     @Test
     public void addClub() {
         ProgramAdapter classUnderTest = new ProgramAdapter(null, null, (String)null);
-        MasterCurriculum curriculum = new MasterCurriculum("foo", null, Collections.emptyList(), null);
+        MasterCurriculum curriculum = new MasterCurriculum("foo", null, Collections.emptyList(), null, false);
         classUnderTest.addClub(curriculum);
         assertFalse(classUnderTest.getClubs().isEmpty());
         assertEquals("foo", classUnderTest.getClubs().iterator().next().getShortCode());

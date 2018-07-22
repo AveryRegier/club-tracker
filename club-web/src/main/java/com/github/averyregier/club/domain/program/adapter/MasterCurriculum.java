@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 public class MasterCurriculum extends CurriculumAdapter {
     private List<Curriculum> series;
 
-    public MasterCurriculum(String shortCode, String name, List<Curriculum> series, Later<Curriculum> parentCurriculum) {
-        super(shortCode, name, collectBooks(series), parentCurriculum, null);
+    public MasterCurriculum(String shortCode, String name, List<Curriculum> series, Later<Curriculum> parentCurriculum, boolean scheduled) {
+        super(shortCode, name, collectBooks(series), parentCurriculum, scheduled, null);
         this.series = series;
     }
 

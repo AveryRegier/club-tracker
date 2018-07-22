@@ -18,13 +18,17 @@ class CurriculumAdapter implements Curriculum {
     private final List<Book> bookList;
     private String shortCode;
     private Later<Curriculum> parentCurriculum;
+    private boolean scheduled;
     private Function<AgeGroup, Boolean> acceptsFn;
 
-    public CurriculumAdapter(String shortCode, String name, List<Book> bookList, Later<Curriculum> parentCurriculum, Function<AgeGroup, Boolean> acceptsFn) {
+    public CurriculumAdapter(String shortCode, String name, List<Book> bookList, Later<Curriculum> parentCurriculum,
+                             boolean scheduled, Function<AgeGroup, Boolean> acceptsFn)
+    {
         this.name = name;
         this.bookList = bookList;
         this.shortCode = shortCode;
         this.parentCurriculum = parentCurriculum;
+        this.scheduled = scheduled;
         this.acceptsFn = acceptsFn;
     }
 
@@ -137,5 +141,13 @@ class CurriculumAdapter implements Curriculum {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean isScheduled() {
+        if(!scheduled && parentCurriculum != null && parentCurriculum.isPresent()) {
+            return parentCurriculum.get().isScheduled();
+        }
+        return scheduled;
     }
 }

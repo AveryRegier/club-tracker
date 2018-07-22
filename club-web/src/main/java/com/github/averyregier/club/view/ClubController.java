@@ -115,6 +115,7 @@ public class ClubController extends ModelMaker {
                 Settings settings = new SettingsAdapter(theClub);
                 if (policies.contains(Policy.customizedBookSelections)) {
                     settings = buildCustomizedBookSettings(request, theClub);
+                    policies.add(Policy.allTogether);
                 }
                 theClub.replacePolicies(policies, settings);
                 response.redirect("/protected/club/" + theClub.getId());
@@ -422,6 +423,7 @@ public class ClubController extends ModelMaker {
             String key = ageGroup.name() + "-book";
             return Optional.ofNullable(killWhitespace(request.queryParams(key)))
                     .flatMap(value -> theClub
+                            .getProgram()
                             .getCurriculum()
                             .getSeries(value))
                     .map(series -> new SettingAdapter<>(Curriculum.Type.get(), key, series));

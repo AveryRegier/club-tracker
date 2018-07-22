@@ -24,6 +24,7 @@ public class CurriculumBuilder implements Builder<Curriculum> {
     private Later<Curriculum> parentCurriculum;
     private Function<AgeGroup, Boolean> acceptsFn;
     private String name;
+    private boolean scheduled;
 
     public Curriculum build() {
         Later<Curriculum> curriculumLater = new Later<>();
@@ -32,10 +33,10 @@ public class CurriculumBuilder implements Builder<Curriculum> {
             List<Curriculum> series = this.series.stream()
                     .map(s->s.setCurriculum(curriculumLater).build())
                     .collect(Collectors.toList());
-            curriculum = new MasterCurriculum(shortCode, getName(), series, parentCurriculum);
+            curriculum = new MasterCurriculum(shortCode, getName(), series, parentCurriculum, scheduled);
         } else {
             List<Book> bookList = buildBooks(curriculumLater);
-            curriculum = new CurriculumAdapter(shortCode, getName(), bookList, parentCurriculum, acceptsFn);
+            curriculum = new CurriculumAdapter(shortCode, getName(), bookList, parentCurriculum, scheduled, acceptsFn);
         }
         curriculumLater.set(curriculum);
         return curriculum;
@@ -78,6 +79,11 @@ public class CurriculumBuilder implements Builder<Curriculum> {
     public CurriculumBuilder accepts(AgeGroup... ageGroups) {
         List<AgeGroup> ageGroupList = Arrays.asList(ageGroups);
         this.acceptsFn = ageGroupList::contains;
+        return this;
+    }
+
+    public CurriculumBuilder scheduled(boolean scheduled) {
+        this.scheduled = scheduled;
         return this;
     }
 }

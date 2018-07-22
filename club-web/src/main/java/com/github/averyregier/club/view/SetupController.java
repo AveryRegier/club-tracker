@@ -1,10 +1,13 @@
 package com.github.averyregier.club.view;
 
 import com.github.averyregier.club.application.ClubApplication;
+import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.club.ClubLeader;
 import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
+import com.github.averyregier.club.domain.program.Section;
+import com.github.averyregier.club.domain.utility.Schedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Filter;
@@ -12,21 +15,27 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.template.freemarker.FreeMarkerEngine;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static spark.Spark.*;
 
 public class SetupController extends ModelMaker {
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
     public void init(ClubApplication app) {
         get("/protected/setup", (request, response) -> {
             return new ModelAndView(newModel(request, "Club Setup")
-                .put("roles", ClubLeader.LeadershipRole.values())
-                .put("programs", Programs.values())
-                .build(), "setup.ftl");
+                    .put("roles", ClubLeader.LeadershipRole.values())
+                    .put("programs", Programs.values())
+                    .build(), "setup.ftl");
         }, new FreeMarkerEngine());
 
         post("/protected/setup", (request, response) -> {
@@ -69,11 +78,11 @@ public class SetupController extends ModelMaker {
         });
 
         get("/protected/program/:id/update", (request, response) -> {
-            Program program = app.getProgram(request.params(":id"));
-            app.addExtraFields(program);
-            return createProgramView(request, program, "program.ftl");
-        },
-        new FreeMarkerEngine());
+                    Program program = app.getProgram(request.params(":id"));
+                    app.addExtraFields(program);
+                    return createProgramView(request, program, "program.ftl");
+                },
+                new FreeMarkerEngine());
 
         before("/protected/program/:id/schedule", gotoSetupScreenIfNecessary(app));
 
@@ -81,6 +90,41 @@ public class SetupController extends ModelMaker {
                         createProgramView(request, app.getProgram(request.params(":id")), "schedule.ftl"),
                 new FreeMarkerEngine());
 
+        post("/protected/program/:id/schedule", (request, response) -> {
+            Program program = app.getProgram(request.params(":id"));
+            List<LocalDate> dates = parseMeetingDates(request);
+
+            for (Club club: program.getClubs()) {
+                for(Curriculum curriculum: club.getScheduledCurriculum()) {
+                    List<Section> scheduledSections = curriculum.getScheduledSections();
+                    Schedule<Club, Section> schedule = Schedule.generate(club, dates, scheduledSections);
+                    club.setSchedule(curriculum, schedule);
+                }
+            }
+
+            response.redirect("/protected/program/" + program.getId());
+            return null;
+        });
+    }
+
+    public List<LocalDate> parseMeetingDates(Request request) {
+        return request.queryMap().toMap().entrySet().stream()
+                .filter(e -> e.getKey().startsWith("week"))
+                .map(Map.Entry::getValue)
+                .flatMap(Arrays::stream)
+                .map(this::parseDate)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    public Optional<LocalDate> parseDate(String value) {
+        try {
+            return Optional.ofNullable(LocalDate.parse(value));
+        } catch (DateTimeParseException e) {
+            return Optional.empty();
+        }
     }
 
     public Filter gotoSetupScreenIfNecessary(ClubApplication app) {
