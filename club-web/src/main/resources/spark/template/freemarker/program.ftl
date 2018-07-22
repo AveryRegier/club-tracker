@@ -19,7 +19,7 @@
 
                     <UL>
                     <#list program.clubs as club>
-                        <LI>${club.shortCode}</LI>
+                        <LI><a href="/protected/club/${club.id}/policies">${club.shortCode}</a></LI>
                     </#list>
                     </UL>
 
