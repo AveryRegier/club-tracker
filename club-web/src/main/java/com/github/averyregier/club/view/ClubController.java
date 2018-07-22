@@ -90,8 +90,6 @@ public class ClubController extends ModelMaker {
                         .forEach(setting -> defaults.put(
                                 setting.getKey().replace("-book", ""), setting.marshall()));
 
-                System.out.println(defaults);
-
                 builder.put("defaultCurriculum", defaults);
 
                 return new ModelAndView(
@@ -115,7 +113,6 @@ public class ClubController extends ModelMaker {
                 Settings settings = new SettingsAdapter(theClub);
                 if (policies.contains(Policy.customizedBookSelections)) {
                     settings = buildCustomizedBookSettings(request, theClub);
-                    policies.add(Policy.allTogether);
                 }
                 theClub.replacePolicies(policies, settings);
                 response.redirect("/protected/club/" + theClub.getId());

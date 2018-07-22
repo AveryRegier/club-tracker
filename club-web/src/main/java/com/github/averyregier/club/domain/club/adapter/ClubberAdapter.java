@@ -211,7 +211,7 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
         if(isScheduled()) {
             return getScheduled();
         }
-        return UtilityMethods.concat(
+        return Stream.concat(
                 getRequiredToMoveOn(b),
                 getRequiredForBookStream(b)
         );
