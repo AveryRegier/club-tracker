@@ -2,7 +2,7 @@ package com.github.averyregier.club.domain.utility;
 
 import java.time.LocalDate;
 
-public class Scheduled<C extends HasId, E extends HasId> {
+public class Scheduled<C extends HasTimezone, E extends HasId> {
     private C container;
     private LocalDate date;
     private E item;

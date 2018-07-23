@@ -359,8 +359,8 @@ public class UtilityMethods {
         return getToday(findZone(member));
     }
 
-    public static LocalDate findToday(Optional<Club> club) {
-        return getToday(findZone(club));
+    public static LocalDate findToday(Optional<? extends HasTimezone> holder) {
+        return getToday(findZone(holder));
     }
 
     public static LocalDate getToday(ZoneId zone) {
@@ -372,8 +372,8 @@ public class UtilityMethods {
         return findZone(club);
     }
 
-    private static ZoneId findZone(Optional<Club> club) {
-        return club.map(c -> c.getProgram().getTimeZone())
+    private static ZoneId findZone(Optional<? extends HasTimezone> holder) {
+        return holder.map(h -> h.getTimeZone())
                 .orElseGet(()-> getDefaultZone());
     }
 

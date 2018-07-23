@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.stream.Stream;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.joining;
 
-public class Schedule<C extends HasId, E extends HasId> {
+public class Schedule<C extends HasTimezone, E extends HasId> {
     private static final Logger log = LoggerFactory.getLogger(Schedule.class);
     private C container;
     private List<Scheduled<C, E>> list;
@@ -28,7 +27,7 @@ public class Schedule<C extends HasId, E extends HasId> {
      * This will destructively schedule toSchedule into a Schedule object.
      * The leftovers in toSchedule were not able to be scheduled on the given dates.
      */
-    public static <C extends HasId, I extends HasId> Schedule<C, I> generate(
+    public static <C extends HasTimezone, I extends HasId> Schedule<C, I> generate(
             C container, Collection<LocalDate> dates, List<I> toSchedule) {
         List<Scheduled<C, I>> list = new ArrayList<>();
         for (LocalDate date : dates) {
@@ -66,7 +65,7 @@ public class Schedule<C extends HasId, E extends HasId> {
     }
 
     public LocalDate getToday() {
-        return LocalDate.now(ZoneId.of("America/Chicago"));
+        return LocalDate.now(container.getTimeZone());
     }
 
     public Stream<E> getAvailableEvents() {

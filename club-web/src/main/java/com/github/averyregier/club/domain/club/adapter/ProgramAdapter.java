@@ -328,7 +328,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
 
     @Override
     public ZoneId getTimeZone() {
-        return ZoneId.of("CST6CDT");
+        return UtilityMethods.getDefaultZone();
     }
 
     protected InputFieldGroup persist(InputFieldGroup group) {

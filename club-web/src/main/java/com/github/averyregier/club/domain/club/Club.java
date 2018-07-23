@@ -6,6 +6,7 @@ import com.github.averyregier.club.domain.utility.Schedule;
 import com.github.averyregier.club.domain.utility.Setting;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -71,5 +72,9 @@ public interface Club extends ClubGroup, Comparable<Club>, Named {
 
     default boolean isScheduled() {
         return findPolicies(Policy::isScheduled).anyMatch(x->x);
+    }
+    
+    default ZoneId getTimeZone() {
+        return getProgram().getTimeZone();
     }
 }
