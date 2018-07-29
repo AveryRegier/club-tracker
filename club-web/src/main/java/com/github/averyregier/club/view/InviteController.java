@@ -125,7 +125,7 @@ public class InviteController extends ModelMaker {
 
         String fullName = invite.getPerson().getName().getFullName();
         String orgName = toInviteTo.getShortCode();
-        String programName = toInviteTo.getCurriculum().getShortCode();
+        String programName = toInviteTo.getName();
         String senderName = (invite.by().asClubLeader()
                 .map(l -> l.getLeadershipRole().name()).orElse("") + " " +
                 invite.by().getName().getFullName()).trim();
@@ -197,7 +197,7 @@ public class InviteController extends ModelMaker {
     }
     private String getListenerTemplate() {
         return "I would like to invite you to use a new website that will help us keep track of " +
-                "the {1} {2} program and communicate parents about the progress of their children.";
+                "the {1} {2} program and communicate with parents about the progress of their children.";
     }
     private String getClubberTemplate() {
         return "I would like to invite you to use a new website that will help us keep track of " +
