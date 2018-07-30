@@ -7,8 +7,10 @@ import com.github.averyregier.club.domain.club.ClubLeader;
 import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
 import com.github.averyregier.club.domain.club.adapter.ClubLeaderAdapter;
 import org.jooq.DSLContext;
+import org.jooq.Result;
 import org.jooq.TableField;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -46,15 +48,14 @@ public class LeaderBroker extends PersistenceBroker<ClubLeader> {
 
     public Optional<ClubLeader> find(String id, PersonManager personManager, ClubManager clubManager) {
         Function<DSLContext, Optional<ClubLeader>> fn = create -> {
-            LeaderRecord record = create.selectFrom(LEADER).where(LEADER.ID.eq(id.getBytes())).fetchOne();
-            if (record == null) return Optional.empty();
+            Result<LeaderRecord> results = create.selectFrom(LEADER).where(LEADER.ID.eq(id.getBytes())).fetch();
 
-            return Optional.of(new ClubLeaderAdapter(personManager.lookup(id).get(),
+            if (results == null) return Optional.empty();
+            return results.stream().map(record -> (ClubLeader) new ClubLeaderAdapter(personManager.lookup(id).get(),
                     ClubLeader.LeadershipRole.valueOf(record.getRole()),
                     (ClubAdapter) clubManager.lookup(convert(record.getClubId())).get()
-            ));
+            )).min(Comparator.reverseOrder());
         };
-        Optional<ClubLeader> result = query(fn);
-        return result;
+        return query(fn);
     }
 }
