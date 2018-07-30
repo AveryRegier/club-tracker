@@ -171,12 +171,12 @@ public class ClubApplication implements SparkApplication, ServletContextListener
 //                      .id("phone")
                         .required().type(text))
                 .build());
-        program.addField(RegistrationSection.household, new InputFieldBuilder()
-//                .id("media")
-                .name("Media Disclosure").type(text).required()
-                .value("Granted", "Permission Granted", false)
-                .value("Denied", "Permission Denied", false)
-                .build());
+//        program.addField(RegistrationSection.household, new InputFieldBuilder()
+////                .id("media")
+//                .name("Media Disclosure").type(text).required()
+//                .value("Granted", "Permission Granted", false)
+//                .value("Denied", "Permission Denied", false)
+//                .build());
         program.addField(RegistrationSection.household, new InputFieldBuilder()
                 .name("Phone Number for Cancellations & Other " + program.getCurriculum().getShortCode() + " Related News")
 //                .id("phone")
@@ -202,6 +202,21 @@ public class ClubApplication implements SparkApplication, ServletContextListener
                 .filter(c -> c instanceof Program)
                 .map(c -> (Program) c)
                 .orElse(null);
+    }
+
+    public Optional<Program> getProgramByName(String name) {
+        return getClubManager()
+                .getPrograms()
+                .stream()
+                .filter(p->matches(name, p.getName()))
+                .findFirst();
+    }
+
+    private boolean matches(String match, String v) {
+        String comparing = Stream.of(v.split("\\W+"))
+                .collect(Collectors.joining())
+                .toLowerCase();
+        return comparing.equalsIgnoreCase(match);
     }
 
     @Override
