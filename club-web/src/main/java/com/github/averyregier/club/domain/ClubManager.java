@@ -15,6 +15,7 @@ import com.github.averyregier.club.repository.PersistedProgram;
 
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -40,6 +41,7 @@ public class ClubManager {
     protected Club find(String id) {
         return null;
     }
+
     protected Program findProgram(String id) {
         return null;
     }
@@ -58,9 +60,9 @@ public class ClubManager {
 
     public Optional<Club> constructClub(String id, String parentId, String curriculum) {
         return Programs.find(curriculum).map(s -> {
-            if(parentId == null) {
+            if (parentId == null) {
                 Program program = findProgram(id);
-                if(program != null) return program;
+                if (program != null) return program;
             }
             return new PersistedClub(s, id, clubs.computeIfAbsent(parentId, this::find));
         });
@@ -78,9 +80,9 @@ public class ClubManager {
         clubs.put(program.getId(), program);
         return program;
     }
+
     public Program loadProgram(String acceptLanguage, String organizationName, Curriculum curriculum, String id,
-                               Supplier<Map<RegistrationSection, InputFieldGroup>> registrationForm)
-    {
+                               Supplier<Map<RegistrationSection, InputFieldGroup>> registrationForm) {
         PersistedProgram program = new PersistedProgram(factory, acceptLanguage, organizationName, curriculum, id, this, registrationForm);
         clubs.put(program.getId(), program);
         return program;
@@ -89,6 +91,15 @@ public class ClubManager {
     public boolean hasPrograms() {
         doLoad();
         return clubs.values().stream().anyMatch(c -> c.asProgram().isPresent());
+    }
+
+    public Collection<Program> getPrograms() {
+        doLoad();
+        return clubs.values().stream()
+                .map(Club::asProgram)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 
     public Optional<InputField> getRegistrationField(String inputFieldId) {
@@ -100,12 +111,12 @@ public class ClubManager {
 
     private Stream<Program> streamPrograms() {
         return clubs.values().stream()
-                .filter(c->c instanceof Program)
+                .filter(c -> c instanceof Program)
                 .map(c -> (Program) c);
     }
 
     private synchronized void doLoad() {
-        if(clubs.isEmpty()) {
+        if (clubs.isEmpty()) {
             loadClubs();
             streamPrograms().forEach(Program::getClubs);
         }

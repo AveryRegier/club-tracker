@@ -208,7 +208,7 @@ public class ClubApplication implements SparkApplication, ServletContextListener
         return getClubManager()
                 .getPrograms()
                 .stream()
-                .filter(p->matches(name, p.getName()))
+                .filter(p->matches(name, p.getShortCode()))
                 .findFirst();
     }
 
