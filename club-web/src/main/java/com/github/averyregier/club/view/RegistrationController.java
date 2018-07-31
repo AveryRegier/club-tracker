@@ -20,7 +20,7 @@ import static spark.Spark.*;
 
 public class RegistrationController extends ModelMaker {
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
     public void init(ClubApplication app) {
@@ -39,6 +39,13 @@ public class RegistrationController extends ModelMaker {
                 response.redirect("/protected/setup");
                 halt();
             }
+        });
+
+        before("/register/:name", (request, response) -> {
+            app.getProgramByName(request.params(":name")).ifPresent(program -> {
+                response.redirect("/protected/" + program.getId() + "/family");
+                halt();
+            });
         });
 
         get("/protected/:id/family", (request, response) -> {
@@ -162,10 +169,10 @@ public class RegistrationController extends ModelMaker {
                 .filter(p -> !p.asListener().isPresent())
                 .filter(p -> !p.asClubLeader().isPresent())
                 .findFirst();
-        if(aParent.isPresent()) {
+        if (aParent.isPresent()) {
             Optional<Club> leadingClub = optMap(user.asClubLeader(), ClubMember::getClub);
-            if(leadingClub.isPresent()) {
-                response.redirect("/protected/club/"+leadingClub.get().getId()+"/workers/" + aParent.get().getId());
+            if (leadingClub.isPresent()) {
+                response.redirect("/protected/club/" + leadingClub.get().getId() + "/workers/" + aParent.get().getId());
                 return;
             }
         }
@@ -199,7 +206,7 @@ public class RegistrationController extends ModelMaker {
     }
 
     private boolean leadsProgram(User user, String programId) {
-        return user.asClubLeader().map(l -> l.getProgram().getId().equals(programId)).filter(x->x).isPresent();
+        return user.asClubLeader().map(l -> l.getProgram().getId().equals(programId)).filter(x -> x).isPresent();
     }
 
     private UserBean mapUser(String provider, Request request) {

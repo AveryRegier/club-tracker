@@ -295,6 +295,7 @@ public class Login extends ModelMaker {
                 manager = new SocialAuthManager();
                 manager.setSocialAuthConfig(conf);
                 manager.setPermission("facebook", Permission.AUTHENTICATE_ONLY);
+                manager.setPermission("googleplus", Permission.AUTHENTICATE_ONLY);
                 session.attribute("socialAuthManager", manager);
             } catch (Exception e) {
                 throw new RuntimeException(e);
