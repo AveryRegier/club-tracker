@@ -43,6 +43,7 @@ public class RegistrationController extends ModelMaker {
 
         before("/register/:name", (request, response) -> {
             app.getProgramByName(request.params(":name")).ifPresent(program -> {
+                request.session(true).attribute("program", program);
                 response.redirect("/protected/" + program.getId() + "/family");
                 halt();
             });
