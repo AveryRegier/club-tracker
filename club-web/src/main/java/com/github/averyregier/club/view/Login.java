@@ -17,6 +17,7 @@ import spark.template.freemarker.FreeMarkerEngine;
 import java.io.StringReader;
 import java.util.*;
 
+import static com.github.averyregier.club.domain.utility.UtilityMethods.map;
 import static java.util.stream.Collectors.joining;
 import static spark.Spark.*;
 
@@ -26,7 +27,7 @@ import static spark.Spark.*;
 public class Login extends ModelMaker {
 
     public static void resetCookies(Request req, Response res, User user) {
-        if(!req.raw().isSecure()) {
+        if (!req.raw().isSecure()) {
             Session session = req.session(true);
             session.attribute("userID", user.getLoginInformation().getUniqueID());
             session.attribute("provider", user.getLoginInformation().getProviderID());
@@ -35,7 +36,7 @@ public class Login extends ModelMaker {
         res.cookie("userID", user.getLoginInformation().getUniqueID(), 60 * 60 * 3, req.raw().isSecure());
         res.cookie("provider", user.getLoginInformation().getProviderID(), 60 * 60 * 3, req.raw().isSecure());
         String location = req.session().attribute("location");
-        if(location == null || location.startsWith("/login")) {
+        if (location == null || location.startsWith("/login")) {
             location = "/protected/my";
         }
         res.redirect(location);
@@ -46,7 +47,7 @@ public class Login extends ModelMaker {
         before("/invite/:code", (request, response) -> {
             String code = request.params(":code");
             Optional<Invitation> invitation = findOpenInvite(app, code);
-            if(invitation.isPresent()) {
+            if (invitation.isPresent()) {
                 request.session().attribute("invite", invitation.get());
                 Optional<Program> program = app.getPrograms(invitation.get().getPerson()).stream().findFirst();
                 if (program.isPresent()) {
@@ -71,9 +72,11 @@ public class Login extends ModelMaker {
         new ConsumerService().init(app);
 
         get("/login", (request, response) ->
-                new spark.ModelAndView(toMap("providers",
-                        getProviders(app)
-                        ), "index.ftl"), new FreeMarkerEngine());
+                new spark.ModelAndView(
+                        map("providers", getProviders(app))
+                                .put("program", request.session().attribute("program"))
+                                .build(),
+                        "index.ftl"), new FreeMarkerEngine());
 
         get("/openid", (request, response) ->
                 new spark.ModelAndView(new HashMap<Object, Object>(), "openid.ftl"), new FreeMarkerEngine());
@@ -105,7 +108,7 @@ public class Login extends ModelMaker {
                     response.redirect("/login");
                 } else {
                     User auser = setupUser(app, provider.getUserProfile(), request.session().attribute("invite"));
-                    System.out.println("login success: "+auser.getId());
+                    System.out.println("login success: " + auser.getId());
                     resetCookies(request, response, auser);
                 }
             } catch (Exception e) {
@@ -118,7 +121,7 @@ public class Login extends ModelMaker {
     }
 
     private boolean loggedIn(ClubApplication app, Request request) {
-        if(request.raw().isSecure()) {
+        if (request.raw().isSecure()) {
             if (isLoggedInSecure(app, request)) return true;
         } else {
             if (isLoggedInInsecure(app, request)) return true;
@@ -135,8 +138,8 @@ public class Login extends ModelMaker {
     }
 
     private void printCookies(Request request) {
-        request.cookies().entrySet().forEach(e->{
-            System.out.println(e.getKey()+"="+e.getValue());
+        request.cookies().entrySet().forEach(e -> {
+            System.out.println(e.getKey() + "=" + e.getValue());
         });
     }
 
@@ -193,7 +196,7 @@ public class Login extends ModelMaker {
 
     public static User setupUser(ClubApplication app, Profile userProfile, Invitation invite) {
         UserBean bean = mapUser(userProfile);
-        if(invite != null) {
+        if (invite != null) {
             User user = app.getUserManager().acceptInvite(bean, invite.getPerson());
             new InviteBroker(app).persist(invite.complete());
             return user;
@@ -206,19 +209,19 @@ public class Login extends ModelMaker {
         UserBean user = new UserBean();
         user.setEmail(profile.getEmail());
         String firstName = profile.getFirstName();
-        if(!empty(firstName))
+        if (!empty(firstName))
             user.setFirstName(firstName);
         String lastName = profile.getLastName();
-        if(!empty(lastName)) {
+        if (!empty(lastName)) {
             user.setLastName(lastName);
-        } else if(!empty(profile.getFullName())) {
+        } else if (!empty(profile.getFullName())) {
             mapSplitName(profile.getFullName(), user);
-        } else if(!empty(profile.getDisplayName())) {
+        } else if (!empty(profile.getDisplayName())) {
             mapSplitName(profile.getDisplayName(), user);
         }
         user.setDisplayName(profile.getDisplayName());
         BirthDate dob = profile.getDob();
-        if(dob != null) {
+        if (dob != null) {
             user.setDob(dob.getDay() + "/" + dob.getMonth() + "/" + dob.getYear());
         }
         user.setCountry(profile.getCountry());
@@ -233,10 +236,10 @@ public class Login extends ModelMaker {
 
     private static void mapSplitName(String fullName, UserBean user) {
         String[] parts = fullName.trim().split("\\s");
-        if(parts.length > 0) {
+        if (parts.length > 0) {
             user.setFirstName(parts[0]);
         }
-        if(parts.length > 1) {
+        if (parts.length > 1) {
             int lastIndex = parts.length - 1;
             user.setLastName(parts[lastIndex]);
             // if middle names were on user bean set them here
