@@ -67,12 +67,12 @@
                 <p>If you have a new clubber, you can find them from the club roster.</p>
                 <p>You can see the all the clubber's records as well.</p>
             </div>
-            <div>
-                <p><strong>Clubbers</strong></p>
-                <p>Club Tracker will help you keep track of your status in the ${program.shortCode}
-                    ${program.name} program.</p>
-                <p>See what next sections you should be preparing for the next club meeting.</p>
-            </div>
+            <!--<div>-->
+                <!--<p><strong>Clubbers</strong></p>-->
+                <!--<p>Club Tracker will help you keep track of your status in the ${program.shortCode}-->
+                    <!--${program.name} program.</p>-->
+                <!--<p>See what next sections you should be preparing for the next club meeting.</p>-->
+            <!--</div>-->
             </#if>
             <div>
                 <p><strong>Club Leadership: Commanders, Directors, Secretaries, and Pastors</strong></p>
