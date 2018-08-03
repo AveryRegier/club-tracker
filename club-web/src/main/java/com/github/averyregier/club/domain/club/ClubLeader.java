@@ -6,7 +6,13 @@ import java.util.Random;
  * Created by avery on 9/5/2014.
  */
 public interface ClubLeader extends ClubWorker {
-    public enum LeadershipRole {
+    enum LeadershipRole {
+        KIOSK {
+            @Override
+            public boolean isKiosk() {
+                return true;
+            }
+        },
         SECRETARY,
         DIRECTOR,
         COMMANDER,
@@ -18,7 +24,11 @@ public interface ClubLeader extends ClubWorker {
             LeadershipRole[] values = values();
             return values[random.nextInt(values.length)];
         }
+
+        public boolean isKiosk() {
+            return false;
+        }
     }
-    public Program getProgram();
+    Program getProgram();
     LeadershipRole getLeadershipRole();
 }

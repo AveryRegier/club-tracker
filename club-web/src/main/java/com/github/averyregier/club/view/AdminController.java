@@ -49,7 +49,8 @@ public class AdminController extends ModelMaker {
     }
 
     private boolean leadsProgram(Person person) {
-        return optMap(person.asClubLeader(), l -> optMap(l.getClub(), Club::asProgram)).isPresent();
+        return optMap(person.asClubLeader().filter(l->!l.getLeadershipRole().isKiosk()),
+                l -> optMap(l.getClub(), Club::asProgram)).isPresent();
     }
 
 }

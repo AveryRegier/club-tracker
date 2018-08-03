@@ -25,5 +25,10 @@
             </div>
         </div>
     </form>
+
+    <div>
+    <p>Please see our <a href="/privacy.html">Privacy Policy</a> for how each field is used, and
+        if you have any questions, contact the <a href="mailto:avery.regier@gmail.com">site owner</a>.</p>
+    </div>
 </body>
 </html>

@@ -39,7 +39,10 @@ public class RegistrationController extends ModelMaker {
                 response.redirect("/protected/setup");
                 halt();
             }
+            redirectKiosk(request, response);
         });
+        
+        before("/protected/my", this::redirectKiosk);
 
         before("/register/:name", (request, response) -> {
             app.getProgramByName(request.params(":name")).ifPresent(program -> {
@@ -140,6 +143,17 @@ public class RegistrationController extends ModelMaker {
         post("/protected/:id/newWorker", (request, response) -> {
             return updateRegistrationForm(app, request);
         }, new FreeMarkerEngine());
+    }
+
+    public void redirectKiosk(Request request, Response response) {
+        getUser(request).asClubLeader().ifPresent(l->{
+            if(l.getLeadershipRole().isKiosk()) {
+                if(!request.pathInfo().endsWith("/newClubber")) {
+                    response.redirect("/protected/"+ l.getProgram().getId()+"/newClubber");
+                    halt();
+                }
+            }
+        });
     }
 
     private void validateMayCreateNewPeople(
