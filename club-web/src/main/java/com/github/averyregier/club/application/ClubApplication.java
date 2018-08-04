@@ -156,7 +156,7 @@ public class ClubApplication implements SparkApplication, ServletContextListener
                 .build());
         program.addField(RegistrationSection.household, new InputFieldGroupBuilder()
                 .name("Emergency Contact")
-                .group(n -> extraNameFields(n))
+                .group(this::extraNameFields)
                 .field((f) -> f.name("Phone Number")
 //                      .id("phone")
                         .required().type(text))
@@ -164,24 +164,28 @@ public class ClubApplication implements SparkApplication, ServletContextListener
 //                      .id("relationship")
                         .required().type(text))
                 .build());
-        program.addField(RegistrationSection.household, new InputFieldGroupBuilder()
-                .name("Preferred Doctor")
-                .group(n -> extraNameFields(n))
-                .field(f -> f.name("Phone Number")
-//                      .id("phone")
-                        .required().type(text))
-                .build());
-//        program.addField(RegistrationSection.household, new InputFieldBuilder()
-////                .id("media")
-//                .name("Media Disclosure").type(text).required()
-//                .value("Granted", "Permission Granted", false)
-//                .value("Denied", "Permission Denied", false)
+//        program.addField(RegistrationSection.household, new InputFieldGroupBuilder()
+//                .name("Preferred Doctor")
+//                .group(n -> extraNameFields(n))
+//                .field(f -> f.name("Phone Number")
+////                      .id("phone")
+//                        .required().type(text))
 //                .build());
         program.addField(RegistrationSection.household, new InputFieldBuilder()
-                .name("Phone Number for Cancellations & Other " + program.getCurriculum().getShortCode() + " Related News")
-//                .id("phone")
-                .type(text)
+//                .id("media")
+                .name("Media Disclosure").type(text).required()
+                .value("Granted", "Permission Granted", false)
+                .value("Denied", "Permission Denied", false)
                 .build());
+//        program.addField(RegistrationSection.household, new InputFieldBuilder()
+//                .name("Phone Number for Cancellations & Other " + program.getCurriculum().getShortCode() + " Related News")
+////                .id("phone")
+//                .type(text)
+//                .build());
+        program.addField(RegistrationSection.household, new InputFieldBuilder()
+            .name("Additional Information About Your Family")
+            .type(text)
+            .build());
     }
 
     private InputFieldGroupBuilder extraNameFields(InputFieldGroupBuilder n) {

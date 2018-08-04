@@ -46,6 +46,13 @@ public class AdminController extends ModelMaker {
             response.redirect("/protected/admin");
             return null;
         }));
+
+        before("/protected/admin/program/:name/reset", (request, response) -> {
+            app.getProgramByName(request.params("name")).ifPresent(app::addExtraFields);
+
+            response.redirect("/protected/admin");
+            halt();
+        });
     }
 
     private boolean leadsProgram(Person person) {
