@@ -78,9 +78,10 @@ public class ProgramAdapter extends ClubAdapter implements Program {
             return createRegistrationForm(user.getFamily().get(), user);
         }
         InputFieldGroup me = buildMeFields();
+        InputField spouseAction = buildSpouseAction();
         InputFieldGroup household = buildHouseholdFields();
-        InputField action = StandardInputFields.action.createField(getLocale()).build();
-        List<InputFieldDesignator> list = Arrays.asList(me, household, action);
+        InputField action = buildChildAction();
+        List<InputFieldDesignator> list = Arrays.asList(me, spouseAction, household, action);
 
         Map<String, String> map = prefix(me.getShortCode(), me.map(user));
 
@@ -90,10 +91,11 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     @Override
     public RegistrationInformation createRegistrationForm() {
         InputFieldGroup parent = buildParentFields();
+        InputField spouseAction = buildSpouseAction();
         InputFieldGroup household = buildHouseholdFields();
 
-        InputField action = StandardInputFields.action.createField(getLocale()).build();
-        List<InputFieldDesignator> list = Arrays.asList(parent, household, action);
+        InputField childAction = buildChildAction();
+        List<InputFieldDesignator> list = Arrays.asList(parent, spouseAction, household, childAction);
 
         return new ProgramRegistrationInformation(list, Collections.emptyMap());
     }
@@ -103,17 +105,18 @@ public class ProgramAdapter extends ClubAdapter implements Program {
         InputFieldGroup me = buildMeFields();
         list.add(me);
         Map<String, String> map = prefix(me.getShortCode(), me.map(user));
-        InputFieldGroup household = buildHouseholdFields();
-        putAll(map, household.getShortCode(), household.map(user));
-        list.add(household);
 
         Parent spouse = getOther(family.getParents(), user.asParent().get()).orElse(null);
-        boolean hasSpouse = false;
         if(spouse != null) {
             InputFieldGroup spouseFields = addSpouse(list);
             putAll(map, spouseFields.getShortCode(), spouseFields.map(spouse));
-            hasSpouse = true;
+        } else {
+            addSpouseAction(list);
         }
+
+        InputFieldGroup household = buildHouseholdFields();
+        putAll(map, household.getShortCode(), household.map(user));
+        list.add(household);
 
         int i=0;
         for(Clubber clubber: family.getClubbers()) {
@@ -121,17 +124,29 @@ public class ProgramAdapter extends ClubAdapter implements Program {
             putAll(map, childFields.getShortCode(), childFields.map(clubber));
         }
 
-        addActionFields(list, hasSpouse);
+        addActionFields(list, true);
 
         return new ProgramRegistrationInformation(list, map);
     }
 
     private void addActionFields(List<InputFieldDesignator> list, boolean hasSpouse) {
         if(hasSpouse) {
-            list.add(StandardInputFields.action.createField(getLocale()).exclude(Action.spouse.name()).build());
+            list.add(buildChildAction());
         } else {
             list.add(StandardInputFields.action.createField(getLocale()).build());
         }
+    }
+
+    private InputField buildChildAction() {
+        return StandardInputFields.action.createField(getLocale()).exclude(Action.spouse.name()).build();
+    }
+
+    public void addSpouseAction(List<InputFieldDesignator> list) {
+        list.add(buildSpouseAction());
+    }
+
+    public InputField buildSpouseAction() {
+        return StandardInputFields.action.createField(getLocale()).exclude(Action.child.name()).build();
     }
 
     private InputFieldGroup buildMeFields() {
@@ -180,6 +195,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
 
     @Override
     public RegistrationInformation updateRegistrationForm(Map<String, String> values) {
+        boolean hasSpouse = hasSpouse(values);
         String parentGroupKey;
         InputFieldGroup me;
         if(values.keySet().stream().anyMatch(k->k.startsWith("me."))) {
@@ -194,9 +210,6 @@ public class ProgramAdapter extends ClubAdapter implements Program {
         Action action = actionName != null ? Action.valueOf(actionName) : null;
         List<InputFieldDesignator> list = new ArrayList<>();
         list.add(me);
-        list.add(buildHouseholdFields());
-
-        boolean hasSpouse = hasSpouse(values);
         if(hasSpouse) {
             addSpouse(list);
         } else if(action == Action.spouse) {
@@ -204,7 +217,12 @@ public class ProgramAdapter extends ClubAdapter implements Program {
             hasSpouse = true;
             fields.put("spouse.gender", Person.Gender.lookup(values.get(parentGroupKey+".gender")).map(g -> g.opposite().name()).orElse(null));
             fields.put("spouse.name.surname", values.get(parentGroupKey+".name.surname"));
+        } else {
+            addSpouseAction(list);
         }
+
+        list.add(buildHouseholdFields());
+
 
         int num = getNextChildNumber(values);
         for(int i=1; i<num; i++) {
@@ -215,7 +233,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
             fields.put("child" + num + ".childName.surname", values.get(parentGroupKey+".name.surname"));
         }
 
-        addActionFields(list, hasSpouse);
+        addActionFields(list, true);
 
         return new ProgramRegistrationInformation(list, fields);
     }

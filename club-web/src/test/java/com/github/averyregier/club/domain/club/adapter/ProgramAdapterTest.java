@@ -234,13 +234,13 @@ public class ProgramAdapterTest {
         RegistrationInformation form = program.createRegistrationForm();
 
         assertFieldInGroup(form, 0, parentField);
-        assertFieldInGroup(form, 1, householdField);
+        assertFieldInGroup(form, 2, householdField);
 
         form = program.updateRegistrationForm(UtilityMethods.map("action", "child").build());
 
         assertFieldInGroup(form, 0, parentField);
-        assertFieldInGroup(form, 1, householdField);
-        assertFieldInGroup(form, 2, childField);
+        assertFieldInGroup(form, 2, householdField);
+        assertFieldInGroup(form, 3, childField);
     }
 
     @Test

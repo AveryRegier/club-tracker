@@ -85,7 +85,7 @@ public class RegistrationFormTest {
         RegistrationInformation registrationForm = program.createRegistrationForm(me);
         List<InputFieldDesignator> form = registrationForm.getForm();
 
-        assertActionField(form, Action.values().length);
+        assertActionField(form, Action.values().length - 1);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class RegistrationFormTest {
         User me = new User();
         Program program = new ProgramAdapter("en_US", "Mock Org", "AWANA");
         RegistrationInformation registrationForm = program.createRegistrationForm(me);
-        assertHouseholdFieldsPresent(registrationForm, 1);
+        assertHouseholdFieldsPresent(registrationForm, 2);
     }
 
     private InputFieldGroup assertGroup(String shortCode, List<InputFieldDesignator> form, int index) {
@@ -158,10 +158,10 @@ public class RegistrationFormTest {
 
         assertNotEquals(values, registrationForm.getFields());
         assertNull(registrationForm.getFields().get("action"));
-        assertHouseholdFieldsPresent(registrationForm, 1);
+        assertHouseholdFieldsPresent(registrationForm, 2);
         assertEquals("Clubville", registrationForm.getFields().get("household.address.city"));
 
-        assertPersonFieldsPresent(registrationForm, "spouse", 2);
+        assertPersonFieldsPresent(registrationForm, "spouse", 1);
         assertEquals(meGender.opposite().name(), registrationForm.getFields().get("spouse.gender"));
         assertEquals("Smith", registrationForm.getFields().get("spouse.name.surname"));
     }
@@ -178,7 +178,12 @@ public class RegistrationFormTest {
     }
 
     private InputFieldDesignator assertActionField(List<InputFieldDesignator> form, int expected) {
-        InputFieldDesignator designator = form.get(form.size() - 1);
+        int index = form.size() - 1;
+        return assertActionFieldAt(form, expected, index);
+    }
+
+    private InputFieldDesignator assertActionFieldAt(List<InputFieldDesignator> form, int expected, int index) {
+        InputFieldDesignator designator = form.get(index);
         // you can add only one spouse, so make sure the button doesn't show up again.
         assertEquals("action", designator.getShortCode());
         assertTrue(designator.asField().isPresent());
@@ -214,10 +219,10 @@ public class RegistrationFormTest {
         assertPersonFieldsPresent(registrationForm, "me", 0);
         assertEquals("Smith", registrationForm.getFields().get("me.name.surname"));
 
-        assertHouseholdFieldsPresent(registrationForm, 1);
+        assertHouseholdFieldsPresent(registrationForm, 2);
         assertAllActions(form);
 
-        assertChildFieldsPresent(registrationForm, "child1", 2);
+        assertChildFieldsPresent(registrationForm, "child1", 3);
         assertEquals("Smith", registrationForm.getFields().get("child1.childName.surname"));
         assertFalse(registrationForm.getFields().containsKey("child1.childName.title"));
     }
@@ -236,12 +241,12 @@ public class RegistrationFormTest {
         assertPersonFieldsPresent(registrationForm, "me", 0);
         assertEquals("Smith", registrationForm.getFields().get("me.name.surname"));
 
-        // verify the household fields didn't disappear
-        assertHouseholdFieldsPresent(registrationForm, 1);
-
         // verify the spouse fields didn't disappear
-        assertPersonFieldsPresent(registrationForm, "spouse", 2);
+        assertPersonFieldsPresent(registrationForm, "spouse", 1);
         assertEquals("Another", registrationForm.getFields().get("spouse.name.surname"));
+
+        // verify the household fields didn't disappear
+        assertHouseholdFieldsPresent(registrationForm, 2);
 
         assertChildFieldsPresent(registrationForm, "child1", 3);
         assertEquals("Smith", registrationForm.getFields().get("child1.childName.surname"));
@@ -269,10 +274,10 @@ public class RegistrationFormTest {
         assertEquals("Smith", registrationForm.getFields().get("me.name.surname"));
 
         // verify the household fields didn't disappear
-        assertHouseholdFieldsPresent(registrationForm, 1);
+        assertHouseholdFieldsPresent(registrationForm, 2);
 
         // verify the spouse fields didn't appear where they are supposed to
-        assertPersonFieldsPresent(registrationForm, "spouse", 2);
+        assertPersonFieldsPresent(registrationForm, "spouse", 1);
         assertEquals("Smith", registrationForm.getFields().get("spouse.name.surname"));
 
         // verify the child fields didn't disappear
@@ -296,20 +301,43 @@ public class RegistrationFormTest {
         assertEquals("Smith", registrationForm.getFields().get("me.name.surname"));
 
         assertAllActions(form);
-        assertHouseholdFieldsPresent(registrationForm, 1);
+        assertHouseholdFieldsPresent(registrationForm, 2);
 
-        assertChildFieldsPresent(registrationForm, "child1", 2);
+        assertChildFieldsPresent(registrationForm, "child1", 3);
         assertEquals("Another", registrationForm.getFields().get("child1.childName.surname"));
 
-        assertChildFieldsPresent(registrationForm, "child2", 3);
+        assertChildFieldsPresent(registrationForm, "child2", 4);
         assertEquals("Smith", registrationForm.getFields().get("child2.childName.surname"));
     }
 
     private void assertAllActions(List<InputFieldDesignator> form) {
-        InputFieldDesignator designator = assertActionField(form, Action.values().length);
+        InputFieldDesignator spouseField = assertActionFieldAt(form, 1, 1);// spouse
+        assertOnlyThisValue(spouseField, Action.spouse);
+
+        InputFieldDesignator designator = assertActionFieldAt(form, Action.values().length - 1, form.size() - 1);
+        assertAllValuesBut(designator);
+    }
+
+    private void assertOnlyThisValue(InputFieldDesignator designator, Action included) {
         int i = 0;
         for(InputField.Value value: designator.asField().get().getValues().get()) {
-            assertEquals(Action.values()[i++].name(), value.getValue());
+            if(Action.values()[i] == included) {
+                assertEquals(Action.values()[i++].name(), value.getValue());
+            } else {
+                i++;
+            }
+        }
+    }
+
+    private void assertAllValuesBut(InputFieldDesignator designator) {
+        Action excluded = Action.spouse;
+        int i = 0;
+        for(InputField.Value value: designator.asField().get().getValues().get()) {
+            if(Action.values()[i] == excluded) {
+                i++;
+            } else {
+                assertEquals(Action.values()[i++].name(), value.getValue());
+            }
         }
     }
 
@@ -393,9 +421,9 @@ public class RegistrationFormTest {
     private void assertVisitorRegistration(RegistrationInformation registrationForm) {
         InputFieldGroup parentFields = assertGroup("parent", registrationForm.getForm(), 0);
         InputFieldGroup nameFields = assertGroup("name", parentFields);
-        assertHouseholdFieldsPresent(registrationForm, 1);
+        assertHouseholdFieldsPresent(registrationForm, 2);
 
-        assertChildFieldsPresent(registrationForm, "child1", 2);
+        assertChildFieldsPresent(registrationForm, "child1", 3);
         assertAllActions(registrationForm.getForm());
     }
 }
