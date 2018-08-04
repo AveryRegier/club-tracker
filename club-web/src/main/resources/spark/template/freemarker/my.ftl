@@ -8,14 +8,25 @@
     <script src="/js-cookie.js"></script>
     <script lang="javascript">
         addEvent(window, 'load', function() {
+          var found = false;
           for (var i = 0; i < document.forms[0].elements.length; i++) {
             var elm = document.forms[0].elements[i];
             if(elm.type == 'radio') {
                 var value = Cookies.get(elm.name);
                 if(value === elm.id) {
                     elm.checked = true;
+                    found = true;
                 }
             }
+          }
+          if(!found) {
+              for (var i = 0; i < document.forms[0].elements.length; i++) {
+                var elm = document.forms[0].elements[i];
+                if(elm.type == 'radio' && elm.id.startsWith('tab')) {
+                    elm.checked = true;
+                    return;
+                }
+              }
           }
         });
 
