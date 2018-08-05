@@ -72,7 +72,7 @@ public class TnTCurriculum {
              .catalog("80434", "Ea.")
              .catalog("80422", "Pkg.")
              .award(r -> r.sequence(s->s
-                             .item(i-> alpha(i))))
+                             .item(TnTCurriculum::alpha)))
              .typeAssigner((g, s) -> {
                  if (s == 0) return parent;
                  else if (s > 8) return gold;
@@ -94,8 +94,8 @@ public class TnTCurriculum {
              .catalog("80493", "Ea.")
              .catalog("80506", "Pkg.")
              .award(r -> r.sequence(s->s
-                     .item(i-> alpha(i))
-                     .item(i-> excellence(i))))
+                     .item(TnTCurriculum::alpha)
+                     .item(TnTCurriculum::excellence)))
              .typeAssigner((g, s) -> {
                  if (s == 0) return parent;
                  else if (s > 8) return gold;
@@ -142,9 +142,9 @@ public class TnTCurriculum {
              .catalog("80557", "Ea.")
              .catalog("80565", "Pkg.")
              .award(r -> r.sequence(s->s
-                            .item(i-> alpha(i))
-                            .item(i-> excellence(i))
-                            .item(i-> challenge(i))))
+                            .item(TnTCurriculum::alpha)
+                            .item(TnTCurriculum::excellence)
+                            .item(TnTCurriculum::challenge)))
              .typeAssigner((g, s) -> {
                  if (s == 0) return parent;
                  else if (s > 8) return gold;
@@ -166,10 +166,10 @@ public class TnTCurriculum {
              .catalog("80611", "Ea.")
              .catalog("80629", "Pkg.")
              .award(r -> r.sequence(s->s
-                           .item(i-> alpha(i))
-                           .item(i-> excellence(i))
-                           .item(i-> challenge(i))
-                           .item(i-> timothy(i))))
+                           .item(TnTCurriculum::alpha)
+                           .item(TnTCurriculum::excellence)
+                           .item(TnTCurriculum::challenge)
+                           .item(TnTCurriculum::timothy)))
              .typeAssigner((g, s) -> {
                  if (s == 0) return parent;
                  else if (s > 8) return gold;
