@@ -1,12 +1,14 @@
 package com.github.averyregier.club.domain.program;
 
 import com.github.averyregier.club.domain.program.adapter.CurriculumBuilder;
+import com.github.averyregier.club.domain.program.awana.CubbiesCurriculum;
 import com.github.averyregier.club.domain.program.awana.SparksCurriculum;
 import com.github.averyregier.club.domain.program.awana.TnTCombinedCurriculum;
 
 import java.util.Optional;
 
-import static com.github.averyregier.club.domain.program.AgeGroup.DefaultAgeGroup.*;
+import static com.github.averyregier.club.domain.program.AgeGroup.DefaultAgeGroup.THREE;
+import static com.github.averyregier.club.domain.program.AgeGroup.DefaultAgeGroup.TWO;
 
 /**
  * Created by avery on 9/22/14.
@@ -16,7 +18,7 @@ public enum Programs {
         private Curriculum awana = new CurriculumBuilder()
                 .shortCode("AWANA")
                 .curriculum(c -> c.shortCode("Puggles").accepts(TWO, THREE))
-                .curriculum(c -> c.shortCode("Cubbies").accepts(FOUR, FIVE))
+                .curriculum(CubbiesCurriculum::build)
                 .curriculum(SparksCurriculum::build)
                 .curriculum(TnTCombinedCurriculum::build)
                 .build();

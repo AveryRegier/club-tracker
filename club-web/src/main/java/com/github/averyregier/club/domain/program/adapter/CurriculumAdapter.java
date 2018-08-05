@@ -3,7 +3,6 @@ package com.github.averyregier.club.domain.program.adapter;
 import com.github.averyregier.club.domain.program.*;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -19,17 +18,17 @@ class CurriculumAdapter implements Curriculum {
     private String shortCode;
     private Later<Curriculum> parentCurriculum;
     private boolean scheduled;
-    private Function<AgeGroup, Boolean> acceptsFn;
+    private List<AgeGroup> ageGroups;
 
     public CurriculumAdapter(String shortCode, String name, List<Book> bookList, Later<Curriculum> parentCurriculum,
-                             boolean scheduled, Function<AgeGroup, Boolean> acceptsFn)
+                             boolean scheduled, List<AgeGroup> ageGroups)
     {
         this.name = name;
         this.bookList = bookList;
         this.shortCode = shortCode;
         this.parentCurriculum = parentCurriculum;
         this.scheduled = scheduled;
-        this.acceptsFn = acceptsFn;
+        this.ageGroups = ageGroups;
     }
 
     @Override
@@ -113,7 +112,7 @@ class CurriculumAdapter implements Curriculum {
 
     @Override
     public boolean accepts(AgeGroup ageGroup) {
-        return (acceptsFn != null ? acceptsFn : defaultAcceptsFn()).apply(ageGroup);
+        return ageGroups != null ? ageGroups.contains(ageGroup) : defaultAcceptsFn().apply(ageGroup);
     }
 
     private Function<AgeGroup, Boolean> defaultAcceptsFn() {
@@ -122,15 +121,27 @@ class CurriculumAdapter implements Curriculum {
 
     @Override
     public Optional<Book> lookupBook(String bookId) {
-        return
-                getBooks().stream()
+        return getBooks().stream()
                 .filter(b -> b.getId().equals(bookId))
                 .findFirst();
     }
 
     @Override
-    public Collection<AgeGroup> getAgeGroups() {
-        return Curriculum.super.getAgeGroups();
+    public List<AgeGroup> getAgeGroups() {
+        return ageGroups != null ? ageGroups : Curriculum.super.getAgeGroups();
+    }
+
+    @Override
+    public List<AgeGroup> getConfiguredAgeGroups() {
+        if (ageGroups != null) {
+            return ageGroups;
+        } else {
+            Curriculum container = getContainer();
+            if(container != null) {
+                return container.getConfiguredAgeGroups();
+            }
+            return Collections.emptyList();
+        }
     }
 
     @Override

@@ -29,12 +29,16 @@ public interface Curriculum extends Contained<Curriculum>, Named {
         return Optional.empty();
     }
 
-    default Collection<AgeGroup> getAgeGroups() {
+    default List<AgeGroup> getAgeGroups() {
         return getBooks().stream()
                 .flatMap(b -> b.getAgeGroups().stream())
                 .distinct()
                 .sorted(new AgeGroup.Comparator())
                 .collect(Collectors.toList());
+    }
+
+    default List<AgeGroup> getConfiguredAgeGroups() {
+        return Collections.emptyList();
     }
 
     default List<Curriculum> getAllSeries() {

@@ -272,9 +272,19 @@ a.button {
     font-weight: lighter;
     line-height: initial;
 }
+.footer {
+    clear: both;
+    position: relative;
+}
 .silver {
     background: silver;
 }
 .gold {
     background: #D4AF37;
+}
+.greenBearHug {
+    background: lightgreen;
+}
+.redBearHug {
+    background: #ff6666;
 }

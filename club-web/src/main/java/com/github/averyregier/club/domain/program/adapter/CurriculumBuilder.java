@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
@@ -22,9 +21,9 @@ public class CurriculumBuilder implements Builder<Curriculum> {
     private List<BookBuilder> books = new ArrayList<>();
     private List<CurriculumBuilder> series = new ArrayList<>();
     private Later<Curriculum> parentCurriculum;
-    private Function<AgeGroup, Boolean> acceptsFn;
     private String name;
     private boolean scheduled;
+    private List<AgeGroup> ageGroups;
 
     public Curriculum build() {
         Later<Curriculum> curriculumLater = new Later<>();
@@ -33,10 +32,10 @@ public class CurriculumBuilder implements Builder<Curriculum> {
             List<Curriculum> series = this.series.stream()
                     .map(s->s.setCurriculum(curriculumLater).build())
                     .collect(Collectors.toList());
-            curriculum = new MasterCurriculum(shortCode, getName(), series, parentCurriculum, scheduled);
+            curriculum = new MasterCurriculum(shortCode, getName(), series, parentCurriculum, scheduled, ageGroups);
         } else {
             List<Book> bookList = buildBooks(curriculumLater);
-            curriculum = new CurriculumAdapter(shortCode, getName(), bookList, parentCurriculum, scheduled, acceptsFn);
+            curriculum = new CurriculumAdapter(shortCode, getName(), bookList, parentCurriculum, scheduled, ageGroups);
         }
         curriculumLater.set(curriculum);
         return curriculum;
@@ -77,8 +76,7 @@ public class CurriculumBuilder implements Builder<Curriculum> {
     }
 
     public CurriculumBuilder accepts(AgeGroup... ageGroups) {
-        List<AgeGroup> ageGroupList = Arrays.asList(ageGroups);
-        this.acceptsFn = ageGroupList::contains;
+        this.ageGroups = Arrays.asList(ageGroups);
         return this;
     }
 

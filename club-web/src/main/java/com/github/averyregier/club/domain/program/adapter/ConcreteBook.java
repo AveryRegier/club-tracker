@@ -4,6 +4,7 @@ import com.github.averyregier.club.domain.program.*;
 import com.github.averyregier.club.domain.utility.builder.Later;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +39,9 @@ class ConcreteBook implements Book {
 
     @Override
     public List<AgeGroup> getAgeGroups() {
-        return ageGroups;
+        return Optional.ofNullable(ageGroups)
+                .filter(c->!c.isEmpty())
+                .orElseGet(()->getContainer().getConfiguredAgeGroups());
     }
 
     @Override

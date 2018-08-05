@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.program.adapter;
 
+import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.program.Book;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Section;
@@ -15,8 +16,9 @@ import java.util.stream.Collectors;
 public class MasterCurriculum extends CurriculumAdapter {
     private List<Curriculum> series;
 
-    public MasterCurriculum(String shortCode, String name, List<Curriculum> series, Later<Curriculum> parentCurriculum, boolean scheduled) {
-        super(shortCode, name, collectBooks(series), parentCurriculum, scheduled, null);
+    public MasterCurriculum(String shortCode, String name, List<Curriculum> series, Later<Curriculum> parentCurriculum,
+                            boolean scheduled, List<AgeGroup> ageGroups) {
+        super(shortCode, name, collectBooks(series), parentCurriculum, scheduled, ageGroups);
         this.series = series;
     }
 
