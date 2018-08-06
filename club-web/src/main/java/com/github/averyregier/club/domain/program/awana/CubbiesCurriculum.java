@@ -5,6 +5,7 @@ import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.adapter.BookBuilder;
 import com.github.averyregier.club.domain.program.adapter.CurriculumBuilder;
 import com.github.averyregier.club.domain.program.adapter.SectionGroupBuilder;
+import com.github.averyregier.club.domain.program.adapter.SectionHolderBuilder;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.UnaryOperator;
@@ -31,16 +32,16 @@ public class CubbiesCurriculum {
         return builder
                 .scheduled(true)
                 .curriculum(a -> a.name("Apple Acres").shortCode("AA")
-                    .curriculum(c -> c
-                            .shortCode("AS")
-                            .name("AppleSeed")
-                            .book(0, appleAcres())
-                            .book(1, appleseed()))
-                    .curriculum(c -> c
-                            .shortCode("HC")
-                            .name("HoneyComb")
-                            .book(2, appleAcres())
-                            .book(3, honeycomb())));
+                        .curriculum(c -> c
+                                .shortCode("AS")
+                                .name("AppleSeed")
+                                .book(0, appleAcres())
+                                .book(1, appleseed()))
+                        .curriculum(c -> c
+                                .shortCode("HC")
+                                .name("HoneyComb")
+                                .book(2, appleAcres())
+                                .book(3, honeycomb())));
     }
 
     private static UnaryOperator<BookBuilder> appleAcres() {
@@ -51,14 +52,14 @@ public class CubbiesCurriculum {
                 .publicationYear(2013) // ?
                 .catalog("92866", "1")
                 .catalog("92867", "25")
-                .award(a-> {
+                .award(a -> {
                     a.type(AccomplishmentLevel.group);
                     return a.name("Cubbies Vest");
                 })
                 .group(0, g ->
-                        g.name("Apple Acres").award(a->a.name(start.getAwardName().get()))
-                         .section(1, start, s -> s.shortCode("A").name("Parent Night; Cubbies Key Verse"))
-                         .section(2, start, s -> s.shortCode("B").name("Cubbies Motto")));
+                        g.name("Apple Acres").award(a -> a.name(start.getAwardName().get()))
+                                .section(1, start, s -> s.shortCode("A").name("Parent Night; Cubbies Key Verse"))
+                                .section(2, start, s -> s.shortCode("B").name("Cubbies Motto")));
     }
 
     private static UnaryOperator<BookBuilder> appleseed() {
@@ -165,13 +166,21 @@ public class CubbiesCurriculum {
     private static UnaryOperator<SectionGroupBuilder> apple(String unit, CubbiesSectionTypes type, AtomicInteger hug, String... titles) {
         return g -> {
             g.name(unit);
-            SectionGroupBuilder b = type.getAwardName().map(name -> g.award(r -> r.name(name))).orElse(g);
-            for (int i = 0; i < titles.length; i++) {
-                String title = titles[i];
-                b.section(i, type, s -> s.name(title).shortCode(Integer.toString(hug.incrementAndGet())));
+            if (type.getAwardName().isPresent()) {
+                String name = type.getAwardName().get();
+                g.award(r -> addSections(type, hug, r.name(name), titles));
+            } else {
+                addSections(type, hug, g, titles);
             }
             return g;
         };
     }
 
+    private static <T extends SectionHolderBuilder<T>> T addSections(CubbiesSectionTypes type, AtomicInteger hug, T b, String[] titles) {
+        for (int i = 0; i < titles.length; i++) {
+            String title = titles[i];
+            b.section(i, type, s -> s.name(title).shortCode(Integer.toString(hug.incrementAndGet())));
+        }
+        return b;
+    }
 }
