@@ -69,10 +69,9 @@ public class BaseController {
     }
 
     Curriculum getCurriculum(Optional<Club> club, AgeGroup ageGroup) {
-        return club.get().getCurriculum()
-                .recommendedBookList(ageGroup).stream()
-                .findFirst()
+        return club.map(Club::getCurriculum)
+                .flatMap(curriculum->curriculum.recommendedBookList(ageGroup).stream().findFirst())
                 .map(Contained::getContainer)
-                .orElseGet(() -> club.get().getCurriculum());
+                .orElseGet(() -> club.map(Club::getCurriculum).orElseThrow(IllegalArgumentException::new));
     }
 }
