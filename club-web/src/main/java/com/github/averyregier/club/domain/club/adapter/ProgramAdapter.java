@@ -214,7 +214,6 @@ public class ProgramAdapter extends ClubAdapter implements Program {
             addSpouse(list);
         } else if(action == Action.spouse) {
             addSpouse(list);
-            hasSpouse = true;
             fields.put("spouse.gender", Person.Gender.lookup(values.get(parentGroupKey+".gender")).map(g -> g.opposite().name()).orElse(null));
             fields.put("spouse.name.surname", values.get(parentGroupKey+".name.surname"));
         } else {
@@ -330,10 +329,8 @@ public class ProgramAdapter extends ClubAdapter implements Program {
 
     private boolean alreadyPresent(InputFieldDesignator designator, InputFieldGroup old) {
         return old != null &&
-               old.getFieldDesignations().stream()
-                .filter(d->d.getName().equals(designator.getName()))
-                .findFirst()
-                .isPresent();
+                old.getFieldDesignations().stream()
+                 .anyMatch(d->d.getName().equals(designator.getName()));
     }
 
     public Optional<InputField> findField(String fieldId) {

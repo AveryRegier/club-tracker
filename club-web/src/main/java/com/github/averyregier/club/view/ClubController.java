@@ -442,10 +442,6 @@ public class ClubController extends ModelMaker {
         return null;
     }
 
-    private Optional<Club> lookupClub(ClubApplication app, Request request) {
-        return app.getClubManager().lookup(request.params(":club"));
-    }
-
     private List<Object> getClubList(Program p) {
         return Stream.concat(Stream.of(p), p.getClubs().stream()).collect(Collectors.toList());
     }

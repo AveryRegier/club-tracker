@@ -1,6 +1,8 @@
 package com.github.averyregier.club.view;
 
+import com.github.averyregier.club.application.ClubApplication;
 import com.github.averyregier.club.domain.User;
+import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.navigation.Breadcrumb;
 import com.github.averyregier.club.domain.navigation.Breadcrumbs;
 import com.github.averyregier.club.domain.utility.MapBuilder;
@@ -50,5 +52,9 @@ public class ModelMaker {
         }
         breadcrumbs.mark(new Breadcrumb(title, request.uri()));
         return breadcrumbs;
+    }
+
+    protected Optional<Club> lookupClub(ClubApplication app, Request request) {
+        return app.getClubManager().lookup(request.params(":club"));
     }
 }
