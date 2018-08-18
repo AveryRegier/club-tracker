@@ -129,7 +129,7 @@ public class ClubSetupController extends BaseController {
         }, new FreeMarkerEngine());
     }
 
-    public Settings buildCustomizedBookSettings(Request request, Club theClub) {
+    private Settings buildCustomizedBookSettings(Request request, Club theClub) {
         List<Setting<?>> collect = theClub.getCurriculum().getAgeGroups().stream().map(ageGroup -> {
             String key = ageGroup.name() + "-book";
             return Optional.ofNullable(killWhitespace(request.queryParams(key)))
@@ -143,7 +143,7 @@ public class ClubSetupController extends BaseController {
         return new SettingsAdapter(theClub, theClub.createSettingDefinitions(), collect);
     }
 
-    private List<Object> getClubList(Program p) {
+    private List<Club> getClubList(Program p) {
         return Stream.concat(Stream.of(p), p.getClubs().stream()).collect(Collectors.toList());
     }
 }
