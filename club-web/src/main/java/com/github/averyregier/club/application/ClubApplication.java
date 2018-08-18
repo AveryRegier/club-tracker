@@ -87,6 +87,7 @@ public class ClubApplication implements SparkApplication, ServletContextListener
         new InviteController().init(this);
         new RestAPI().init(this);
         new ClubController().init(this);
+        new ClubSetupController().init(this);
         new AdminController().init(this);
     }
 

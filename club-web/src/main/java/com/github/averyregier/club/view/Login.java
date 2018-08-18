@@ -44,6 +44,11 @@ public class Login extends ModelMaker {
     }
 
     public void init(final ClubApplication app) {
+
+        before("/", (request, response) -> {
+            response.redirect("/protected/my");
+        });
+
         before("/invite/:code", (request, response) -> {
             String code = request.params(":code");
             Optional<Invitation> invitation = findOpenInvite(app, code);
