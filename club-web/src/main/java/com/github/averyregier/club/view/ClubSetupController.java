@@ -94,18 +94,15 @@ public class ClubSetupController extends BaseController {
             return null;
         });
 
-        get("/protected/club/:club/workers", (request, response) -> {
-            Optional<Club> club = lookupClub(app, request);
-            if (club.isPresent()) {
-                return new ModelAndView(
-                        newModel(request, "Add " + club.get().getShortCode() + " Workers")
-                                .put("club", club.get())
-                                .build(),
-                        "addWorker.ftl");
-            } else {
-                return gotoMy(response);
-            }
-        }, new FreeMarkerEngine());
+        get("/protected/club/:club/workers",
+                (request, response) ->
+                        lookupClub(app, request)
+                                .map(club -> new ModelAndView(
+                                        newModel(request, "Add " + club.getShortCode() + " Workers")
+                                                .put("club", club)
+                                                .build(), "addWorker.ftl"))
+                                .orElseGet(() -> gotoMy(response)),
+                new FreeMarkerEngine());
 
         get("/protected/club/:club/workers/:personId", (request, response) -> {
             Optional<Club> club = lookupClub(app, request);
