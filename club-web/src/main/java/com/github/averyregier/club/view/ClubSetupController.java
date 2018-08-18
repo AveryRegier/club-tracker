@@ -6,7 +6,6 @@ import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.SettingsAdapter;
 import com.github.averyregier.club.domain.program.AgeGroup;
 import com.github.averyregier.club.domain.program.Curriculum;
-import com.github.averyregier.club.domain.utility.Contained;
 import com.github.averyregier.club.domain.utility.MapBuilder;
 import com.github.averyregier.club.domain.utility.Setting;
 import com.github.averyregier.club.domain.utility.Settings;
@@ -142,14 +141,6 @@ public class ClubSetupController extends BaseController {
         }).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 
         return new SettingsAdapter(theClub, theClub.createSettingDefinitions(), collect);
-    }
-
-    public Curriculum getCurriculum(Optional<Club> club, AgeGroup ageGroup) {
-        return club.get().getCurriculum()
-                .recommendedBookList(ageGroup).stream()
-                .findFirst()
-                .map(Contained::getContainer)
-                .orElseGet(() -> club.get().getCurriculum());
     }
 
     private List<Object> getClubList(Program p) {

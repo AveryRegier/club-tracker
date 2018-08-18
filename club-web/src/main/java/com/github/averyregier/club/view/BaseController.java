@@ -5,6 +5,9 @@ import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.Club;
 import com.github.averyregier.club.domain.navigation.Breadcrumb;
 import com.github.averyregier.club.domain.navigation.Breadcrumbs;
+import com.github.averyregier.club.domain.program.AgeGroup;
+import com.github.averyregier.club.domain.program.Curriculum;
+import com.github.averyregier.club.domain.utility.Contained;
 import com.github.averyregier.club.domain.utility.MapBuilder;
 import spark.ModelAndView;
 import spark.Request;
@@ -63,5 +66,13 @@ public class BaseController {
 
     Optional<Club> lookupClub(ClubApplication app, Request request) {
         return app.getClubManager().lookup(request.params(":club"));
+    }
+
+    Curriculum getCurriculum(Optional<Club> club, AgeGroup ageGroup) {
+        return club.get().getCurriculum()
+                .recommendedBookList(ageGroup).stream()
+                .findFirst()
+                .map(Contained::getContainer)
+                .orElseGet(() -> club.get().getCurriculum());
     }
 }

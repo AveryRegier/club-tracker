@@ -6,8 +6,10 @@ import com.github.averyregier.club.broker.CeremonyBroker;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.CeremonyAdapter;
-import com.github.averyregier.club.domain.program.*;
-import com.github.averyregier.club.domain.utility.Contained;
+import com.github.averyregier.club.domain.program.AccomplishmentLevel;
+import com.github.averyregier.club.domain.program.Award;
+import com.github.averyregier.club.domain.program.Book;
+import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.utility.MapBuilder;
 import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
@@ -314,14 +316,6 @@ public class ClubController extends BaseController {
             }
             return null;
         });
-    }
-
-    public Curriculum getCurriculum(Optional<Club> club, AgeGroup ageGroup) {
-        return club.get().getCurriculum()
-                .recommendedBookList(ageGroup).stream()
-                .findFirst()
-                .map(Contained::getContainer)
-                .orElseGet(() -> club.get().getCurriculum());
     }
 
     private String getDefaultListener(User user, Clubber clubber) {
