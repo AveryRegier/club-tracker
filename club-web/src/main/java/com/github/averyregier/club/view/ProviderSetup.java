@@ -11,7 +11,7 @@ import static spark.Spark.*;
 /**
  * Created by avery on 6/20/15.
  */
-public class ProviderSetup extends ModelMaker {
+public class ProviderSetup extends BaseController {
     public void init(ClubApplication app) {
         String path = "/protected/provider";
 

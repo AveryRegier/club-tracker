@@ -12,7 +12,7 @@ import static spark.Spark.*;
 /**
  * Created by avery on 6/20/15.
  */
-public class InitialSetup extends ModelMaker {
+public class InitialSetup extends BaseController {
     public void init(ClubApplication app) {
         before("/initial-setup", (request, response) -> {
             List<Provider> providers = new ProviderBroker(app.getConnector()).find();

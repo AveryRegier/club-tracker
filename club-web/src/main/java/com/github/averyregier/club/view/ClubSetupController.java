@@ -31,7 +31,7 @@ import static spark.Spark.*;
 /**
  * Created by avery on 12/26/14.
  */
-public class ClubSetupController extends ModelMaker {
+public class ClubSetupController extends BaseController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

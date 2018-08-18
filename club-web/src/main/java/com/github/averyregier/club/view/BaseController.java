@@ -21,7 +21,7 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.map;
 /**
  * Created by avery on 9/27/14.
  */
-public class ModelMaker {
+public class BaseController {
     static ModelAndView gotoMy(Response response) {
         response.redirect("/protected/my");
         return null;

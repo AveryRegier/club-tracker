@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.chain;
 import static spark.Spark.*;
 
-public class InviteController extends ModelMaker {
+public class InviteController extends BaseController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

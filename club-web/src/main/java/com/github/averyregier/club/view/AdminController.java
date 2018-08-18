@@ -16,7 +16,7 @@ import static spark.Spark.*;
 /**
  * Created by avery on 12/26/14.
  */
-public class AdminController extends ModelMaker {
+public class AdminController extends BaseController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

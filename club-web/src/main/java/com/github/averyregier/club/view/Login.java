@@ -24,7 +24,7 @@ import static spark.Spark.*;
 /**
  * Created by avery on 8/30/14.
  */
-public class Login extends ModelMaker {
+public class Login extends BaseController {
 
     public static void resetCookies(Request req, Response res, User user) {
         if (!req.raw().isSecure()) {

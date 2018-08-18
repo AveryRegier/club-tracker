@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 import static com.github.averyregier.club.domain.utility.UtilityMethods.optMap;
 import static spark.Spark.*;
 
-public class RegistrationController extends ModelMaker {
+public class RegistrationController extends BaseController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

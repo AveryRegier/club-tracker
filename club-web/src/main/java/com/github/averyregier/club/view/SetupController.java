@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 import static spark.Spark.*;
 
-public class SetupController extends ModelMaker {
+public class SetupController extends BaseController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
