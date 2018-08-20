@@ -63,6 +63,11 @@ public class PersistedClubManager extends ClubManager {
     }
 
     @Override
+    protected void persist(TeachingPlan teachingPlan) {
+        new TeachingPlanBroker(factory.getConnector()).persist(teachingPlan);
+    }
+
+    @Override
     protected EnumSet<Policy> loadPolicies(PolicyHolder policyHolder) {
         return new PolicyBroker(factory.getConnector()).loadPolicies(policyHolder);
     }

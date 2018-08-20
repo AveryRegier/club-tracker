@@ -66,8 +66,6 @@ public interface Club extends ClubGroup, Comparable<Club>, Named {
                 .collect(Collectors.toSet());
     }
 
-    default void setSchedule(Curriculum curriculum, Schedule<Club, Section> schedule) {}
-
     Optional<Schedule<Club, Section>> getSchedule(Curriculum curriculum);
 
     default boolean isScheduled() {
@@ -77,4 +75,6 @@ public interface Club extends ClubGroup, Comparable<Club>, Named {
     default ZoneId getTimeZone() {
         return getProgram().getTimeZone();
     }
+
+    default void setSchedule(TeachingPlan teachingPlan) {}
 }

@@ -5,10 +5,8 @@ import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 
 /**
  * Created by avery on 9/6/2014.
@@ -30,4 +28,6 @@ public interface Program extends Club {
 
     Program addField(RegistrationSection section, InputFieldDesignator field);
     Optional<InputField> findField(String fieldId);
+
+    void setMeetings(String clubYear, List<LocalDate> dates);
 }

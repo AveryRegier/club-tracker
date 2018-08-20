@@ -321,7 +321,7 @@
                             <name>${jooq.generator.database.name}</name>
                             <includes>.*</includes>
                             <excludes></excludes>
-                            <inputSchema>CLUB</inputSchema>
+                            <inputSchema>${schema}</inputSchema>
                         </database>
                         <target>
                             <packageName>com.github.averyregier.club.db</packageName>

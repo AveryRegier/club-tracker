@@ -102,4 +102,13 @@ public class PersistedProgram extends ProgramAdapter {
         new RegistrationFormBroker(factory.getConnector()).persist(this, group);
         return group;
     }
+
+    @Override
+    protected void persist(ClubYear clubYear) {
+        new ClubYearBroker(factory.getConnector()).persist(clubYear);
+        MeetingBroker meetingBroker = new MeetingBroker(factory.getConnector());
+        clubYear.getSchedule().getList().forEach(meeting->{
+            meetingBroker.persist(meeting.getEvent());
+        });
+    }
 }

@@ -4,12 +4,15 @@ import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.Curriculum;
 import com.github.averyregier.club.domain.program.Programs;
+import com.github.averyregier.club.domain.program.Section;
 import com.github.averyregier.club.domain.utility.*;
 import com.github.averyregier.club.domain.utility.adapter.InputFieldGroupBuilder;
 import com.github.averyregier.club.domain.utility.adapter.StandardInputFields;
 
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -24,6 +27,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     private SortedSet<ClubAdapter> clubs;
     private PersonManager personManager;
     private Supplier<Map<RegistrationSection, InputFieldGroup>> extraFields;
+    private Map<String, ClubYear> clubYears = new ConcurrentHashMap<>();
 
     public ProgramAdapter() {
         this(null,null,(String)null);
@@ -380,6 +384,38 @@ public class ProgramAdapter extends ClubAdapter implements Program {
         return clubs().stream()
                 .flatMap(c->c.getClubbers().stream())
                 .collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    @Override
+    public void setMeetings(String clubYear, List<LocalDate> dates) {
+        ClubYear result = this.clubYears.compute(clubYear, (cy, old) -> new ClubYearAdapter(this, clubYear, dates));
+        persist(result);
+        for (Club club: getClubs()) {
+            for(Curriculum curriculum: club.getScheduledCurriculum()) {
+                List<Section> scheduledSections = curriculum.getScheduledSections();
+                Schedule<Club, Section> schedule = Schedule.generate(club, dates, scheduledSections);
+                TeachingPlan teachingPlan = new TeachingPlan() {
+                    @Override
+                    public Curriculum getCurriculum() {
+                        return curriculum;
+                    }
+
+                    @Override
+                    public Schedule<Club, Section> getSchedule() {
+                        return schedule;
+                    }
+
+                    @Override
+                    public ClubYear getYear() {
+                        return result;
+                    }
+                };
+                club.setSchedule(teachingPlan);
+            }
+        }
+    }
+
+    protected void persist(ClubYear clubYear) {
     }
 
     @Override

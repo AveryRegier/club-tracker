@@ -64,6 +64,13 @@ public class Schedule<C extends HasTimezone, E extends HasId> {
                 .map(Scheduled::getEvent);
     }
 
+    public Optional<E> getEventAt(LocalDate date) {
+        return list.stream()
+                .filter(s->s.getDate().equals(date))
+                .map(Scheduled::getEvent)
+                .findFirst();
+    }
+
     public LocalDate getToday() {
         return LocalDate.now(container.getTimeZone());
     }

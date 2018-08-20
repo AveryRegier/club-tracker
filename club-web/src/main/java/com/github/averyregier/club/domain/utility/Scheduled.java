@@ -13,15 +13,15 @@ public class Scheduled<C extends HasTimezone, E extends HasId> {
         this.item = item;
     }
 
-    C getContainer() {
+    public C getContainer() {
         return container;
     }
 
-    LocalDate getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    E getEvent() {
+    public E getEvent() {
         return item;
     }
 }

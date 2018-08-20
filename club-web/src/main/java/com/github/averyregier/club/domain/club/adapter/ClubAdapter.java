@@ -102,9 +102,12 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     }
 
     @Override
-    public void setSchedule(Curriculum curriculum, Schedule<Club, Section> schedule) {
-        schedules.put(curriculum, schedule);
+    public void setSchedule(TeachingPlan teachingPlan) {
+        schedules.put(teachingPlan.getCurriculum(), teachingPlan.getSchedule());
+        persist(teachingPlan);
     }
+
+    protected void persist(TeachingPlan teachingPlan) { }
 
     @Override
     public Optional<Schedule<Club, Section>> getSchedule(Curriculum curriculum) {

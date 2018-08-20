@@ -188,6 +188,10 @@ public class ClubManager {
             });
         }
 
+        protected void persist(TeachingPlan teachingPlan) {
+            ClubManager.this.persist(teachingPlan);
+        }
+
         @Override
         public Set<Listener> getListeners() {
             return ClubManager.this.getListeners(this, super::getListeners);
@@ -215,6 +219,8 @@ public class ClubManager {
             return new LinkedHashSet<>(new ClubberBroker(factory).find(this));
         }
     }
+
+    protected void persist(TeachingPlan teachingPlan) {}
 
     protected Settings loadSettings(PolicyHolder club) {
         return new SettingsAdapter(club);
