@@ -35,6 +35,10 @@ public interface Section extends Comparable<Section>, Contained<SectionGroup> {
 
 
     default String getSectionTitle() {
+        return getSectionCode();
+    }
+
+    default String getSectionCode() {
         return getGroup().getBook().getMwhCode()+"-"+getGroup().getShortCode()+"."+getShortCode();
     }
 

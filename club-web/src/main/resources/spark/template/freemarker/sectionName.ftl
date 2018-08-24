@@ -1,1 +1,1 @@
-${section.sectionTitle}
+${section.sectionCode}

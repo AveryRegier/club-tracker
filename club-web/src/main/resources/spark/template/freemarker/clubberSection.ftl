@@ -23,7 +23,9 @@
             </div>
             <div class="inputField">
                 <label>Section:</label>
-                <div class="staticField">${section.group.name}-${section.shortCode}</div>
+                <div class="staticField">
+                    ${section.group.name}-${section.shortCode}<br/>
+                    ${section.sectionTitle}</div>
             </div>
             <div class="inputField">
                 <label>Type:</label>

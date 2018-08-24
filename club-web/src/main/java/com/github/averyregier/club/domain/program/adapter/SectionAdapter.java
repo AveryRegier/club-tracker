@@ -78,4 +78,9 @@ class SectionAdapter implements Section {
     public String getSectionTitle() {
         return name != null ? name : Section.super.getSectionTitle();
     }
+
+    @Override
+    public String getSectionCode() {
+        return Section.super.getSectionCode();
+    }
 }
