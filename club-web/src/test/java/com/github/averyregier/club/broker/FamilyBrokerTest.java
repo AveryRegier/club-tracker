@@ -60,7 +60,7 @@ public class FamilyBrokerTest {
     }
 
     private Family newFamily() {
-        return new FamilyAdapter(new ClubberAdapter(new PersonAdapter()));
+        return new FamilyAdapter(new ClubberAdapter(new PersonAdapter()), new MockProgram());
     }
 
     private FamilyBroker setup(MockDataProvider provider) {

@@ -7,6 +7,7 @@ import com.github.averyregier.club.db.tables.records.FamilyRecord;
 import com.github.averyregier.club.domain.club.Address;
 import com.github.averyregier.club.domain.club.Family;
 import com.github.averyregier.club.domain.club.Person;
+import com.github.averyregier.club.domain.club.Program;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import com.github.averyregier.club.repository.PersistedFamily;
 import org.jooq.DSLContext;
@@ -48,6 +49,7 @@ public class FamilyBroker extends PersistenceBroker<Family> {
     private Map<TableField<FamilyRecord, ?>, Object> mapFields(Family family) {
         return JooqUtil.<FamilyRecord>map()
                 .set(FAMILY.ADDRESS_ID, family.getAddress().map(a->a.getId().getBytes()).orElse(null))
+                .set(FAMILY.ORGANIZATION_ID, family.getProgram().map(Program::getId).orElseThrow(IllegalArgumentException::new))
                 .build();
     }
 
@@ -67,6 +69,7 @@ public class FamilyBroker extends PersistenceBroker<Family> {
         PersistedFamily family = new PersistedFamily(familyId, members);
         members.forEach(m -> m.getUpdater().setFamily(family));
         getAddress(familyId).ifPresent(family::setAddress);
+        getProgramId(familyId).map(id->factory.getProgram(id)).ifPresent(family::setProgram);
         family.setValues(new FamilyRegistrationBroker(factory).getRegistration(familyId));
         return family;
     }
@@ -82,4 +85,12 @@ public class FamilyBroker extends PersistenceBroker<Family> {
                 .where(FAMILY.ID.eq(familyId.getBytes()))
                 .fetch().stream().findFirst().map(r -> convert(r.getAddressId())));
     }
+
+    protected Optional<String> getProgramId(String familyId) {
+        return query(create -> create
+                .selectFrom(FAMILY)
+                .where(FAMILY.ID.eq(familyId.getBytes()))
+                .fetch().stream().findFirst().map(r -> convert(r.getOrganizationId())));
+    }
+
 }

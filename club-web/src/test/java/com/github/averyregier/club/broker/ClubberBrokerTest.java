@@ -48,8 +48,9 @@ public class ClubberBrokerTest {
     @Test
     public void testPersistsCorrectValues() throws Exception {
         final ClubberAdapter clubber = newClubber();
-        new FamilyAdapter(clubber);
-        clubber.setClub(new MockClub(null, new ProgramAdapter()));
+        ProgramAdapter program = new ProgramAdapter();
+        new FamilyAdapter(clubber, program);
+        clubber.setClub(new MockClub(null, program));
         clubber.getUpdater().setAgeGroup(AgeGroup.DefaultAgeGroup.FIFTH_GRADE);
 
         MockDataProvider provider = mergeProvider(assertUUID(clubber), assertFields(clubber));

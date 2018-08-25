@@ -169,7 +169,8 @@ public class PersonAdapter implements Person, PersonUpdater {
     @Override
     public void setAddress(Address address) {
         Family theFamily = getFamily().orElseGet(() -> {
-            FamilyAdapter family = new FamilyAdapter(PersonAdapter.this);
+            FamilyAdapter family = new FamilyAdapter(PersonAdapter.this,
+                    getClubs().stream().map(Club::getProgram).findFirst().orElse(null));
             setFamily(family);
             return family;
         });
@@ -217,7 +218,12 @@ public class PersonAdapter implements Person, PersonUpdater {
                             getOther(f.getParents(), parent).ifPresent(
                                     spouse -> addPersonalClubs(spouse, clubs));
                         }));
+        addRegistrationProgram(clubs);
         return clubs;
+    }
+
+    public void addRegistrationProgram(HashSet<Club> clubs) {
+        getFamily().flatMap(Family::getProgram).ifPresent(clubs::add);
     }
 
     private static void addPersonalClubs(Person person, HashSet<Club> clubs) {

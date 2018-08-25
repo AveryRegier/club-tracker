@@ -10,27 +10,24 @@ import java.util.stream.Collectors;
 * Created by avery on 11/30/14.
 */
 public class FamilyAdapter implements Family {
+    private Program program;
     private String id;
     private final LinkedHashSet<Person> members = new LinkedHashSet<>();
     private Address address;
     private LinkedHashMap<InputField, String> registration = new LinkedHashMap<>();
 
-    public FamilyAdapter(Person firstPerson) {
-        id = UUID.randomUUID().toString();
-        addPerson(firstPerson);
-    }
-
     public FamilyAdapter(String id) {
         this.id = id;
     }
 
-    public void addPerson(Person person) {
-        members.add(person.getUpdater().asPerson());
+    public FamilyAdapter(Person firstPerson, Program program) {
+        id = UUID.randomUUID().toString();
+        this.program = program;
+        addPerson(firstPerson);
     }
 
-    public FamilyAdapter(String uuid, Person firstPerson) {
-        this.id = uuid;
-        addPerson(firstPerson);
+    public void addPerson(Person person) {
+        members.add(person.getUpdater().asPerson());
     }
 
     @Override
@@ -98,5 +95,14 @@ public class FamilyAdapter implements Family {
                 .filter(p -> !p.getLogin().isPresent())
                 .findAny()
                 .isPresent();
+    }
+
+    @Override
+    public Optional<Program> getProgram() {
+        return Optional.ofNullable(program);
+    }
+
+    public void setProgram(Program program) {
+        this.program = program;
     }
 }

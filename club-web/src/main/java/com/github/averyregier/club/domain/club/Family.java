@@ -28,4 +28,8 @@ public interface Family extends Group, HasId, Registered {
     Optional<Clubber> findNthChild(int childNumber);
 
     boolean shouldInvite();
+
+    default Optional<Program> getProgram() {
+        return Optional.empty();
+    }
 }

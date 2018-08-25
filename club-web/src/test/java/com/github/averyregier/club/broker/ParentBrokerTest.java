@@ -4,6 +4,7 @@ import com.github.averyregier.club.domain.club.Parent;
 import com.github.averyregier.club.domain.club.adapter.FamilyAdapter;
 import com.github.averyregier.club.domain.club.adapter.MockParent;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
+import com.github.averyregier.club.domain.club.adapter.ProgramAdapter;
 import org.jooq.exception.DataAccessException;
 import org.jooq.tools.jdbc.MockDataProvider;
 import org.junit.Test;
@@ -40,7 +41,7 @@ public class ParentBrokerTest {
     @Test
     public void testPersistsCorrectValues() throws Exception {
         final Parent parent = newParent();
-        new FamilyAdapter(parent);
+        new FamilyAdapter(parent, new ProgramAdapter());
 
         MockDataProvider provider = mergeProvider(assertUUID(parent), assertFields(parent));
 

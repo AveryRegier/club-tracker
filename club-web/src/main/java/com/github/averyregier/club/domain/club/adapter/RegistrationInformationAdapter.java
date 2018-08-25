@@ -26,7 +26,7 @@ public abstract class RegistrationInformationAdapter implements RegistrationInfo
 
     private Family registerFamily(Person person, Map<InputFieldDesignator, Object> validate) {
         ParentAdapter thisParent = (ParentAdapter) person.asParent().orElseGet(() -> new ParentAdapter(person));
-        FamilyAdapter family = (FamilyAdapter) person.getFamily().orElseGet(() -> new FamilyAdapter(thisParent));
+        FamilyAdapter family = (FamilyAdapter) person.getFamily().orElseGet(() -> new FamilyAdapter(thisParent, getProgram()));
 
         update(thisParent, family, validate);
 

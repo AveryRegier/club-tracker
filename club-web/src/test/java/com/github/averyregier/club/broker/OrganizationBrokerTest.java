@@ -67,14 +67,7 @@ public class OrganizationBrokerTest {
     }
 
     private Program newProgram() {
-        return new ProgramAdapter("en", "Any Org Nmae", "AWANA") {
-            String id = UUID.randomUUID().toString();
-
-            @Override
-            public String getId() {
-                return id;
-            }
-        };
+        return new MockProgram();
     }
 
     private Consumer<StatementVerifier> assertFields(Program program) {
@@ -174,4 +167,5 @@ public class OrganizationBrokerTest {
         Object[] bindings = ctx.bindings();
         assertEquals(id, new String((byte[]) bindings[bindings.length-1]));
     }
+
 }
