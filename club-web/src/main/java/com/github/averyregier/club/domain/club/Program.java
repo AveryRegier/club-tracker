@@ -30,4 +30,5 @@ public interface Program extends Club {
     Optional<InputField> findField(String fieldId);
 
     void setMeetings(String clubYear, List<LocalDate> dates);
+    List<ClubMeeting> getMeetings();
 }

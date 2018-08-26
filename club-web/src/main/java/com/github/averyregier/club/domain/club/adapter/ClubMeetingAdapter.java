@@ -10,10 +10,17 @@ import java.util.UUID;
 public class ClubMeetingAdapter implements ClubMeeting {
     private final ClubYear clubYear;
     private final LocalDate date;
-    private final String id = UUID.randomUUID().toString();
+    private final String id;
 
     public ClubMeetingAdapter(ClubYear clubYear, LocalDate date) {
         this.clubYear = clubYear;
+        this.date = date;
+        this.id = UUID.randomUUID().toString();
+    }
+
+    public ClubMeetingAdapter(ClubYear clubYear, String id, LocalDate date) {
+        this.clubYear = clubYear;
+        this.id = id;
         this.date = date;
     }
     

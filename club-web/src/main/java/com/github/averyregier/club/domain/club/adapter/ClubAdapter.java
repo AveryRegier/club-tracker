@@ -18,8 +18,7 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.stream;
 public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
     private final Curriculum series;
     private Set<Clubber> clubbers;
-    private ConcurrentMap<Curriculum, Schedule<Club, Section>> schedules =
-            new ConcurrentHashMap<>();
+    private ConcurrentMap<Curriculum, TeachingPlan> schedules;
 
     public ClubAdapter(Curriculum series) {
         this.series = series;
@@ -103,7 +102,8 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
 
     @Override
     public void setSchedule(TeachingPlan teachingPlan) {
-        schedules.put(teachingPlan.getCurriculum(), teachingPlan.getSchedule());
+        ensureScheduleLoaded();
+        schedules.put(teachingPlan.getCurriculum(), teachingPlan);
         persist(teachingPlan);
     }
 
@@ -111,6 +111,17 @@ public abstract class ClubAdapter extends ClubGroupAdapter implements Club {
 
     @Override
     public Optional<Schedule<Club, Section>> getSchedule(Curriculum curriculum) {
-        return Optional.ofNullable(schedules.get(curriculum));
+        ensureScheduleLoaded();
+        return Optional.ofNullable(schedules.get(curriculum)).map(TeachingPlan::getSchedule);
+    }
+
+    private synchronized void ensureScheduleLoaded() {
+        if(this.schedules == null) {
+            schedules = loadSchedules();
+        }
+    }
+
+    protected ConcurrentHashMap<Curriculum, TeachingPlan> loadSchedules() {
+        return new ConcurrentHashMap<>();
     }
 }

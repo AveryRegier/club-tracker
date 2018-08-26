@@ -87,5 +87,4 @@ public abstract class ClubGroupAdapter implements ClubGroup {
         ensurePoliciesLoaded();
         return settings.get();
     }
-
 }

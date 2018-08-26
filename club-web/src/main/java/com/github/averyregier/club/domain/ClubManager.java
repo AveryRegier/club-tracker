@@ -2,6 +2,7 @@ package com.github.averyregier.club.domain;
 
 import com.github.averyregier.club.application.ClubFactory;
 import com.github.averyregier.club.broker.ClubberBroker;
+import com.github.averyregier.club.broker.TeachingPlanBroker;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.club.adapter.ClubAdapter;
 import com.github.averyregier.club.domain.club.adapter.SettingsAdapter;
@@ -14,6 +15,7 @@ import com.github.averyregier.club.domain.utility.UtilityMethods;
 import com.github.averyregier.club.repository.PersistedProgram;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -193,6 +195,11 @@ public class ClubManager {
         }
 
         @Override
+        protected ConcurrentHashMap<Curriculum, TeachingPlan> loadSchedules() {
+            return ClubManager.this.loadSchedules(this);
+        }
+
+        @Override
         public Set<Listener> getListeners() {
             return ClubManager.this.getListeners(this, super::getListeners);
         }
@@ -218,6 +225,10 @@ public class ClubManager {
         protected HashSet<Clubber> initializeClubbers() {
             return new LinkedHashSet<>(new ClubberBroker(factory).find(this));
         }
+    }
+
+    private ConcurrentHashMap<Curriculum, TeachingPlan> loadSchedules(Club club) {
+        return new ConcurrentHashMap<>(new TeachingPlanBroker(factory.getConnector()).find(club));
     }
 
     protected void persist(TeachingPlan teachingPlan) {}

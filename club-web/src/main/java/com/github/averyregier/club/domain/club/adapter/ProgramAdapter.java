@@ -27,7 +27,7 @@ public class ProgramAdapter extends ClubAdapter implements Program {
     private SortedSet<ClubAdapter> clubs;
     private PersonManager personManager;
     private Supplier<Map<RegistrationSection, InputFieldGroup>> extraFields;
-    private Map<String, ClubYear> clubYears = new ConcurrentHashMap<>();
+    private Map<String, ClubYear> clubYears;
 
     public ProgramAdapter() {
         this(null,null,(String)null);
@@ -388,34 +388,38 @@ public class ProgramAdapter extends ClubAdapter implements Program {
 
     @Override
     public void setMeetings(String clubYear, List<LocalDate> dates) {
+        ensureMeetingsLoaded();
         ClubYear result = this.clubYears.compute(clubYear, (cy, old) -> new ClubYearAdapter(this, clubYear, dates));
         persist(result);
         for (Club club: getClubs()) {
             for(Curriculum curriculum: club.getScheduledCurriculum()) {
                 List<Section> scheduledSections = curriculum.getScheduledSections();
                 Schedule<Club, Section> schedule = Schedule.generate(club, dates, scheduledSections);
-                TeachingPlan teachingPlan = new TeachingPlan() {
-                    @Override
-                    public Curriculum getCurriculum() {
-                        return curriculum;
-                    }
-
-                    @Override
-                    public Schedule<Club, Section> getSchedule() {
-                        return schedule;
-                    }
-
-                    @Override
-                    public ClubYear getYear() {
-                        return result;
-                    }
-                };
+                TeachingPlan teachingPlan = new TeachingPlanAdapter(curriculum, schedule, result);
                 club.setSchedule(teachingPlan);
             }
         }
     }
 
     protected void persist(ClubYear clubYear) {
+    }
+
+    @Override
+    public List<ClubMeeting> getMeetings() {
+        ensureMeetingsLoaded();
+        return this.clubYears.values().stream()
+                .flatMap(v->v.getSchedule().getList().stream().map(Scheduled::getEvent))
+                .collect(Collectors.toList());
+    }
+
+    private void ensureMeetingsLoaded() {
+        if(clubYears == null) {
+            clubYears = loadClubYears();
+        }
+    }
+
+    protected ConcurrentHashMap<String, ClubYear> loadClubYears() {
+        return new ConcurrentHashMap<>();
     }
 
     @Override

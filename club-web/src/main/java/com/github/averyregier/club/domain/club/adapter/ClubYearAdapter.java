@@ -21,7 +21,13 @@ public class ClubYearAdapter implements ClubYear {
     public ClubYearAdapter(Club club, String clubYear, List<LocalDate> dates) {
         this.club = club;
         this.clubYear = clubYear;
-        this.schedule = new Schedule<>(this, generate(dates));
+        setSchedule(new Schedule<>(this, generate(dates)));
+    }
+
+    protected ClubYearAdapter(Club club, String id, String clubYear) {
+        this.club = club;
+        this.clubYear = clubYear;
+        this.uuid = id;
     }
 
     private List<Scheduled<ClubYear, ClubMeeting>> generate(List<LocalDate> dates) {
@@ -58,5 +64,9 @@ public class ClubYearAdapter implements ClubYear {
     @Override
     public Club getClub() {
         return club;
+    }
+
+    protected void setSchedule(Schedule<ClubYear, ClubMeeting> schedule) {
+        this.schedule = schedule;
     }
 }

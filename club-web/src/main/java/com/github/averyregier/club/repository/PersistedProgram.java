@@ -13,6 +13,8 @@ import com.github.averyregier.club.domain.utility.InputFieldGroup;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -110,5 +112,11 @@ public class PersistedProgram extends ProgramAdapter {
         clubYear.getSchedule().getList().forEach(meeting->{
             meetingBroker.persist(meeting.getEvent());
         });
+    }
+
+    @Override
+    protected ConcurrentHashMap<String, ClubYear> loadClubYears() {
+        return new ClubYearBroker(factory.getConnector()).find(this).stream()
+                .collect(Collectors.toMap(ClubYear::getClubYear, Function.identity(), (x,y)->x, ConcurrentHashMap::new));
     }
 }
