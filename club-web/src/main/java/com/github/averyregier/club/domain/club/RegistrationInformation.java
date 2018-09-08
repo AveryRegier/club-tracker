@@ -1,11 +1,10 @@
 package com.github.averyregier.club.domain.club;
 
+import com.github.averyregier.club.domain.utility.InputField;
 import com.github.averyregier.club.domain.utility.InputFieldDesignator;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by avery on 9/5/2014.
@@ -13,6 +12,14 @@ import java.util.Optional;
 public interface RegistrationInformation {
 
     List<InputFieldDesignator> getForm();
+
+    default List<InputField> getLeaves() {
+        return getForm().stream()
+                .map(InputFieldDesignator::getLeaves)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
     Map<String, String> getFields();
 
     default Map<InputFieldDesignator, Object> validate() {
@@ -21,9 +28,7 @@ public interface RegistrationInformation {
         Map<String, String> fields = getFields();
         for(InputFieldDesignator section: getForm()) {
             Optional<Object> result = section.validateFromParentMap(fields);
-            if(result.isPresent()) {
-                results.put(section, result.get());
-            }
+            result.ifPresent(o -> results.put(section, o));
         }
         return results;
     }

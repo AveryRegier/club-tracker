@@ -7,9 +7,7 @@ import com.github.averyregier.club.domain.utility.adapter.UpdateFunction;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -108,5 +106,10 @@ public interface InputField extends InputFieldDesignator {
         String getDisplayName();
         String getValue();
         boolean isDefault();
+    }
+
+    @Override
+    default Collection<InputField> getLeaves() {
+        return Collections.singletonList(this);
     }
 }

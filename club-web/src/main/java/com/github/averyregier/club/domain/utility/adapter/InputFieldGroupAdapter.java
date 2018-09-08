@@ -44,7 +44,7 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
 
     private Function<Person, Map<String, String>> defaultMapper() {
         return p->{
-            Map<String, String> model = new HashMap<String,String>();
+            Map<String, String> model = new LinkedHashMap<>();
             for(InputFieldDesignator d: getFieldDesignations()) {
                 if(d.asField().isPresent()) {
                     model.put(d.getShortCode(), d.asField().get().map(p));
@@ -109,7 +109,7 @@ public class InputFieldGroupAdapter implements InputFieldGroup {
 
     @Override
     public Optional<Object> validate(Map<String, String> map) {
-        Map<String, Object> results = new HashMap<>();
+        Map<String, Object> results = new LinkedHashMap<>();
         for(InputFieldDesignator d: getFieldDesignations()) {
             Optional<Object> dResult = d.validateFromParentMap(map);
             if((d.isGroup() || d.asField().get().isRequired()) && !dResult.isPresent()) return Optional.empty(); // propagate validation failure

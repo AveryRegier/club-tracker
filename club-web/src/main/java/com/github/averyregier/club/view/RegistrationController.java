@@ -1,6 +1,7 @@
 package com.github.averyregier.club.view;
 
 import com.github.averyregier.club.application.ClubApplication;
+import com.github.averyregier.club.domain.PersonManager;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
@@ -76,7 +77,8 @@ public class RegistrationController extends BaseController {
             String programId = request.params(":id");
             String familyId = request.params(":familyId");
             if (leadsProgram(user, programId)) {
-                return createRegistrationView(request, app.getProgram(programId).createRegistrationForm(familyParent(app, familyId)));
+                PersonManager personManager = app.getPersonManager();
+                return createRegistrationView(request, app.getProgram(programId).createRegistrationForm(personManager.getParent(familyId)));
             }
             response.redirect("/protected/my");
             halt();
@@ -92,7 +94,8 @@ public class RegistrationController extends BaseController {
                 halt();
             } else if ("submit".equals(request.queryParams("submit"))) {
                 logger.info("Submitting family registration");
-                Family family = updateForm(app, request).register(familyParent(app, familyId));
+                PersonManager personManager = app.getPersonManager();
+                Family family = updateForm(app, request).register(personManager.getParent(familyId));
                 postRegistrationRedirect(response, family);
                 halt();
             }
@@ -209,15 +212,6 @@ public class RegistrationController extends BaseController {
         return new ModelAndView(
                 newModel(request, "Registration").put("regInfo", form).build(),
                 "family.ftl");
-    }
-
-    private Parent familyParent(ClubApplication app, String familyId) {
-        Optional<Family> family = app.getPersonManager().lookupFamily(familyId);
-        Optional<Optional<Parent>> parent = family
-                .map(f -> f.getParents().stream().findFirst());
-        return parent
-                .orElseThrow(IllegalArgumentException::new)
-                .orElseThrow(IllegalArgumentException::new);
     }
 
     private boolean leadsProgram(User user, String programId) {

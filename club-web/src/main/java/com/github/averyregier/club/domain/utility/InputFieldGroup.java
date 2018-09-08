@@ -2,9 +2,11 @@ package com.github.averyregier.club.domain.utility;
 
 import com.github.averyregier.club.domain.club.Person;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by avery on 10/2/2014.
@@ -44,4 +46,12 @@ public interface InputFieldGroup extends InputFieldDesignator {
     Map<String, String> map(Person person);
 
     Optional<InputField> findField(String descendant);
+
+    @Override
+    default Collection<InputField> getLeaves() {
+        return getFieldDesignations().stream()
+                .map(InputFieldDesignator::getLeaves)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
 }

@@ -3,6 +3,7 @@ package com.github.averyregier.club.domain.utility;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.utility.builder.ChildBuilder;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,4 +26,6 @@ public interface InputFieldDesignator extends Contained<InputFieldGroup> {
     public void update(Person person, Object results);
 
     ChildBuilder<InputFieldGroup,InputFieldDesignator> copy();
+
+    Collection<InputField> getLeaves();
 }

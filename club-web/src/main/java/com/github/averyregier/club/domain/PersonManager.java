@@ -1,6 +1,7 @@
 package com.github.averyregier.club.domain;
 
 import com.github.averyregier.club.domain.club.Family;
+import com.github.averyregier.club.domain.club.Parent;
 import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.club.adapter.PersonAdapter;
 
@@ -46,5 +47,14 @@ public class PersonManager {
                 .flatMap(p -> stream(p.getFamily()))
                 .filter(f->f.getId().equals(familyId))
                 .findFirst();
+    }
+
+    public Parent getParent(String familyId) {
+        Optional<Family> family = lookupFamily(familyId);
+        Optional<Optional<Parent>> parent = family
+                .map(f -> f.getParents().stream().findFirst());
+        return parent
+                .orElseThrow(IllegalArgumentException::new)
+                .orElseThrow(IllegalArgumentException::new);
     }
 }
