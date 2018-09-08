@@ -15,7 +15,10 @@ import spark.Session;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.StringReader;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 
 import static com.github.averyregier.club.domain.utility.UtilityMethods.map;
 import static java.util.stream.Collectors.joining;
@@ -74,17 +77,12 @@ public class Login extends BaseController {
             halt();
         });
 
-        new ConsumerService().init(app);
-
         get("/login", (request, response) ->
                 new spark.ModelAndView(
                         map("providers", getProviders(app))
                                 .put("program", request.session().attribute("program"))
                                 .build(),
                         "index.ftl"), new FreeMarkerEngine());
-
-        get("/openid", (request, response) ->
-                new spark.ModelAndView(new HashMap<Object, Object>(), "openid.ftl"), new FreeMarkerEngine());
 
         get("/socialauth", (request, response) -> {
             SocialAuthManager manager = getSocialAuthManager(request, app);

@@ -19,9 +19,6 @@
                 <a class="login" href="socialauth?id=${provider.id}"><img src="${provider.image}" alt="${provider.name}" title="${provider.name}" border="0"/></a>
             </div>
         </#list>
-	       	<div class="provider">
-                <a class="login" href="/openid"><img src="http://openid.net/logo-graphics/openid-icon-100x100.png" alt="OpenID" title="OpenID" border="0" width="50" height="50"/></a>
-            </div>
         </div>
     </div>
     <div>
