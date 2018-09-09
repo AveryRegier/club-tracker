@@ -23,16 +23,6 @@ public class RegistrationController extends BaseController {
 
 
     public void init(ClubApplication app) {
-        post("/submitRegistration", (request, response) -> {
-            logger.info("Submitting registration");
-
-            UserBean bean = mapUser(request.cookie("provider"), request);
-
-            User user = app.getUserManager().syncUser(bean);
-            Login.resetCookies(request, response, user);
-            return null;
-        });
-
         before("/protected/*/*", (request, response) -> {
             if (!app.hasPrograms()) {
                 response.redirect("/protected/setup");
@@ -209,20 +199,4 @@ public class RegistrationController extends BaseController {
     private boolean leadsProgram(User user, String programId) {
         return user.asClubLeader().map(l -> l.getProgram().getId().equals(programId)).filter(x -> x).isPresent();
     }
-
-    private UserBean mapUser(String provider, Request request) {
-        UserBean user = new UserBean();
-        user.setProviderId(provider);
-        user.setEmail(request.queryParams("email"));
-        user.setName(request.queryParams("name"));
-        user.setDob(request.queryParams("dob"));
-        user.setCountry(request.queryParams("country"));
-        user.setLanguage(request.queryParams("language"));
-        user.setGender(request.queryParams("gender"));
-        user.setLanguage(request.queryParams("location"));
-        user.setProfileImageURL(request.queryParams("profileImageURL"));
-        user.setUniqueId(request.queryParams("uniqueId"));
-        return user;
-    }
-
 }
