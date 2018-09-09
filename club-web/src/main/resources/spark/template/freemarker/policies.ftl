@@ -18,18 +18,6 @@
                 <input type="checkbox" name="policy" id="noSectionAwards" value="noSectionAwards" ${noSectionAwards}>
             </div>
             <div class="inputField">
-                <label for="listenerGroupsByGender">Listener Groups by Gender</label>
-                <input type="checkbox" name="policy" id="listenerGroupsByGender" value="listenerGroupsByGender" ${listenerGroupsByGender}>
-            </div>
-            <div class="inputField">
-                <label for="listenerGroupByRecentSignings">Listener Groups by Recent Signings</label>
-                <input type="checkbox" name="policy" id="listenerGroupByRecentSignings" value="listenerGroupByRecentSignings" ${listenerGroupByRecentSignings}>
-            </div>
-            <div class="inputField">
-                <label for="listenerGroupsMayNotContainFamily">Listener Groups May Not Contain Family</label>
-                <input type="checkbox" name="policy" id="listenerGroupsMayNotContainFamily" value="listenerGroupsMayNotContainFamily" ${listenerGroupsMayNotContainFamily}>
-            </div>
-            <div class="inputField">
                 <label for="allTogether">All Together Curriculum</label>
                 <input type="checkbox" name="policy" id="allTogether" value="allTogether" ${allTogether}>
             </div>
@@ -42,6 +30,24 @@
             </div>
             </#if>
 
+        </div>
+    </fieldset>
+
+    <fieldset class="inputGroup">
+        <legend class="inputGroupLabel">Listener Group Policies</legend>
+        <div class="inputGroupFields">
+            <div class="inputField">
+                <label for="listenerGroupsByGender">By Gender</label>
+                <input type="checkbox" name="policy" id="listenerGroupsByGender" value="listenerGroupsByGender" ${listenerGroupsByGender}>
+            </div>
+            <div class="inputField">
+                <label for="listenerGroupByRecentSignings">By Recent Signings</label>
+                <input type="checkbox" name="policy" id="listenerGroupByRecentSignings" value="listenerGroupByRecentSignings" ${listenerGroupByRecentSignings}>
+            </div>
+            <div class="inputField">
+                <label for="listenerGroupsMayNotContainFamily">May Not Contain Family</label>
+                <input type="checkbox" name="policy" id="listenerGroupsMayNotContainFamily" value="listenerGroupsMayNotContainFamily" ${listenerGroupsMayNotContainFamily}>
+            </div>
         </div>
     </fieldset>
 
