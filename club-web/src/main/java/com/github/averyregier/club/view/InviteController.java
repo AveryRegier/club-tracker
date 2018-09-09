@@ -8,9 +8,7 @@ import com.github.averyregier.club.domain.club.adapter.InvitationAdapter;
 import com.github.averyregier.club.domain.utility.HasId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.ModelAndView;
 import spark.Request;
-import spark.template.freemarker.FreeMarkerEngine;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -51,13 +49,11 @@ public class InviteController extends BaseController {
             halt();
         });
 
-        get(familyInvitePath, (request, response) -> {
-            return new ModelAndView(
-                    newModel(request, "Invite Family Members")
-                            .put("people", request.attribute("people"))
-                            .build(),
-                    "inviteFamily.ftl");
-        }, new FreeMarkerEngine());
+        get(familyInvitePath, (request, response) -> render(
+                newModel(request, "Invite Family Members")
+                        .put("people", request.attribute("people"))
+                        .build(),
+                "inviteFamily.ftl"));
 
         before(invitationPath, (request, response) -> {
             String id = request.params(":id");

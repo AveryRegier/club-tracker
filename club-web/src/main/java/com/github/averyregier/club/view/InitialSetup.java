@@ -3,7 +3,6 @@ package com.github.averyregier.club.view;
 import com.github.averyregier.club.application.ClubApplication;
 import com.github.averyregier.club.broker.ProviderBroker;
 import com.github.averyregier.club.domain.login.Provider;
-import spark.template.freemarker.FreeMarkerEngine;
 
 import java.util.List;
 
@@ -23,11 +22,9 @@ public class InitialSetup extends BaseController {
             }
         });
 
-        get("/initial-setup", (request, response)->{
-            return new spark.ModelAndView(
-                    newModel(request, "Add Login Provider").build(),
-                    "provider.ftl");
-        }, new FreeMarkerEngine());
+        get("/initial-setup", (request, response)-> render(
+                newModel(request, "Add Login Provider").build(),
+                "provider.ftl"));
 
         post("/initial-setup", (request, response) -> {
 

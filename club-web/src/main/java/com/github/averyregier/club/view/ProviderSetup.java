@@ -4,7 +4,8 @@ import com.github.averyregier.club.application.ClubApplication;
 import com.github.averyregier.club.broker.ProviderBroker;
 import com.github.averyregier.club.domain.User;
 import com.github.averyregier.club.domain.login.Provider;
-import spark.template.freemarker.FreeMarkerEngine;
+
+import java.util.Collections;
 
 import static spark.Spark.*;
 
@@ -24,11 +25,9 @@ public class ProviderSetup extends BaseController {
             }
         });
 
-        get(path, (request, response)->{
-            return new spark.ModelAndView(
-                    new Object(),
-                    "provider.ftl");
-        }, new FreeMarkerEngine());
+        get(path, (request, response)-> render(
+                Collections.emptyMap(),
+                "provider.ftl"));
 
         post(path, (request, response) -> {
 

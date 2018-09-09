@@ -12,7 +12,6 @@ import org.brickred.socialauth.util.BirthDate;
 import spark.Request;
 import spark.Response;
 import spark.Session;
-import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.StringReader;
 import java.util.List;
@@ -78,11 +77,11 @@ public class Login extends BaseController {
         });
 
         get("/login", (request, response) ->
-                new spark.ModelAndView(
+                render(
                         map("providers", getProviders(app))
                                 .put("program", request.session().attribute("program"))
                                 .build(),
-                        "index.ftl"), new FreeMarkerEngine());
+                        "index.ftl"));
 
         get("/socialauth", (request, response) -> {
             SocialAuthManager manager = getSocialAuthManager(request, app);
@@ -254,7 +253,7 @@ public class Login extends BaseController {
     }
 
 
-    private spark.ModelAndView registration(final AuthProvider provider)
+    private String registration(final AuthProvider provider)
             throws Exception {
         Profile profile = provider.getUserProfile();
         if (profile.getFullName() == null) {
@@ -276,7 +275,7 @@ public class Login extends BaseController {
                 profile.setFullName(name);
             }
         }
-        return new spark.ModelAndView(
+        return render(
                 toMap("profile", profile),
                 "registrationForm.ftl");
     }

@@ -7,10 +7,8 @@ import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.utility.UtilityMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
-import spark.template.freemarker.FreeMarkerEngine;
 
 import java.util.Map;
 import java.util.Optional;
@@ -56,7 +54,7 @@ public class RegistrationController extends BaseController {
         get("/protected/:id/family", (request, response) -> {
             User user = getUser(request);
             return createRegistrationView(request, app.getProgram(request.params(":id")).createRegistrationForm(user));
-        }, new FreeMarkerEngine());
+        });
 
         before("/protected/:id/family", (request, response) -> {
             if ("submit".equals(request.queryParams("submit"))) {
@@ -68,9 +66,7 @@ public class RegistrationController extends BaseController {
             }
         });
 
-        post("/protected/:id/family", (request, response) -> {
-            return updateRegistrationForm(app, request);
-        }, new FreeMarkerEngine());
+        post("/protected/:id/family", (request, response) -> updateRegistrationForm(app, request));
 
         get("/protected/:id/family/:familyId", (request, response) -> {
             User user = getUser(request);
@@ -83,7 +79,7 @@ public class RegistrationController extends BaseController {
             response.redirect("/protected/my");
             halt();
             return null;
-        }, new FreeMarkerEngine());
+        });
 
         before("/protected/:id/family/:familyId", (request, response) -> {
             User user = getUser(request);
@@ -103,7 +99,7 @@ public class RegistrationController extends BaseController {
 
         post("/protected/:id/family/:familyId", (request, response) -> {
             return updateRegistrationForm(app, request);
-        }, new FreeMarkerEngine());
+        });
 
         get("/protected/:id/newClubber", (request, response) -> {
             User user = getUser(request);
@@ -116,7 +112,7 @@ public class RegistrationController extends BaseController {
             response.redirect("/protected/my");
             halt();
             return null;
-        }, new FreeMarkerEngine());
+        });
 
         get("/protected/:id/newWorker", (request, response) -> {
             User user = getUser(request);
@@ -127,25 +123,21 @@ public class RegistrationController extends BaseController {
             response.redirect("/protected/my");
             halt();
             return null;
-        }, new FreeMarkerEngine());
+        });
 
         before("/protected/:id/newClubber", (request, response) -> {
             validateMayCreateNewPeople(app, request, response,
                     f -> postRegistrationRedirect(response, f));
         });
 
-        post("/protected/:id/newClubber", (request, response) -> {
-            return updateRegistrationForm(app, request);
-        }, new FreeMarkerEngine());
+        post("/protected/:id/newClubber", (request, response) -> updateRegistrationForm(app, request));
 
         before("/protected/:id/newWorker", (request, response) -> {
             validateMayCreateNewPeople(app, request, response,
                     f -> postWorkerRegistrationRedirect(getUser(request), response, f));
         });
 
-        post("/protected/:id/newWorker", (request, response) -> {
-            return updateRegistrationForm(app, request);
-        }, new FreeMarkerEngine());
+        post("/protected/:id/newWorker", (request, response) -> updateRegistrationForm(app, request));
     }
 
     public void redirectKiosk(Request request, Response response) {
@@ -202,14 +194,14 @@ public class RegistrationController extends BaseController {
         return app.getProgram(request.params(":id")).updateRegistrationForm(collect);
     }
 
-    private ModelAndView updateRegistrationForm(ClubApplication app, Request request) {
+    private String updateRegistrationForm(ClubApplication app, Request request) {
         logger.info("Adding additional family members");
         RegistrationInformation form = updateForm(app, request);
         return createRegistrationView(request, form);
     }
 
-    private ModelAndView createRegistrationView(Request request, RegistrationInformation form) {
-        return new ModelAndView(
+    private String createRegistrationView(Request request, RegistrationInformation form) {
+        return render(
                 newModel(request, "Registration").put("regInfo", form).build(),
                 "family.ftl");
     }

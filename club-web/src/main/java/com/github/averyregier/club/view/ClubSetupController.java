@@ -12,9 +12,7 @@ import com.github.averyregier.club.domain.utility.Settings;
 import com.github.averyregier.club.domain.utility.adapter.SettingAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.ModelAndView;
 import spark.Request;
-import spark.template.freemarker.FreeMarkerEngine;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -64,11 +62,11 @@ public class ClubSetupController extends BaseController {
 
                 builder.put("defaultCurriculum", defaults);
 
-                return new ModelAndView(
+                return render(
                         builder.build(),
                         "policies.ftl");
             } else return gotoMy(response);
-        }, new FreeMarkerEngine());
+        });
 
         post("/protected/club/:club/policies", (request, response) -> {
             Optional<Club> club = lookupClub(app, request);
@@ -97,12 +95,11 @@ public class ClubSetupController extends BaseController {
         get("/protected/club/:club/workers",
                 (request, response) ->
                         lookupClub(app, request)
-                                .map(club -> new ModelAndView(
+                                .map(club -> render(
                                         newModel(request, "Add " + club.getShortCode() + " Workers")
                                                 .put("club", club)
                                                 .build(), "addWorker.ftl"))
-                                .orElseGet(() -> gotoMy(response)),
-                new FreeMarkerEngine());
+                                .orElseGet(() -> gotoMy(response)));
 
         get("/protected/club/:club/workers/:personId", (request, response) -> {
             Optional<Club> club = lookupClub(app, request);
@@ -115,7 +112,7 @@ public class ClubSetupController extends BaseController {
                             .put("person", person.get())
                             .put("roles", ClubLeader.LeadershipRole.values());
                     optMap(club, Club::asProgram).ifPresent(p -> model.put("clubs", getClubList(p)));
-                    return new ModelAndView(model.build(), "workerRole.ftl");
+                    return render(model.build(), "workerRole.ftl");
                 } else {
                     response.redirect("/protected/club/" + club.get().getId() + "/workers");
                     return null;
@@ -123,7 +120,7 @@ public class ClubSetupController extends BaseController {
             } else {
                 return gotoMy(response);
             }
-        }, new FreeMarkerEngine());
+        });
     }
 
     private Settings buildCustomizedBookSettings(Request request, Club theClub) {

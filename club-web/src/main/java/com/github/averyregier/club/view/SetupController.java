@@ -8,9 +8,7 @@ import com.github.averyregier.club.domain.program.Programs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Filter;
-import spark.ModelAndView;
 import spark.Request;
-import spark.template.freemarker.FreeMarkerEngine;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -28,12 +26,11 @@ public class SetupController extends BaseController {
 
 
     public void init(ClubApplication app) {
-        get("/protected/setup", (request, response) -> {
-            return new ModelAndView(newModel(request, "Club Setup")
-                    .put("roles", ClubLeader.LeadershipRole.values())
-                    .put("programs", Programs.values())
-                    .build(), "setup.ftl");
-        }, new FreeMarkerEngine());
+        get("/protected/setup", (request, response) ->
+                render(newModel(request, "Club Setup")
+                .put("roles", ClubLeader.LeadershipRole.values())
+                .put("programs", Programs.values())
+                .build(), "setup.ftl"));
 
         post("/protected/setup", (request, response) -> {
 
@@ -52,8 +49,7 @@ public class SetupController extends BaseController {
         before("/protected/program/:id", gotoSetupScreenIfNecessary(app));
 
         get("/protected/program/:id", (request, response) ->
-                        createProgramView(request, app.getProgram(request.params(":id")), "program.ftl"),
-                new FreeMarkerEngine());
+                        createProgramView(request, app.getProgram(request.params(":id")), "program.ftl"));
 
         post("/protected/program/:id", (request, response) -> {
             Program program = app.getProgram(request.params(":id"));
@@ -75,17 +71,15 @@ public class SetupController extends BaseController {
         });
 
         get("/protected/program/:id/update", (request, response) -> {
-                    Program program = app.getProgram(request.params(":id"));
-                    app.addExtraFields(program);
-                    return createProgramView(request, program, "program.ftl");
-                },
-                new FreeMarkerEngine());
+            Program program = app.getProgram(request.params(":id"));
+            app.addExtraFields(program);
+            return createProgramView(request, program, "program.ftl");
+        });
 
         before("/protected/program/:id/schedule", gotoSetupScreenIfNecessary(app));
 
         get("/protected/program/:id/schedule", (request, response) ->
-                        createProgramView(request, app.getProgram(request.params(":id")), "schedule.ftl"),
-                new FreeMarkerEngine());
+                        createProgramView(request, app.getProgram(request.params(":id")), "schedule.ftl"));
 
         post("/protected/program/:id/schedule", (request, response) -> {
             Program program = app.getProgram(request.params(":id"));
@@ -136,8 +130,8 @@ public class SetupController extends BaseController {
         };
     }
 
-    private ModelAndView createProgramView(Request request, Program program, String viewName) {
-        return new ModelAndView(
+    private String createProgramView(Request request, Program program, String viewName) {
+        return render(
                 newModel(request, "Program").put("program", program).build(),
                 viewName);
     }

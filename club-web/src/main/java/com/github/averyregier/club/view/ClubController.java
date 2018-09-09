@@ -14,9 +14,7 @@ import com.github.averyregier.club.domain.utility.MapBuilder;
 import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.ModelAndView;
 import spark.Request;
-import spark.template.freemarker.FreeMarkerEngine;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -38,17 +36,17 @@ public class ClubController extends BaseController {
     public void init(ClubApplication app) {
         get("/protected/:id/viewProgram", (request, response) -> {
             Program program = app.getProgram(request.params(":id"));
-            return new ModelAndView(
+            return render(
                     newModel(request, program.getShortCode())
                             .put("program", program)
                             .build(),
                     "viewProgram.ftl");
-        }, new FreeMarkerEngine());
+        });
 
         get("/protected/club/:club", (request, response) -> {
             Optional<Club> club = lookupClub(app, request);
             if (club.isPresent()) {
-                return new ModelAndView(
+                return render(
                         newModel(request, club.get().getShortCode())
                                 .put("club", club.get())
                                 .put("clubbers", club.get().getClubNightReport().entrySet())
@@ -57,12 +55,12 @@ public class ClubController extends BaseController {
             } else {
                 return gotoMy(response);
             }
-        }, new FreeMarkerEngine());
+        });
 
         get("/protected/club/:club/clubbers", (request, response) -> {
             Optional<Club> club = lookupClub(app, request);
             if (club.isPresent()) {
-                return new ModelAndView(
+                return render(
                         newModel(request, "All " + club.get().getShortCode() + " Clubber's Upcoming Sections")
                                 .put("club", club.get())
                                 .build(),
@@ -70,7 +68,7 @@ public class ClubController extends BaseController {
             } else {
                 return gotoMy(response);
             }
-        }, new FreeMarkerEngine());
+        });
 
         post("/protected/club/:club/workers/:personId", (request, response) -> {
             Optional<Club> club = lookupClub(app, request);
@@ -118,7 +116,7 @@ public class ClubController extends BaseController {
                 String accomplishmentLevel = request.queryParams("accomplishmentLevel");
                 AccomplishmentLevel type = AccomplishmentLevel.valueOf(
                         accomplishmentLevel != null ? accomplishmentLevel : AccomplishmentLevel.group.name());
-                return new ModelAndView(
+                return render(
                         newModel(request, club.get().getShortCode() + " Awards")
                                 .put("club", club.get())
                                 .put("awards", club.get().getAwardsNotYetPresented(type))
@@ -127,7 +125,7 @@ public class ClubController extends BaseController {
             } else {
                 return gotoMy(response);
             }
-        }, new FreeMarkerEngine());
+        });
 
         get("/protected/my", (request, response) -> {
             User user = getUser(request);
@@ -141,9 +139,9 @@ public class ClubController extends BaseController {
                         .put("programs", programs);
 
                 user.asClubLeader().ifPresent(l -> l.getClub().ifPresent(c -> model.put("mygroup", c)));
-                return new ModelAndView(model.build(), "my.ftl");
+                return render(model.build(), "my.ftl");
             }
-        }, new FreeMarkerEngine());
+        });
 
         before("/protected/clubbers/:personId/sections/:sectionId", (request, response) -> {
             if (request.requestMethod().equalsIgnoreCase("POST")) {
@@ -193,8 +191,8 @@ public class ClubController extends BaseController {
                         .put("defaultListener", getDefaultListener(user, clubber))
                         .put("listeners", clubber.getClub().get().getListeners());
             }
-            return new ModelAndView(builder.build(), "clubberSection.ftl");
-        }, new FreeMarkerEngine());
+            return render(builder.build(), "clubberSection.ftl");
+        });
 
         before("/protected/clubbers/:personId/sections", ((request, response) -> {
             User user = getUser(request);
@@ -223,7 +221,7 @@ public class ClubController extends BaseController {
             Clubber clubber = app.findClubber(id);
             if (clubber.maySeeRecords(user)) {
                 String bookId = request.params(":bookId");
-                Optional<ModelAndView> modelAndView = clubber.getBook(bookId)
+                Optional<String> modelAndView = clubber.getBook(bookId)
                         .map(book -> mapClubberBookRecords(request, user, clubber, book));
                 if (modelAndView.isPresent()) {
                     return modelAndView.get();
@@ -234,7 +232,7 @@ public class ClubController extends BaseController {
                 response.status(HttpStatus.SC_FORBIDDEN);
             }
             return null;
-        }, new FreeMarkerEngine());
+        });
 
         get("/protected/clubbers/:personId/sections/:sectionId/awards/:awardName/catchup", (request, response) -> {
             User user = getUser(request);
@@ -245,7 +243,7 @@ public class ClubController extends BaseController {
                 Optional<Award> award = optMap(section, s -> s.findAward(request.params(":awardName")));
                 if (award.isPresent()) {
                     if (!clubber.hasAward(award.get())) {
-                        return new ModelAndView(
+                        return render(
                                 newModel(request, "Catchup")
                                         .put("clubber", clubber)
                                         .put("defaultListener", getDefaultListener(user, clubber))
@@ -263,7 +261,7 @@ public class ClubController extends BaseController {
                 response.status(HttpStatus.SC_FORBIDDEN);
             }
             return null;
-        }, new FreeMarkerEngine());
+        });
 
         post("/protected/clubbers/:personId/sections/:sectionId/awards/:awardName/catchup", (request, response) -> {
             User user = getUser(request);
@@ -345,7 +343,7 @@ public class ClubController extends BaseController {
                 .orElse(defaultDate);
     }
 
-    private ModelAndView mapClubberBookRecords(Request request, User user, Clubber clubber, Book book) {
+    private String mapClubberBookRecords(Request request, User user, Clubber clubber, Book book) {
         Map<String, Object> model = newModel(request, clubber.getName().getFullName() + " - " + book.getName())
                 .put("me", user)
                 .put("clubber", clubber)
@@ -356,7 +354,7 @@ public class ClubController extends BaseController {
                 .put("awards", clubber.getBookAwards(book).entrySet())
                 .put("catchup", clubber.mayRecordSigning(user))
                 .build();
-        return new ModelAndView(model, "clubberBook.ftl");
+        return render(model, "clubberBook.ftl");
     }
 
     private ClubberRecord getClubberRecord(Request request, Clubber clubber) {

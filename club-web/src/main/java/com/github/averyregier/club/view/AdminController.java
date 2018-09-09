@@ -7,8 +7,6 @@ import com.github.averyregier.club.domain.club.Person;
 import com.github.averyregier.club.domain.utility.MapBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.ModelAndView;
-import spark.template.freemarker.FreeMarkerEngine;
 
 import static com.github.averyregier.club.domain.utility.UtilityMethods.optMap;
 import static spark.Spark.*;
@@ -38,8 +36,8 @@ public class AdminController extends BaseController {
             MapBuilder<String, Object> model = newModel(request, "Admin");
             User user = getUser(request);
             user.asClubLeader().ifPresent(l -> l.getClub().ifPresent(c -> model.put("mygroup", c)));
-            return new ModelAndView(model.build(), "admin.ftl");
-        }, new FreeMarkerEngine());
+            return render(model.build(), "admin.ftl");
+        });
 
         post("/protected/admin/reset", ((request, response) -> {
             app.reset();

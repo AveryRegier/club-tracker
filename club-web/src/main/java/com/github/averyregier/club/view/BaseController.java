@@ -13,6 +13,7 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.Session;
+import spark.template.freemarker.FreeMarkerEngine;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,11 @@ import static com.github.averyregier.club.domain.utility.UtilityMethods.map;
  * Created by avery on 9/27/14.
  */
 public class BaseController {
-    ModelAndView gotoMy(Response response) {
+    public static String render(Map<String, ?> model, String templatePath) {
+        return new FreeMarkerEngine().render(new ModelAndView(model, templatePath));
+    }
+
+    String gotoMy(Response response) {
         response.redirect("/protected/my");
         return null;
     }
