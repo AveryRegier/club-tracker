@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.github.averyregier.club.domain.utility.UtilityMethods.*;
 import static java.util.stream.Collectors.toList;
@@ -20,7 +21,11 @@ import static java.util.stream.Collectors.toList;
 public interface Clubber extends ClubMember {
     Optional<Section> getNextSection();
 
-    Optional<ClubberRecord> getLastRecord();
+    default Optional<ClubberRecord> getLastRecord() {
+        return getRecentRecords().findFirst();
+    }
+    
+    Stream<ClubberRecord> getRecentRecords();
 
     List<ClubberRecord> getNextSections(int max);
 

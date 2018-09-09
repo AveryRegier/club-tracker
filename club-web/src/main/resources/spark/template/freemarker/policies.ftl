@@ -22,6 +22,14 @@
                 <input type="checkbox" name="policy" id="listenerGroupsByGender" value="listenerGroupsByGender" ${listenerGroupsByGender}>
             </div>
             <div class="inputField">
+                <label for="listenerGroupByRecentSignings">Listener Groups by Recent Signings</label>
+                <input type="checkbox" name="policy" id="listenerGroupByRecentSignings" value="listenerGroupByRecentSignings" ${listenerGroupByRecentSignings}>
+            </div>
+            <div class="inputField">
+                <label for="listenerGroupsMayNotContainFamily">Listener Groups May Not Contain Family</label>
+                <input type="checkbox" name="policy" id="listenerGroupsMayNotContainFamily" value="listenerGroupsMayNotContainFamily" ${listenerGroupsMayNotContainFamily}>
+            </div>
+            <div class="inputField">
                 <label for="allTogether">All Together Curriculum</label>
                 <input type="checkbox" name="policy" id="allTogether" value="allTogether" ${allTogether}>
             </div>

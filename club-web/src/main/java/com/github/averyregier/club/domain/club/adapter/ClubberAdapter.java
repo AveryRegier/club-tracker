@@ -176,13 +176,11 @@ public class ClubberAdapter extends ClubMemberAdapter implements Clubber {
         return getRecords().containsKey(s) && getRecords().get(s).getSigning().isPresent();
     }
 
-    @Override
-    public Optional<ClubberRecord> getLastRecord() {
+    public Stream<ClubberRecord> getRecentRecords() {
         return asStream(getRecords().values().stream()
                 .collect(Collectors.toCollection(ArrayDeque::new)) // or LinkedList
                 .descendingIterator())
-                .filter(r -> r.getSigning().isPresent())
-                .findFirst();
+                .filter(r -> r.getSigning().isPresent());
     }
 
     @Override

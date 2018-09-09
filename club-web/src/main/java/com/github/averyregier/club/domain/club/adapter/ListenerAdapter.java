@@ -4,11 +4,9 @@ import com.github.averyregier.club.domain.club.*;
 import com.github.averyregier.club.domain.program.AgeGroup;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
 * Created by avery on 12/16/14.
@@ -28,9 +26,14 @@ public class ListenerAdapter extends PersonWrapper implements Listener {
     }
 
     private Set<Clubber> matchingClubbers(Group cl) {
-        return cl.getClubbers().stream()
-                .filter(clubber -> clubGroup.findPolicies(Policy::getListenerGroupPolicy)
-                        .allMatch(p->p.test(this, clubber)))
+        List<ListenerGroupPolicy> policies = clubGroup.findPolicies(Policy::getListenerGroupPolicy).collect(Collectors.toList());
+
+        Stream<Clubber> stream = cl.getClubbers().stream();
+        for(ListenerGroupPolicy policy: policies) {
+            stream = policy.limit(stream, this);
+        }
+        return stream
+
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 

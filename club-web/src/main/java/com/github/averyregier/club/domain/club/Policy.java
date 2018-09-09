@@ -1,5 +1,6 @@
 package com.github.averyregier.club.domain.club;
 
+import com.github.averyregier.club.domain.club.adapter.ListenerGroupPolicy;
 import com.github.averyregier.club.domain.program.*;
 import com.github.averyregier.club.domain.utility.Schedule;
 import com.github.averyregier.club.domain.utility.Setting;
@@ -7,7 +8,6 @@ import com.github.averyregier.club.domain.utility.Settings;
 
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -25,8 +25,35 @@ public enum Policy {
     },
     listenerGroupsByGender {
         @Override
-        public Optional<BiPredicate<Listener, Clubber>> getListenerGroupPolicy() {
-            return Optional.of(Person::gendersMatch);
+        public Optional<ListenerGroupPolicy> getListenerGroupPolicy() {
+            return Optional.of((stream, listener) -> stream.filter(c->Person.gendersMatch(listener, c)));
+        }
+    },
+    listenerGroupByRecentSignings {
+        @Override
+        public Optional<ListenerGroupPolicy> getListenerGroupPolicy() {
+            return Optional.of((stream, listener) -> stream
+                    .sorted(Comparator.comparingLong(c -> getRecentCount(listener, c)))
+                    .limit(10)
+                    .sorted(Comparator.comparing(Person::getName)));
+        }
+
+        private long getRecentCount(Listener listener, Clubber c1) {
+            return c1.getRecentRecords().limit(20).filter(r->sameListener(listener, r)).count();
+        }
+
+        private boolean sameListener(Listener listener, ClubberRecord r) {
+            return listener.getId().equals(getSignedById(r));
+        }
+
+        private String getSignedById(ClubberRecord r) {
+            return r.getSigning().map(Signing::by).map(Listener::getId).orElse("");
+        }
+    },
+    listenerGroupsMayNotContainFamily {
+        @Override
+        public Optional<ListenerGroupPolicy> getListenerGroupPolicy() {
+            return Optional.of((stream, listener) -> stream.filter(c->c.maySignRecords(listener)));
         }
     },
     customizedBookSelections {
@@ -98,7 +125,7 @@ public enum Policy {
         return Optional.empty();
     }
 
-    public Optional<BiPredicate<Listener, Clubber>> getListenerGroupPolicy() {
+    public Optional<ListenerGroupPolicy> getListenerGroupPolicy() {
         return Optional.empty();
     }
 
