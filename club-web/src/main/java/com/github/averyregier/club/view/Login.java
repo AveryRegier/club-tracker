@@ -252,34 +252,6 @@ public class Login extends BaseController {
         return s == null || s.trim().isEmpty();
     }
 
-
-    private String registration(final AuthProvider provider)
-            throws Exception {
-        Profile profile = provider.getUserProfile();
-        if (profile.getFullName() == null) {
-            String name = null;
-            if (profile.getFirstName() != null) {
-                name = profile.getFirstName();
-            }
-            if (profile.getLastName() != null) {
-                if (profile.getFirstName() != null) {
-                    name += " " + profile.getLastName();
-                } else {
-                    name = profile.getLastName();
-                }
-            }
-            if (name == null && profile.getDisplayName() != null) {
-                name = profile.getDisplayName();
-            }
-            if (name != null) {
-                profile.setFullName(name);
-            }
-        }
-        return render(
-                toMap("profile", profile),
-                "registrationForm.ftl");
-    }
-
     private SocialAuthManager getSocialAuthManager(Request request, ClubApplication app) {
         Session session = request.session(true);
         SocialAuthManager manager = session.attribute("socialAuthManager");
@@ -287,7 +259,7 @@ public class Login extends BaseController {
             try {
                 List<Provider> providers = getProviders(app);
                 String propString = providers.stream()
-                        .map(p -> buildProviderComment(p))
+                        .map(this::buildProviderComment)
                         .collect(joining("\n"));
 
 //                InputStream in = Login.class.getClassLoader()
