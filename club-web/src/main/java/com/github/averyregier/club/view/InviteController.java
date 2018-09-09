@@ -29,8 +29,8 @@ public class InviteController extends BaseController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public void init(ClubApplication app) {
-        String invitationPath = "/protected/person/:id/invite";
-        String familyInvitePath = "/protected/family/:familyId/invite";
+        String invitationPath = "/person/:id/invite";
+        String familyInvitePath = "/family/:familyId/invite";
 
         before(familyInvitePath, (request, response) -> {
             Optional<Family> family = app.getPersonManager().lookupFamily(request.params(":familyId"));

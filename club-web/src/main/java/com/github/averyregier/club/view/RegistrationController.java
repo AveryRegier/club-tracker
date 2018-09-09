@@ -23,7 +23,7 @@ public class RegistrationController extends BaseController {
 
 
     public void init(ClubApplication app) {
-        before("/protected/*/*", (request, response) -> {
+        before("/*/*", (request, response) -> {
             if (!app.hasPrograms()) {
                 response.redirect("/protected/setup");
                 halt();
@@ -31,22 +31,14 @@ public class RegistrationController extends BaseController {
             redirectKiosk(request, response);
         });
         
-        before("/protected/my", this::redirectKiosk);
+        before("/my", this::redirectKiosk);
 
-        before("/register/:name", (request, response) -> {
-            app.getProgramByName(request.params(":name")).ifPresent(program -> {
-                request.session(true).attribute("program", program);
-                response.redirect("/protected/" + program.getId() + "/family");
-                halt();
-            });
-        });
-
-        get("/protected/:id/family", (request, response) -> {
+        get("/:id/family", (request, response) -> {
             User user = getUser(request);
             return createRegistrationView(request, app.getProgram(request.params(":id")).createRegistrationForm(user));
         });
 
-        before("/protected/:id/family", (request, response) -> {
+        before("/:id/family", (request, response) -> {
             if ("submit".equals(request.queryParams("submit"))) {
                 logger.info("Submitting family registration");
                 RegistrationInformation form = updateForm(app, request);
@@ -56,9 +48,9 @@ public class RegistrationController extends BaseController {
             }
         });
 
-        post("/protected/:id/family", (request, response) -> updateRegistrationForm(app, request));
+        post("/:id/family", (request, response) -> updateRegistrationForm(app, request));
 
-        get("/protected/:id/family/:familyId", (request, response) -> {
+        get("/:id/family/:familyId", (request, response) -> {
             User user = getUser(request);
             String programId = request.params(":id");
             String familyId = request.params(":familyId");
@@ -66,17 +58,17 @@ public class RegistrationController extends BaseController {
                 PersonManager personManager = app.getPersonManager();
                 return createRegistrationView(request, app.getProgram(programId).createRegistrationForm(personManager.getParent(familyId)));
             }
-            response.redirect("/protected/my");
+            response.redirect("/my");
             halt();
             return null;
         });
 
-        before("/protected/:id/family/:familyId", (request, response) -> {
+        before("/:id/family/:familyId", (request, response) -> {
             User user = getUser(request);
             String programId = request.params(":id");
             String familyId = request.params(":familyId");
             if (!leadsProgram(user, programId)) {
-                response.redirect("/protected/my");
+                response.redirect("/my");
                 halt();
             } else if ("submit".equals(request.queryParams("submit"))) {
                 logger.info("Submitting family registration");
@@ -87,11 +79,11 @@ public class RegistrationController extends BaseController {
             }
         });
 
-        post("/protected/:id/family/:familyId", (request, response) -> {
+        post("/:id/family/:familyId", (request, response) -> {
             return updateRegistrationForm(app, request);
         });
 
-        get("/protected/:id/newClubber", (request, response) -> {
+        get("/:id/newClubber", (request, response) -> {
             User user = getUser(request);
             String programId = request.params(":id");
             if (leadsProgram(user, programId)) {
@@ -104,7 +96,7 @@ public class RegistrationController extends BaseController {
             return null;
         });
 
-        get("/protected/:id/newWorker", (request, response) -> {
+        get("/:id/newWorker", (request, response) -> {
             User user = getUser(request);
             String programId = request.params(":id");
             if (leadsProgram(user, programId)) {
@@ -115,19 +107,19 @@ public class RegistrationController extends BaseController {
             return null;
         });
 
-        before("/protected/:id/newClubber", (request, response) -> {
+        before("/:id/newClubber", (request, response) -> {
             validateMayCreateNewPeople(app, request, response,
                     f -> postRegistrationRedirect(response, f));
         });
 
-        post("/protected/:id/newClubber", (request, response) -> updateRegistrationForm(app, request));
+        post("/:id/newClubber", (request, response) -> updateRegistrationForm(app, request));
 
-        before("/protected/:id/newWorker", (request, response) -> {
+        before("/:id/newWorker", (request, response) -> {
             validateMayCreateNewPeople(app, request, response,
                     f -> postWorkerRegistrationRedirect(getUser(request), response, f));
         });
 
-        post("/protected/:id/newWorker", (request, response) -> updateRegistrationForm(app, request));
+        post("/:id/newWorker", (request, response) -> updateRegistrationForm(app, request));
     }
 
     public void redirectKiosk(Request request, Response response) {

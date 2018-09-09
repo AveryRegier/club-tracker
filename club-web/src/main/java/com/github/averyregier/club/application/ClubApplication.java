@@ -31,8 +31,7 @@ import java.util.stream.Stream;
 
 import static com.github.averyregier.club.domain.utility.InputField.Type.date;
 import static com.github.averyregier.club.domain.utility.InputField.Type.text;
-import static spark.Spark.exception;
-import static spark.Spark.port;
+import static spark.Spark.*;
 
 /**
  * Created by avery on 8/30/14.
@@ -81,14 +80,25 @@ public class ClubApplication implements SparkApplication, ServletContextListener
         new InitialSetup().init(this);
         new FastSetup().init(this);
         new Login().init(this);
-        new ProviderSetup().init(this);
-        new SetupController().init(this);
-        new RegistrationController().init(this);
-        new InviteController().init(this);
-        new RestAPI().init(this);
-        new ClubController().init(this);
-        new ClubSetupController().init(this);
-        new AdminController().init(this);
+
+        before("/register/:name", (request, response) -> {
+            getProgramByName(request.params(":name")).ifPresent(program -> {
+                request.session(true).attribute("program", program);
+                response.redirect("/protected/" + program.getId() + "/family");
+                halt();
+            });
+        });
+
+        path("/protected", ()->{
+            new ProviderSetup().init(this);
+            new SetupController().init(this);
+            new RegistrationController().init(this);
+            new InviteController().init(this);
+            new RestAPI().init(this);
+            new ClubController().init(this);
+            new ClubSetupController().init(this);
+            new AdminController().init(this);
+        });
     }
 
     private void loadConfig() {

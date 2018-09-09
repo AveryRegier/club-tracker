@@ -26,13 +26,13 @@ public class SetupController extends BaseController {
 
 
     public void init(ClubApplication app) {
-        get("/protected/setup", (request, response) ->
+        get("/setup", (request, response) ->
                 render(newModel(request, "Club Setup")
                 .put("roles", ClubLeader.LeadershipRole.values())
                 .put("programs", Programs.values())
                 .build(), "setup.ftl"));
 
-        post("/protected/setup", (request, response) -> {
+        post("/setup", (request, response) -> {
 
             String organizationName = request.queryParams("organizationName");
             String myRole = request.queryParams("role");
@@ -46,12 +46,12 @@ public class SetupController extends BaseController {
             return null;
         });
 
-        before("/protected/program/:id", gotoSetupScreenIfNecessary(app));
+        before("/program/:id", gotoSetupScreenIfNecessary(app));
 
-        get("/protected/program/:id", (request, response) ->
+        get("/program/:id", (request, response) ->
                         createProgramView(request, app.getProgram(request.params(":id")), "program.ftl"));
 
-        post("/protected/program/:id", (request, response) -> {
+        post("/program/:id", (request, response) -> {
             Program program = app.getProgram(request.params(":id"));
 
             String clubId = request.queryParams("addClub");
@@ -70,18 +70,18 @@ public class SetupController extends BaseController {
             return null;
         });
 
-        get("/protected/program/:id/update", (request, response) -> {
+        get("/program/:id/update", (request, response) -> {
             Program program = app.getProgram(request.params(":id"));
             app.addExtraFields(program);
             return createProgramView(request, program, "program.ftl");
         });
 
-        before("/protected/program/:id/schedule", gotoSetupScreenIfNecessary(app));
+        before("/program/:id/schedule", gotoSetupScreenIfNecessary(app));
 
-        get("/protected/program/:id/schedule", (request, response) ->
+        get("/program/:id/schedule", (request, response) ->
                         createProgramView(request, app.getProgram(request.params(":id")), "schedule.ftl"));
 
-        post("/protected/program/:id/schedule", (request, response) -> {
+        post("/program/:id/schedule", (request, response) -> {
             Program program = app.getProgram(request.params(":id"));
             List<LocalDate> dates = parseMeetingDates(request);
 

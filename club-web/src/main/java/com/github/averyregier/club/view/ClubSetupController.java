@@ -35,7 +35,7 @@ public class ClubSetupController extends BaseController {
 
     public void init(ClubApplication app) {
 
-        before("/protected/club/:club/policies", (request, response) -> {
+        before("/club/:club/policies", (request, response) -> {
             User user = getUser(request);
             Optional<Club> club = lookupClub(app, request);
             if (!club.map(c -> c.isLeader(user)).orElse(false)) {
@@ -44,7 +44,7 @@ public class ClubSetupController extends BaseController {
             }
         });
 
-        get("/protected/club/:club/policies", (request, response) -> {
+        get("/club/:club/policies", (request, response) -> {
             Optional<Club> club = lookupClub(app, request);
             if (club.isPresent()) {
                 MapBuilder<String, Object> builder = newModel(request, "Club " + club.get().getShortCode() + " Policies")
@@ -68,7 +68,7 @@ public class ClubSetupController extends BaseController {
             } else return gotoMy(response);
         });
 
-        post("/protected/club/:club/policies", (request, response) -> {
+        post("/club/:club/policies", (request, response) -> {
             Optional<Club> club = lookupClub(app, request);
             if (club.isPresent()) {
                 EnumSet<Policy> policies = EnumSet.noneOf(Policy.class);
@@ -92,7 +92,7 @@ public class ClubSetupController extends BaseController {
             return null;
         });
 
-        get("/protected/club/:club/workers",
+        get("/club/:club/workers",
                 (request, response) ->
                         lookupClub(app, request)
                                 .map(club -> render(
@@ -101,7 +101,7 @@ public class ClubSetupController extends BaseController {
                                                 .build(), "addWorker.ftl"))
                                 .orElseGet(() -> gotoMy(response)));
 
-        get("/protected/club/:club/workers/:personId", (request, response) -> {
+        get("/club/:club/workers/:personId", (request, response) -> {
             Optional<Club> club = lookupClub(app, request);
             if (club.isPresent()) {
                 Optional<Person> person = app.getPersonManager().lookup(request.params(":personId"));

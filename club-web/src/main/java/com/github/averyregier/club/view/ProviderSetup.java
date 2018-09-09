@@ -14,7 +14,7 @@ import static spark.Spark.*;
  */
 public class ProviderSetup extends BaseController {
     public void init(ClubApplication app) {
-        String path = "/protected/provider";
+        String path = "/provider";
 
         before(path, (request, response) -> {
             User user = getUser(request);

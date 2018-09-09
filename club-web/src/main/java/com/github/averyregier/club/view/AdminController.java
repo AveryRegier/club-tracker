@@ -20,36 +20,38 @@ public class AdminController extends BaseController {
 
 
     public void init(ClubApplication app) {
-        before("/protected/admin/*", (request, response) -> {
-            if(!leadsProgram(getUser(request))) {
-                response.redirect("/protected/my");
+        path("/admin", ()->{
+            before("/*", (request, response) -> {
+                if(!leadsProgram(getUser(request))) {
+                    response.redirect("/protected/my");
+                    halt();
+                }
+            });
+
+            before("", (request, response) -> {
+                response.redirect("/protected/admin/");
                 halt();
-            }
-        });
+            });
 
-        before("/protected/admin", (request, response) -> {
-            response.redirect("/protected/admin/");
-            halt();
-        });
+            get("/", (request, response) -> {
+                MapBuilder<String, Object> model = newModel(request, "Admin");
+                User user = getUser(request);
+                user.asClubLeader().ifPresent(l -> l.getClub().ifPresent(c -> model.put("mygroup", c)));
+                return render(model.build(), "admin.ftl");
+            });
 
-        get("/protected/admin/", (request, response) -> {
-            MapBuilder<String, Object> model = newModel(request, "Admin");
-            User user = getUser(request);
-            user.asClubLeader().ifPresent(l -> l.getClub().ifPresent(c -> model.put("mygroup", c)));
-            return render(model.build(), "admin.ftl");
-        });
+            post("/reset", ((request, response) -> {
+                app.reset();
+                response.redirect("/protected/admin");
+                return null;
+            }));
 
-        post("/protected/admin/reset", ((request, response) -> {
-            app.reset();
-            response.redirect("/protected/admin");
-            return null;
-        }));
+            before("/reset", (request, response) -> {
+                app.getProgramByName(request.params("name")).ifPresent(app::addExtraFields);
 
-        before("/protected/admin/program/:name/reset", (request, response) -> {
-            app.getProgramByName(request.params("name")).ifPresent(app::addExtraFields);
-
-            response.redirect("/protected/admin");
-            halt();
+                response.redirect("/protected/admin");
+                halt();
+            });
         });
     }
 

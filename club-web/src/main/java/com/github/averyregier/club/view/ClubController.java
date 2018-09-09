@@ -34,7 +34,7 @@ public class ClubController extends BaseController {
 
 
     public void init(ClubApplication app) {
-        get("/protected/:id/viewProgram", (request, response) -> {
+        get("/:id/viewProgram", (request, response) -> {
             Program program = app.getProgram(request.params(":id"));
             return render(
                     newModel(request, program.getShortCode())
@@ -43,7 +43,7 @@ public class ClubController extends BaseController {
                     "viewProgram.ftl");
         });
 
-        get("/protected/club/:club", (request, response) -> {
+        get("/club/:club", (request, response) -> {
             Optional<Club> club = lookupClub(app, request);
             if (club.isPresent()) {
                 return render(
@@ -57,7 +57,7 @@ public class ClubController extends BaseController {
             }
         });
 
-        get("/protected/club/:club/clubbers", (request, response) -> {
+        get("/club/:club/clubbers", (request, response) -> {
             Optional<Club> club = lookupClub(app, request);
             if (club.isPresent()) {
                 return render(
@@ -70,7 +70,7 @@ public class ClubController extends BaseController {
             }
         });
 
-        post("/protected/club/:club/workers/:personId", (request, response) -> {
+        post("/club/:club/workers/:personId", (request, response) -> {
             Optional<Club> club = lookupClub(app, request);
             if (club.isPresent()) {
                 Optional<Person> person = app.getPersonManager().lookup(request.params(":personId"));
@@ -95,7 +95,7 @@ public class ClubController extends BaseController {
             return null;
         });
 
-        before("/protected/club/:club/awards", (request, response) -> {
+        before("/club/:club/awards", (request, response) -> {
             if (request.requestMethod().equalsIgnoreCase("POST")) {
                 Optional<Club> club = lookupClub(app, request);
                 if (club.isPresent()) {
@@ -110,7 +110,7 @@ public class ClubController extends BaseController {
             }
         });
 
-        get("/protected/club/:club/awards", (request, response) -> {
+        get("/club/:club/awards", (request, response) -> {
             Optional<Club> club = lookupClub(app, request);
             if (club.isPresent()) {
                 String accomplishmentLevel = request.queryParams("accomplishmentLevel");
@@ -127,7 +127,7 @@ public class ClubController extends BaseController {
             }
         });
 
-        get("/protected/my", (request, response) -> {
+        get("/my", (request, response) -> {
             User user = getUser(request);
             Collection<Program> programs = app.getPrograms(user);
             if (programs.isEmpty()) {
@@ -143,7 +143,7 @@ public class ClubController extends BaseController {
             }
         });
 
-        before("/protected/clubbers/:personId/sections/:sectionId", (request, response) -> {
+        before("/clubbers/:personId/sections/:sectionId", (request, response) -> {
             if (request.requestMethod().equalsIgnoreCase("POST")) {
                 User user = getUser(request);
                 String id = request.params(":personId");
@@ -169,7 +169,7 @@ public class ClubController extends BaseController {
             }
         });
 
-        get("/protected/clubbers/:personId/sections/:sectionId", (request, response) -> {
+        get("/clubbers/:personId/sections/:sectionId", (request, response) -> {
             User user = getUser(request);
             String id = request.params(":personId");
             Clubber clubber = app.findClubber(id);
@@ -194,7 +194,7 @@ public class ClubController extends BaseController {
             return render(builder.build(), "clubberSection.ftl");
         });
 
-        before("/protected/clubbers/:personId/sections", ((request, response) -> {
+        before("/clubbers/:personId/sections", ((request, response) -> {
             User user = getUser(request);
             String id = request.params(":personId");
             Clubber clubber = app.findClubber(id);
@@ -215,7 +215,7 @@ public class ClubController extends BaseController {
             halt();
         }));
 
-        get("/protected/clubbers/:personId/books/:bookId", (request, response) -> {
+        get("/clubbers/:personId/books/:bookId", (request, response) -> {
             User user = getUser(request);
             String id = request.params(":personId");
             Clubber clubber = app.findClubber(id);
@@ -234,7 +234,7 @@ public class ClubController extends BaseController {
             return null;
         });
 
-        get("/protected/clubbers/:personId/sections/:sectionId/awards/:awardName/catchup", (request, response) -> {
+        get("/clubbers/:personId/sections/:sectionId/awards/:awardName/catchup", (request, response) -> {
             User user = getUser(request);
             String id = request.params(":personId");
             Clubber clubber = app.findClubber(id);
@@ -263,7 +263,7 @@ public class ClubController extends BaseController {
             return null;
         });
 
-        post("/protected/clubbers/:personId/sections/:sectionId/awards/:awardName/catchup", (request, response) -> {
+        post("/clubbers/:personId/sections/:sectionId/awards/:awardName/catchup", (request, response) -> {
             User user = getUser(request);
             String id = request.params(":personId");
             Clubber clubber = app.findClubber(id);
@@ -288,7 +288,7 @@ public class ClubController extends BaseController {
             return null;
         });
 
-        post("/protected/clubbers/:personId/books/:bookId/awards/:awardName/presentation", (request, response) -> {
+        post("/clubbers/:personId/books/:bookId/awards/:awardName/presentation", (request, response) -> {
             User user = getUser(request);
             String id = request.params(":personId");
             Clubber clubber = app.findClubber(id);
