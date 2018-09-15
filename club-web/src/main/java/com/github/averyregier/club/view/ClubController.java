@@ -144,152 +144,155 @@ public class ClubController extends BaseController {
             }
         });
 
-        before("/clubbers/:personId/sections/:sectionId", (request, response) -> {
-            if (request.requestMethod().equalsIgnoreCase("POST")) {
+        path("/clubbers/:personId", ()-> {
+
+            before("/sections/:sectionId", (request, response) -> {
+                if (request.requestMethod().equalsIgnoreCase("POST")) {
+                    User user = getUser(request);
+                    String id = request.params(":personId");
+                    Clubber clubber = app.findClubber(id);
+                    ClubberRecord record = getClubberRecord(request, clubber);
+                    if ("true".equalsIgnoreCase(request.queryParams("sign"))) {
+                        if (clubber.maySignRecords(user)) {
+                            Listener listener = app.findListener(request.queryParams("listener"), clubber.getClub().get());
+                            LocalDate date = parseDate(request.queryParams("date")).orElseGet(() -> findToday(clubber));
+                            record.sign(listener, request.queryParams("note"), date);
+                        } else {
+                            throw new IllegalAccessException("You are not authorized to sign this section");
+                        }
+                    } else if ("true".equalsIgnoreCase(request.queryParams("unsign"))) {
+                        if (clubber.maySignRecords(user)) {
+                            record.unSign();
+                        } else {
+                            throw new IllegalAccessException("You are not authorized to un-sign this section");
+                        }
+                    }
+                    response.redirect(request.url());
+                    halt();
+                }
+            });
+
+            get("/sections/:sectionId", (request, response) -> {
                 User user = getUser(request);
                 String id = request.params(":personId");
                 Clubber clubber = app.findClubber(id);
                 ClubberRecord record = getClubberRecord(request, clubber);
-                if ("true".equalsIgnoreCase(request.queryParams("sign"))) {
-                    if (clubber.maySignRecords(user)) {
-                        Listener listener = app.findListener(request.queryParams("listener"), clubber.getClub().get());
-                        LocalDate date = parseDate(request.queryParams("date")).orElseGet(() -> findToday(clubber));
-                        record.sign(listener, request.queryParams("note"), date);
-                    } else {
-                        throw new IllegalAccessException("You are not authorized to sign this section");
-                    }
-                } else if ("true".equalsIgnoreCase(request.queryParams("unsign"))) {
-                    if (clubber.maySignRecords(user)) {
-                        record.unSign();
-                    } else {
-                        throw new IllegalAccessException("You are not authorized to un-sign this section");
-                    }
+                boolean maySign = clubber.maySignRecords(user);
+                Section section = record.getSection();
+                MapBuilder<String, Object> builder = newModel(request, section.getSectionTitle())
+                        .put("me", user)
+                        .put("clubber", clubber)
+                        .put("section", section)
+                        .put("record", record)
+                        .put("previousSection", clubber.getSectionBefore(section))
+                        .put("nextSection", clubber.getSectionAfter(section))
+                        .put("maySign", maySign && !record.getSigning().isPresent())
+                        .put("mayUnSign", maySign && record.mayBeUnsigned())
+                        .put("suggestedDate", findToday(clubber));
+                if (clubber.isLeaderInSameClub(user)) {
+                    builder = builder
+                            .put("defaultListener", getDefaultListener(user, clubber))
+                            .put("listeners", clubber.getClub().get().getListeners());
                 }
-                response.redirect(request.url());
+                return render(builder.build(), "clubberSection.ftl");
+            });
+
+            before("/sections", ((request, response) -> {
+                User user = getUser(request);
+                String id = request.params(":personId");
+                Clubber clubber = app.findClubber(id);
+                if (clubber.maySeeRecords(user)) {
+                    Optional<Section> nextSection = clubber.getNextSection();
+                    Optional<Book> book = nextSection.map(s -> s.getContainer().getBook());
+                    if (!nextSection.isPresent()) {
+                        book = clubber.getLastBook();
+                    }
+                    if (book.isPresent()) {
+                        response.redirect("/protected/clubbers/" + clubber.getId() + "/books/" + book.get().getId());
+                    } else {
+                        response.status(HttpStatus.SC_NOT_FOUND);
+                    }
+                } else {
+                    response.status(HttpStatus.SC_FORBIDDEN);
+                }
                 halt();
-            }
-        });
+            }));
 
-        get("/clubbers/:personId/sections/:sectionId", (request, response) -> {
-            User user = getUser(request);
-            String id = request.params(":personId");
-            Clubber clubber = app.findClubber(id);
-            ClubberRecord record = getClubberRecord(request, clubber);
-            boolean maySign = clubber.maySignRecords(user);
-            Section section = record.getSection();
-            MapBuilder<String, Object> builder = newModel(request, section.getSectionTitle())
-                    .put("me", user)
-                    .put("clubber", clubber)
-                    .put("section", section)
-                    .put("record", record)
-                    .put("previousSection", clubber.getSectionBefore(section))
-                    .put("nextSection", clubber.getSectionAfter(section))
-                    .put("maySign", maySign && !record.getSigning().isPresent())
-                    .put("mayUnSign", maySign && record.mayBeUnsigned())
-                    .put("suggestedDate", findToday(clubber));
-            if (clubber.isLeaderInSameClub(user)) {
-                builder = builder
-                        .put("defaultListener", getDefaultListener(user, clubber))
-                        .put("listeners", clubber.getClub().get().getListeners());
-            }
-            return render(builder.build(), "clubberSection.ftl");
-        });
-
-        before("/clubbers/:personId/sections", ((request, response) -> {
-            User user = getUser(request);
-            String id = request.params(":personId");
-            Clubber clubber = app.findClubber(id);
-            if (clubber.maySeeRecords(user)) {
-                Optional<Section> nextSection = clubber.getNextSection();
-                Optional<Book> book = nextSection.map(s -> s.getContainer().getBook());
-                if (!nextSection.isPresent()) {
-                    book = clubber.getLastBook();
-                }
-                if (book.isPresent()) {
-                    response.redirect("/protected/clubbers/" + clubber.getId() + "/books/" + book.get().getId());
-                } else {
-                    response.status(HttpStatus.SC_NOT_FOUND);
-                }
-            } else {
-                response.status(HttpStatus.SC_FORBIDDEN);
-            }
-            halt();
-        }));
-
-        get("/clubbers/:personId/books/:bookId", (request, response) -> {
-            User user = getUser(request);
-            String id = request.params(":personId");
-            Clubber clubber = app.findClubber(id);
-            if (clubber.maySeeRecords(user)) {
-                String bookId = request.params(":bookId");
-                Optional<String> modelAndView = clubber.getBook(bookId)
-                        .map(book -> mapClubberBookRecords(request, user, clubber, book));
-                if (modelAndView.isPresent()) {
-                    return modelAndView.get();
-                } else {
-                    response.status(HttpStatus.SC_NOT_FOUND);
-                }
-            } else {
-                response.status(HttpStatus.SC_FORBIDDEN);
-            }
-            return null;
-        });
-
-        get("/clubbers/:personId/sections/:sectionId/awards/:awardName/catchup", (request, response) ->
-                handleAwardRequest(app, request, response, (user, clubber, award) -> {
-                    if (!clubber.hasAward(award)) {
-                        return render(
-                                newModel(request, "Catchup")
-                                        .put("clubber", clubber)
-                                        .put("defaultListener", getDefaultListener(user, clubber))
-                                        .put("listeners", clubber.getClub().get().getListeners())
-                                        .put("suggestedDate", getSuggestedDate(clubber))
-                                        .build(),
-                                "catchup.ftl");
+            get("/books/:bookId", (request, response) -> {
+                User user = getUser(request);
+                String id = request.params(":personId");
+                Clubber clubber = app.findClubber(id);
+                if (clubber.maySeeRecords(user)) {
+                    String bookId = request.params(":bookId");
+                    Optional<String> modelAndView = clubber.getBook(bookId)
+                            .map(book -> mapClubberBookRecords(request, user, clubber, book));
+                    if (modelAndView.isPresent()) {
+                        return modelAndView.get();
                     } else {
-                        response.status(HttpStatus.SC_PRECONDITION_FAILED);
-                        return null;
+                        response.status(HttpStatus.SC_NOT_FOUND);
                     }
-                }));
+                } else {
+                    response.status(HttpStatus.SC_FORBIDDEN);
+                }
+                return null;
+            });
 
-        post("/clubbers/:personId/sections/:sectionId/awards/:awardName/catchup", (request, response) ->
-                handleAwardRequest(app, request, response, (user, clubber, award) -> {
-                    if (!clubber.hasAward(award)) {
-                        Listener listener = app.findListener(request.queryParams("listener"), clubber.getClub().get());
-                        LocalDate date = parseDate(request.queryParams("date")).orElseGet(() -> findToday(clubber).minusDays(1));
-                        catchUp(clubber, listener, award, date, app);
-                        response.redirect("/protected/clubbers/" + clubber.getId() + "/sections");
-                    } else {
-                        response.status(HttpStatus.SC_NOT_MODIFIED);
-                    }
-                    return null;
-                }));
+            get("/sections/:sectionId/awards/:awardName/catchup", (request, response) ->
+                    handleAwardRequest(app, request, response, (user, clubber, award) -> {
+                        if (!clubber.hasAward(award)) {
+                            return render(
+                                    newModel(request, "Catchup")
+                                            .put("clubber", clubber)
+                                            .put("defaultListener", getDefaultListener(user, clubber))
+                                            .put("listeners", clubber.getClub().get().getListeners())
+                                            .put("suggestedDate", getSuggestedDate(clubber))
+                                            .build(),
+                                    "catchup.ftl");
+                        } else {
+                            response.status(HttpStatus.SC_PRECONDITION_FAILED);
+                            return null;
+                        }
+                    }));
 
-        post("/clubbers/:personId/books/:bookId/awards/:awardName/presentation", (request, response) -> {
-            User user = getUser(request);
-            String id = request.params(":personId");
-            Clubber clubber = app.findClubber(id);
-            if (clubber.mayRecordSigning(user)) {
-                Optional<Book> book = clubber.getBook(request.params(":bookId"));
-                if (book.isPresent()) {
-                    Optional<AwardPresentation> award = clubber.findPresentation(book.get(), request.params(":awardName"));
-                    if (award.isPresent()) {
-                        if (!award.get().notPresented()) {
-                            award.get().undoPresentation();
+            post("/sections/:sectionId/awards/:awardName/catchup", (request, response) ->
+                    handleAwardRequest(app, request, response, (user, clubber, award) -> {
+                        if (!clubber.hasAward(award)) {
+                            Listener listener = app.findListener(request.queryParams("listener"), clubber.getClub().get());
+                            LocalDate date = parseDate(request.queryParams("date")).orElseGet(() -> findToday(clubber).minusDays(1));
+                            catchUp(clubber, listener, award, date, app);
                             response.redirect("/protected/clubbers/" + clubber.getId() + "/sections");
                         } else {
                             response.status(HttpStatus.SC_NOT_MODIFIED);
+                        }
+                        return null;
+                    }));
+
+            post("/books/:bookId/awards/:awardName/presentation", (request, response) -> {
+                User user = getUser(request);
+                String id = request.params(":personId");
+                Clubber clubber = app.findClubber(id);
+                if (clubber.mayRecordSigning(user)) {
+                    Optional<Book> book = clubber.getBook(request.params(":bookId"));
+                    if (book.isPresent()) {
+                        Optional<AwardPresentation> award = clubber.findPresentation(book.get(), request.params(":awardName"));
+                        if (award.isPresent()) {
+                            if (!award.get().notPresented()) {
+                                award.get().undoPresentation();
+                                response.redirect("/protected/clubbers/" + clubber.getId() + "/sections");
+                            } else {
+                                response.status(HttpStatus.SC_NOT_MODIFIED);
+                            }
+                        } else {
+                            response.status(HttpStatus.SC_NOT_FOUND);
                         }
                     } else {
                         response.status(HttpStatus.SC_NOT_FOUND);
                     }
                 } else {
-                    response.status(HttpStatus.SC_NOT_FOUND);
+                    response.status(HttpStatus.SC_FORBIDDEN);
                 }
-            } else {
-                response.status(HttpStatus.SC_FORBIDDEN);
-            }
-            return null;
+                return null;
+            });
         });
     }
 
