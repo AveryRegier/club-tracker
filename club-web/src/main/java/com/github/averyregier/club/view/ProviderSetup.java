@@ -41,8 +41,7 @@ public class ProviderSetup extends BaseController {
             new ProviderBroker(app.getConnector()).persist(new Provider(
                     id, providerName, image, site, clientKey, clientSecret));
 
-            response.redirect("/protected/my");
-            return null;
+            return gotoMy(response);
         });
     }
 }

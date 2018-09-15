@@ -15,6 +15,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
+import spark.Response;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -234,15 +235,9 @@ public class ClubController extends BaseController {
             return null;
         });
 
-        get("/clubbers/:personId/sections/:sectionId/awards/:awardName/catchup", (request, response) -> {
-            User user = getUser(request);
-            String id = request.params(":personId");
-            Clubber clubber = app.findClubber(id);
-            if (clubber.mayRecordSigning(user)) {
-                Optional<Section> section = clubber.lookupSection(request.params(":sectionId"));
-                Optional<Award> award = optMap(section, s -> s.findAward(request.params(":awardName")));
-                if (award.isPresent()) {
-                    if (!clubber.hasAward(award.get())) {
+        get("/clubbers/:personId/sections/:sectionId/awards/:awardName/catchup", (request, response) ->
+                handleAwardRequest(app, request, response, (user, clubber, award) -> {
+                    if (!clubber.hasAward(award)) {
                         return render(
                                 newModel(request, "Catchup")
                                         .put("clubber", clubber)
@@ -253,40 +248,22 @@ public class ClubController extends BaseController {
                                 "catchup.ftl");
                     } else {
                         response.status(HttpStatus.SC_PRECONDITION_FAILED);
+                        return null;
                     }
-                } else {
-                    response.status(HttpStatus.SC_NOT_FOUND);
-                }
-            } else {
-                response.status(HttpStatus.SC_FORBIDDEN);
-            }
-            return null;
-        });
+                }));
 
-        post("/clubbers/:personId/sections/:sectionId/awards/:awardName/catchup", (request, response) -> {
-            User user = getUser(request);
-            String id = request.params(":personId");
-            Clubber clubber = app.findClubber(id);
-            if (clubber.mayRecordSigning(user)) {
-                Optional<Section> section = clubber.lookupSection(request.params(":sectionId"));
-                Optional<Award> award = optMap(section, s -> s.findAward(request.params(":awardName")));
-                if (award.isPresent()) {
-                    if (!clubber.hasAward(award.get())) {
+        post("/clubbers/:personId/sections/:sectionId/awards/:awardName/catchup", (request, response) ->
+                handleAwardRequest(app, request, response, (user, clubber, award) -> {
+                    if (!clubber.hasAward(award)) {
                         Listener listener = app.findListener(request.queryParams("listener"), clubber.getClub().get());
                         LocalDate date = parseDate(request.queryParams("date")).orElseGet(() -> findToday(clubber).minusDays(1));
-                        catchUp(clubber, listener, award.get(), date, app);
+                        catchUp(clubber, listener, award, date, app);
                         response.redirect("/protected/clubbers/" + clubber.getId() + "/sections");
                     } else {
                         response.status(HttpStatus.SC_NOT_MODIFIED);
                     }
-                } else {
-                    response.status(HttpStatus.SC_NOT_FOUND);
-                }
-            } else {
-                response.status(HttpStatus.SC_FORBIDDEN);
-            }
-            return null;
-        });
+                    return null;
+                }));
 
         post("/clubbers/:personId/books/:bookId/awards/:awardName/presentation", (request, response) -> {
             User user = getUser(request);
@@ -314,6 +291,29 @@ public class ClubController extends BaseController {
             }
             return null;
         });
+    }
+
+    private Object handleAwardRequest(ClubApplication app, Request request, Response response, Fn<User, Clubber, Award, Object> process) {
+        User user = getUser(request);
+        String id = request.params(":personId");
+        Clubber clubber = app.findClubber(id);
+        if (clubber.mayRecordSigning(user)) {
+            Optional<Section> section = clubber.lookupSection(request.params(":sectionId"));
+            Optional<Award> award = optMap(section, s -> s.findAward(request.params(":awardName")));
+            if (award.isPresent()) {
+                Award award1 = award.get();
+                return process.apply(user, clubber, award1);
+            } else {
+                response.status(HttpStatus.SC_NOT_FOUND);
+            }
+        } else {
+            response.status(HttpStatus.SC_FORBIDDEN);
+        }
+        return null;
+    }
+
+    private interface Fn<A, B, C, R> {
+        R apply(A a, B b, C c);
     }
 
     private String getDefaultListener(User user, Clubber clubber) {
