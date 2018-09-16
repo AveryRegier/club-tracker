@@ -44,88 +44,92 @@ public class ClubController extends BaseController {
                     "viewProgram.ftl");
         });
 
-        get("/club/:club", (request, response) -> {
-            Optional<Club> club = lookupClub(app, request);
-            if (club.isPresent()) {
-                return render(
-                        newModel(request, club.get().getShortCode())
-                                .put("club", club.get())
-                                .put("clubbers", club.get().getClubNightReport().entrySet())
-                                .build(),
-                        "viewClub.ftl");
-            } else {
-                return gotoMy(response);
-            }
-        });
-
-        get("/club/:club/clubbers", (request, response) -> {
-            Optional<Club> club = lookupClub(app, request);
-            if (club.isPresent()) {
-                return render(
-                        newModel(request, "All " + club.get().getShortCode() + " Clubber's Upcoming Sections")
-                                .put("club", club.get())
-                                .build(),
-                        "allClubbersQuick.ftl");
-            } else {
-                return gotoMy(response);
-            }
-        });
-
-        post("/club/:club/workers/:personId", (request, response) -> {
-            Optional<Club> club = lookupClub(app, request);
-            if (club.isPresent()) {
-                Optional<Person> person = app.getPersonManager().lookup(request.params(":personId"));
-                if (person.isPresent()) {
-                    String roleName = request.queryParams("role");
-                    if ("Listener".equalsIgnoreCase(roleName)) {
-                        club.get().recruit(person.get());
-                    } else {
-                        ClubLeader.LeadershipRole leadershipRole = ClubLeader.LeadershipRole.valueOf(roleName);
-                        club.get().assign(person.get(), leadershipRole);
-                    }
-                    Optional<Family> family = person.get().getFamily();
-                    if (family.map(Family::shouldInvite).orElse(false)) {
-                        response.redirect("/protected/family/" + family.get().getId() + "/invite");
-                        return null;
-                    }
-                }
-                response.redirect("/protected/club/" + club.get().getId());
-            } else {
-                response.redirect("/protected/my");
-            }
-            return null;
-        });
-
-        before("/club/:club/awards", (request, response) -> {
-            if (request.requestMethod().equalsIgnoreCase("POST")) {
+        path("/club/:club", ()->{
+            get("", (request, response) -> {
                 Optional<Club> club = lookupClub(app, request);
                 if (club.isPresent()) {
-                    HashSet<String> awards = asLinkedSet(request.queryMap("award").values());
-                    Ceremony ceremony = persistCeremony(app, new CeremonyAdapter(findToday(club)));
-                    club.get().getAwardsNotYetPresented(AccomplishmentLevel.group).stream()
-                            .filter(a -> awards.contains(a.getId()))
-                            .forEach(a -> a.presentAt(ceremony));
+                    return render(
+                            newModel(request, club.get().getShortCode())
+                                    .put("club", club.get())
+                                    .put("clubbers", club.get().getClubNightReport().entrySet())
+                                    .build(),
+                            "viewClub.ftl");
+                } else {
+                    return gotoMy(response);
                 }
-                response.redirect(request.url());
-                halt();
-            }
-        });
+            });
 
-        get("/club/:club/awards", (request, response) -> {
-            Optional<Club> club = lookupClub(app, request);
-            if (club.isPresent()) {
-                String accomplishmentLevel = request.queryParams("accomplishmentLevel");
-                AccomplishmentLevel type = AccomplishmentLevel.valueOf(
-                        accomplishmentLevel != null ? accomplishmentLevel : AccomplishmentLevel.group.name());
-                return render(
-                        newModel(request, club.get().getShortCode() + " Awards")
-                                .put("club", club.get())
-                                .put("awards", club.get().getAwardsNotYetPresented(type))
-                                .build(),
-                        "awards.ftl");
-            } else {
-                return gotoMy(response);
-            }
+            get("/clubbers", (request, response) -> {
+                Optional<Club> club = lookupClub(app, request);
+                if (club.isPresent()) {
+                    return render(
+                            newModel(request, "All " + club.get().getShortCode() + " Clubber's Upcoming Sections")
+                                    .put("club", club.get())
+                                    .build(),
+                            "allClubbersQuick.ftl");
+                } else {
+                    return gotoMy(response);
+                }
+            });
+
+            post("/workers/:personId", (request, response) -> {
+                Optional<Club> club = lookupClub(app, request);
+                if (club.isPresent()) {
+                    Optional<Person> person = app.getPersonManager().lookup(request.params(":personId"));
+                    if (person.isPresent()) {
+                        String roleName = request.queryParams("role");
+                        if ("Listener".equalsIgnoreCase(roleName)) {
+                            club.get().recruit(person.get());
+                        } else {
+                            ClubLeader.LeadershipRole leadershipRole = ClubLeader.LeadershipRole.valueOf(roleName);
+                            club.get().assign(person.get(), leadershipRole);
+                        }
+                        Optional<Family> family = person.get().getFamily();
+                        if (family.map(Family::shouldInvite).orElse(false)) {
+                            response.redirect("/protected/family/" + family.get().getId() + "/invite");
+                            return null;
+                        }
+                    }
+                    response.redirect("/protected/club/" + club.get().getId());
+                } else {
+                    response.redirect("/protected/my");
+                }
+                return null;
+            });
+
+            path("/awards",()->{
+                before("", (request, response) -> {
+                    if (request.requestMethod().equalsIgnoreCase("POST")) {
+                        Optional<Club> club = lookupClub(app, request);
+                        if (club.isPresent()) {
+                            HashSet<String> awards = asLinkedSet(request.queryMap("award").values());
+                            Ceremony ceremony = persistCeremony(app, new CeremonyAdapter(findToday(club)));
+                            club.get().getAwardsNotYetPresented(AccomplishmentLevel.group).stream()
+                                    .filter(a -> awards.contains(a.getId()))
+                                    .forEach(a -> a.presentAt(ceremony));
+                        }
+                        response.redirect(request.url());
+                        halt();
+                    }
+                });
+
+                get("", (request, response) -> {
+                    Optional<Club> club = lookupClub(app, request);
+                    if (club.isPresent()) {
+                        String accomplishmentLevel = request.queryParams("accomplishmentLevel");
+                        AccomplishmentLevel type = AccomplishmentLevel.valueOf(
+                                accomplishmentLevel != null ? accomplishmentLevel : AccomplishmentLevel.group.name());
+                        return render(
+                                newModel(request, club.get().getShortCode() + " Awards")
+                                        .put("club", club.get())
+                                        .put("awards", club.get().getAwardsNotYetPresented(type))
+                                        .build(),
+                                "awards.ftl");
+                    } else {
+                        return gotoMy(response);
+                    }
+                });
+            });
         });
 
         get("/my", (request, response) -> {
@@ -149,8 +153,7 @@ public class ClubController extends BaseController {
             before("/sections/:sectionId", (request, response) -> {
                 if (request.requestMethod().equalsIgnoreCase("POST")) {
                     User user = getUser(request);
-                    String id = request.params(":personId");
-                    Clubber clubber = app.findClubber(id);
+                    Clubber clubber = findClubberFromPath(app, request);
                     ClubberRecord record = getClubberRecord(request, clubber);
                     if ("true".equalsIgnoreCase(request.queryParams("sign"))) {
                         if (clubber.maySignRecords(user)) {
@@ -174,8 +177,7 @@ public class ClubController extends BaseController {
 
             get("/sections/:sectionId", (request, response) -> {
                 User user = getUser(request);
-                String id = request.params(":personId");
-                Clubber clubber = app.findClubber(id);
+                Clubber clubber = findClubberFromPath(app, request);
                 ClubberRecord record = getClubberRecord(request, clubber);
                 boolean maySign = clubber.maySignRecords(user);
                 Section section = record.getSection();
@@ -199,8 +201,7 @@ public class ClubController extends BaseController {
 
             before("/sections", ((request, response) -> {
                 User user = getUser(request);
-                String id = request.params(":personId");
-                Clubber clubber = app.findClubber(id);
+                Clubber clubber = findClubberFromPath(app, request);
                 if (clubber.maySeeRecords(user)) {
                     Optional<Section> nextSection = clubber.getNextSection();
                     Optional<Book> book = nextSection.map(s -> s.getContainer().getBook());
@@ -220,8 +221,7 @@ public class ClubController extends BaseController {
 
             get("/books/:bookId", (request, response) -> {
                 User user = getUser(request);
-                String id = request.params(":personId");
-                Clubber clubber = app.findClubber(id);
+                Clubber clubber = findClubberFromPath(app, request);
                 if (clubber.maySeeRecords(user)) {
                     String bookId = request.params(":bookId");
                     Optional<String> modelAndView = clubber.getBook(bookId)
@@ -237,7 +237,8 @@ public class ClubController extends BaseController {
                 return null;
             });
 
-            get("/sections/:sectionId/awards/:awardName/catchup", (request, response) ->
+            path("/sections/:sectionId/awards/:awardName/catchup", ()-> {
+                get("", (request, response) ->
                     handleAwardRequest(app, request, response, (user, clubber, award) -> {
                         if (!clubber.hasAward(award)) {
                             return render(
@@ -254,7 +255,7 @@ public class ClubController extends BaseController {
                         }
                     }));
 
-            post("/sections/:sectionId/awards/:awardName/catchup", (request, response) ->
+                post("", (request, response) ->
                     handleAwardRequest(app, request, response, (user, clubber, award) -> {
                         if (!clubber.hasAward(award)) {
                             Listener listener = app.findListener(request.queryParams("listener"), clubber.getClub().get());
@@ -266,11 +267,11 @@ public class ClubController extends BaseController {
                         }
                         return null;
                     }));
+            });
 
             post("/books/:bookId/awards/:awardName/presentation", (request, response) -> {
                 User user = getUser(request);
-                String id = request.params(":personId");
-                Clubber clubber = app.findClubber(id);
+                Clubber clubber = findClubberFromPath(app, request);
                 if (clubber.mayRecordSigning(user)) {
                     Optional<Book> book = clubber.getBook(request.params(":bookId"));
                     if (book.isPresent()) {
@@ -296,10 +297,14 @@ public class ClubController extends BaseController {
         });
     }
 
+    public Clubber findClubberFromPath(ClubApplication app, Request request) {
+        String id = request.params(":personId");
+        return app.findClubber(id);
+    }
+
     private Object handleAwardRequest(ClubApplication app, Request request, Response response, Fn<User, Clubber, Award, Object> process) {
         User user = getUser(request);
-        String id = request.params(":personId");
-        Clubber clubber = app.findClubber(id);
+        Clubber clubber = findClubberFromPath(app, request);
         if (clubber.mayRecordSigning(user)) {
             Optional<Section> section = clubber.lookupSection(request.params(":sectionId"));
             Optional<Award> award = optMap(section, s -> s.findAward(request.params(":awardName")));
