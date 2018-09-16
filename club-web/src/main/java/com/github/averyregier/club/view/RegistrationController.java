@@ -33,93 +33,104 @@ public class RegistrationController extends BaseController {
         
         before("/my", this::redirectKiosk);
 
-        get("/:id/family", (request, response) -> {
-            User user = getUser(request);
-            return createRegistrationView(request, app.getProgram(request.params(":id")).createRegistrationForm(user));
+        path("/:id", ()->{
+
+            path("/family", ()->{
+
+                get("", (request, response) -> {
+                    User user = getUser(request);
+                    return createRegistrationView(request, app.getProgram(request.params(":id")).createRegistrationForm(user));
+                });
+
+                before("", (request, response) -> {
+                    if ("submit".equals(request.queryParams("submit"))) {
+                        logger.info("Submitting family registration");
+                        RegistrationInformation form = updateForm(app, request);
+                        Family family = form.register(getUser(request));
+                        postRegistrationRedirect(response, family);
+                        halt();
+                    }
+                });
+
+                post("", (request, response) -> updateRegistrationForm(app, request));
+
+                path("/:familyId", ()->{
+
+                    get("", (request, response) -> {
+                        User user = getUser(request);
+                        String programId = request.params(":id");
+                        String familyId = request.params(":familyId");
+                        if (leadsProgram(user, programId)) {
+                            PersonManager personManager = app.getPersonManager();
+                            return createRegistrationView(request, app.getProgram(programId).createRegistrationForm(personManager.getParent(familyId)));
+                        }
+                        response.redirect("/my");
+                        halt();
+                        return null;
+                    });
+
+                    before("", (request, response) -> {
+                        User user = getUser(request);
+                        String programId = request.params(":id");
+                        String familyId = request.params(":familyId");
+                        if (!leadsProgram(user, programId)) {
+                            response.redirect("/my");
+                            halt();
+                        } else if ("submit".equals(request.queryParams("submit"))) {
+                            logger.info("Submitting family registration");
+                            PersonManager personManager = app.getPersonManager();
+                            Family family = updateForm(app, request).register(personManager.getParent(familyId));
+                            postRegistrationRedirect(response, family);
+                            halt();
+                        }
+                    });
+
+                    post("", (request, response) -> updateRegistrationForm(app, request));
+                });
+            });
+
+            path("/newClubber", ()->{
+                get("", (request, response) -> {
+                    User user = getUser(request);
+                    String programId = request.params(":id");
+                    if (leadsProgram(user, programId)) {
+                        Program program = app.getProgram(programId);
+                        RegistrationInformation form = program.updateRegistrationForm(UtilityMethods.map("action", "child").build());
+                        return createRegistrationView(request, form);
+                    }
+                    response.redirect("/protected/my");
+                    halt();
+                    return null;
+                });
+
+                before("", (request, response) -> {
+                    validateMayCreateNewPeople(app, request, response,
+                            f -> postRegistrationRedirect(response, f));
+                });
+
+                post("", (request, response) -> updateRegistrationForm(app, request));
+            });
+
+            path("/newWorker", ()->{
+                get("", (request, response) -> {
+                    User user = getUser(request);
+                    String programId = request.params(":id");
+                    if (leadsProgram(user, programId)) {
+                        return createRegistrationView(request, app.getProgram(programId).createRegistrationForm());
+                    }
+                    response.redirect("/protected/my");
+                    halt();
+                    return null;
+                });
+
+                before("", (request, response) -> {
+                    validateMayCreateNewPeople(app, request, response,
+                            f -> postWorkerRegistrationRedirect(getUser(request), response, f));
+                });
+
+                post("", (request, response) -> updateRegistrationForm(app, request));
+            });
         });
-
-        before("/:id/family", (request, response) -> {
-            if ("submit".equals(request.queryParams("submit"))) {
-                logger.info("Submitting family registration");
-                RegistrationInformation form = updateForm(app, request);
-                Family family = form.register(getUser(request));
-                postRegistrationRedirect(response, family);
-                halt();
-            }
-        });
-
-        post("/:id/family", (request, response) -> updateRegistrationForm(app, request));
-
-        get("/:id/family/:familyId", (request, response) -> {
-            User user = getUser(request);
-            String programId = request.params(":id");
-            String familyId = request.params(":familyId");
-            if (leadsProgram(user, programId)) {
-                PersonManager personManager = app.getPersonManager();
-                return createRegistrationView(request, app.getProgram(programId).createRegistrationForm(personManager.getParent(familyId)));
-            }
-            response.redirect("/my");
-            halt();
-            return null;
-        });
-
-        before("/:id/family/:familyId", (request, response) -> {
-            User user = getUser(request);
-            String programId = request.params(":id");
-            String familyId = request.params(":familyId");
-            if (!leadsProgram(user, programId)) {
-                response.redirect("/my");
-                halt();
-            } else if ("submit".equals(request.queryParams("submit"))) {
-                logger.info("Submitting family registration");
-                PersonManager personManager = app.getPersonManager();
-                Family family = updateForm(app, request).register(personManager.getParent(familyId));
-                postRegistrationRedirect(response, family);
-                halt();
-            }
-        });
-
-        post("/:id/family/:familyId", (request, response) -> {
-            return updateRegistrationForm(app, request);
-        });
-
-        get("/:id/newClubber", (request, response) -> {
-            User user = getUser(request);
-            String programId = request.params(":id");
-            if (leadsProgram(user, programId)) {
-                Program program = app.getProgram(programId);
-                RegistrationInformation form = program.updateRegistrationForm(UtilityMethods.map("action", "child").build());
-                return createRegistrationView(request, form);
-            }
-            response.redirect("/protected/my");
-            halt();
-            return null;
-        });
-
-        get("/:id/newWorker", (request, response) -> {
-            User user = getUser(request);
-            String programId = request.params(":id");
-            if (leadsProgram(user, programId)) {
-                return createRegistrationView(request, app.getProgram(programId).createRegistrationForm());
-            }
-            response.redirect("/protected/my");
-            halt();
-            return null;
-        });
-
-        before("/:id/newClubber", (request, response) -> {
-            validateMayCreateNewPeople(app, request, response,
-                    f -> postRegistrationRedirect(response, f));
-        });
-
-        post("/:id/newClubber", (request, response) -> updateRegistrationForm(app, request));
-
-        before("/:id/newWorker", (request, response) -> {
-            validateMayCreateNewPeople(app, request, response,
-                    f -> postWorkerRegistrationRedirect(getUser(request), response, f));
-        });
-
-        post("/:id/newWorker", (request, response) -> updateRegistrationForm(app, request));
     }
 
     public void redirectKiosk(Request request, Response response) {
