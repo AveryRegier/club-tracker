@@ -26,71 +26,78 @@ public class SetupController extends BaseController {
 
 
     public void init(ClubApplication app) {
-        get("/setup", (request, response) ->
-                render(newModel(request, "Club Setup")
-                .put("roles", ClubLeader.LeadershipRole.values())
-                .put("programs", Programs.values())
-                .build(), "setup.ftl"));
+        path("/setup", ()->{
+            get("/setup", (request, response) ->
+                    render(newModel(request, "Club Setup")
+                            .put("roles", ClubLeader.LeadershipRole.values())
+                            .put("programs", Programs.values())
+                            .build(), "setup.ftl"));
 
-        post("/setup", (request, response) -> {
+            post("/setup", (request, response) -> {
 
-            String organizationName = request.queryParams("organizationName");
-            String myRole = request.queryParams("role");
-            String curriculum = request.queryParams("program");
-            String acceptLanguage = request.headers("Accept-Language").split(",")[0];
+                String organizationName = request.queryParams("organizationName");
+                String myRole = request.queryParams("role");
+                String curriculum = request.queryParams("program");
+                String acceptLanguage = request.headers("Accept-Language").split(",")[0];
 
-            Program program = app.setupProgram(organizationName, curriculum, acceptLanguage);
-            program.assign(getUser(request), ClubLeader.LeadershipRole.valueOf(myRole));
+                Program program = app.setupProgram(organizationName, curriculum, acceptLanguage);
+                program.assign(getUser(request), ClubLeader.LeadershipRole.valueOf(myRole));
 
-            response.redirect("/protected/program/" + program.getId());
-            return null;
+                response.redirect("/protected/program/" + program.getId());
+                return null;
+            });
         });
 
-        before("/program/:id", gotoSetupScreenIfNecessary(app));
+        path("/program/:id", ()->{
+            before("", gotoSetupScreenIfNecessary(app));
 
-        get("/program/:id", (request, response) ->
-                        createProgramView(request, app.getProgram(request.params(":id")), "program.ftl"));
+            get("", (request, response) ->
+                            createProgramView(request, app.getProgram(request.params(":id")), "program.ftl"));
 
-        post("/program/:id", (request, response) -> {
-            Program program = app.getProgram(request.params(":id"));
+            post("", (request, response) -> {
+                Program program = app.getProgram(request.params(":id"));
 
-            String clubId = request.queryParams("addClub");
-            if (clubId != null && clubId.trim().length() != 0) {
-                // add the club
-                Optional<Curriculum> series = program.getCurriculum().getSeries(clubId);
-                if (series.isPresent()) {
-                    program.addClub(series.get());
+                String clubId = request.queryParams("addClub");
+                if (clubId != null && clubId.trim().length() != 0) {
+                    // add the club
+                    Optional<Curriculum> series = program.getCurriculum().getSeries(clubId);
+                    if (series.isPresent()) {
+                        program.addClub(series.get());
+                    }
                 }
-            }
 
-            String organizationName = request.queryParams("organizationName");
-            program.setName(organizationName);
+                String organizationName = request.queryParams("organizationName");
+                program.setName(organizationName);
 
-            response.redirect("/protected/program/" + program.getId());
-            return null;
-        });
+                response.redirect("/protected/program/" + program.getId());
+                return null;
+            });
 
-        get("/program/:id/update", (request, response) -> {
-            Program program = app.getProgram(request.params(":id"));
-            app.addExtraFields(program);
-            return createProgramView(request, program, "program.ftl");
-        });
+            get("/update", (request, response) -> {
+                Program program = app.getProgram(request.params(":id"));
+                app.addExtraFields(program);
+                return createProgramView(request, program, "program.ftl");
+            });
 
-        before("/program/:id/schedule", gotoSetupScreenIfNecessary(app));
+            path("/schedule", ()->{
+                before("", gotoSetupScreenIfNecessary(app));
 
-        get("/program/:id/schedule", (request, response) ->
+                get("", (request, response) ->
                         createProgramView(request, app.getProgram(request.params(":id")), "schedule.ftl"));
 
-        post("/program/:id/schedule", (request, response) -> {
-            Program program = app.getProgram(request.params(":id"));
-            List<LocalDate> dates = parseMeetingDates(request);
+                post("", (request, response) -> {
+                    Program program = app.getProgram(request.params(":id"));
+                    List<LocalDate> dates = parseMeetingDates(request);
 
-            String clubYear = determineClubYear(dates);
-            program.setMeetings(clubYear, dates);
+                    String clubYear = determineClubYear(dates);
+                    program.setMeetings(clubYear, dates);
 
-            response.redirect("/protected/program/" + program.getId());
-            return null;
+                    response.redirect("/protected/program/" + program.getId());
+                    return null;
+                });
+            });
         });
+
     }
 
     public String determineClubYear(List<LocalDate> dates) {
