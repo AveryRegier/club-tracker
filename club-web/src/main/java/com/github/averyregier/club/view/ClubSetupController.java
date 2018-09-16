@@ -35,65 +35,67 @@ public class ClubSetupController extends BaseController {
 
     public void init(ClubApplication app) {
 
-        before("/club/:club/policies", (request, response) -> {
-            User user = getUser(request);
-            Optional<Club> club = lookupClub(app, request);
-            if (!club.map(c -> c.isLeader(user)).orElse(false)) {
-                response.redirect("/protected/my");
-                halt();
-            }
-        });
+        path("/club/:club/policies", ()->{
+            before("", (request, response) -> {
+                User user = getUser(request);
+                Optional<Club> club = lookupClub(app, request);
+                if (!club.map(c -> c.isLeader(user)).orElse(false)) {
+                    response.redirect("/protected/my");
+                    halt();
+                }
+            });
 
-        get("/club/:club/policies", (request, response) -> {
-            Optional<Club> club = lookupClub(app, request);
-            if (club.isPresent()) {
-                MapBuilder<String, Object> builder = newModel(request, "Club " + club.get().getShortCode() + " Policies")
-                        .put("club", club.get());
-                Stream.of(Policy.values()).forEach(policy -> builder.put(policy.name(), ""));
-                club.get().getPolicies().forEach(policy -> builder.put(policy.name(), "checked"));
+            get("", (request, response) -> {
+                Optional<Club> club = lookupClub(app, request);
+                if (club.isPresent()) {
+                    MapBuilder<String, Object> builder = newModel(request, "Club " + club.get().getShortCode() + " Policies")
+                            .put("club", club.get());
+                    Stream.of(Policy.values()).forEach(policy -> builder.put(policy.name(), ""));
+                    club.get().getPolicies().forEach(policy -> builder.put(policy.name(), "checked"));
 
-                Map<String, String> defaults = club.get().getCurriculum().getAgeGroups().stream()
-                        .collect(Collectors.toMap(AgeGroup::name,
-                                ageGroup -> getCurriculum(club, ageGroup).getId()));
+                    Map<String, String> defaults = club.get().getCurriculum().getAgeGroups().stream()
+                            .collect(Collectors.toMap(AgeGroup::name,
+                                    ageGroup -> getCurriculum(club, ageGroup).getId()));
 
-                club.get().getSettings().getSettings()
-                        .forEach(setting -> defaults.put(
-                                setting.getKey().replace("-book", ""), setting.marshall()));
+                    club.get().getSettings().getSettings()
+                            .forEach(setting -> defaults.put(
+                                    setting.getKey().replace("-book", ""), setting.marshall()));
 
-                builder.put("defaultCurriculum", defaults);
+                    builder.put("defaultCurriculum", defaults);
 
-                return render(
-                        builder.build(),
-                        "policies.ftl");
-            } else return gotoMy(response);
-        });
+                    return render(
+                            builder.build(),
+                            "policies.ftl");
+                } else return gotoMy(response);
+            });
 
-        post("/club/:club/policies", (request, response) -> {
-            Optional<Club> club = lookupClub(app, request);
-            if (club.isPresent()) {
-                EnumSet<Policy> policies = EnumSet.noneOf(Policy.class);
-                String[] temp = request.queryMap("policy").values();
-                if (temp != null) {
-                    for (String policy : temp) {
-                        policies.add(Policy.valueOf(policy));
+            post("", (request, response) -> {
+                Optional<Club> club = lookupClub(app, request);
+                if (club.isPresent()) {
+                    EnumSet<Policy> policies = EnumSet.noneOf(Policy.class);
+                    String[] temp = request.queryMap("policy").values();
+                    if (temp != null) {
+                        for (String policy : temp) {
+                            policies.add(Policy.valueOf(policy));
+                        }
                     }
-                }
-                Club theClub = club.get();
+                    Club theClub = club.get();
 
-                Settings settings = new SettingsAdapter(theClub);
-                if (policies.contains(Policy.customizedBookSelections)) {
-                    settings = buildCustomizedBookSettings(request, theClub);
+                    Settings settings = new SettingsAdapter(theClub);
+                    if (policies.contains(Policy.customizedBookSelections)) {
+                        settings = buildCustomizedBookSettings(request, theClub);
+                    }
+                    theClub.replacePolicies(policies, settings);
+                    response.redirect("/protected/club/" + theClub.getId());
+                } else {
+                    response.redirect("/protected/my");
                 }
-                theClub.replacePolicies(policies, settings);
-                response.redirect("/protected/club/" + theClub.getId());
-            } else {
-                response.redirect("/protected/my");
-            }
-            return null;
+                return null;
+            });
         });
 
-        get("/club/:club/workers",
-                (request, response) ->
+        path("/club/:club/workers", ()->{
+            get("", (request, response) ->
                         lookupClub(app, request)
                                 .map(club -> render(
                                         newModel(request, "Add " + club.getShortCode() + " Workers")
@@ -101,25 +103,26 @@ public class ClubSetupController extends BaseController {
                                                 .build(), "addWorker.ftl"))
                                 .orElseGet(() -> gotoMy(response)));
 
-        get("/club/:club/workers/:personId", (request, response) -> {
-            Optional<Club> club = lookupClub(app, request);
-            if (club.isPresent()) {
-                Optional<Person> person = app.getPersonManager().lookup(request.params(":personId"));
-                if (person.isPresent()) {
-                    MapBuilder<String, Object> model = newModel(request,
-                            "Assign " + club.get().getShortCode() + " role to " + person.get().getName().getFullName())
-                            .put("club", club.get())
-                            .put("person", person.get())
-                            .put("roles", ClubLeader.LeadershipRole.values());
-                    optMap(club, Club::asProgram).ifPresent(p -> model.put("clubs", getClubList(p)));
-                    return render(model.build(), "workerRole.ftl");
+            get("/:personId", (request, response) -> {
+                Optional<Club> club = lookupClub(app, request);
+                if (club.isPresent()) {
+                    Optional<Person> person = app.getPersonManager().lookup(request.params(":personId"));
+                    if (person.isPresent()) {
+                        MapBuilder<String, Object> model = newModel(request,
+                                "Assign " + club.get().getShortCode() + " role to " + person.get().getName().getFullName())
+                                .put("club", club.get())
+                                .put("person", person.get())
+                                .put("roles", ClubLeader.LeadershipRole.values());
+                        optMap(club, Club::asProgram).ifPresent(p -> model.put("clubs", getClubList(p)));
+                        return render(model.build(), "workerRole.ftl");
+                    } else {
+                        response.redirect("/protected/club/" + club.get().getId() + "/workers");
+                        return null;
+                    }
                 } else {
-                    response.redirect("/protected/club/" + club.get().getId() + "/workers");
-                    return null;
+                    return gotoMy(response);
                 }
-            } else {
-                return gotoMy(response);
-            }
+            });
         });
     }
 
