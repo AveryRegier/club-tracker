@@ -14,34 +14,34 @@ import static spark.Spark.*;
  */
 public class ProviderSetup extends BaseController {
     public void init(ClubApplication app) {
-        String path = "/provider";
+        path("/provider", ()->{
+            before("", (request, response) -> {
+                User user = getUser(request);
+                if(user.asClubLeader().isPresent()) {
 
-        before(path, (request, response) -> {
-            User user = getUser(request);
-            if(user.asClubLeader().isPresent()) {
+                } else {
+                    halt();
+                }
+            });
 
-            } else {
-                halt();
-            }
-        });
+            get("", (request, response)-> render(
+                    Collections.emptyMap(),
+                    "provider.ftl"));
 
-        get(path, (request, response)-> render(
-                Collections.emptyMap(),
-                "provider.ftl"));
+            post("", (request, response) -> {
 
-        post(path, (request, response) -> {
+                String id = request.queryParams("providerId");
+                String providerName = request.queryParams("providerName");
+                String site = request.queryParams("site");
+                String image = request.queryParams("image");
+                String clientKey = request.queryParams("clientKey");
+                String clientSecret = request.queryParams("clientSecret");
 
-            String id = request.queryParams("providerId");
-            String providerName = request.queryParams("providerName");
-            String site = request.queryParams("site");
-            String image = request.queryParams("image");
-            String clientKey = request.queryParams("clientKey");
-            String clientSecret = request.queryParams("clientSecret");
+                new ProviderBroker(app.getConnector()).persist(new Provider(
+                        id, providerName, image, site, clientKey, clientSecret));
 
-            new ProviderBroker(app.getConnector()).persist(new Provider(
-                    id, providerName, image, site, clientKey, clientSecret));
-
-            return gotoMy(response);
+                return gotoMy(response);
+            });
         });
     }
 }
