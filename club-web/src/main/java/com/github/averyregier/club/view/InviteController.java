@@ -29,33 +29,33 @@ public class InviteController extends BaseController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public void init(ClubApplication app) {
-        String invitationPath = "/person/:id/invite";
-        String familyInvitePath = "/family/:familyId/invite";
 
-        before(familyInvitePath, (request, response) -> {
-            Optional<Family> family = app.getPersonManager().lookupFamily(request.params(":familyId"));
-            if (family.isPresent()) {
-                Set<Parent> toInvite = family.map(Family::getParents).orElse(Collections.emptySet())
-                        .stream()
-                        .filter(p -> p.getEmail().isPresent())
-                        .filter(p -> !p.getLogin().isPresent())
-                        .collect(Collectors.toSet());
-                if (!toInvite.isEmpty()) {
-                    request.attribute("people", toInvite);
-                    return;
+        path("/family/:familyId/invite", ()->{
+            before("", (request, response) -> {
+                Optional<Family> family = app.getPersonManager().lookupFamily(request.params(":familyId"));
+                if (family.isPresent()) {
+                    Set<Parent> toInvite = family.map(Family::getParents).orElse(Collections.emptySet())
+                            .stream()
+                            .filter(p -> p.getEmail().isPresent())
+                            .filter(p -> !p.getLogin().isPresent())
+                            .collect(Collectors.toSet());
+                    if (!toInvite.isEmpty()) {
+                        request.attribute("people", toInvite);
+                        return;
+                    }
                 }
-            }
-            response.redirect("/protected/my");
-            halt();
+                response.redirect("/protected/my");
+                halt();
+            });
+
+            get("", (request, response) -> render(
+                    newModel(request, "Invite Family Members")
+                            .put("people", request.attribute("people"))
+                            .build(),
+                    "inviteFamily.ftl"));
         });
 
-        get(familyInvitePath, (request, response) -> render(
-                newModel(request, "Invite Family Members")
-                        .put("people", request.attribute("people"))
-                        .build(),
-                "inviteFamily.ftl"));
-
-        before(invitationPath, (request, response) -> {
+        before("/person/:id/invite", (request, response) -> {
             String id = request.params(":id");
             Optional<Person> person = app.getPersonManager().lookup(id);
             if (!person.isPresent()) {
